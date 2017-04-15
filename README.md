@@ -1,0 +1,1 @@
+Initially inspired by https://github.com/AlastairTaft/draft-js-editor
