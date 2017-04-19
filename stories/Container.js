@@ -38,17 +38,21 @@ const blockTypes = {
   random: Random
 };
 
-const InlinePointer = ({
-  children
-}) => (
-  <span style={{
-    background: 'grey',
-    color: 'white',
-    padding: '5px'
-  }}>
-    {children}
-  </span>
-);
+const InlinePointer = (props) => {
+  const {
+    children
+  } = props;
+  console.log('rendering inline pointer', props);
+  return (
+    <span style={{
+      background: 'grey',
+      color: 'white',
+      padding: '5px'
+    }}>
+      {children}
+    </span>
+  );
+};
 
 const NotePointer = ({
   children

@@ -140,6 +140,7 @@
   },
   "dependencies": {
     "draft-js": "^0.10.0",
+    "draft-js-simpledecorator": "^1.0.2",
     "prop-type": "0.0.1",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",

@@ -50,23 +50,27 @@ It must be used within the principal editor for displaying the main editor and t
 
 `contextualizers` (Object) -> map of the contextualizers data to be potentially used by the connector
 
-`InlineContextualizationComponents` (Object) -> a map for displaying the inline contextualizations in the editor
+`inlineContextualizationComponents` (Object) -> a map for displaying the inline contextualizations in the editor
 
-`BlockContextualizationComponents` (Object) -> a map for displaying the block contextualizations in the editor
+`blockContextualizationComponents` (Object) -> a map for displaying the block contextualizations in the editor
+
+`lastInsertionType` (String) -> whether the last insertion was inline or block
 
 ### Method props
 
-`onEditorChange`
+`onEditorChange(editor)`
 
-`onNotesOrderChange`
+`onContextualizationRequest()`
 
-`onAddContextualization`
-
-`onAddNote`
+`onNoteAdd()`
 
 `onContextualizationClick(contextualizationId, contextualizationData, event)` 
 
-`onContextualizationHover(contextualizationId, contextualizationData, event)` 
+`onContextualizationMouseOver(contextualizationId, contextualizationData, event)` 
+
+`onContextualizationMouseOut(contextualizationId, contextualizationData, event)` 
+
+`onDataChange(dataProp, key, newItem)` -> when mods are applied from editor on contextualizations, contextualizers, or resources
 
 ### Parametrization props
 
@@ -74,11 +78,9 @@ It must be used within the principal editor for displaying the main editor and t
 
 `editorStyles` (Object) -> a style object
 
-`allowFootnotesInsertion` (Boolean)
+`allowNotesInsertion` (Boolean)
 
-`allowInlineContextualizationInsertion` (Boolean)
-
-`allowBlockContextualizationInsertion` (Boolean)
+`allowContextualizations` (Object) => {inline: Boolean, block: Boolean}
 
 # SectionEditor
 
@@ -116,19 +118,21 @@ Higher level editor combining main text and side notes.
 
 ### Method props
 
-`onEditorChange` (editorState)
+`onEditorChange(editorState)` 
 
-`onNoteChange` (noteId, editorState)
+`onNoteChange(noteId, editorState)` 
 
-`onNotesOrderChange` (newNoteOrder) -> update the note order 
+`onNotesOrderChange(notesOrder)` -> update the note order 
 
-`onAddContextualization(noteIdOrMainContent, relatedEditorState)` 
+`onContextualizationRequest(noteIdOrMainContent, relatedEditorState)` 
 
-`onAddNote`
+`onAddNote()`
 
 `onContextualizationClick(contextualizationId, contextualizationData, event)` 
 
-`onContextualizationHover(contextualizationId, contextualizationData, event)` 
+`onContextualizationMouseOver(contextualizationId, contextualizationData, event)` 
+
+`onContextualizationMouseOut(contextualizationId, contextualizationData, event)` 
 
 ### Parametrization props
 

@@ -62,9 +62,13 @@ export default class PopoverControl extends Component {
       iconColor, 
       iconSelectedColor, 
       buttons, } = this.props;
+    const bindRef = toolbar => {
+      this.toolbar = toolbar;
+    }
 
     return (<div
       style={Object.assign({}, styles.container, this.props.style)}
+      ref={bindRef}
     >
 
       {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
