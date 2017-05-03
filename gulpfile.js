@@ -9,8 +9,9 @@ gulp.task('build', function(){
     ])
     .pipe(babel({
     "plugins": [
+      "add-module-exports",
+      "transform-class-properties",
       "transform-decorators-legacy",
-      "transform-decorators",
       "transform-object-rest-spread"
     ],
     "presets": [
