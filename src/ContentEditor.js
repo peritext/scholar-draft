@@ -192,7 +192,8 @@ export default class ContentEditor extends Component {
           contextualizations,
           onContextualizationMouseOver,
           onContextualizationMouseOut,
-          onDataChange
+          onDataChange,
+          inlineContextualizationComponents
         } = this.props;
 
         const {
@@ -215,6 +216,7 @@ export default class ContentEditor extends Component {
             contextualizerId: contextualization.contextualizerId,
             onContextualizationMouseOver,
             onContextualizationMouseOut,
+            inlineContextualizationComponents,
             onDataChange,
             onInputFocus,
             onInputBlur

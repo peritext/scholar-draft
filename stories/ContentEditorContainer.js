@@ -21,9 +21,10 @@ import {
 } from '../src/utils';
 
 import BlockContainer from './ExampleContextualizationBlock';
+import InlinePointer from './ExampleInlinePointer';
 
 const inlineContextualizationComponents = {
-
+  citation: InlinePointer
 };
 
 const blockContextualizationComponents = {
