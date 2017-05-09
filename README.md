@@ -50,10 +50,6 @@ It must be used within the principal editor for displaying the main editor and t
 
 `contextualizers` (Object) -> map of the contextualizers data to be potentially used by the connector
 
-`inlineContextualizationComponents` (Object) -> a map for displaying the inline contextualizations in the editor
-
-`blockContextualizationComponents` (Object) -> a map for displaying the block contextualizations in the editor
-
 `lastInsertionType` (String) -> whether the last insertion was inline or block
 
 ### Method props
@@ -64,6 +60,8 @@ It must be used within the principal editor for displaying the main editor and t
 
 `onNoteAdd()`
 
+`onDataChange(dataProp, id, newObject)` 
+
 `onContextualizationClick(contextualizationId, contextualizationData, event)` 
 
 `onContextualizationMouseOver(contextualizationId, contextualizationData, event)` 
@@ -73,6 +71,10 @@ It must be used within the principal editor for displaying the main editor and t
 `onDataChange(dataProp, key, newItem)` -> when mods are applied from editor on contextualizations, contextualizers, or resources
 
 ### Parametrization props
+
+`inlineContextualizationComponents` (Object) -> a map for displaying the inline contextualizations in the editor
+
+`blockContextualizationComponents` (Object) -> a map for displaying the block contextualizations in the editor
 
 `editorClass` (string) -> the class name to use
 

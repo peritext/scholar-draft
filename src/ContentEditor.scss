@@ -1,0 +1,16 @@
+
+
+.ContentEditor{
+  position: relative;
+
+  .DraftEditor-root
+  {
+    position: relative;
+    .public-DraftEditorPlaceholder-inner
+    {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+}

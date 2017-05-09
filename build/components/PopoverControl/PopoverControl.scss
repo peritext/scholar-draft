@@ -1,0 +1,12 @@
+
+
+.PopoverControl-container{
+  height: 24;
+  display: 'none',;
+  position: 'absolute';
+  z-index: 999;
+
+  background-color: 'rgba(255, 255, 255, 0.9)';
+  // border: '1px solid rgba(204, 204, 204, 0.5);';
+  border-radius: 5;
+}

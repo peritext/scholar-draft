@@ -1,0 +1,35 @@
+.SideControl
+{
+  position: absolute;
+  z-index: 999;
+
+  height: 24px;
+  // left: -200px;
+  // left: 0;
+  // right: 100%;
+  display: none;
+  text-align: right;
+
+  .MoreOptions
+  {
+    position: absolute;
+    left: 0;
+    top: -27px;
+    height: 27px;
+    z-index :  998;
+    white-space: nowrap;
+
+    .inner-container
+    {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 5px;
+      height: 24px;
+    }
+  }
+
+  .DraftJsEditor-more-options
+  {
+    display: inline-block;
+    cursor: pointer;
+  }
+}

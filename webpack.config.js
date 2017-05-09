@@ -1,20 +1,24 @@
 module.exports = {
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: [
+        test: /\.(jpe?g|png|gif)$/i,
+        use: [
             'file?hash=sha512&digest=hex&name=[hash].[ext]',
             'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       },
+      // {
+      //   test: /\.svg$/,
+      //   loader: 'raw-loader'
+      // },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css', 'sass']
+        use: ['style', 'css', 'sass']
       },
       {
         test: /\.css$/,
-        loaders: ['style', 'css']
+        use: ['style', 'css']
       }
     ]
   }

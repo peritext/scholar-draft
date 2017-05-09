@@ -3,12 +3,18 @@ import PropTypes from 'prop-types';
 import getUnboundedScrollPosition from 'fbjs/lib/getUnboundedScrollPosition.js';
 import Style from 'fbjs/lib/Style.js';
 
-import {Map} from 'immutable';
+import { Map } from 'immutable';
 
-import SideToolbar from './components/SideToolbar';
+import SideControl from './components/SideControl/SideControl';
 import PopoverControl from './components/PopoverControl/PopoverControl';
+import InlinePointer from './components/InlinePointer/InlinePointer';
+import NotePointer from './components/NotePointer/NotePointer';
 
 import SimpleDecorator from 'draft-js-simpledecorator';
+import MultiDecorator from 'draft-js-multidecorators';
+
+
+import './ContentEditor.scss';
 
 import {
   EditorState,
@@ -26,135 +32,24 @@ const getSelectedBlockElement = (range) => {
     node = node.parentNode;
   } while (node != null);
   return null;
-  /* const currentContent = this.props.editorState.getCurrentContent()
-  const selection = this.props.editorState.getSelection()
-  return currentContent.getBlockForKey(selection.getStartKey())*/
 };
 
 const getSelectionRange = () => {
   const selection = window.getSelection();
-  if (selection.rangeCount == 0) return null;
+  if (selection.rangeCount === 0) return null;
   return selection.getRangeAt(0);
 };
 
 const isParentOf = (ele, maybeParent) => {
 
   while (ele.parentNode != null && ele.parentNode != document.body) {
-    if (ele.parentNode == maybeParent) return true;
+    if (ele.parentNode === maybeParent) return true;
     ele = ele.parentNode;
   }
   return false;
 };
 
-const InlinePointer = (props) => {
-  const {
-    children,
-    contentState,
-    contextualizer = {},
-    contextualizerId,
-    data,
-    onDataChange,
-    onInputBlur,
-    onInputFocus,
-    onContextualizationMouseOver,
-    onContextualizationMouseOut,
-    resource = {},
-    resourceId
-  } = props;
-
-  const onResourceTitleChange = e => {
-    const title = e.target.value;
-    onDataChange('resources', resourceId, {
-      ...resource,
-      title
-    });
-  };
-
-  const onContextualizerPageChange = e => {
-    const pages = e.target.value;
-    onDataChange('contextualizers', contextualizerId, {
-      ...contextualizer,
-      pages
-    });
-  };
-  const onMouseOver = e => {
-    if (typeof onContextualizationMouseOver === 'function') {
-      onContextualizationMouseOver(data.contextualization.id, data.contextualization, e);
-    }
-  }
-
-  const onMouseOut = e => {
-    if (typeof onContextualizationMouseOut === 'function') {
-      onContextualizationMouseOut(data.contextualization.id, data.contextualization, e);
-    }
-  }
-  return (
-    <span style={{
-      background: 'grey',
-      color: 'white',
-      padding: '5px'
-    }}
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
-    >
-      <input
-        value={resource.title}
-        onChange={onResourceTitleChange}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
-      />, pp.
-      <input
-        value={contextualizer.pages}
-        onChange={onContextualizerPageChange}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
-      />
-
-      {children}
-    </span>
-  );
-};
-
-const NotePointer = ({
-  children
-}) => (
-  <span style={{
-    width: '1rem',
-    height: '1rem',
-    background: 'red',
-    borderRadius: '50%',
-    display: 'inline-block',
-    marginLeft: '.5rem',
-    marginRight: '.5rem'
-  }}>
-    {children}
-  </span>
-);
-
-
-const styles = {
-  editorContainer: {
-    position: 'relative',
-    // paddingLeft: 48,
-  },
-  popOverControl: {
-    // width: 78, // Height and width are needed to compute the position
-    // height: 24,
-    display: 'none', 
-    position: 'absolute',
-    zIndex: 999,
-  },
-  sideControl: {
-    height: 24, // Required to figure out positioning
-    // width: 48, // Needed to figure out how much to offset the sideControl left
-    left: -92,
-    right: '100%',
-    display: 'none',
-    textAlign: 'right',
-  }
-};
-
-const popoverSpacing = 3; // The distance above the selection that popover 
+const popoverSpacing = 30; // The distance above the selection that popover 
 
 
 export default class ContentEditor extends Component {
@@ -175,32 +70,28 @@ export default class ContentEditor extends Component {
     onEditorChange: PropTypes.func,
     onNotesOrderChange: PropTypes.func,
     onContextualizationRequest: PropTypes.func,
-    onAddNote: PropTypes.func,
+    onNoteAdd: PropTypes.func,
     onContextualizationClick: PropTypes.func,
     onContextualizationMouseOver: PropTypes.func,
     onContextualizationMouseOut: PropTypes.func,
     /*
      * Parametrization props
      */
-     editorClass: PropTypes.string,
-     editorStyles: PropTypes.object,
-     allowFootnotesInsertion: PropTypes.bool,
-     allowInlineContextualizationInsertion: PropTypes.bool,
-     allowBlockContextualizationInsertion: PropTypes.bool,
+    editorClass: PropTypes.string,
+    editorStyle: PropTypes.object,
+    allowFootnotesInsertion: PropTypes.bool,
+    allowInlineContextualizationInsertion: PropTypes.bool,
+    allowBlockContextualizationInsertion: PropTypes.bool,
   }
 
 
   static defaultProps = {
     blockContextualizationComponents: {},
-    iconColor: '#000000',
-    iconSelectedColor: '#2000FF',
   };
 
   constructor(props) {
     super(props);
   }
-
-  // componentDidUpdate = () => this.updateSelection();
 
   focus = () => {
     if (this.props.readOnly) return;
@@ -212,48 +103,47 @@ export default class ContentEditor extends Component {
     });
 
     const scrollParent = Style.getScrollParent(editorNode);
-    // console.log(`focus called: ${require('util').inspect(getUnboundedScrollPosition(scrollParent))}`)
     editorNode.focus(getUnboundedScrollPosition(scrollParent));
-    // this.refs.editor.focus();
   };
 
   updateSelection = () => {
-      
-    let selectionRangeIsCollapsed = null;
+
+
+    const selectionRangeIsCollapsed = null;
+    const sideControlLeft = -92;
     let sideControlVisible = false;
     let sideControlTop = null;
-    let sideControlLeft = styles.sideControl.left;
     let popoverControlVisible = false;
     let popoverControlTop = null;
     let popoverControlLeft = null;
-
-
     
     const selectionRange = getSelectionRange();
+    
     if (!selectionRange) return;
     
     const editorEle = this.editor;
     if (!isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) { return; }
-
     const popoverControlEle = this.inlineToolbar.toolbar;
-    const sideControlEle = this.sideToolbar.toolbar;
-
-
+    const sideControlEle = this.sideControl.toolbar;
     const rangeBounds = selectionRange.getBoundingClientRect();
+
+    const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
     const selectedBlock = getSelectedBlockElement(selectionRange);
+
+    const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
+    const top = displaceY + offsetTop;
+
     if (selectedBlock) {
       const blockBounds = selectedBlock.getBoundingClientRect();
       sideControlVisible = true;
       // sideControlTop = this.state.selectedBlock.offsetTop
       const editorBounds = this.state.editorBounds;
       if (!editorBounds) return;
-      sideControlTop = (blockBounds.top - editorBounds.top)
-        + ((blockBounds.bottom - blockBounds.top) / 2)
-        + (styles.sideControl.height / 2);
-
-
-      // sideControlEle.style.left = `${sideControlLeft}px`;
+      const top = displaceY + offsetTop;
+      sideControlTop = top;
       sideControlEle.style.top = `${sideControlTop}px`;
+      const left = editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
+      sideControlEle.style.left = `${left}px`;
       sideControlEle.style.display = 'block';
 
       if (!selectionRange.collapsed) {
@@ -261,23 +151,19 @@ export default class ContentEditor extends Component {
         popoverControlEle.style.display = 'block';
         const popoverWidth = popoverControlEle.clientWidth;
 
-
         popoverControlVisible = true;
         let rangeWidth = rangeBounds.right - rangeBounds.left,
           rangeHeight = rangeBounds.bottom - rangeBounds.top;
-        popoverControlTop = (rangeBounds.top - editorBounds.top)
-          - styles.popOverControl.height
-          - popoverSpacing;
-        popoverControlLeft = 0
-          + (rangeBounds.left - editorBounds.left)
-          + (rangeWidth / 2)
-          - (/* styles.popOverControl.width*/ popoverWidth / 2);
+        popoverControlTop = top;
 
-
-        // console.log(popoverControlEle)
-        // console.log(popoverControlEle.style)
-        popoverControlEle.style.left = `${popoverControlLeft}px`;
-        popoverControlEle.style.top = `${popoverControlTop}px`;
+        popoverControlLeft = 0;
+        let startNode = selectionRange.startContainer;
+        while (startNode.nodeType === 3) startNode = startNode.parentNode;
+        const height = rangeBounds.bottom - rangeBounds.top;
+        const popTop = rangeBounds.top - editorBounds.top + displaceY - popoverSpacing;
+        const left = rangeBounds.left;
+        popoverControlEle.style.left = `${left}px`;
+        popoverControlEle.style.top = `${popTop}px`;
       } else {
         popoverControlEle.style.display = 'none';
       }
@@ -288,6 +174,9 @@ export default class ContentEditor extends Component {
   }
 
   findInlineContextualizations = (contentBlock, callback, contentState) => {
+    if (contentState === undefined) {
+      contentState = this.props.editorState.getCurrentContent();
+    }
     contentBlock.findEntityRanges(
       (character) => {
         const entityKey = character.getEntity();
@@ -337,6 +226,9 @@ export default class ContentEditor extends Component {
   }
 
   findNotePointers = (contentBlock, callback, contentState) => {
+    if (contentState === undefined) {
+      contentState = this.props.editorState.getCurrentContent();
+    }
     contentBlock.findEntityRanges(
       (character) => {
         const entityKey = character.getEntity();
@@ -349,21 +241,11 @@ export default class ContentEditor extends Component {
     );
   }
 
-  createDecorator = () => {
-    // new SimpleDecorator(this.findInlineContextualizations, InlinePointer)
-    // new CompositeDecorator([
-    return new SimpleDecorator(this.findInlineContextualizations, InlinePointer);
-  }
-    /*{
-      strategy: this.findInlineContextualizations,
-      component: InlinePointer
-    }*/
-    // ,
-    // {
-    //   strategy: this.findNotePointers,
-    //   component: NotePointer
-    // }
-    // ])
+  createDecorator = () => 
+     new MultiDecorator([
+       new SimpleDecorator(this.findInlineContextualizations, InlinePointer),
+       new SimpleDecorator(this.findNotePointers, NotePointer),
+     ]);
 
   forceRender = (props) => {
     const editorState = props.editorState || this.generateEmptyEditor();
@@ -371,13 +253,11 @@ export default class ContentEditor extends Component {
     const {
       contextualizers
     } = props;
-    // console.log('force render', contextualizers[Object.keys(contextualizers)[0]].pages);
 
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
     const selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
-    this.setState({editorState: selectedEditorState});
+    this.setState({ editorState: selectedEditorState });
   }
-
 
 
   generateEmptyEditor = () => 
@@ -391,13 +271,13 @@ export default class ContentEditor extends Component {
   onInputFocus = () => {
     this.setState({
       readOnly: true
-    })
+    });
   }
 
   onInputBlur = () => {
     this.setState({
       readOnly: false
-    })
+    });
   }
 
 
@@ -408,9 +288,9 @@ export default class ContentEditor extends Component {
       const entityKey = contentBlock.getEntityAt(0);
       const contentState = this.state.editorState.getCurrentContent();
       let data;
-      try{
+      try {
         data = contentState.getEntity(entityKey).toJS();
-      } catch(e) {
+      } catch (e) {
         return;
       }
       const { blockContextualizationComponents } = this.props;
@@ -455,33 +335,26 @@ export default class ContentEditor extends Component {
 
   onBlur = () => {
 
-    // this.inlineBar.style.display = 'none';
-    // this.sideBar.style.display = 'none';
+    this.inlineToolbar.toolbar.display = 'none';
+    this.sideControl.toolbar.display = 'none';
 
     const { onBlur } = this.props;
     if (onBlur) {
       onBlur.apply(this, arguments);
     }
-
-    // const popoverControlEle = ReactDOM.findDOMNode(this.refs.popoverControl);
-    // const sideControlEle = ReactDOM.findDOMNode(this.refs.sideControl);
-    // popoverControlEle.style.display = 'none';
-    // sideControlEle.style.display = 'none';
-    // const { onBlur } = this.props;
-    // if (onBlur) { onBlur.apply(this, arguments); }
   };
 
   _handleKeyCommand = (command) => {
     const { editorState } = this.props;
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
-      this._onChange(newState);
+      this.onChange(newState);
       return true;
     }
     return false;
   };
 
-  _onChange = editorState => {
+  onChange = (editorState) => {
     this.props.onEditorChange(editorState);
   }
 
@@ -491,6 +364,7 @@ export default class ContentEditor extends Component {
     const {
       forceRender
     } = this;
+
     if (this.props.editorState !== prevProps.editorState 
       || prevProps.contextualizers !== this.props.contextualizers
       || prevProps.contextualizations !== this.props.contextualizations
@@ -501,7 +375,11 @@ export default class ContentEditor extends Component {
     }
 
     // force focus if last insertion type is inline
-    if(this.props.editorState !== prevProps.editorState && this.editor && this.props.lastInsertionType === 'inlineContextualization') {
+    if (
+      this.props.editorState !== prevProps.editorState && 
+      this.editor && 
+      this.props.lastInsertionType === 'inlineContextualization'
+    ) {
       this.editor.focus();
     }
   }
@@ -523,70 +401,58 @@ export default class ContentEditor extends Component {
       allowBlockContextualization = true,
 
       blockContextualizationComponents,
-      blockButtons,
       inlineButtons,
 
       onContextualizationRequest,
-      onContextualizationClick,
-      onContextualizationMouseOver,
-      onContextualizationMouseOut,
+      // onContextualizationClick,
+      // onContextualizationMouseOver,
+      // onContextualizationMouseOut,
 
       onNoteAdd,
 
-      iconColor,
-      iconSelectedColor,
-      popOverStyle,
-
+      editorStyle,
       ...otherProps
     } = this.props;
 
     const {
-      readOnly
+      readOnly,
+      editorState : stateEditorState
     } = this.state;
 
-    let realEditorState = editorState || this.generateEmptyEditor();
-    
-    const uEditor = realEditorState;
+    const {
+      _handleKeyCommand,
+      onChange,
+      _blockRenderer,
+    } = this;
 
-    const bindEditorRef = editor => {
+    const realEditorState = editorState || this.generateEmptyEditor();
+    
+    const bindEditorRef = (editor) => {
       this.editor = editor;
     };
-    const bindSideToolbarRef = sideToolbar => {
-      this.sideToolbar = sideToolbar;
+    const bindSideControlRef = (sideControl) => {
+      this.sideControl = sideControl;
     };
 
-    const bindInlineToolbar = inlineToolbar => {
+    const bindInlineToolbar = (inlineToolbar) => {
       this.inlineToolbar = inlineToolbar;
     };
-
-    const sideControlStyles = Object.assign({}, styles.sideControl);
-
-    const popoverStyle = Object.assign({}, styles.popOverControl);
     return (
       <div>
         <div 
-          style={editorStyles}
-          className={editorClass}
+          className="ContentEditor"
           onClick={this.focus}
+          style={editorStyle}
         >
           <PopoverControl
             ref={bindInlineToolbar}
-            style={popoverStyle} 
             editorState={realEditorState}
-            iconSelectedColor={iconSelectedColor}
-            iconColor={iconColor}
-            updateEditorState={this._onChange}
-            buttons={inlineButtons}
+            updateEditorState={onChange}
           />
-          <SideToolbar
-            style={sideControlStyles} 
-            iconSelectedColor={iconSelectedColor}
-            iconColor={iconColor}
-            popoverStyle={popoverStyle}
-            ref={bindSideToolbarRef}
-            buttons={blockButtons}
+          <SideControl
+            ref={bindSideControlRef}
             editorState={realEditorState}
-            updateEditorState={this._onChange}
+            updateEditorState={onChange}
 
             allowContextualizations={{
               inline: allowInlineContextualization,
@@ -597,14 +463,14 @@ export default class ContentEditor extends Component {
             onNoteAdd={onNoteAdd}
           />
           <Editor
-            blockRendererFn={this._blockRenderer}
+            blockRendererFn={_blockRenderer}
             spellCheck
             readOnly={readOnly}
             placeholder={placeholder}
 
-            handleKeyCommand={this._handleKeyCommand}
-            editorState={this.state.editorState}
-            onChange={this._onChange}
+            handleKeyCommand={_handleKeyCommand}
+            editorState={stateEditorState}
+            onChange={onChange}
             ref={bindEditorRef}
             onBlur={this.onBlur}
             {...otherProps}

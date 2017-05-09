@@ -2,13 +2,7 @@ import React, { Component } from 'react';
 import defaultButtons from './defaultButtons.js';
 import PropTypes from 'prop-types';
 
-const styles = {
-  container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    // border: '1px solid rgba(204, 204, 204, 0.5);',
-    borderRadius: 5,
-  },
-};
+import './PopoverControl.scss';
 
 export default class PopoverControl extends Component {
 
@@ -59,15 +53,17 @@ export default class PopoverControl extends Component {
     const { 
       updateEditorState, 
       editorState, 
-      iconColor, 
-      iconSelectedColor, 
-      buttons, } = this.props;
-    const bindRef = toolbar => {
+      iconColor = 'black', 
+      iconSelectedColor = 'red', 
+      buttons, 
+    } = this.props;
+    const bindRef = (toolbar) => {
       this.toolbar = toolbar;
-    }
+    };
 
     return (<div
-      style={Object.assign({}, styles.container, this.props.style)}
+      className="PopoverControl-container"
+      style={Object.assign({}, this.props.style)}
       ref={bindRef}
     >
 

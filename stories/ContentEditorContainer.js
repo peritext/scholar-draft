@@ -16,94 +16,11 @@ import ContentEditor from '../src/ContentEditor';
 import {
   getContextualizationsToDeleteFromEditor,
   insertContextualizationInEditor,
-  deleteContextualizationFromEditor
+  deleteContextualizationFromEditor,
+  getUnusedContextualizations
 } from '../src/utils';
 
-const BlockContainer = (props) => {
-  const {
-    children,
-    blockProps: {
-      data,
-      resource,
-      resourceId,
-      contextualizerId,
-      contextualizer,
-      contextualization,
-      onContextualizationMouseOver,
-      onContextualizationMouseOut,
-      onDataChange,
-      onInputFocus,
-      onInputBlur
-    },
-  } = props;
-
-
-  const onResourceTitleChange = e => {
-    const title = e.target.value;
-    onDataChange('resources', resourceId, {
-      ...resource,
-      title
-    })
-  };
-
-  const onContextualizerPageChange = e => {
-    const pages = e.target.value;
-    onDataChange('contextualizers', contextualizerId, {
-      ...contextualizer,
-      pages
-    })
-  }
-
-  const onMouseOver = e => {
-    if (typeof onContextualizationMouseOver === 'function') {
-      onContextualizationMouseOver(data.contextualization.id, data.contextualization, e);
-    }
-  }
-
-  const onMouseOut = e => {
-    if (typeof onContextualizationMouseOut === 'function') {
-      onContextualizationMouseOut(data.contextualization.id, data.contextualization, e);
-    }
-  }
-
-
-  const exampleRendering = type => {
-    switch(type) {
-      case 'citation':
-      default:
-        return (
-          <span><i>
-            <input
-              value={resource.title}
-              onChange={onResourceTitleChange}
-              onFocus={onInputFocus}
-              onBlur={onInputBlur}
-            />
-          </i>. <i>pp. <input
-              value={contextualizer.pages}
-              onChange={onContextualizerPageChange}
-              onFocus={onInputFocus}
-              onBlur={onInputBlur}
-            /></i>. 
-          {
-            resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
-          }</span>
-        );
-    }
-  }
-  return (
-    <div 
-      className="citation-block"
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
-    >
-      <p>
-        {exampleRendering(contextualizer.type)}
-      </p>
-      <p>{children}</p>
-    </div>
-  );
-};
+import BlockContainer from './ExampleContextualizationBlock';
 
 const inlineContextualizationComponents = {
 
@@ -152,17 +69,6 @@ export default class ContentEditorContainer extends Component {
     if (!editorState) {
       return;
     }
-    // setTimeout(() => {
-    // let toDelete = getContextualizationsToDeleteFromEditor(editorState, ['inlineContextualization', 'blockContextualization'], contextualizations);
-    // let newContextualizations = contextualizations;
-    // if (toDelete.length) {
-      // console.log('to delete', toDelete);
-      // newContextualizations = this.deleteContextualizations(toDelete);
-      // this.setState({
-      //   contextualizations: newContextualizations
-      // })
-    // }
-    // });
   }
 
   constructor(props) {
@@ -281,6 +187,20 @@ export default class ContentEditorContainer extends Component {
     });
   }
 
+  /**
+   * Deletes from state contextualizations not used inside the editor
+   */
+  refreshContextualizationsList = () => {
+    const unused = getUnusedContextualizations(this.state.editorState, this.state.contextualizations);
+    const contextualizations = {...this.state.contextualizations};
+    unused.forEach(id => {
+      delete contextualizations[id];
+    });
+    this.setState({
+      contextualizations
+    });
+  }
+
   render = () => {
     
     const {
@@ -294,6 +214,7 @@ export default class ContentEditorContainer extends Component {
       updateResourceTitle,
       onDataChange,
       deleteContextualization,
+      refreshContextualizationsList,
       state
     } = this;
     const {
@@ -314,6 +235,9 @@ export default class ContentEditorContainer extends Component {
     const onContextualizerPagesChange = e => {
       updateContextualizerPages(e.target.value);
     }
+    const refreshUpstreamContextualizationsList = e => {
+      refreshContextualizationsList();
+    }
     return (
       <div
         style={{
@@ -322,14 +246,17 @@ export default class ContentEditorContainer extends Component {
           top: 0,
           width: '100%',
           height: '100%',
-          padding: '10rem'
         }}
       >
         <div
           style={{
             position: 'fixed',
-            left: '1rem',
-            top: '1rem'
+            padding: '1rem',
+            left: 0,
+            top: 0,
+            width: '10%',
+            height: '100%',
+            zIndex: 3,
           }}
         >
           {
@@ -348,6 +275,9 @@ export default class ContentEditorContainer extends Component {
             })
           }
           <div>
+          {Object.keys(contextualizations).length > 0 && <div>
+            <button onClick={refreshUpstreamContextualizationsList}>Refresh upstream contextualizations list</button>
+          </div>}
             Change the contextualizer page :
             <input
               value={contextualizers[Object.keys(contextualizers)[0]].pages}
@@ -363,45 +293,50 @@ export default class ContentEditorContainer extends Component {
             >
             </input>
           </div>
+          {contextualizationRequest && <div>
+          <button onClick={insertContextualization}>Insert contextualization</button>
+            </div>}
         </div>
           
-        {contextualizationRequest && <div style={{
-          position: 'fixed',
-          bottom: '1rem',
-          left: '1rem'
-        }}>
-          <button onClick={insertContextualization}>Insert contextualization</button>
-        </div>}
-        <ContentEditor 
-          editorState={editorState}
-          onEditorChange={onEditorChange}
-          onContextualizationRequest={onContextualizationRequest}
-
-          contextualizations={contextualizations}
-          contextualizers={contextualizers}
-          resources={resources}
-
-          inlineContextualizationComponents={inlineContextualizationComponents}
-          blockContextualizationComponents={blockContextualizationComponents}
-
-          allowNotesInsertion={true}
-          onNoteAdd={() => console.log('on note add')}
-          onContextualizationRequest={onContextualizationRequest}
-
-          onDataChange={onDataChange}
-          lastInsertionType={lastInsertionType} 
-          
-          onContextualizationClick={onContextualizationClick}
-          onContextualizationMouseOver={onContextualizationMouseOver}
-          onContextualizationMouseOut={onContextualizationMouseOut}
-          editorStyles={{
-            position: 'relative',
-            left: 0,
+        <div
+          style={{
+            position: 'fixed',
             top: 0,
-            width: '100%',
+            left: '10%',
             height: '100%',
-          }}
-        />
+            width: '90%',
+            overflow: 'auto'
+          }}>
+          <ContentEditor 
+            editorState={editorState}
+            contextualizations={contextualizations}
+            contextualizers={contextualizers}
+            resources={resources}
+            lastInsertionType={lastInsertionType} 
+            
+            onEditorChange={onEditorChange}
+            onContextualizationRequest={onContextualizationRequest}
+            onNoteAdd={() => console.log('on note add')}
+            onContextualizationRequest={onContextualizationRequest}
+            onDataChange={onDataChange}
+            onContextualizationClick={onContextualizationClick}
+            onContextualizationMouseOver={onContextualizationMouseOver}
+            onContextualizationMouseOut={onContextualizationMouseOut}
+            
+            inlineContextualizationComponents={inlineContextualizationComponents}
+            blockContextualizationComponents={blockContextualizationComponents}
+            allowNotesInsertion={true}
+            editorStyle={{
+              position: 'relative',
+              left: 0,
+              top: 0,
+              width: '50%',
+              height: '100%',
+              padding:'25%',
+              paddingTop: '5em'
+            }}
+          />
+        </div>
       </div>
     );
   }
