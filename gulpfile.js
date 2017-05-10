@@ -12,7 +12,8 @@ gulp.task('build', function(){
       "add-module-exports",
       "transform-class-properties",
       "transform-decorators-legacy",
-      "transform-object-rest-spread"
+      "transform-object-rest-spread",
+      "transform-export-extensions"
     ],
     "presets": [
       "es2015",

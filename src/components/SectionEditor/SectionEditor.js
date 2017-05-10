@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import ContentEditor from './ContentEditor';
-import NoteContainer from './components/NoteContainer/NoteContainer';
+import ContentEditor from '../ContentEditor/ContentEditor';
+import NoteContainer from '../NoteContainer/NoteContainer';
 
 import './SectionEditor.scss';
 

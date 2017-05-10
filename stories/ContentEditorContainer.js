@@ -13,16 +13,21 @@ import {
 } from 'uuid';
 
 import {
-  BLOCK_CONTEXTUALIZATION
-} from '../src/constants';
+  ContentEditor,
+  constants,
+  utils,
+} from '../src';
 
-import ContentEditor from '../src/ContentEditor';
-import {
+const {
+  BLOCK_CONTEXTUALIZATION
+} = constants;
+
+const {
   getContextualizationsToDeleteFromEditor,
   insertContextualizationInEditor,
   deleteContextualizationFromEditor,
-  getUnusedContextualizations
-} from '../src/utils';
+  getUnusedContextualizations 
+} = utils;
 
 import BlockContainer from './ExampleContextualizationBlock';
 import InlinePointer from './ExampleInlinePointer';

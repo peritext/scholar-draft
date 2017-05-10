@@ -13,8 +13,12 @@ import {
   v4 as generateId
 } from 'uuid';
 
-import SectionEditor from '../src/SectionEditor';
 import {
+  SectionEditor,
+  utils
+} from '../src';
+
+const {
   getContextualizationsToDeleteFromEditor,
   insertContextualizationInEditor,
   deleteContextualizationFromEditor,
@@ -22,7 +26,18 @@ import {
   getUnusedContextualizations,
   updateNotesFromEditor,
   insertNoteInEditor
-} from '../src/utils';
+} = utils;
+
+// import SectionEditor from '../src/SectionEditor';
+// import {
+//   getContextualizationsToDeleteFromEditor,
+//   insertContextualizationInEditor,
+//   deleteContextualizationFromEditor,
+//   deleteNoteFromEditor,
+//   getUnusedContextualizations,
+//   updateNotesFromEditor,
+//   insertNoteInEditor
+// } from '../src/utils';
 
 import BlockContainer from './ExampleContextualizationBlock';
 import InlinePointer from './ExampleInlinePointer';

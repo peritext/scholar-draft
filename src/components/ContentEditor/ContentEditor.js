@@ -8,18 +8,18 @@ import { Map } from 'immutable';
 import SimpleDecorator from 'draft-js-simpledecorator';
 import MultiDecorator from 'draft-js-multidecorators';
 
-import adjustBlockDepth from './modifiers/adjustBlockDepth';
-import handleBlockType from './modifiers/handleBlockType';
-import handleInlineStyle from './modifiers/handleInlineStyle';
-import handleNewCodeBlock from './modifiers/handleNewCodeBlock';
-import insertEmptyBlock from './modifiers/insertEmptyBlock';
-import handleLink from './modifiers/handleLink';
-import handleImage from './modifiers/handleImage';
-import leaveList from './modifiers/leaveList';
-import insertText from './modifiers/insertText';
+import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
+import handleBlockType from '../../modifiers/handleBlockType';
+import handleInlineStyle from '../../modifiers/handleInlineStyle';
+import handleNewCodeBlock from '../../modifiers/handleNewCodeBlock';
+import insertEmptyBlock from '../../modifiers/insertEmptyBlock';
+import handleLink from '../../modifiers/handleLink';
+import handleImage from '../../modifiers/handleImage';
+import leaveList from '../../modifiers/leaveList';
+import insertText from '../../modifiers/insertText';
 // import createLinkDecorator from './decorators/link';
 // import createImageDecorator from './decorators/image';
-import { addText, addEmptyBlock } from './utils';
+import { addText, addEmptyBlock } from '../../utils';
 
 import {
   EditorState,
@@ -31,20 +31,16 @@ import {
 } from 'draft-js';
 
 import {
-  INLINE_CONTEXTUALIZATION
-} from './constants';
+  INLINE_CONTEXTUALIZATION,
+  NOTE_POINTER
+} from '../../constants';
 
-import SideControl from './components/SideControl/SideControl';
-import PopoverControl from './components/PopoverControl/PopoverControl';
-import InlinePointer from './components/InlinePointer/InlinePointer';
-import NotePointer from './components/NotePointer/NotePointer';
+import SideControl from '../SideControl/SideControl';
+import PopoverControl from '../PopoverControl/PopoverControl';
+import InlinePointer from '../InlinePointer/InlinePointer';
+import NotePointer from '../NotePointer/NotePointer';
 
 import './ContentEditor.scss';
-
-import {
-  NOTE_POINTER
-} from './constants';
-
 
 const getSelectedBlockElement = (range) => {
   let node = range.startContainer;
