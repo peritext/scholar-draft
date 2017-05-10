@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import MoreOptions from './MoreOptions';
 import PropTypes from 'prop-types';
 
+import {
+  INLINE_CONTEXTUALIZATION,
+  BLOCK_CONTEXTUALIZATION
+} from '../../constants';
   
 import './SideControl.scss';
 
@@ -49,16 +53,16 @@ export default class SideControl extends Component {
 
     const handleFigureClick = () => {
       const currentSelection = editorState && editorState.getSelection();
-      let insertionType = 'blockContextualization;';
+      let insertionType = BLOCK_CONTEXTUALIZATION;
       if (currentSelection) {
         const contentState = editorState.getCurrentContent();
         const selectedBlock = contentState.getBlockForKey(currentSelection.getAnchorKey());
         if (selectedBlock && 
           selectedBlock.getText().length > 0
         ) {
-          insertionType = 'inlineContextualization';
+          insertionType = INLINE_CONTEXTUALIZATION;
         } else {
-          insertionType = 'blockContextualization';
+          insertionType = BLOCK_CONTEXTUALIZATION;
         }
       }
       onContextualizationClick(insertionType, currentSelection);

@@ -12,6 +12,10 @@ import {
   v4 as generateId
 } from 'uuid';
 
+import {
+  BLOCK_CONTEXTUALIZATION
+} from '../src/constants';
+
 import ContentEditor from '../src/ContentEditor';
 import {
   getContextualizationsToDeleteFromEditor,
@@ -28,7 +32,7 @@ const inlineContextualizationComponents = {
 };
 
 const blockContextualizationComponents = {
-  blockContextualization: BlockContainer
+  [BLOCK_CONTEXTUALIZATION]: BlockContainer
 };
 
 export default class ContentEditorContainer extends Component {
@@ -343,7 +347,6 @@ export default class ContentEditorContainer extends Component {
             lastInsertionType={lastInsertionType} 
             
             onEditorChange={onEditorChange}
-            onContextualizationRequest={onContextualizationRequest}
             onContextualizationRequest={onContextualizationRequest}
             onDataChange={onDataChange}
 

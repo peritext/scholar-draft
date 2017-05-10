@@ -10,7 +10,9 @@ import {
 import { List } from 'immutable';
 
 import {
-  NOTE_POINTER
+  NOTE_POINTER,
+  INLINE_CONTEXTUALIZATION,
+  BLOCK_CONTEXTUALIZATION
 } from './constants';
 
 /**
@@ -53,7 +55,7 @@ export function addEmptyBlock(editorState) {
 
 export function insertContextualizationInEditor(
     editorState, 
-    insertionType = 'inlineContextualization', 
+    insertionType = INLINE_CONTEXTUALIZATION, 
     contextualization, 
     selection
   ) {
@@ -79,7 +81,7 @@ export function insertContextualizationInEditor(
     EditorState.createWithContent(newContentState), 
     thatSelection
   );
-  if (insertionType === 'blockContextualization') {
+  if (insertionType === BLOCK_CONTEXTUALIZATION) {
     updatedEditor = AtomicBlockUtils.insertAtomicBlock(
         updatedEditor,
         newEntityKey,

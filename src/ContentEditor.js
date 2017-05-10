@@ -30,6 +30,10 @@ import {
   Editor
 } from 'draft-js';
 
+import {
+  INLINE_CONTEXTUALIZATION
+} from './constants';
+
 import SideControl from './components/SideControl/SideControl';
 import PopoverControl from './components/PopoverControl/PopoverControl';
 import InlinePointer from './components/InlinePointer/InlinePointer';
@@ -241,7 +245,7 @@ export default class ContentEditor extends Component {
         const entityKey = character.getEntity();
         return (
           entityKey !== null &&
-          contentState.getEntity(entityKey).getType() === 'inlineContextualization'
+          contentState.getEntity(entityKey).getType() === INLINE_CONTEXTUALIZATION
         );
       },
       (start, end) => {
@@ -378,7 +382,6 @@ export default class ContentEditor extends Component {
       }
       const { blockContextualizationComponents } = this.props;
       const component = blockContextualizationComponents[data.type];
-
       const {
         resources,
         contextualizers,
@@ -523,7 +526,7 @@ export default class ContentEditor extends Component {
     if (
       this.props.editorState !== prevProps.editorState && 
       this.editor && 
-      this.props.lastInsertionType === 'inlineContextualization'
+      this.props.lastInsertionType === INLINE_CONTEXTUALIZATION
     ) {
       this.editor.focus();
     }
