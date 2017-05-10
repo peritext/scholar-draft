@@ -168,8 +168,6 @@ export default class ContentEditor extends Component {
   };
 
   updateSelection = () => {
-
-
     const selectionRangeIsCollapsed = null;
     const sideControlLeft = -92;
     let sideControlVisible = false;
@@ -598,7 +596,7 @@ export default class ContentEditor extends Component {
     }
     return (
         <div 
-          className="ContentEditor"
+          className="peritext-draft-ContentEditor"
           onClick={this.focus}
           style={editorStyle}
 

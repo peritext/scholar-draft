@@ -62,7 +62,7 @@ export default class PopoverControl extends Component {
     };
 
     return (<div
-      className="PopoverControl-container"
+      className="peritext-draft-PopoverControl"
       style={Object.assign({}, this.props.style)}
       ref={bindRef}
     >

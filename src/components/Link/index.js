@@ -6,7 +6,7 @@ import React from 'react';
 const Link = (props) => {
   const { href, title } = props.contentState.getEntity(props.entityKey).getData();
   return (
-    <a href={href} title={title}>
+    <a className="peritext-draft-Link" href={href} title={title}>
       {props.children}
     </a>
   );
