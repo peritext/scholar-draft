@@ -53,7 +53,7 @@ export function addEmptyBlock(editorState) {
 
 export function insertContextualizationInEditor(
     editorState, 
-    insertionType, 
+    insertionType = 'inlineContextualization', 
     contextualization, 
     selection
   ) {
@@ -68,11 +68,12 @@ export function insertContextualizationInEditor(
   const newEntityKey = newContentState.getLastCreatedEntityKey();
   const currentContent = editorState.getCurrentContent();
   const activeSelection = editorState.getSelection();
+  const inputSelection = selection || activeSelection;
   const thatSelection = activeSelection.merge({
-    anchorOffset: selection.getStartOffset(),
-    focusOffset: selection.getEndOffset(),
-    focusKey: selection.getFocusKey(),
-    anchorKey: selection.getAnchorKey(),
+    anchorOffset: inputSelection.getStartOffset(),
+    focusOffset: inputSelection.getEndOffset(),
+    focusKey: inputSelection.getFocusKey(),
+    anchorKey: inputSelection.getAnchorKey(),
   });
   let updatedEditor = EditorState.acceptSelection(
     EditorState.createWithContent(newContentState), 
@@ -84,6 +85,7 @@ export function insertContextualizationInEditor(
         newEntityKey,
         ' '
       );
+    updatedEditor = EditorState.acceptSelection(updatedEditor, thatSelection);
   } else {
     const anchorKey = thatSelection.getAnchorKey();
     const currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -120,6 +122,7 @@ export function insertContextualizationInEditor(
         null
       );
     updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
+    updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
   }
   return updatedEditor;
 }

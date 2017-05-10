@@ -129,25 +129,30 @@ export default class ContentEditorContainer extends Component {
     console.info('on note pointer mouse click', noteId, event);
   }
 
-  insertContextualization = () => {
+  insertContextualization = (contentId, inputEditorState) => {
     const {
       mainEditorState,
       notes,
       contextualizationRequestType,
       contextualizationRequestSelection,
-      contextualizationRequestContentId,
+      // contextualizationRequestContentId,
       resources,
       contextualizers,
       contextualizations
     } = this.state;
 
+    const contextualizationRequestContentId = contentId || this.state.contextualizationRequestContentId;
     const id = generateId();
     const contextualization = {
       id,
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
     };
-    const editorState = contextualizationRequestContentId === 'main' ? mainEditorState : notes[contextualizationRequestContentId].editorState;
+    console.log('using input editor state', inputEditorState);
+    let editorState = inputEditorState;
+    if (!editorState){
+      editorState = contextualizationRequestContentId === 'main' ? mainEditorState : notes[contextualizationRequestContentId].editorState;
+    }
     const newEditorState = insertContextualizationInEditor(editorState, contextualizationRequestType, contextualization, contextualizationRequestSelection);
     const newState = {
       lastInsertionType: this.state.contextualizationRequestType,
@@ -333,6 +338,16 @@ export default class ContentEditorContainer extends Component {
     const refreshUpstreamContextualizationsList = e => {
       refreshContextualizationsList();
     }
+
+    const startDrag = (e) => {
+       e.dataTransfer.dropEffect = 'copy';
+       e.dataTransfer.setData('text', 'TEST');
+    };
+
+    const onDrop = (contentId, payload, selection) => {
+      const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
+      this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
+    };
     return (
       <div
         style={{
@@ -355,6 +370,16 @@ export default class ContentEditorContainer extends Component {
             overflow: 'auto'
           }}
         >
+          <div
+            draggable={true} 
+            onDragStart={startDrag}
+            style={{
+              border: '1px solid black',
+              padding: '1em'
+            }}
+          >
+            Draggable resource
+          </div>
           {
             Object.keys(contextualizations)
             .map(key => {
@@ -390,7 +415,7 @@ export default class ContentEditorContainer extends Component {
             </input>
           </div>
           {contextualizationRequest && <div>
-          <button onClick={insertContextualization}>Insert contextualization</button>
+          <button onClick={() => insertContextualization()}>Insert contextualization</button>
             </div>}
         </div>
           
@@ -417,6 +442,7 @@ export default class ContentEditorContainer extends Component {
             onNoteDelete={deleteNote}
             onContextualizationRequest={onContextualizationRequest}
             onDataChange={onDataChange}
+            onDrop={onDrop}
 
             onContextualizationClick={onContextualizationClick}
             onContextualizationMouseOver={onContextualizationMouseOver}

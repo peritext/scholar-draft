@@ -25,6 +25,7 @@ import {
   EditorState,
   CompositeDecorator,
   RichUtils,
+  Modifier,
   Entity,
   Editor
 } from 'draft-js';
@@ -469,6 +470,36 @@ export default class ContentEditor extends Component {
     return 'not-handled';
   }
 
+  _handleDrop = (e) => {
+    const payload = e.dataTransfer.getData('text');
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Set timeout to allow cursor/selection to move to drop location
+    setTimeout(() => {
+      const selection = this.props.editorState.getSelection();
+      let anchorOffset = selection.getEndOffset() - payload.length;
+      anchorOffset = anchorOffset < 0 ? 0 : anchorOffset;
+      const payloadSel = selection.merge({
+        anchorOffset
+      });
+      const newContentState = Modifier.replaceText(
+        this.props.editorState.getCurrentContent(),
+        payloadSel,
+        ' '
+      );
+      this.onChange(EditorState.createWithContent(newContentState))
+
+      this.props.onDrop(payload, selection);
+    }, 1);
+    return false;
+  }
+
+  _handleDragOver = (e) => {
+    e.preventDefault();
+    return false;
+  }
+
   onChange = (editorState) => {
     this.props.onEditorChange(editorState);
   }
@@ -541,7 +572,9 @@ export default class ContentEditor extends Component {
       onChange,
       _blockRenderer,
       _handleReturn,
-      _onTab
+      _onTab,
+      _handleDrop,
+      _handleDragOver
     } = this;
 
     const realEditorState = editorState || this.generateEmptyEditor();
@@ -564,11 +597,13 @@ export default class ContentEditor extends Component {
       })
     }
     return (
-      <div>
         <div 
           className="ContentEditor"
           onClick={this.focus}
           style={editorStyle}
+
+          onDrop={_handleDrop}
+          onDragOver={_handleDragOver}
         >
           <PopoverControl
             ref={bindInlineToolbar}
@@ -604,10 +639,12 @@ export default class ContentEditor extends Component {
             onChange={onChange}
             ref={bindEditorRef}
             onBlur={this.onBlur}
+
+            onDrop={e => console.log('on editor drop')}
+
             {...otherProps}
           />
         </div>
-      </div>
     );
   }
 }

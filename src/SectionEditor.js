@@ -36,6 +36,7 @@ export default class SectionEditor extends Component {
       onNotePointerMouseOver,
       onNotePointerMouseOut,
       onNotePointerMouseClick,
+      onDrop,
       
       inlineContextualizationComponents,
       blockContextualizationComponents,
@@ -50,6 +51,9 @@ export default class SectionEditor extends Component {
       const onClickDelete = () => {
         this.props.onNoteDelete(noteId);
       }
+      const onNoteDrop = (payload, selection) => {
+        onDrop(noteId, payload, selection);
+      };
       const noteEditorState = notes[noteId].editorState;
       return (
         <section 
@@ -71,6 +75,7 @@ export default class SectionEditor extends Component {
               onNoteAdd={onNoteAdd}
               onContextualizationRequest={onNoteContextualizationRequest}
               onDataChange={onDataChange}
+              onDrop={onNoteDrop}
 
               onContextualizationClick={onContextualizationClick}
               onContextualizationMouseOver={onContextualizationMouseOver}
@@ -89,6 +94,10 @@ export default class SectionEditor extends Component {
     const onMainEditorChange = editor => onEditorChange('main', undefined, editor);
     const onMainContextualizationRequest = (contextualizationRequestType, selection) => {
       onContextualizationRequest('main', undefined, contextualizationRequestType, selection);
+    };
+
+    const onMainEditorDrop = (payload, selection) => {
+      onDrop('main', payload, selection);
     };
     return (
       <div className="SectionEditor">
@@ -113,6 +122,7 @@ export default class SectionEditor extends Component {
             lastInsertionType={lastInsertionType} 
             
             onEditorChange={onMainEditorChange}
+            onDrop={onMainEditorDrop}
             onContextualizationRequest={onMainContextualizationRequest}
             onNoteAdd={onNoteAdd}
             onDataChange={onDataChange}
