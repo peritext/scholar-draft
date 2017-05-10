@@ -1,0 +1,22 @@
+.SectionEditor
+{
+  display: flex;
+  flex-flow: row nowrap;
+  .notes-container
+  {
+    width: 30%;
+    height: 100%;
+    background : lightgreen;
+
+    .note-container
+    {
+      padding: 1rem;
+      padding-left: 2rem;
+    }
+  }
+  .main-container-editor
+  {
+    width: 70%;
+    height: 100%;
+  }
+}

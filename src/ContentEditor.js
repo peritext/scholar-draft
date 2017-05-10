@@ -5,16 +5,8 @@ import Style from 'fbjs/lib/Style.js';
 
 import { Map } from 'immutable';
 
-import SideControl from './components/SideControl/SideControl';
-import PopoverControl from './components/PopoverControl/PopoverControl';
-import InlinePointer from './components/InlinePointer/InlinePointer';
-import NotePointer from './components/NotePointer/NotePointer';
-
 import SimpleDecorator from 'draft-js-simpledecorator';
 import MultiDecorator from 'draft-js-multidecorators';
-
-
-import './ContentEditor.scss';
 
 import {
   EditorState,
@@ -23,6 +15,17 @@ import {
   Entity,
   Editor
 } from 'draft-js';
+
+import SideControl from './components/SideControl/SideControl';
+import PopoverControl from './components/PopoverControl/PopoverControl';
+import InlinePointer from './components/InlinePointer/InlinePointer';
+import NotePointer from './components/NotePointer/NotePointer';
+
+import './ContentEditor.scss';
+
+import {
+  NOTE_POINTER
+} from './constants';
 
 
 const getSelectedBlockElement = (range) => {
@@ -49,7 +52,7 @@ const isParentOf = (ele, maybeParent) => {
   return false;
 };
 
-const popoverSpacing = 30; // The distance above the selection that popover 
+const popoverSpacing = 30;
 
 
 export default class ContentEditor extends Component {
@@ -236,10 +239,32 @@ export default class ContentEditor extends Component {
         const entityKey = character.getEntity();
         return (
           entityKey !== null &&
-          contentState.getEntity(entityKey).getType() === 'note-pointer'
+          contentState.getEntity(entityKey).getType() === NOTE_POINTER
         );
       },
-      callback
+      (start, end) => {
+        const entityKey = contentBlock.getEntityAt(start);
+        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+        const noteId = data.data.noteId;
+        const onMouseOver = (e) => {
+          this.props.onNotePointerMouseOver(noteId, e);
+        }
+        const onMouseOut = (e) => {
+          this.props.onNotePointerMouseOut(noteId, e);
+        }
+        const onMouseClick = (e) => {
+          this.props.onNotePointerMouseClick(noteId, e);
+        }
+        const note = this.props.notes && this.props.notes[noteId];
+        const props = {
+          ...data.data,
+          note,
+          onMouseOver,
+          onMouseOut,
+          onMouseClick
+        }
+        callback(start, end, props);
+      }
     );
   }
 
@@ -372,6 +397,7 @@ export default class ContentEditor extends Component {
       || prevProps.contextualizations !== this.props.contextualizations
       || prevProps.resources !== this.props.resources
       || prevProps.readOnly !== this.props.readOnly
+      || prevProps.notes !== this.props.notes
     ) {
       forceRender(this.props);
     }
@@ -410,7 +436,7 @@ export default class ContentEditor extends Component {
       // onContextualizationMouseOver,
       // onContextualizationMouseOut,
 
-      onNoteAdd,
+      // onNoteAdd,
 
       editorStyle,
       ...otherProps
@@ -439,6 +465,13 @@ export default class ContentEditor extends Component {
     const bindInlineToolbar = (inlineToolbar) => {
       this.inlineToolbar = inlineToolbar;
     };
+
+    const onNoteAdd = () => {
+      this.props.onNoteAdd();
+      setTimeout(() => {
+        this.props.onEditorChange(this.props.editorState);        
+      })
+    }
     return (
       <div>
         <div 

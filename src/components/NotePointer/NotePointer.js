@@ -3,19 +3,31 @@ import PropTypes from 'prop-types';
 
 import './NotePointer.scss';
 
-export default NotePointer;
-
 const NotePointer = ({
-  children
-}) => (
-  <span
-    className="NotePointer"
-  >
-    {children}
-  </span>
-);
+  children,
+  noteId,
+  note,
+  onMouseOver,
+  onMouseOut,
+  onMouseClick
+}) => {
+  return (
+    <span
+      className="NotePointer"
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
+      onClick={onMouseClick}
+    >
+      <span>{note && note.order || '°'}</span>
+      {children}
+    </span>
+  );
+};
 
 
 NotePointer.propTypes = {
-  children: PropTypes.object
+  children: PropTypes.array
 };
+
+
+export default NotePointer;
