@@ -8,6 +8,19 @@ import { Map } from 'immutable';
 import SimpleDecorator from 'draft-js-simpledecorator';
 import MultiDecorator from 'draft-js-multidecorators';
 
+import adjustBlockDepth from './modifiers/adjustBlockDepth';
+import handleBlockType from './modifiers/handleBlockType';
+import handleInlineStyle from './modifiers/handleInlineStyle';
+import handleNewCodeBlock from './modifiers/handleNewCodeBlock';
+import insertEmptyBlock from './modifiers/insertEmptyBlock';
+import handleLink from './modifiers/handleLink';
+import handleImage from './modifiers/handleImage';
+import leaveList from './modifiers/leaveList';
+import insertText from './modifiers/insertText';
+// import createLinkDecorator from './decorators/link';
+// import createImageDecorator from './decorators/image';
+import { addText, addEmptyBlock } from './utils';
+
 import {
   EditorState,
   CompositeDecorator,
@@ -53,6 +66,50 @@ const isParentOf = (ele, maybeParent) => {
 };
 
 const popoverSpacing = 30;
+
+
+function checkCharacterForState(editorState, character) {
+  let newEditorState = handleBlockType(editorState, character);
+  // this is commented because links and images should be handled upstream as resources
+  // if (editorState === newEditorState) {
+  //   newEditorState = handleImage(editorState, character);
+  // }
+  // if (editorState === newEditorState) {
+  //   newEditorState = handleLink(editorState, character);
+  // }
+  if (editorState === newEditorState) {
+    newEditorState = handleInlineStyle(editorState, character);
+  }
+  return newEditorState;
+}
+
+function checkReturnForState(editorState, ev) {
+  let newEditorState = editorState;
+  const contentState = editorState.getCurrentContent();
+  const selection = editorState.getSelection();
+  const key = selection.getStartKey();
+  const currentBlock = contentState.getBlockForKey(key);
+  const type = currentBlock.getType();
+  const text = currentBlock.getText();
+  if (/-list-item$/.test(type) && text === '') {
+    newEditorState = leaveList(editorState);
+  }
+  if (newEditorState === editorState &&
+    (ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.altKey || /^header-/.test(type))) {
+    newEditorState = insertEmptyBlock(editorState);
+  }
+  if (newEditorState === editorState && type === 'code-block') {
+    newEditorState = insertText(editorState, '\n');
+  }
+  if (newEditorState === editorState) {
+    newEditorState = handleNewCodeBlock(editorState);
+  }
+
+  return newEditorState;
+}
+
+
+
 
 
 export default class ContentEditor extends Component {
@@ -381,6 +438,37 @@ export default class ContentEditor extends Component {
     return false;
   };
 
+  _handleBeforeInput = (character, props) => {
+    if (character !== ' ') {
+        return 'not-handled';
+    }
+    const editorState = this.props.editorState;
+    const newEditorState = checkCharacterForState(editorState, character);
+    if (editorState !== newEditorState) {
+      this.onChange(newEditorState);
+      return 'handled';
+    }
+  }
+
+  _onTab = (ev) => {
+      const editorState = this.props.editorState;
+      const newEditorState = adjustBlockDepth(editorState, ev);
+      if (newEditorState !== editorState) {
+        this.onChange(newEditorState);
+        return 'handled';
+      }
+      return 'not-handled';
+    }
+  _handleReturn = (ev) => {
+    const editorState = this.props.editorState;
+    const newEditorState = checkReturnForState(editorState, ev);
+    if (editorState !== newEditorState) {
+      this.onChange(newEditorState);
+      return 'handled';
+    }
+    return 'not-handled';
+  }
+
   onChange = (editorState) => {
     this.props.onEditorChange(editorState);
   }
@@ -449,8 +537,11 @@ export default class ContentEditor extends Component {
 
     const {
       _handleKeyCommand,
+      _handleBeforeInput,
       onChange,
       _blockRenderer,
+      _handleReturn,
+      _onTab
     } = this;
 
     const realEditorState = editorState || this.generateEmptyEditor();
@@ -504,7 +595,12 @@ export default class ContentEditor extends Component {
             placeholder={placeholder}
 
             handleKeyCommand={_handleKeyCommand}
+            handleBeforeInput={_handleBeforeInput}
+            handleReturn={_handleReturn}
+            onTab={_onTab}
+
             editorState={stateEditorState}
+
             onChange={onChange}
             ref={bindEditorRef}
             onBlur={this.onBlur}

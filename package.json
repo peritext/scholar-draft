@@ -146,6 +146,7 @@
   "dependencies": {
     "async": "^2.4.0",
     "draft-js": "^0.10.0",
+    "draft-js-markdown-shortcuts-plugin": "^0.1.0",
     "draft-js-multidecorators": "^1.0.0",
     "draft-js-simpledecorator": "^1.0.2",
     "prop-type": "0.0.1",

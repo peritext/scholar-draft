@@ -352,6 +352,7 @@ export default class ContentEditorContainer extends Component {
             width: '10%',
             height: '100%',
             zIndex: 3,
+            overflow: 'auto'
           }}
         >
           {

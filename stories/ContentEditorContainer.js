@@ -258,6 +258,7 @@ export default class ContentEditorContainer extends Component {
             width: '10%',
             height: '100%',
             zIndex: 3,
+            overflow: 'auto'
           }}
         >
           {
@@ -317,7 +318,6 @@ export default class ContentEditorContainer extends Component {
             
             onEditorChange={onEditorChange}
             onContextualizationRequest={onContextualizationRequest}
-            onNoteAdd={() => console.log('on note add')}
             onContextualizationRequest={onContextualizationRequest}
             onDataChange={onDataChange}
             onContextualizationClick={onContextualizationClick}
@@ -326,7 +326,7 @@ export default class ContentEditorContainer extends Component {
             
             inlineContextualizationComponents={inlineContextualizationComponents}
             blockContextualizationComponents={blockContextualizationComponents}
-            allowNotesInsertion={true}
+            allowNotesInsertion={false}
             editorStyle={{
               position: 'relative',
               left: 0,
