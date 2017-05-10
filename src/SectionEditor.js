@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import ContentEditor from './ContentEditor';
+import NoteContainer from './components/NoteContainer/NoteContainer';
 
 import './SectionEditor.scss';
 
@@ -54,40 +55,29 @@ export default class SectionEditor extends Component {
       const onNoteDrop = (payload, selection) => {
         onDrop(noteId, payload, selection);
       };
-      const noteEditorState = notes[noteId].editorState;
+      const note = notes[noteId];
       return (
-        <section 
+        <NoteContainer
           key={noteId}
-          className="note-container">
-          <div className="note-header">
-            <button onClick={onClickDelete}>x</button>
-            <h3>Note {notes[noteId].order}</h3>
-          </div>
-          <div className="note-body">
-            <ContentEditor 
-              editorState={noteEditorState}
-              contextualizations={contextualizations}
-              contextualizers={contextualizers}
-              resources={resources}
-              lastInsertionType={lastInsertionType} 
-              
-              onEditorChange={onThisNoteEditorChange}
-              onNoteAdd={onNoteAdd}
-              onContextualizationRequest={onNoteContextualizationRequest}
-              onDataChange={onDataChange}
-              onDrop={onNoteDrop}
+          note={note}
+          contextualizations={contextualizations}
+          contextualizers={contextualizers}
+          resources={resources}
+          lastInsertionType={lastInsertionType}
 
-              onContextualizationClick={onContextualizationClick}
-              onContextualizationMouseOver={onContextualizationMouseOver}
-              onContextualizationMouseOut={onContextualizationMouseOut}
-              
-              inlineContextualizationComponents={inlineContextualizationComponents}
-              blockContextualizationComponents={blockContextualizationComponents}
-              allowNotesInsertion={false}
-              editorStyle={editorStyles.noteEditor}
-            />
-          </div>
-        </section>
+          onEditorChange={onThisNoteEditorChange}
+          onContextualizationRequest={onNoteContextualizationRequest}
+          onDataChange={onDataChange}
+          onDrop={onNoteDrop}
+          onClickDelete={onClickDelete}
+
+          onContextualizationClick={onContextualizationClick}
+          onContextualizationMouseOver={onContextualizationMouseOver}
+          onContextualizationMouseOut={onContextualizationMouseOut}
+          inlineContextualizationComponents={inlineContextualizationComponents}
+          blockContextualizationComponents={blockContextualizationComponents}
+          editorStyle={editorStyles.noteEditor}
+        />
       );
     };
 
