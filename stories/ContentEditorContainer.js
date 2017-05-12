@@ -263,7 +263,7 @@ export default class ContentEditorContainer extends Component {
 
    const onDrop = (payload, selection) => {
     this.insertContextualization(EditorState.acceptSelection(this.state.editorState, selection));
-   }
+   };
     return (
       <div
         style={{
