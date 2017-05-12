@@ -378,7 +378,7 @@ export default class ContentEditor extends Component {
         return;
       }
       const { blockContextualizationComponents } = this.props;
-      const component = blockContextualizationComponents[data.type];
+      const component = blockContextualizationComponents[data.data.contextualization.type];
       const {
         resources,
         contextualizers,

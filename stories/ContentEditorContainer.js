@@ -37,7 +37,7 @@ const inlineContextualizationComponents = {
 };
 
 const blockContextualizationComponents = {
-  [BLOCK_CONTEXTUALIZATION]: BlockContainer
+  citation: BlockContainer
 };
 
 export default class ContentEditorContainer extends Component {
@@ -132,6 +132,7 @@ export default class ContentEditorContainer extends Component {
       id,
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
+      type: contextualizers[Object.keys(contextualizers)[0]].type,
     }
     const newEditorState = insertContextualizationInEditor(editorState, contextualizationRequestType, contextualization, contextualizationRequestSelection);
     this.setState({
