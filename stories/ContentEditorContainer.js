@@ -338,9 +338,9 @@ export default class ContentEditorContainer extends Component {
         <div
           style={{
             position: 'fixed',
-            top: '10%',
+            top: '0',
             left: '10%',
-            height: '80%',
+            height: '100%',
             width: '90%',
             overflow: 'auto'
           }}>

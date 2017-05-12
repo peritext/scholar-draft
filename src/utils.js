@@ -67,7 +67,6 @@ export function insertContextualizationInEditor(
     currentContent.getBlockForKey(activeSelection.getStartKey()).getText().trim().length === 0;
 
   const insertionType = isInEmptyBlock ? BLOCK_CONTEXTUALIZATION : INLINE_CONTEXTUALIZATION;
-  console.log('insertion type', insertionType);
   let newContentState = editorState.getCurrentContent().createEntity(
       insertionType,
       'IMMUTABLE',
@@ -358,6 +357,50 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     return {
       ...finalNotes,
       [noteId]: note
+    };
+  }, {});
+};
+
+export const updateAssetsFromEditors = (editorStates, inputAssets) => {
+  const assets = { ...inputAssets };
+  // list active entities
+  const assetsEntities = editorStates.reduce((total, editorState) => {
+    const contentState = editorState.getCurrentContent();
+    const blockMap = contentState.getBlockMap().toJS();
+    return Object.keys(blockMap).reduce((entities, blockMapId) => {
+      const newEnt = blockMap[blockMapId]
+          .characterList
+          // find characters attached to an entity
+          .filter(chara => chara.entity !== null)
+          // keep entities only
+          .map(chara => chara.entity)
+          // add info about entity and its location
+          .map(entityKey => ({
+            entityKey, 
+            entity: contentState.getEntity(entityKey),
+            blockMapId
+          }))
+          // find relevant entity (corresponding to the contextualization to delete)
+          .filter(thatEntity => 
+            thatEntity.entity.getType() === INLINE_CONTEXTUALIZATION ||
+            thatEntity.entity.getType() === BLOCK_CONTEXTUALIZATION
+          );
+      return entities.concat(newEnt);
+    }, []);
+  }, []);
+  // filter unused assets
+  return Object.keys(assets)
+  .filter((assetId) => {
+    const asset = assets[assetId];
+    let entityIndex;
+    const entity = assetsEntities.find((assetEntity, index) => assetEntity.entity.getData().contextualization.id === assetId);
+    return entity !== undefined;
+  })
+  .reduce((finalAssets, assetId) => {
+    const asset = assets[assetId];
+    return {
+      ...finalAssets,
+      [assetId]: asset
     };
   }, {});
 };

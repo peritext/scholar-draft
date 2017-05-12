@@ -25,7 +25,8 @@ const {
   deleteNoteFromEditor,
   getUnusedContextualizations,
   updateNotesFromEditor,
-  insertNoteInEditor
+  insertNoteInEditor,
+  updateAssetsFromEditors
 } = utils;
 
 // import SectionEditor from '../src/SectionEditor';
@@ -87,19 +88,43 @@ export default class ContentEditorContainer extends Component {
     super(props);
   }
 
+  clearContextualizations = () => {
+    const notesEditorStates = Object.keys(this.state.notes).reduce((result, noteId) => {
+      return {
+        ...result,
+        [noteId]: this.state.notes[noteId].editorState
+      } 
+    }, {});
+    let editorStates = {
+      'main': this.state.mainEditorState,
+      ...notesEditorStates,
+    };
+    editorStates = Object.keys(editorStates).map(id => editorStates[id]).filter(e => e);
+    const contextualizations = updateAssetsFromEditors(editorStates, {...this.state.contextualizations});
+    this.setState({
+      contextualizations
+    });
+  }
+
   onEditorChange = (contentType, noteId, editorState) => {
+    // list all editor states to purge unused assets
+    // (very expensive for performance)
+    // setTimeout(this.clearContextualizations, 1);
     if (contentType === 'main') {
       const notes = updateNotesFromEditor(editorState, this.state.notes);
       this.setState({
         mainEditorState: editorState,
+        // contextualizations: {...newContextualizations},
         notes
       });
     } else {
       this.setState({
+        // contextualizations,
         notes: {
             ...this.state.notes,
             [noteId]: {
               ...this.state.notes[noteId],
+
               editorState
             }
           }
@@ -437,10 +462,10 @@ export default class ContentEditorContainer extends Component {
         <div
           style={{
             position: 'fixed',
-            top: '10%',
+            top: '0',
             left: '20%',
-            height: '80%',
-            width: '80%',
+            height: '100%',
+            width: '100%',
             overflow: 'auto'
           }}>
           <SectionEditor 
