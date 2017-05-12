@@ -19,8 +19,8 @@ const insertEmptyBlock = (editorState, blockType = 'unstyled', data = {}) => {
     data: Map().merge(data)
   });
   const blockMap = contentState.getBlockMap();
-  const blocksBefore = blockMap.toSeq().takeUntil((value) => value === currentBlock);
-  const blocksAfter = blockMap.toSeq().skipUntil((value) => value === currentBlock).rest();
+  const blocksBefore = blockMap.toSeq().takeUntil(value => value === currentBlock);
+  const blocksAfter = blockMap.toSeq().skipUntil(value => value === currentBlock).rest();
   const augmentedBlocks = [
     [
       currentBlock.getKey(),

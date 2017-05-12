@@ -10,19 +10,17 @@ const NotePointer = ({
   onMouseOver,
   onMouseOut,
   onMouseClick
-}) => {
-  return (
-    <span
-      className="peritext-draft-NotePointer"
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
-      onClick={onMouseClick}
-    >
-      <span>{note && note.order || '°'}</span>
-      {children}
-    </span>
+}) => (
+  <span
+    className="peritext-draft-NotePointer"
+    onMouseOver={onMouseOver}
+    onMouseOut={onMouseOut}
+    onClick={onMouseClick}
+  >
+    <span>{note && note.order || '°'}</span>
+    {children}
+  </span>
   );
-};
 
 
 NotePointer.propTypes = {

@@ -3,6 +3,9 @@
 .peritext-draft-ContentEditor{
   position: relative;
 
+  overflow-y: auto;
+  overflow-x: visible;
+
   .DraftEditor-root
   {
     position: relative;

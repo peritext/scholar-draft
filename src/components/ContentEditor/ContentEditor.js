@@ -110,9 +110,6 @@ function checkReturnForState(editorState, ev) {
 }
 
 
-
-
-
 export default class ContentEditor extends Component {
 
   static propTypes = {
@@ -182,11 +179,12 @@ export default class ContentEditor extends Component {
     
     const editorEle = this.editor;
     if (!isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) { return; }
-    const popoverControlEle = this.inlineToolbar.toolbar;
+    const inlineToolbarEle = this.inlineToolbar.toolbar;
     const sideControlEle = this.sideControl.toolbar;
     const rangeBounds = selectionRange.getBoundingClientRect();
 
     const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
+    const displaceX = this.editor.refs.editorContainer.parentNode.offsetLeft;
     const selectedBlock = getSelectedBlockElement(selectionRange);
 
     const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
@@ -207,8 +205,9 @@ export default class ContentEditor extends Component {
 
       if (!selectionRange.collapsed) {
         // The control needs to be visible so that we can get it's width
-        popoverControlEle.style.display = 'block';
-        const popoverWidth = popoverControlEle.clientWidth;
+        inlineToolbarEle.style.position = 'fixed';
+        inlineToolbarEle.style.display = 'block';
+        const popoverWidth = inlineToolbarEle.clientWidth;
 
         popoverControlVisible = true;
         let rangeWidth = rangeBounds.right - rangeBounds.left,
@@ -217,18 +216,20 @@ export default class ContentEditor extends Component {
 
         popoverControlLeft = 0;
         let startNode = selectionRange.startContainer;
-        while (startNode.nodeType === 3) startNode = startNode.parentNode;
+        while (startNode.nodeType === 3) {
+          startNode = startNode.parentNode;
+        }
         const height = rangeBounds.bottom - rangeBounds.top;
-        const popTop = rangeBounds.top - editorBounds.top + displaceY - popoverSpacing;
+        const popTop = rangeBounds.top /* - editorBounds.top + displaceY */ - popoverSpacing;
         const left = rangeBounds.left;
-        popoverControlEle.style.left = `${left}px`;
-        popoverControlEle.style.top = `${popTop}px`;
+        inlineToolbarEle.style.left = `${left}px`;
+        inlineToolbarEle.style.top = `${popTop}px`;
       } else {
-        popoverControlEle.style.display = 'none';
+        inlineToolbarEle.style.display = 'none';
       }
     } else {
       sideControlEle.style.display = 'none';
-      popoverControlEle.style.display = 'none';
+      inlineToolbarEle.style.display = 'none';
     }
   }
 
@@ -304,13 +305,13 @@ export default class ContentEditor extends Component {
         const noteId = data.data.noteId;
         const onMouseOver = (e) => {
           this.props.onNotePointerMouseOver(noteId, e);
-        }
+        };
         const onMouseOut = (e) => {
           this.props.onNotePointerMouseOut(noteId, e);
-        }
+        };
         const onMouseClick = (e) => {
           this.props.onNotePointerMouseClick(noteId, e);
-        }
+        };
         const note = this.props.notes && this.props.notes[noteId];
         const props = {
           ...data.data,
@@ -318,7 +319,7 @@ export default class ContentEditor extends Component {
           onMouseOver,
           onMouseOut,
           onMouseClick
-        }
+        };
         callback(start, end, props);
       }
     );
@@ -438,7 +439,7 @@ export default class ContentEditor extends Component {
 
   _handleBeforeInput = (character, props) => {
     if (character !== ' ') {
-        return 'not-handled';
+      return 'not-handled';
     }
     const editorState = this.props.editorState;
     const newEditorState = checkCharacterForState(editorState, character);
@@ -449,14 +450,14 @@ export default class ContentEditor extends Component {
   }
 
   _onTab = (ev) => {
-      const editorState = this.props.editorState;
-      const newEditorState = adjustBlockDepth(editorState, ev);
-      if (newEditorState !== editorState) {
-        this.onChange(newEditorState);
-        return 'handled';
-      }
-      return 'not-handled';
+    const editorState = this.props.editorState;
+    const newEditorState = adjustBlockDepth(editorState, ev);
+    if (newEditorState !== editorState) {
+      this.onChange(newEditorState);
+      return 'handled';
     }
+    return 'not-handled';
+  }
   _handleReturn = (ev) => {
     const editorState = this.props.editorState;
     const newEditorState = checkReturnForState(editorState, ev);
@@ -485,7 +486,7 @@ export default class ContentEditor extends Component {
         payloadSel,
         ' '
       );
-      this.onChange(EditorState.createWithContent(newContentState))
+      this.onChange(EditorState.createWithContent(newContentState));
 
       this.props.onDrop(payload, selection);
     }, 1);
@@ -560,7 +561,7 @@ export default class ContentEditor extends Component {
 
     const {
       readOnly,
-      editorState : stateEditorState
+      editorState: stateEditorState
     } = this.state;
 
     const {
@@ -591,57 +592,62 @@ export default class ContentEditor extends Component {
       this.props.onNoteAdd();
       setTimeout(() => {
         this.props.onEditorChange(this.props.editorState);        
-      })
-    }
+      });
+    };
+
+    const onScroll = () => {
+      this.updateSelection();
+    };
     return (
-        <div 
-          className="peritext-draft-ContentEditor"
-          onClick={this.focus}
-          style={editorStyle}
+      <div 
+        className="peritext-draft-ContentEditor"
+        onClick={this.focus}
+        style={editorStyle}
 
-          onDrop={_handleDrop}
-          onDragOver={_handleDragOver}
-        >
-          <PopoverControl
-            ref={bindInlineToolbar}
-            editorState={realEditorState}
-            updateEditorState={onChange}
-          />
-          <SideControl
-            ref={bindSideControlRef}
-            editorState={realEditorState}
-            updateEditorState={onChange}
+        onScroll={onScroll}
+        onDrop={_handleDrop}
+        onDragOver={_handleDragOver}
+      >
+        <PopoverControl
+          ref={bindInlineToolbar}
+          editorState={realEditorState}
+          updateEditorState={onChange}
+        />
+        <SideControl
+          ref={bindSideControlRef}
+          editorState={realEditorState}
+          updateEditorState={onChange}
 
-            allowContextualizations={{
-              inline: allowInlineContextualization,
-              block: allowBlockContextualization
-            }}
-            allowNotesInsertion={allowNotesInsertion}
-            onContextualizationClick={onContextualizationRequest}
-            onNoteAdd={onNoteAdd}
-          />
-          <Editor
-            blockRendererFn={_blockRenderer}
-            spellCheck
-            readOnly={readOnly}
-            placeholder={placeholder}
+          allowContextualizations={{
+            inline: allowInlineContextualization,
+            block: allowBlockContextualization
+          }}
+          allowNotesInsertion={allowNotesInsertion}
+          onContextualizationClick={onContextualizationRequest}
+          onNoteAdd={onNoteAdd}
+        />
+        <Editor
+          blockRendererFn={_blockRenderer}
+          spellCheck
+          readOnly={readOnly}
+          placeholder={placeholder}
 
-            handleKeyCommand={_handleKeyCommand}
-            handleBeforeInput={_handleBeforeInput}
-            handleReturn={_handleReturn}
-            onTab={_onTab}
+          handleKeyCommand={_handleKeyCommand}
+          handleBeforeInput={_handleBeforeInput}
+          handleReturn={_handleReturn}
+          onTab={_onTab}
 
-            editorState={stateEditorState}
+          editorState={stateEditorState}
 
-            onChange={onChange}
-            ref={bindEditorRef}
-            onBlur={this.onBlur}
+          onChange={onChange}
+          ref={bindEditorRef}
+          onBlur={this.onBlur}
 
-            onDrop={e => console.log('on editor drop')}
+          onDrop={e => console.log('on editor drop')}
 
-            {...otherProps}
-          />
-        </div>
+          {...otherProps}
+        />
+      </div>
     );
   }
 }

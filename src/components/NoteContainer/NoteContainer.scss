@@ -2,6 +2,11 @@
 
 .peritext-draft-NoteContainer
 {
-  padding: 1rem;
-  padding-left: 2rem;
+  padding: 1em;
+  padding-left: 2em;
+  .peritext-draft-ContentEditor
+  {
+    padding: 2em;
+    padding-top: 0;
+  }
 }

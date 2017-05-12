@@ -39,15 +39,15 @@ const InlinePointer = (props) => {
       onMouseOut={onMouseOut}
     >
       <Component
-      contentState={contentState}
-      contextualizer = {contextualizer}
-      contextualizerId={contextualizerId}
-      data={data}
-      onDataChange={onDataChange}
-      onInputBlur={onInputBlur}
-      onInputFocus={onInputFocus}
-      resource={resource}
-      resourceId={resourceId}
+        contentState={contentState}
+        contextualizer={contextualizer}
+        contextualizerId={contextualizerId}
+        data={data}
+        onDataChange={onDataChange}
+        onInputBlur={onInputBlur}
+        onInputFocus={onInputFocus}
+        resource={resource}
+        resourceId={resourceId}
       >
         {children}
       </Component>

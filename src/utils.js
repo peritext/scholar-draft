@@ -137,9 +137,9 @@ export function insertNoteInEditor(
   let newContentState = editorState.getCurrentContent().createEntity(
       NOTE_POINTER,
       'IMMUTABLE',
-      {
-        noteId
-      }
+    {
+      noteId
+    }
     );
   const newEntityKey = newContentState.getLastCreatedEntityKey();
   const currentContent = editorState.getCurrentContent();
@@ -159,7 +159,7 @@ export function insertNoteInEditor(
   const currentContentBlock = currentContent.getBlockForKey(anchorKey);
   const start = thatSelection.getStartOffset();
   const end = thatSelection.getEndOffset();
-  let selectedText = ' ';
+  const selectedText = ' ';
 
   newContentState = Modifier.replaceText(
       currentContent,
@@ -305,7 +305,7 @@ export function deleteNoteFromEditor(
 }
 
 export const updateNotesFromEditor = (editorState, inputNotes) => {
-  const notes = {...inputNotes};
+  const notes = { ...inputNotes };
   const contentState = editorState.getCurrentContent();
   const blockMap = contentState.getBlockMap().toJS();
   // list active entities
@@ -323,16 +323,14 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
           blockMapId
         }))
         // find relevant entity (corresponding to the contextualization to delete)
-        .filter((thatEntity) => {
-          return thatEntity.entity.getType() === NOTE_POINTER;
-        });
+        .filter(thatEntity => thatEntity.entity.getType() === NOTE_POINTER);
     return entities.concat(newEnt);
   }, []);
-  //attribute orders to notes
+  // attribute orders to notes
   let order = 0;
-  noteEntities.forEach(entity => {
+  noteEntities.forEach((entity) => {
     const noteId = entity.entity.getData().noteId;
-    order ++;
+    order++;
     if (notes[noteId]) {
       notes[noteId].order = order;
     } else {
@@ -341,7 +339,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   });
   // filter unused notes
   return Object.keys(notes)
-  .filter(noteId => {
+  .filter((noteId) => {
     const note = notes[noteId];
     let entityIndex;
     const entity = noteEntities.find((noteEntity, index) => noteEntity.entity.getData().noteId === noteId);
@@ -352,9 +350,9 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     return {
       ...finalNotes,
       [noteId]: note
-    }
+    };
   }, {});
-}
+};
 
 const getContextualizationEntity = (editorState, id) => {
   const contentState = editorState.getCurrentContent();

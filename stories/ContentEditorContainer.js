@@ -337,11 +337,11 @@ export default class ContentEditorContainer extends Component {
         <div
           style={{
             position: 'fixed',
-            top: 0,
+            top: '10%',
             left: '10%',
-            height: '100%',
+            height: '80%',
             width: '90%',
-            overflow: 'auto'
+            overflow: 'hidden'
           }}>
           <ContentEditor 
             ref={bindEditorRef}
@@ -370,8 +370,7 @@ export default class ContentEditorContainer extends Component {
               top: 0,
               width: '50%',
               height: '100%',
-              padding:'25%',
-              paddingTop: '5em'
+              padding:'1em 25% 1em 25%',
             }}
           />
         </div>

@@ -51,7 +51,7 @@ export default class SectionEditor extends Component {
       };
       const onClickDelete = () => {
         this.props.onNoteDelete(noteId);
-      }
+      };
       const onNoteDrop = (payload, selection) => {
         onDrop(noteId, payload, selection);
       };
@@ -97,7 +97,7 @@ export default class SectionEditor extends Component {
             .sort((a, b) => {
               if (notes[a].order > notes[b].order) {
                 return 1;
-              } else return -1;
+              } return -1;
             })
             .map(renderNoteEditor)
           }
@@ -127,7 +127,7 @@ export default class SectionEditor extends Component {
             
             inlineContextualizationComponents={inlineContextualizationComponents}
             blockContextualizationComponents={blockContextualizationComponents}
-            allowNotesInsertion={true}
+            allowNotesInsertion
             editorStyle={editorStyles.mainEditor}
           />
         </section>
