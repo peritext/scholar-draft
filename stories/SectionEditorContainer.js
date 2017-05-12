@@ -441,7 +441,7 @@ export default class ContentEditorContainer extends Component {
             left: '20%',
             height: '80%',
             width: '80%',
-            overflow: 'hidden'
+            overflow: 'auto'
           }}>
           <SectionEditor 
             mainEditorState={mainEditorState}
@@ -477,7 +477,7 @@ export default class ContentEditorContainer extends Component {
                 top: 0,
                 width: '50%',
                 height: '100%',
-                padding:'1em 25% 1em 25%'
+                padding:'3em 25% 3em 25%',
               }
             }}
           />

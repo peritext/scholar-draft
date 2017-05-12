@@ -45,7 +45,9 @@ import './ContentEditor.scss';
 const getSelectedBlockElement = (range) => {
   let node = range.startContainer;
   do {
-    if (node.getAttribute && node.getAttribute('data-block') == 'true') { return node; }
+    if (node.getAttribute && (node.getAttribute('data-block') == 'true' || node.getAttribute('data-contents') == 'true')) { 
+      return node; 
+    }
     node = node.parentNode;
   } while (node != null);
   return null;
@@ -184,12 +186,10 @@ export default class ContentEditor extends Component {
     const rangeBounds = selectionRange.getBoundingClientRect();
 
     const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
-    const displaceX = this.editor.refs.editorContainer.parentNode.offsetLeft;
     const selectedBlock = getSelectedBlockElement(selectionRange);
 
     const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
     const top = displaceY + offsetTop;
-
     if (selectedBlock) {
       const blockBounds = selectedBlock.getBoundingClientRect();
       sideControlVisible = true;
