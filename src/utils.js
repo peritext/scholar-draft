@@ -55,10 +55,19 @@ export function addEmptyBlock(editorState) {
 
 export function insertContextualizationInEditor(
     editorState, 
-    insertionType = INLINE_CONTEXTUALIZATION, 
     contextualization, 
     selection
   ) {
+  const currentContent = editorState.getCurrentContent();
+  const activeSelection = editorState.getSelection();
+  const inputSelection = selection || activeSelection;
+
+  const isInEmptyBlock = activeSelection.isCollapsed() && 
+    activeSelection.getStartOffset() === 0 && 
+    currentContent.getBlockForKey(activeSelection.getStartKey()).getText().trim().length === 0;
+
+  const insertionType = isInEmptyBlock ? BLOCK_CONTEXTUALIZATION : INLINE_CONTEXTUALIZATION;
+  console.log('insertion type', insertionType);
   let newContentState = editorState.getCurrentContent().createEntity(
       insertionType,
       'IMMUTABLE',
@@ -67,10 +76,9 @@ export function insertContextualizationInEditor(
       contextualization
     }
     );
+
   const newEntityKey = newContentState.getLastCreatedEntityKey();
-  const currentContent = editorState.getCurrentContent();
-  const activeSelection = editorState.getSelection();
-  const inputSelection = selection || activeSelection;
+
   const thatSelection = activeSelection.merge({
     anchorOffset: inputSelection.getStartOffset(),
     focusOffset: inputSelection.getEndOffset(),

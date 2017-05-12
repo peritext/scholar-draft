@@ -164,12 +164,11 @@ export default class ContentEditorContainer extends Component {
       contextualizerId: Object.keys(contextualizers)[0],
       type: contextualizers[Object.keys(contextualizers)[0]].type,
     };
-    console.log('using input editor state', inputEditorState);
     let editorState = inputEditorState;
     if (!editorState){
       editorState = contextualizationRequestContentId === 'main' ? mainEditorState : notes[contextualizationRequestContentId].editorState;
     }
-    const newEditorState = insertContextualizationInEditor(editorState, contextualizationRequestType, contextualization, contextualizationRequestSelection);
+    const newEditorState = insertContextualizationInEditor(editorState, contextualization);
     const newState = {
       lastInsertionType: this.state.contextualizationRequestType,
       contextualizationRequest: false,
