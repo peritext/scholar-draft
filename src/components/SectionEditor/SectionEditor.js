@@ -22,32 +22,30 @@ export default class SectionEditor extends Component {
     const {
       mainEditorState,
       notes,
-      contextualizations,
-      contextualizers,
-      resources,
+      assets,
       lastInsertionType,
       
       onEditorChange,
       onNoteAdd,
       onDataChange,
-      onContextualizationRequest,
-      onContextualizationClick,
-      onContextualizationMouseOver,
-      onContextualizationMouseOut,
+      onAssetRequest,
+      onAssetClick,
+      onAssetMouseOver,
+      onAssetMouseOut,
       onNotePointerMouseOver,
       onNotePointerMouseOut,
       onNotePointerMouseClick,
       onDrop,
       
-      inlineContextualizationComponents,
-      blockContextualizationComponents,
+      inlineAssetComponents,
+      blockAssetComponents,
       editorStyles,
     } = this.props;
 
     const renderNoteEditor = (noteId, order) => {
       const onThisNoteEditorChange = editor => onEditorChange('note', noteId, editor);
-      const onNoteContextualizationRequest = (contextualizationRequestType, selection) => {
-        onContextualizationRequest('note', noteId, contextualizationRequestType, selection);
+      const onNoteAssetRequest = (assetRequestType, selection) => {
+        onAssetRequest('note', noteId, assetRequestType, selection);
       };
       const onClickDelete = () => {
         this.props.onNoteDelete(noteId);
@@ -60,30 +58,28 @@ export default class SectionEditor extends Component {
         <NoteContainer
           key={noteId}
           note={note}
-          contextualizations={contextualizations}
-          contextualizers={contextualizers}
-          resources={resources}
+          assets={assets}
           lastInsertionType={lastInsertionType}
 
           onEditorChange={onThisNoteEditorChange}
-          onContextualizationRequest={onNoteContextualizationRequest}
+          onAssetRequest={onNoteAssetRequest}
           onDataChange={onDataChange}
           onDrop={onNoteDrop}
           onClickDelete={onClickDelete}
 
-          onContextualizationClick={onContextualizationClick}
-          onContextualizationMouseOver={onContextualizationMouseOver}
-          onContextualizationMouseOut={onContextualizationMouseOut}
-          inlineContextualizationComponents={inlineContextualizationComponents}
-          blockContextualizationComponents={blockContextualizationComponents}
+          onAssetClick={onAssetClick}
+          onAssetMouseOver={onAssetMouseOver}
+          onAssetMouseOut={onAssetMouseOut}
+          inlineAssetComponents={inlineAssetComponents}
+          blockAssetComponents={blockAssetComponents}
           editorStyle={editorStyles.noteEditor}
         />
       );
     };
 
     const onMainEditorChange = editor => onEditorChange('main', undefined, editor);
-    const onMainContextualizationRequest = (contextualizationRequestType, selection) => {
-      onContextualizationRequest('main', undefined, contextualizationRequestType, selection);
+    const onMainAssetRequest = (assetRequestType, selection) => {
+      onAssetRequest('main', undefined, assetRequestType, selection);
     };
 
     const onMainEditorDrop = (payload, selection) => {
@@ -106,27 +102,25 @@ export default class SectionEditor extends Component {
           <ContentEditor 
             editorState={mainEditorState}
             notes={notes}
-            contextualizations={contextualizations}
-            contextualizers={contextualizers}
-            resources={resources}
+            assets={assets}
             lastInsertionType={lastInsertionType} 
             
             onEditorChange={onMainEditorChange}
             onDrop={onMainEditorDrop}
-            onContextualizationRequest={onMainContextualizationRequest}
+            onAssetRequest={onMainAssetRequest}
             onNoteAdd={onNoteAdd}
             onDataChange={onDataChange}
 
-            onContextualizationClick={onContextualizationClick}
-            onContextualizationMouseOver={onContextualizationMouseOver}
-            onContextualizationMouseOut={onContextualizationMouseOut}
+            onAssetClick={onAssetClick}
+            onAssetMouseOver={onAssetMouseOver}
+            onAssetMouseOut={onAssetMouseOut}
 
             onNotePointerMouseOver={onNotePointerMouseOver}
             onNotePointerMouseOut={onNotePointerMouseOut}
             onNotePointerMouseClick={onNotePointerMouseClick}
             
-            inlineContextualizationComponents={inlineContextualizationComponents}
-            blockContextualizationComponents={blockContextualizationComponents}
+            inlineAssetComponents={inlineAssetComponents}
+            blockAssetComponents={blockAssetComponents}
             allowNotesInsertion
             editorStyle={editorStyles.mainEditor}
           />

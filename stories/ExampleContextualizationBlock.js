@@ -4,24 +4,27 @@ const BlockContainer = (props) => {
   const {
     children,
     blockProps: {
-      data,
-      resource,
-      resourceId,
-      contextualizerId,
-      contextualizer,
-      contextualization,
-      onContextualizationMouseOver,
-      onContextualizationMouseOut,
-      onDataChange,
-      onInputFocus,
-      onInputBlur
+      asset,
+      onMouseOver,
+      onMouseOut,
+      onChange,
+      onFocus,
+      onBlur
     },
   } = props;
+
+  const {
+    resource,
+    resourceId,
+    contextualizerId,
+    contextualizer,
+    contextualization,
+  } = asset;
 
 
   const onResourceTitleChange = e => {
     const title = e.target.value;
-    onDataChange('resources', resourceId, {
+    onChange('resources', resourceId, {
       ...resource,
       title
     })
@@ -29,21 +32,21 @@ const BlockContainer = (props) => {
 
   const onContextualizerPageChange = e => {
     const pages = e.target.value;
-    onDataChange('contextualizers', contextualizerId, {
+    onChange('contextualizers', contextualizerId, {
       ...contextualizer,
       pages
     })
   }
 
-  const onMouseOver = e => {
-    if (typeof onContextualizationMouseOver === 'function') {
-      onContextualizationMouseOver(data.contextualization.id, data.contextualization, e);
+  const onMOver = e => {
+    if (typeof onMouseOver === 'function') {
+      onMouseOver(asset.id, asset.contextualization, e);
     }
   }
 
-  const onMouseOut = e => {
-    if (typeof onContextualizationMouseOut === 'function') {
-      onContextualizationMouseOut(data.contextualization.id, data.contextualization, e);
+  const onMOut = e => {
+    if (typeof onMouseOut === 'function') {
+      onMouseOut(asset.id, asset.contextualization, e);
     }
   }
 
@@ -57,14 +60,14 @@ const BlockContainer = (props) => {
             <input
               value={resource.title}
               onChange={onResourceTitleChange}
-              onFocus={onInputFocus}
-              onBlur={onInputBlur}
+              onFocus={onFocus}
+              onBlur={onBlur}
             />
           </i>. <i>pp. <input
               value={contextualizer.pages}
               onChange={onContextualizerPageChange}
-              onFocus={onInputFocus}
-              onBlur={onInputBlur}
+              onFocus={onFocus}
+              onBlur={onBlur}
             /></i>. 
           {
             resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
@@ -75,8 +78,8 @@ const BlockContainer = (props) => {
   return (
     <div 
       className="citation-block"
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
+      onMouseOver={onMOver}
+      onMouseOut={onMOut}
     >
       <p>
         {exampleRendering(contextualizer.type)}

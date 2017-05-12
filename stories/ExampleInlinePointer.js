@@ -4,19 +4,23 @@ const InlinePointer = (props) => {
   const {
     children,
     contentState,
+    data,
+    asset,
+    onChange,
+    onBlur,
+    onFocus,
+  } = props;
+
+  const {
     contextualizer = {},
     contextualizerId,
-    data,
-    onDataChange,
-    onInputBlur,
-    onInputFocus,
     resource = {},
-    resourceId
-  } = props;
+    resourceId,
+  } = asset;
 
   const onResourceTitleChange = (e) => {
     const title = e.target.value;
-    onDataChange('resources', resourceId, {
+    onChange('resources', resourceId, {
       ...resource,
       title
     });
@@ -24,7 +28,7 @@ const InlinePointer = (props) => {
 
   const onContextualizerPageChange = (e) => {
     const pages = e.target.value;
-    onDataChange('contextualizers', contextualizerId, {
+    onChange('contextualizers', contextualizerId, {
       ...contextualizer,
       pages
     });
@@ -35,14 +39,14 @@ const InlinePointer = (props) => {
       <input
         value={resource.title}
         onChange={onResourceTitleChange}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />, pp.
       <input
         value={contextualizer.pages}
         onChange={onContextualizerPageChange}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
 
       {children}

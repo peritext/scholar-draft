@@ -11,8 +11,8 @@ import { List } from 'immutable';
 
 import {
   NOTE_POINTER,
-  INLINE_CONTEXTUALIZATION,
-  BLOCK_CONTEXTUALIZATION
+  INLINE_ASSET,
+  BLOCK_ASSET
 } from './constants';
 
 /**
@@ -50,12 +50,12 @@ export function addEmptyBlock(editorState) {
 }
 
 /**
- *
+ * Other utils
  */
 
-export function insertContextualizationInEditor(
+export function insertAssetInEditor(
     editorState, 
-    contextualization, 
+    asset, 
     selection
   ) {
   const currentContent = editorState.getCurrentContent();
@@ -66,13 +66,13 @@ export function insertContextualizationInEditor(
     activeSelection.getStartOffset() === 0 && 
     currentContent.getBlockForKey(activeSelection.getStartKey()).getText().trim().length === 0;
 
-  const insertionType = isInEmptyBlock ? BLOCK_CONTEXTUALIZATION : INLINE_CONTEXTUALIZATION;
+  const insertionType = isInEmptyBlock ? BLOCK_ASSET : INLINE_ASSET;
   let newContentState = editorState.getCurrentContent().createEntity(
       insertionType,
       'IMMUTABLE',
     {
       insertionType,
-      contextualization
+      asset
     }
     );
 
@@ -88,7 +88,7 @@ export function insertContextualizationInEditor(
     EditorState.createWithContent(newContentState), 
     thatSelection
   );
-  if (insertionType === BLOCK_CONTEXTUALIZATION) {
+  if (insertionType === BLOCK_ASSET) {
     updatedEditor = AtomicBlockUtils.insertAtomicBlock(
         updatedEditor,
         newEntityKey,
@@ -190,14 +190,13 @@ export function insertNoteInEditor(
   newContentState = Modifier.applyEntity(newContentState, endSelection, newEntityKey);
 
   updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
-  // console.log('created entity', newEntityKey, NOTE_POINTER);
   return updatedEditor;
 }
 
-export function getContextualizationsToDeleteFromEditor(
+export function getAssetsToDeleteFromEditor(
   editorState, 
   acceptedEntitiesTypes = [], 
-  contextualizations = {}
+  assets = {}
 ) {
   const contentState = editorState.getCurrentContent();
   const blockMap = contentState.getBlockMap().toJS();
@@ -211,12 +210,12 @@ export function getContextualizationsToDeleteFromEditor(
   , [])
   .map(entityKey => contentState.getEntity(entityKey))
   .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
-  .map(entity => entity.getData().contextualization.id);
-  return Object.keys(contextualizations)
+  .map(entity => entity.getData().asset.id);
+  return Object.keys(assets)
     .filter(key => activeEntitiesIds.indexOf(key) === -1);
 }
 
-export function deleteContextualizationFromEditor(
+export function deleteAssetFromEditor(
   editorState, 
   acceptedEntitiesTypes = [], 
   id, 
@@ -238,10 +237,10 @@ export function deleteContextualizationFromEditor(
         entity: contentState.getEntity(entityKey),
         blockMapId
       }))
-      // find relevant entity (corresponding to the contextualization to delete)
+      // find relevant entity (corresponding to the asset to delete)
       .find((entity) => {
         const data = entity.entity.getData();
-        return data.contextualization && data.contextualization.id === id;
+        return data.asset && data.asset.id === id;
       })).filter(data => data !== undefined);
   if (entities.length) {
     const entityInfos = entities[0];
@@ -285,7 +284,7 @@ export function deleteNoteFromEditor(
         entity: contentState.getEntity(entityKey),
         blockMapId
       }))
-      // find relevant entity (corresponding to the contextualization to delete)
+      // find relevant entity (corresponding to the asset to delete)
       .find((entity) => {
         const data = entity.entity.getData();
         return data.noteId === id;
@@ -329,7 +328,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
           entity: contentState.getEntity(entityKey),
           blockMapId
         }))
-        // find relevant entity (corresponding to the contextualization to delete)
+        // find relevant entity (corresponding to the note to delete)
         .filter(thatEntity => thatEntity.entity.getType() === NOTE_POINTER);
     return entities.concat(newEnt);
   }, []);
@@ -380,10 +379,10 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
             entity: contentState.getEntity(entityKey),
             blockMapId
           }))
-          // find relevant entity (corresponding to the contextualization to delete)
+          // find relevant entity (corresponding to the asset to delete)
           .filter(thatEntity => 
-            thatEntity.entity.getType() === INLINE_CONTEXTUALIZATION ||
-            thatEntity.entity.getType() === BLOCK_CONTEXTUALIZATION
+            thatEntity.entity.getType() === INLINE_ASSET ||
+            thatEntity.entity.getType() === BLOCK_ASSET
           );
       return entities.concat(newEnt);
     }, []);
@@ -393,7 +392,7 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
   .filter((assetId) => {
     const asset = assets[assetId];
     let entityIndex;
-    const entity = assetsEntities.find((assetEntity, index) => assetEntity.entity.getData().contextualization.id === assetId);
+    const entity = assetsEntities.find((assetEntity, index) => assetEntity.entity.getData().asset.id === assetId);
     return entity !== undefined;
   })
   .reduce((finalAssets, assetId) => {
@@ -405,7 +404,7 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
   }, {});
 };
 
-const getContextualizationEntity = (editorState, id) => {
+const getAssetEntity = (editorState, id) => {
   const contentState = editorState.getCurrentContent();
   const blockMap = contentState.getBlockMap().toJS();
   const entity = Object.keys(blockMap)
@@ -422,16 +421,16 @@ const getContextualizationEntity = (editorState, id) => {
         entity: contentState.getEntity(entityKey),
         blockMapId
       }))
-      // find relevant entity (corresponding to the contextualization to delete)
+      // find relevant entity (corresponding to the asset to delete)
       .find((thatEntity) => {
         const data = thatEntity.entity.getData();
-        return data.contextualization && data.contextualization.id === id;
+        return data.asset && data.asset.id === id;
       }));
   return entity;
 };
 
-export function getUnusedContextualizations(editorState, contextualizations) {
+export function getUnusedAssets(editorState, assets) {
   return Object
-  .keys(contextualizations)
-  .filter(id => getContextualizationEntity(editorState, id) === undefined);
+  .keys(assets)
+  .filter(id => getAssetEntity(editorState, id) === undefined);
 }

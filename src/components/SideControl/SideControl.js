@@ -5,8 +5,8 @@ import AssetButton from '../ToolbarButtons/AssetButton';
 import NoteButton from '../ToolbarButtons/NoteButton';
 
 import {
-  INLINE_CONTEXTUALIZATION,
-  BLOCK_CONTEXTUALIZATION
+  INLINE_ASSET,
+  BLOCK_ASSET
 } from '../../constants';
   
 import './SideControl.scss';
@@ -25,7 +25,7 @@ export default class SideControl extends Component {
   };
 
   state = {
-    canAddBlockContextualization: true 
+    canAddBlockAsset: true 
   };
 
   render = () => {
@@ -37,9 +37,9 @@ export default class SideControl extends Component {
       buttons,
       editorState,
       updateEditorState,
-      onContextualizationClick,
+      onAssetRequest,
       onNoteAdd,
-      allowContextualizations = {
+      allowAssets = {
         // inline: true,
         // block: true
       },
@@ -48,30 +48,29 @@ export default class SideControl extends Component {
     } = this.props;
 
     const {
-      canAddBlockContextualization
+      canAddBlockAsset
     } = this.state;
 
     const handleFigureClick = () => {
       const currentSelection = editorState && editorState.getSelection();
-      let insertionType = BLOCK_CONTEXTUALIZATION;
+      let insertionType = BLOCK_ASSET;
       if (currentSelection) {
         const contentState = editorState.getCurrentContent();
         const selectedBlock = contentState.getBlockForKey(currentSelection.getAnchorKey());
         if (selectedBlock && 
           selectedBlock.getText().length > 0
         ) {
-          insertionType = INLINE_CONTEXTUALIZATION;
+          insertionType = INLINE_ASSET;
         } else {
-          insertionType = BLOCK_CONTEXTUALIZATION;
+          insertionType = BLOCK_ASSET;
         }
       }
-      onContextualizationClick(insertionType, currentSelection);
+      onAssetRequest(insertionType, currentSelection);
     };
 
     const bindToolbar = (toolbar) => {
       this.toolbar = toolbar;
     };
-
     return (
       <div
         className="peritext-draft-SideControl"
@@ -81,7 +80,7 @@ export default class SideControl extends Component {
         {allowNotesInsertion && 
         <NoteButton onClick={onNoteAdd} />
         }
-        {(allowContextualizations.inline || allowContextualizations.block) && 
+        {(allowAssets.inline || allowAssets.block) && 
         <AssetButton onClick={handleFigureClick} />}
       </div>
     );

@@ -19,24 +19,24 @@ import {
 } from '../src';
 
 const {
-  BLOCK_CONTEXTUALIZATION
+  BLOCK_ASSET
 } = constants;
 
 const {
-  getContextualizationsToDeleteFromEditor,
-  insertContextualizationInEditor,
-  deleteContextualizationFromEditor,
-  getUnusedContextualizations 
+  getAssetsToDeleteFromEditor,
+  insertAssetInEditor,
+  deleteAssetFromEditor,
+  getUnusedAssets 
 } = utils;
 
 import BlockContainer from './ExampleContextualizationBlock';
 import InlinePointer from './ExampleInlinePointer';
 
-const inlineContextualizationComponents = {
+const inlineAssetComponents = {
   citation: InlinePointer
 };
 
-const blockContextualizationComponents = {
+const blockAssetComponents = {
   citation: BlockContainer
 };
 
@@ -48,8 +48,8 @@ export default class ContentEditorContainer extends Component {
     contextualizationRequestType: undefined,
     // all these should be handled by upstream logic in real applications
     editorState: undefined,
-    inlineContextualizationComponents,
-    blockContextualizationComponents,
+    inlineAssetComponents,
+    blockAssetComponents,
     contextualizations: {
     },
     resources: {
@@ -91,7 +91,7 @@ export default class ContentEditorContainer extends Component {
     });
   }
 
-  onContextualizationRequest = (contextualizationRequestType, selection) => {
+  onAssetRequest = (contextualizationRequestType, selection) => {
     this.setState({
       contextualizationRequestType,
       contextualizationRequest: true,
@@ -103,15 +103,15 @@ export default class ContentEditorContainer extends Component {
    * MOCK-RELATED
    */
 
-  onContextualizationMouseClick = (contextualizationId, contextualizationData, event) => {
+  onAssetMouseClick = (contextualizationId, contextualizationData, event) => {
     console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
   }
 
-  onContextualizationMouseOver = (contextualizationId, contextualizationData, event) => {
+  onAssetMouseOver = (contextualizationId, contextualizationData, event) => {
     console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
   }
 
-  onContextualizationMouseOut = (contextualizationId, contextualizationData, event) => {
+  onAssetMouseOut = (contextualizationId, contextualizationData, event) => {
     console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
   }
 
@@ -132,9 +132,9 @@ export default class ContentEditorContainer extends Component {
       id,
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
-      type: contextualizers[Object.keys(contextualizers)[0]].type,
+      // type: contextualizers[Object.keys(contextualizers)[0]].type,
     }
-    const newEditorState = insertContextualizationInEditor(editorState, contextualization);
+    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id});
     this.setState({
       lastInsertionType: this.state.contextualizationRequestType,
       contextualizationRequest: false,
@@ -190,7 +190,7 @@ export default class ContentEditorContainer extends Component {
   }
 
   deleteContextualization = id => {
-    deleteContextualizationFromEditor(this.state.editorState, ['inlineContextualization', 'blockContextualization'], id, newEditorState => {
+    deleteAssetFromEditor(this.state.editorState, ['inlineContextualization', 'blockContextualization'], id, newEditorState => {
       const contextualizations = {...this.state.contextualizations};
       delete contextualizations[id];
       this.setState({
@@ -204,7 +204,7 @@ export default class ContentEditorContainer extends Component {
    * Deletes from state contextualizations not used inside the editor
    */
   refreshContextualizationsList = () => {
-    const unused = getUnusedContextualizations(this.state.editorState, this.state.contextualizations);
+    const unused = getUnusedAssets(this.state.editorState, this.state.contextualizations);
     const contextualizations = {...this.state.contextualizations};
     unused.forEach(id => {
       delete contextualizations[id];
@@ -218,10 +218,10 @@ export default class ContentEditorContainer extends Component {
     
     const {
       onEditorChange,
-      onContextualizationRequest,
-      onContextualizationClick,
-      onContextualizationMouseOver,
-      onContextualizationMouseOut,
+      onAssetRequest,
+      onAssetClick,
+      onAssetMouseOver,
+      onAssetMouseOut,
       insertContextualization,
       updateContextualizerPages,
       updateResourceTitle,
@@ -232,8 +232,8 @@ export default class ContentEditorContainer extends Component {
     } = this;
     const {
       editorState,
-      inlineContextualizationComponents,
-      blockContextualizationComponents,
+      inlineAssetComponents,
+      blockAssetComponents,
       contextualizations,
       contextualizers,
       contextualizationRequest,
@@ -264,6 +264,20 @@ export default class ContentEditorContainer extends Component {
    const onDrop = (payload, selection) => {
     this.insertContextualization(EditorState.acceptSelection(this.state.editorState, selection));
    };
+
+   const assets = Object.keys(contextualizations)
+    .reduce((ass, id) => {
+      const contextualization = contextualizations[id];
+      return {
+        ...ass,
+        [id]: {
+          ...contextualization,
+          resource: resources[contextualization.resourceId],
+          contextualizer: contextualizers[contextualization.contextualizerId],
+          type: contextualizers[contextualization.contextualizerId].type
+        }
+      }
+    }, {});
     return (
       <div
         style={{
@@ -347,23 +361,24 @@ export default class ContentEditorContainer extends Component {
           <ContentEditor 
             ref={bindEditorRef}
             editorState={editorState}
+            assets={assets}
             contextualizations={contextualizations}
             contextualizers={contextualizers}
             resources={resources}
             lastInsertionType={lastInsertionType} 
             
             onEditorChange={onEditorChange}
-            onContextualizationRequest={onContextualizationRequest}
+            onAssetRequest={onAssetRequest}
             onDataChange={onDataChange}
 
-            onContextualizationClick={onContextualizationClick}
-            onContextualizationMouseOver={onContextualizationMouseOver}
-            onContextualizationMouseOut={onContextualizationMouseOut}
+            onAssetClick={onAssetClick}
+            onAssetMouseOver={onAssetMouseOver}
+            onAssetMouseOut={onAssetMouseOut}
 
             onDrop={onDrop}
             
-            inlineContextualizationComponents={inlineContextualizationComponents}
-            blockContextualizationComponents={blockContextualizationComponents}
+            inlineAssetComponents={inlineAssetComponents}
+            blockAssetComponents={blockAssetComponents}
             allowNotesInsertion={false}
             editorStyle={{
               position: 'relative',

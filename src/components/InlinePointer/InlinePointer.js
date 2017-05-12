@@ -6,48 +6,40 @@ const InlinePointer = (props) => {
   const {
     children,
     contentState,
-    contextualizer = {},
-    contextualizerId,
-    data,
-    onDataChange,
-    onInputBlur,
-    onInputFocus,
-    onContextualizationMouseOver,
-    onContextualizationMouseOut,
-    resource = {},
-    resourceId,
-    inlineContextualizationComponents
+    asset,
+    onChange,
+    onBlur,
+    onFocus,
+    onMouseOver,
+    onMouseOut,
+    components
   } = props;
 
-  const onMouseOver = (e) => {
-    if (typeof onContextualizationMouseOver === 'function') {
-      onContextualizationMouseOver(data.contextualization.id, data.contextualization, e);
+  const onMOver = (e) => {
+    if (typeof onMouseOver === 'function') {
+      onMouseOver(asset.id, asset, e);
     }
   };
 
-  const onMouseOut = (e) => {
-    if (typeof onContextualizationMouseOut === 'function') {
-      onContextualizationMouseOut(data.contextualization.id, data.contextualization, e);
+  const onMOut = (e) => {
+    if (typeof onMouseOut === 'function') {
+      onMouseOut(asset.id, asset, e);
     }
   };
-  const Component = (contextualizer.type && inlineContextualizationComponents[contextualizer.type]) ||
+  const Component = (asset.type && components[asset.type]) ||
     <span />;
   return (
     <span
       className="peritext-draft-InlinePointer"
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
+      onMouseOver={onMOver}
+      onMouseOut={onMOut}
     >
       <Component
+        asset={asset}
         contentState={contentState}
-        contextualizer={contextualizer}
-        contextualizerId={contextualizerId}
-        data={data}
-        onDataChange={onDataChange}
-        onInputBlur={onInputBlur}
-        onInputFocus={onInputFocus}
-        resource={resource}
-        resourceId={resourceId}
+        onChange={onChange}
+        onBlur={onBlur}
+        onFocus={onFocus}
       >
         {children}
       </Component>

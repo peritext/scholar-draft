@@ -6,21 +6,20 @@ import ContentEditor from '../ContentEditor/ContentEditor';
 
 const NoteContainer = ({
   note,
-  contextualizations,
-  contextualizers,
-  resources,
+  assets,
+  
   lastInsertionType,
   onEditorChange,
-  onContextualizationRequest,
+  onAssetRequest,
   onDataChange,
   onClickDelete,
   onDrop,
 
-  onContextualizationClick,
-  onContextualizationMouseOver,
-  onContextualizationMouseOut,
-  inlineContextualizationComponents,
-  blockContextualizationComponents,
+  onAssetClick,
+  onAssetMouseOver,
+  onAssetMouseOut,
+  inlineAssetComponents,
+  blockAssetComponents,
   editorStyle
 }) => (
   <section 
@@ -33,22 +32,20 @@ const NoteContainer = ({
     <div className="note-body">
       <ContentEditor 
         editorState={note.editorState}
-        contextualizations={contextualizations}
-        contextualizers={contextualizers}
-        resources={resources}
+        assets={assets}
         lastInsertionType={lastInsertionType} 
         
         onEditorChange={onEditorChange}
-        onContextualizationRequest={onContextualizationRequest}
+        onAssetRequest={onAssetRequest}
         onDataChange={onDataChange}
         onDrop={onDrop}
 
-        onContextualizationClick={onContextualizationClick}
-        onContextualizationMouseOver={onContextualizationMouseOver}
-        onContextualizationMouseOut={onContextualizationMouseOut}
+        onAssetClick={onAssetClick}
+        onAssetMouseOver={onAssetMouseOver}
+        onAssetMouseOut={onAssetMouseOut}
         
-        inlineContextualizationComponents={inlineContextualizationComponents}
-        blockContextualizationComponents={blockContextualizationComponents}
+        inlineAssetComponents={inlineAssetComponents}
+        blockAssetComponents={blockAssetComponents}
         allowNotesInsertion={false}
         editorStyle={editorStyle}
       />

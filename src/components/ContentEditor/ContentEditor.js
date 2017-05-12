@@ -31,7 +31,7 @@ import {
 } from 'draft-js';
 
 import {
-  INLINE_CONTEXTUALIZATION,
+  INLINE_ASSET,
   NOTE_POINTER
 } from '../../constants';
 
@@ -119,34 +119,32 @@ export default class ContentEditor extends Component {
      * State-related props
      */
     editorState: PropTypes.object,
-    contextualizations: PropTypes.object,
-    resources: PropTypes.object,
-    contextualizers: PropTypes.object,
-    inlineContextualizationComponents: PropTypes.object,
-    blockContextualizationComponents: PropTypes.object,
+    assets: PropTypes.object,
+    inlineAssetComponents: PropTypes.object,
+    blockAssetComponents: PropTypes.object,
     /*
      * Method props
      */
     onEditorChange: PropTypes.func,
     onNotesOrderChange: PropTypes.func,
-    onContextualizationRequest: PropTypes.func,
+    onAssetRequest: PropTypes.func,
     onNoteAdd: PropTypes.func,
-    onContextualizationClick: PropTypes.func,
-    onContextualizationMouseOver: PropTypes.func,
-    onContextualizationMouseOut: PropTypes.func,
+    onAssetClick: PropTypes.func,
+    onAssetMouseOver: PropTypes.func,
+    onAssetMouseOut: PropTypes.func,
     /*
      * Parametrization props
      */
     editorClass: PropTypes.string,
     editorStyle: PropTypes.object,
     allowFootnotesInsertion: PropTypes.bool,
-    allowInlineContextualizationInsertion: PropTypes.bool,
-    allowBlockContextualizationInsertion: PropTypes.bool,
+    allowInlineAssetInsertion: PropTypes.bool,
+    allowBlockAssetInsertion: PropTypes.bool,
   }
 
 
   static defaultProps = {
-    blockContextualizationComponents: {},
+    blockAssetComponents: {},
   };
 
   constructor(props) {
@@ -233,7 +231,7 @@ export default class ContentEditor extends Component {
     }
   }
 
-  findInlineContextualizations = (contentBlock, callback, contentState) => {
+  findInlineAsset = (contentBlock, callback, contentState) => {
     if (contentState === undefined) {
       contentState = this.props.editorState.getCurrentContent();
     }
@@ -242,44 +240,37 @@ export default class ContentEditor extends Component {
         const entityKey = character.getEntity();
         return (
           entityKey !== null &&
-          contentState.getEntity(entityKey).getType() === INLINE_CONTEXTUALIZATION
+          contentState.getEntity(entityKey).getType() === INLINE_ASSET
         );
       },
       (start, end) => {
         const {
           resources,
-          contextualizers,
-          contextualizations,
-          onContextualizationMouseOver,
-          onContextualizationMouseOut,
+          assets,
+          onAssetMouseOver: onMouseOver,
+          onAssetMouseOut: onMouseOut,
           onDataChange,
-          inlineContextualizationComponents
+          inlineAssetComponents: components
         } = this.props;
 
         const {
-          onInputFocus,
-          onInputBlur
+          onInputFocus: onFocus,
+          onInputBlur: onBlur
         } = this;
-
         const entityKey = contentBlock.getEntityAt(start);
         const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
-
-        const id = data.data.contextualization.id;
-        const contextualization = contextualizations[id];
+        const id = data.data.asset.id;
+        const asset = assets[id];
         let props = {};
-        if (contextualization) {
+        if (asset) {
           props = {
-            ...data,
-            resource: resources[contextualization.resourceId],
-            contextualizer: contextualizers[contextualization.contextualizerId],
-            resourceId: contextualization.resourceId,
-            contextualizerId: contextualization.contextualizerId,
-            onContextualizationMouseOver,
-            onContextualizationMouseOut,
-            inlineContextualizationComponents,
-            onDataChange,
-            onInputFocus,
-            onInputBlur
+            asset,
+            onMouseOver,
+            onMouseOut,
+            components,
+            onChange: onDataChange,
+            onFocus,
+            onBlur
           };
         }
         callback(start, end, props);
@@ -327,16 +318,13 @@ export default class ContentEditor extends Component {
 
   createDecorator = () => 
      new MultiDecorator([
-       new SimpleDecorator(this.findInlineContextualizations, InlinePointer),
+       new SimpleDecorator(this.findInlineAsset, InlinePointer),
        new SimpleDecorator(this.findNotePointers, NotePointer),
      ]);
 
   forceRender = (props) => {
     const editorState = props.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
-    const {
-      contextualizers
-    } = props;
 
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
     const selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
@@ -377,39 +365,33 @@ export default class ContentEditor extends Component {
       } catch (e) {
         return;
       }
-      const { blockContextualizationComponents } = this.props;
-      const component = blockContextualizationComponents[data.data.contextualization.type];
+      const id = data.data.asset.id;
+      const asset = this.props.assets[id];
+      const { blockAssetComponents } = this.props;
+      const component = blockAssetComponents[asset.type];
       const {
-        resources,
-        contextualizers,
-        contextualizations,
-        onDataChange,
-        onContextualizationMouseOver,
-        onContextualizationMouseOut
+        assets,
+        onDataChange: onChange,
+        onAssetMouseOver: onMouseOver,
+        onAssetMouseOut: onMouseOut
       } = this.props;
 
       const {
-        onInputFocus,
-        onInputBlur
+        onInputFocus: onFocus,
+        onInputBlur: onBlur
       } = this;
 
-      const id = data.data.contextualization.id;
-      const contextualization = contextualizations[id];
-      if (contextualization) {
+      if (asset) {
         return {
           component,
           editable: false,
           props: {
-            ...data,
-            resource: resources[contextualization.resourceId],
-            contextualizer: contextualizers[contextualization.contextualizerId],
-            resourceId: contextualization.resourceId,
-            contextualizerId: contextualization.contextualizerId,
-            onDataChange,
-            onInputFocus,
-            onInputBlur,
-            onContextualizationMouseOver,
-            onContextualizationMouseOut
+            asset,
+            onFocus,
+            onBlur,
+            onChange,
+            onMouseOver,
+            onMouseOut,
           },
         };
       }
@@ -510,9 +492,7 @@ export default class ContentEditor extends Component {
     } = this;
 
     if (this.props.editorState !== prevProps.editorState 
-      || prevProps.contextualizers !== this.props.contextualizers
-      || prevProps.contextualizations !== this.props.contextualizations
-      || prevProps.resources !== this.props.resources
+      || prevProps.assets !== this.props.assets
       || prevProps.readOnly !== this.props.readOnly
       || prevProps.notes !== this.props.notes
     ) {
@@ -523,7 +503,7 @@ export default class ContentEditor extends Component {
     if (
       this.props.editorState !== prevProps.editorState && 
       this.editor && 
-      this.props.lastInsertionType === INLINE_CONTEXTUALIZATION
+      this.props.lastInsertionType === INLINE_ASSET
     ) {
       this.editor.focus();
     }
@@ -537,24 +517,14 @@ export default class ContentEditor extends Component {
 
       placeholder = 'write your text',
 
-      contextualizations,
-      contextualizers,
-      resources,
-
       allowNotesInsertion = false,
-      allowInlineContextualization = true,
-      allowBlockContextualization = true,
+      allowInlineAsset = true,
+      allowBlockAsset = true,
 
-      blockContextualizationComponents,
+      blockAssetComponents,
       inlineButtons,
 
-      onContextualizationRequest,
-      // onContextualizationClick,
-      // onContextualizationMouseOver,
-      // onContextualizationMouseOut,
-
-      // onNoteAdd,
-
+      onAssetRequest,
       editorStyle,
       ...otherProps
     } = this.props;
@@ -618,12 +588,12 @@ export default class ContentEditor extends Component {
           editorState={realEditorState}
           updateEditorState={onChange}
 
-          allowContextualizations={{
-            inline: allowInlineContextualization,
-            block: allowBlockContextualization
+          allowAssets={{
+            inline: allowInlineAsset,
+            block: allowBlockAsset
           }}
           allowNotesInsertion={allowNotesInsertion}
-          onContextualizationClick={onContextualizationRequest}
+          onAssetRequest={onAssetRequest}
           onNoteAdd={onNoteAdd}
         />
         <Editor
