@@ -62,8 +62,7 @@ export function insertAssetInEditor(
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
 
-  const isInEmptyBlock = currentContent.getBlockForKey(activeSelection.getStartKey()).getText().trim().length === 0;
-
+  const isInEmptyBlock = currentContent.getBlockForKey(inputSelection.getStartKey()).getText().trim().length === 0;
   const insertionType = isInEmptyBlock ? BLOCK_ASSET : INLINE_ASSET;
   let newContentState = editorState.getCurrentContent().createEntity(
       insertionType,
@@ -92,7 +91,20 @@ export function insertAssetInEditor(
         newEntityKey,
         ' '
       );
-    updatedEditor = EditorState.acceptSelection(updatedEditor, thatSelection);
+    const newContent = updatedEditor.getCurrentContent();
+    const lastEntity = newContent.getEntity(newEntityKey);
+    const blockMap = newContent.getBlockMap().toJS();
+    const blockE = Object.keys(blockMap).map(blockId => blockMap[blockId])
+      .find(block => {
+        if (block.type === 'atomic') {
+          return block.characterList.find(char => char.entity && char.entity === newEntityKey);
+        }
+      });
+    const block = newContent.getBlockAfter(blockE.key);
+    const finalSelection = SelectionState.createEmpty(block.getKey());
+
+    // const finalSelection = block.getSelectionAfter();
+    updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
   } else {
     const anchorKey = thatSelection.getAnchorKey();
     const currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -188,6 +200,7 @@ export function insertNoteInEditor(
   newContentState = Modifier.applyEntity(newContentState, endSelection, newEntityKey);
 
   updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
+  updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;
 }
 

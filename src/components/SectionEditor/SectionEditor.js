@@ -23,7 +23,6 @@ export default class SectionEditor extends Component {
       mainEditorState,
       notes,
       assets,
-      lastInsertionType,
       
       onEditorChange,
       onNoteAdd,
@@ -44,8 +43,8 @@ export default class SectionEditor extends Component {
 
     const renderNoteEditor = (noteId, order) => {
       const onThisNoteEditorChange = editor => onEditorChange('note', noteId, editor);
-      const onNoteAssetRequest = (assetRequestType, selection) => {
-        onAssetRequest('note', noteId, assetRequestType, selection);
+      const onNoteAssetRequest = (selection) => {
+        onAssetRequest('note', noteId, selection);
       };
       const onClickDelete = () => {
         if (typeof this.props.onNoteDelete === 'function') {
@@ -63,7 +62,6 @@ export default class SectionEditor extends Component {
           key={noteId}
           note={note}
           assets={assets}
-          lastInsertionType={lastInsertionType}
 
           onEditorChange={onThisNoteEditorChange}
           onAssetRequest={onNoteAssetRequest}
@@ -82,8 +80,8 @@ export default class SectionEditor extends Component {
     };
 
     const onMainEditorChange = editor => onEditorChange('main', undefined, editor);
-    const onMainAssetRequest = (assetRequestType, selection) => {
-      onAssetRequest('main', undefined, assetRequestType, selection);
+    const onMainAssetRequest = (selection) => {
+      onAssetRequest('main', undefined, selection);
     };
 
     const onMainEditorDrop = (payload, selection) => {
@@ -107,7 +105,6 @@ export default class SectionEditor extends Component {
             editorState={mainEditorState}
             notes={notes}
             assets={assets}
-            lastInsertionType={lastInsertionType} 
             
             onEditorChange={onMainEditorChange}
             onDrop={onMainEditorDrop}

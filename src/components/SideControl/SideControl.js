@@ -53,19 +53,7 @@ export default class SideControl extends Component {
 
     const handleFigureClick = () => {
       const currentSelection = editorState && editorState.getSelection();
-      let insertionType = BLOCK_ASSET;
-      if (currentSelection) {
-        const contentState = editorState.getCurrentContent();
-        const selectedBlock = contentState.getBlockForKey(currentSelection.getAnchorKey());
-        if (selectedBlock && 
-          selectedBlock.getText().length > 0
-        ) {
-          insertionType = INLINE_ASSET;
-        } else {
-          insertionType = BLOCK_ASSET;
-        }
-      }
-      onAssetRequest(insertionType, currentSelection);
+      onAssetRequest(currentSelection);
     };
 
     const bindToolbar = (toolbar) => {

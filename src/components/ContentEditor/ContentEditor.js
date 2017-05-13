@@ -375,6 +375,9 @@ export default class ContentEditor extends Component {
       }
       const id = data.data.asset.id;
       const asset = this.props.assets[id];
+      if (!asset) {
+        return;
+      }
       const { blockAssetComponents } = this.props;
       const AssetComponent = blockAssetComponents[asset.type] || <div />;
       const {
@@ -510,11 +513,9 @@ export default class ContentEditor extends Component {
       forceRender(this.props);
     }
 
-    // force focus if last insertion type is inline
     if (
       this.props.editorState !== prevProps.editorState && 
-      this.editor && 
-      this.props.lastInsertionType === INLINE_ASSET
+      this.editor
     ) {
       this.editor.focus();
     }
@@ -583,9 +584,9 @@ export default class ContentEditor extends Component {
       this.updateSelection();
     };
 
-    const onAssetRequest = (contextualizationRequestType, selection) => {
+    const onAssetRequest = (selection) => {
       if (typeof onAssetRequestUpstream === 'function') {
-        onAssetRequestUpstream(contextualizationRequestType, selection);
+        onAssetRequestUpstream(selection);
       }
     }
     return (
