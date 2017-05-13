@@ -350,7 +350,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     if (notes[noteId]) {
       notes[noteId].order = order;
     } else {
-      console.log('could note attribute order to note', noteId, ' in ', notes);
+      console.log('could note attribute order to note', noteId, ' in ', notes, notes[noteId]);
     }
   });
   // filter unused notes
@@ -443,4 +443,10 @@ export function getUnusedAssets(editorState, assets) {
   return Object
   .keys(assets)
   .filter(id => getAssetEntity(editorState, id) === undefined);
+}
+
+export function getUsedAssets(editorState, assets) {
+  return Object
+  .keys(assets)
+  .filter(id => getAssetEntity(editorState, id) !== undefined);
 }

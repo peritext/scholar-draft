@@ -27,8 +27,8 @@ const InlineAssetContainer = (props) => {
     }
   };
   const Component = (asset && asset.type && components[asset.type]) ||
-    <span />;
-  return (
+    null;
+  return Component ? (
     <span
       className="scholar-draft-InlineAssetContainer"
       onMouseOver={onMOver}
@@ -44,7 +44,7 @@ const InlineAssetContainer = (props) => {
         {children}
       </Component>
     </span>
-  );
+  ) : null;
 };
 
 export default InlineAssetContainer;

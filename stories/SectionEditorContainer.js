@@ -23,6 +23,7 @@ const {
   insertAssetInEditor,
   deleteAssetFromEditor,
   deleteNoteFromEditor,
+  getUsedAssets,
   getUnusedAssets,
   updateNotesFromEditor,
   insertNoteInEditor,
@@ -240,20 +241,25 @@ export default class ContentEditorContainer extends Component {
 
   deleteContextualization = (id) => {
     const contextualizations = {...this.state.contextualizations};
-    const notes = this.state.notes;
+    let notes = this.state.notes;
     deleteAssetFromEditor(this.state.mainEditorState, id, newEditorState => {
       mapSeries(notes, (note, cb) => {
         deleteAssetFromEditor(note.editorState, id, newNoteEditorState => {
           cb(null, {
             ...note,
+            id: note.id,
             editorState: newNoteEditorState
           });
         });
       }, (err, finalNotes) => {
         delete contextualizations[id];
+        notes = finalNotes.reduce((final, note) => ({
+          ...final,
+          [note.id]: note
+        }), {});
         this.setState({
           mainEditorState: newEditorState,
-          notes: finalNotes,
+          notes,
           contextualizations
         });
       });
@@ -264,21 +270,19 @@ export default class ContentEditorContainer extends Component {
    * Deletes from state contextualizations not used inside the editor
    */
   refreshContextualizationsList = () => {
-    // in main
-    let unused = getUnusedAssets(this.state.mainEditorState, this.state.contextualizations);
     const contextualizations = {...this.state.contextualizations};
-    unused.forEach(id => {
-      delete contextualizations[id];
-    });
+    // in main
+    let used = getUsedAssets(this.state.mainEditorState, contextualizations);
     // in notes
     Object.keys(this.state.notes)
     .forEach(noteId => {
       const noteEditor = this.state.notes[noteId].editorState;
-      unused = getUnusedAssets(noteEditor, this.state.contextualizations);
-      unused.forEach(id => {
-        delete contextualizations[id];
-      });
-    })
+      used = used.concat(getUsedAssets(noteEditor, contextualizations))
+    });
+    const unusedAssets = Object.keys(contextualizations).filter(id => used.indexOf(id) === -1);
+    unusedAssets.forEach(id => {
+      delete contextualizations[id];
+    });
     this.setState({
       contextualizations
     });
