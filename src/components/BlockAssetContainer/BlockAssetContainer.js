@@ -19,12 +19,14 @@ const BlockAssetContainer = (props) => {
   } = blockProps;
 
   const onMOver = (e) => {
+    e.stopPropagation();
     if (typeof onMouseOver === 'function') {
       onMouseOver(asset.id, asset, e);
     }
   };
 
   const onMOut = (e) => {
+    e.stopPropagation();
     if (typeof onMouseOut === 'function') {
       onMouseOut(asset.id, asset, e);
     }

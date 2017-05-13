@@ -133,27 +133,27 @@ export default class ContentEditorContainer extends Component {
    */
 
   onAssetMouseClick = (contextualizationId, contextualizationData, event) => {
-    console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
+    // console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
   }
 
   onAssetMouseOver = (contextualizationId, contextualizationData, event) => {
-    console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
+    // console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
   }
 
   onAssetMouseOut = (contextualizationId, contextualizationData, event) => {
-    console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
+    // console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
   }
 
   onNotePointerMouseOver = (noteId, event) => {
-    console.info('on note pointer mouse over', noteId, event);
+    // console.info('on note pointer mouse over', noteId, event);
   }
 
   onNotePointerMouseOut = (noteId, event) => {
-    console.info('on note pointer mouse out', noteId, event);
+    // console.info('on note pointer mouse out', noteId, event);
   }
 
   onNotePointerMouseClick = (noteId, event) => {
-    console.info('on note pointer mouse click', noteId, event);
+    // console.info('on note pointer mouse click', noteId, event);
   }
 
   insertContextualization = (contentId, inputEditorState) => {

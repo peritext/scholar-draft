@@ -152,7 +152,7 @@ export default class ContentEditor extends Component {
     super(props);
   }
 
-  focus = () => {
+  focus = (e) => {
     if (this.props.readOnly) return;
 
     if (!this.props.readOnly && this.state.readOnly) {
@@ -160,13 +160,17 @@ export default class ContentEditor extends Component {
         readOnly: false
       })
     }
+
+    const editorNode = this.editor && this.editor.refs.editor;
+    const editorBounds = editorNode.getBoundingClientRect();
+    this.setState({
+      editorBounds,
+    });
+
     setTimeout(() => {
-      const editorNode = this.editor && this.editor.refs.editor;
-      const editorBounds = editorNode.getBoundingClientRect();
-      this.setState({
-        editorBounds,
-      });
-      editorNode.focus();
+      if (!this.state.readOnly) {
+        editorNode.focus();
+      }
     }, 1);
   };
 
@@ -263,7 +267,7 @@ export default class ContentEditor extends Component {
         } = this.props;
 
         const {
-          onInputFocus: onFocus,
+          onAssetFocus: onFocus,
           onInputBlur: onBlur
         } = this;
         const entityKey = contentBlock.getEntityAt(start);
@@ -355,13 +359,15 @@ export default class ContentEditor extends Component {
   };
 
 
-  onInputFocus = () => {
+  onAssetFocus = (e) => {
+    e.stopPropagation();
     this.setState({
       readOnly: true
     });
   }
 
-  onInputBlur = () => {
+  onInputBlur = (e) => {
+    e.stopPropagation();
     this.setState({
       readOnly: false
     });
@@ -395,7 +401,7 @@ export default class ContentEditor extends Component {
       } = this.props;
 
       const {
-        onInputFocus: onFocus,
+        onAssetFocus: onFocus,
         onInputBlur: onBlur
       } = this;
       if (asset) {
