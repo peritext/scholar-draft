@@ -1,16 +1,14 @@
 import React from 'react';
 
-const BlockContainer = (props) => {
+const BlockCitation = (props) => {
   const {
     children,
-    blockProps: {
-      asset,
-      onMouseOver,
-      onMouseOut,
-      onChange,
-      onFocus,
-      onBlur
-    },
+    asset,
+    onMouseOver,
+    onMouseOut,
+    onChange,
+    onFocus,
+    onBlur
   } = props;
 
   const {
@@ -38,19 +36,6 @@ const BlockContainer = (props) => {
     })
   }
 
-  const onMOver = e => {
-    if (typeof onMouseOver === 'function') {
-      onMouseOver(asset.id, asset.contextualization, e);
-    }
-  }
-
-  const onMOut = e => {
-    if (typeof onMouseOut === 'function') {
-      onMouseOut(asset.id, asset.contextualization, e);
-    }
-  }
-
-
   const exampleRendering = type => {
     switch(type) {
       case 'citation':
@@ -76,19 +61,28 @@ const BlockContainer = (props) => {
     }
   }
   return (
-    <div 
-      className="citation-block"
-      onMouseOver={onMOver}
-      onMouseOut={onMOut}
-    >
-      <p>
-        {exampleRendering(contextualizer.type)}
-      </p>
-      <p>{children}</p>
+    <div className="citation-block">
+      <span><i>
+            <input
+              value={resource.title}
+              onChange={onResourceTitleChange}
+              onFocus={onFocus}
+              onBlur={onBlur}
+            />
+          </i>. <i>pp. <input
+              value={contextualizer.pages}
+              onChange={onContextualizerPageChange}
+              onFocus={onFocus}
+              onBlur={onBlur}
+            /></i>. 
+          {
+            resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
+          }
+      </span>
     </div>
   );
 };
 
-export default BlockContainer;
+export default BlockCitation;
 
 

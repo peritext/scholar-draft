@@ -29,15 +29,15 @@ const {
   updateAssetsFromEditors
 } = utils;
 
-import BlockContainer from './ExampleContextualizationBlock';
-import InlinePointer from './ExampleInlinePointer';
+import ExampleBlockCitation from './ExampleBlockCitation';
+import ExampleInlineCitation from './ExampleInlineCitation';
 
 const inlineAssetComponents = {
-  citation: InlinePointer
+  citation: ExampleInlineCitation
 };
 
 const blockAssetComponents = {
-  citation: BlockContainer
+  citation: ExampleBlockCitation
 };
 
 export default class ContentEditorContainer extends Component {
@@ -103,12 +103,10 @@ export default class ContentEditorContainer extends Component {
       const notes = updateNotesFromEditor(editorState, this.state.notes);
       this.setState({
         mainEditorState: editorState,
-        // contextualizations: {...newContextualizations},
         notes
       });
     } else {
       this.setState({
-        // contextualizations,
         notes: {
             ...this.state.notes,
             [noteId]: {
@@ -164,7 +162,6 @@ export default class ContentEditorContainer extends Component {
       notes,
       contextualizationRequestType,
       contextualizationRequestSelection,
-      // contextualizationRequestContentId,
       resources,
       contextualizers,
       contextualizations
@@ -182,7 +179,7 @@ export default class ContentEditorContainer extends Component {
     if (!editorState){
       editorState = contextualizationRequestContentId === 'main' ? mainEditorState : notes[contextualizationRequestContentId].editorState;
     }
-    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id});
+    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, contextualizationRequestSelection);
     const newState = {
       lastInsertionType: this.state.contextualizationRequestType,
       contextualizationRequest: false,

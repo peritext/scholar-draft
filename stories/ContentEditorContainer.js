@@ -29,15 +29,15 @@ const {
   getUnusedAssets 
 } = utils;
 
-import BlockContainer from './ExampleContextualizationBlock';
-import InlinePointer from './ExampleInlinePointer';
+import ExampleBlockCitation from './ExampleBlockCitation';
+import ExampleInlineCitation from './ExampleInlineCitation';
 
 const inlineAssetComponents = {
-  citation: InlinePointer
+  citation: ExampleInlineCitation
 };
 
 const blockAssetComponents = {
-  citation: BlockContainer
+  citation: ExampleBlockCitation
 };
 
 export default class ContentEditorContainer extends Component {
@@ -134,7 +134,7 @@ export default class ContentEditorContainer extends Component {
       contextualizerId: Object.keys(contextualizers)[0],
       // type: contextualizers[Object.keys(contextualizers)[0]].type,
     }
-    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id});
+    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, contextualizationRequestSelection);
     this.setState({
       lastInsertionType: this.state.contextualizationRequestType,
       contextualizationRequest: false,

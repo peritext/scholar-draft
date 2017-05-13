@@ -1,6 +1,6 @@
 import React from 'react';
 
-const InlinePointer = (props) => {
+const InlineCitation = (props) => {
   const {
     children,
     contentState,
@@ -54,4 +54,4 @@ const InlinePointer = (props) => {
   );
 };
 
-export default InlinePointer;
+export default InlineCitation;

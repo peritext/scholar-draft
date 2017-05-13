@@ -37,7 +37,9 @@ import {
 
 import SideControl from '../SideControl/SideControl';
 import PopoverControl from '../PopoverControl/PopoverControl';
-import InlinePointer from '../InlinePointer/InlinePointer';
+
+import InlineAssetContainer from '../InlineAssetContainer/InlineAssetContainer';
+import BlockAssetContainer from '../BlockAssetContainer/BlockAssetContainer';
 import NotePointer from '../NotePointer/NotePointer';
 
 import './ContentEditor.scss';
@@ -318,7 +320,7 @@ export default class ContentEditor extends Component {
 
   createDecorator = () => 
      new MultiDecorator([
-       new SimpleDecorator(this.findInlineAsset, InlinePointer),
+       new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
        new SimpleDecorator(this.findNotePointers, NotePointer),
      ]);
 
@@ -368,7 +370,7 @@ export default class ContentEditor extends Component {
       const id = data.data.asset.id;
       const asset = this.props.assets[id];
       const { blockAssetComponents } = this.props;
-      const component = blockAssetComponents[asset.type];
+      const AssetComponent = blockAssetComponents[asset.type] || <div />;
       const {
         assets,
         onDataChange: onChange,
@@ -380,10 +382,9 @@ export default class ContentEditor extends Component {
         onInputFocus: onFocus,
         onInputBlur: onBlur
       } = this;
-
       if (asset) {
         return {
-          component,
+          component: BlockAssetContainer,
           editable: false,
           props: {
             asset,
@@ -392,6 +393,7 @@ export default class ContentEditor extends Component {
             onChange,
             onMouseOver,
             onMouseOut,
+            AssetComponent
           },
         };
       }
