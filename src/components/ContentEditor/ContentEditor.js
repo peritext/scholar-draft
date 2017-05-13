@@ -526,6 +526,8 @@ export default class ContentEditor extends Component {
       const payloadSel = selection.merge({
         anchorOffset
       });
+
+      console.log('anchor offset', anchorOffset);
       const newContentState = Modifier.replaceText(
         this.props.editorState.getCurrentContent(),
         payloadSel,

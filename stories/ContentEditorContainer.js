@@ -276,6 +276,9 @@ export default class ContentEditorContainer extends Component {
     const startDrag = (e) => {
        e.dataTransfer.dropEffect = 'copy';
        e.dataTransfer.setData('text', 'TEST');
+       this.setState({
+        readOnly: false
+       });
     };
 
    const onDrop = (payload, selection) => {
