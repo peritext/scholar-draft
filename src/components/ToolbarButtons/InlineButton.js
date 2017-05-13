@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { RichUtils } from 'draft-js';
 import PropTypes from 'prop-types';
 
+import './ButtonStyles.scss';
+
 const styles = {
   iconContainer: {
     display: 'inline-block',
@@ -77,9 +79,11 @@ class InlineButton extends Component {
 
     const selected = this.isSelected(editorState, inlineStyleType); 
     const fill = selected ? iconSelectedColor : iconColor;
+    const className = 'scholar-draft-InlineButton' + (selected ? ' selected': '');
 
     return (<div
       style={styles.iconContainer}
+      className={className}
       onMouseDown={(e) => {
         e.preventDefault();
         updateEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyleType));

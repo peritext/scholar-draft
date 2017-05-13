@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import getUnboundedScrollPosition from 'fbjs/lib/getUnboundedScrollPosition.js';
 import Style from 'fbjs/lib/Style.js';
 
 import { Map } from 'immutable';
@@ -70,7 +69,7 @@ const isParentOf = (ele, maybeParent) => {
   return false;
 };
 
-const popoverSpacing = 30;
+const popoverSpacing = 50;
 
 
 function checkCharacterForState(editorState, character) {
@@ -156,14 +155,19 @@ export default class ContentEditor extends Component {
   focus = () => {
     if (this.props.readOnly) return;
 
-    const editorNode = this.editor.refs.editor;
-    const editorBounds = editorNode.getBoundingClientRect();
-    this.setState({
-      editorBounds,
-    });
-
-    const scrollParent = Style.getScrollParent(editorNode);
-    editorNode.focus(getUnboundedScrollPosition(scrollParent));
+    if (!this.props.readOnly && this.state.readOnly) {
+      this.setState({
+        readOnly: false
+      })
+    }
+    setTimeout(() => {
+      const editorNode = this.editor && this.editor.refs.editor;
+      const editorBounds = editorNode.getBoundingClientRect();
+      this.setState({
+        editorBounds,
+      });
+      editorNode.focus();
+    }, 1);
   };
 
   updateSelection = () => {
@@ -234,6 +238,9 @@ export default class ContentEditor extends Component {
   }
 
   findInlineAsset = (contentBlock, callback, contentState) => {
+    if (!this.props.editorState) {
+      callback(null);
+    }
     if (contentState === undefined) {
       contentState = this.props.editorState.getCurrentContent();
     }
@@ -409,14 +416,22 @@ export default class ContentEditor extends Component {
     }
   }
 
-  onBlur = () => {
+  onBlur = (e) => {
 
-    this.inlineToolbar.toolbar.display = 'none';
-    this.sideControl.toolbar.display = 'none';
+    if (this.inlineToolbar) {
+      this.inlineToolbar.toolbar.display = 'none';
+    }
+    if (this.sideControl) {
+      this.sideControl.toolbar.display = 'none';
+    }
+
+    this.setState({
+      readOnly: true
+    });
 
     const { onBlur } = this.props;
     if (onBlur) {
-      onBlur.apply(this, arguments);
+      onBlur(e);
     }
   };
 

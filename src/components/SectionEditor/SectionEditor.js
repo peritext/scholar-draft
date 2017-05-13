@@ -76,7 +76,7 @@ export default class SectionEditor extends Component {
           onAssetMouseOut={onAssetMouseOut}
           inlineAssetComponents={inlineAssetComponents}
           blockAssetComponents={blockAssetComponents}
-          editorStyle={editorStyles.noteEditor}
+          editorStyle={editorStyles && editorStyles.noteEditor}
         />
       );
     };
@@ -90,18 +90,7 @@ export default class SectionEditor extends Component {
       onDrop('main', payload, selection);
     };
     return (
-      <div className={editorState}>
-        <aside className="notes-container">
-          {
-            Object.keys(notes || {})
-            .sort((a, b) => {
-              if (notes[a].order > notes[b].order) {
-                return 1;
-              } return -1;
-            })
-            .map(renderNoteEditor)
-          }
-        </aside>
+      <div className={editorClass}>
         <section className="main-container-editor">
           <ContentEditor 
             editorState={mainEditorState}
@@ -125,9 +114,20 @@ export default class SectionEditor extends Component {
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
             allowNotesInsertion
-            editorStyle={editorStyles.mainEditor}
+            editorStyle={editorStyles && editorStyles.mainEditor}
           />
         </section>
+        <aside className="notes-container">
+          {
+            Object.keys(notes || {})
+            .sort((a, b) => {
+              if (notes[a].order > notes[b].order) {
+                return 1;
+              } return -1;
+            })
+            .map(renderNoteEditor)
+          }
+        </aside>
       </div>
     );
   }

@@ -11,7 +11,7 @@ const NotePointer = ({
   onMouseOut,
   onMouseClick
 }) => (
-  <span
+  <sup
     className="scholar-draft-NotePointer"
     onMouseOver={onMouseOver}
     onMouseOut={onMouseOut}
@@ -19,7 +19,7 @@ const NotePointer = ({
   >
     <span>{note && note.order || '°'}</span>
     {children}
-  </span>
+  </sup>
   );
 
 

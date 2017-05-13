@@ -59,6 +59,8 @@ class BlockButton extends Component {
     const selected = this.isSelected(editorState, blockType); 
     const fill = selected ? iconSelectedColor : iconColor;
 
+    const className = 'scholar-draft-BlockButton' + (selected ? ' selected': '');
+
     return (
     <div
       style={styles.iconContainer}
@@ -69,7 +71,7 @@ class BlockButton extends Component {
       {...otherProps}
     >
       {React.Children.map(this.props.children, 
-        c => React.cloneElement(c, { fill, selected }))}
+        c => React.cloneElement(c, { fill, selected, className }))}
     </div>
     );
   }

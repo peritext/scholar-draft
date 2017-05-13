@@ -26,7 +26,7 @@ const InlineAssetContainer = (props) => {
       onMouseOut(asset.id, asset, e);
     }
   };
-  const Component = (asset.type && components[asset.type]) ||
+  const Component = (asset && asset.type && components[asset.type]) ||
     <span />;
   return (
     <span

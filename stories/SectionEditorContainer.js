@@ -241,9 +241,9 @@ export default class ContentEditorContainer extends Component {
   deleteContextualization = (id) => {
     const contextualizations = {...this.state.contextualizations};
     const notes = this.state.notes;
-    deleteAssetFromEditor(this.state.mainEditorState, ['inlineContextualization', 'blockContextualization'], id, newEditorState => {
+    deleteAssetFromEditor(this.state.mainEditorState, id, newEditorState => {
       mapSeries(notes, (note, cb) => {
-        deleteAssetFromEditor(note.editorState, ['inlineContextualization', 'blockContextualization'], id, newNoteEditorState => {
+        deleteAssetFromEditor(note.editorState, id, newNoteEditorState => {
           cb(null, {
             ...note,
             editorState: newNoteEditorState
@@ -293,7 +293,7 @@ export default class ContentEditorContainer extends Component {
       ...this.state.notes,
       [id]: {
         id,
-        editorState: undefined
+        editorState: EditorState.createEmpty()
       }
     };
     this.setState({
@@ -368,7 +368,7 @@ export default class ContentEditorContainer extends Component {
 
     const onDrop = (contentId, payload, selection) => {
       const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
-      this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
+      this.insertContextualization(contentId, editorState /*EditorState.acceptSelection(editorState, selection)*/);
     };
 
     const assets = Object.keys(contextualizations)
@@ -407,12 +407,16 @@ export default class ContentEditorContainer extends Component {
             overflow: 'auto'
           }}
         >
+          {contextualizationRequest && <div>
+          <button onClick={() => insertContextualization()}>Insert contextualization</button>
+            </div>}
           <div
             draggable={true} 
             onDragStart={startDrag}
             style={{
               border: '1px solid black',
-              padding: '1em'
+              padding: '1em',
+              background: 'white'
             }}
           >
             Draggable resource
@@ -451,19 +455,15 @@ export default class ContentEditorContainer extends Component {
             >
             </input>
           </div>
-          {contextualizationRequest && <div>
-          <button onClick={() => insertContextualization()}>Insert contextualization</button>
-            </div>}
         </div>
           
         <div
           style={{
-            position: 'fixed',
+            position: 'relative',
             top: '0',
             left: '20%',
             height: '100%',
-            width: '100%',
-            overflow: 'auto'
+            width: '80%'
           }}>
           <SectionEditor 
             mainEditorState={mainEditorState}
@@ -494,17 +494,6 @@ export default class ContentEditorContainer extends Component {
             blockAssetComponents={blockAssetComponents}
             
             allowNotesInsertion={true}
-            
-            editorStyles={{
-              mainEditor: {
-                position: 'relative',
-                left: 0,
-                top: 0,
-                width: '50%',
-                height: '100%',
-                padding:'3em 25% 3em 25%',
-              }
-            }}
           />
         </div>
       </div>

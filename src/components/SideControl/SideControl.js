@@ -14,26 +14,13 @@ import './SideControl.scss';
 export default class SideControl extends Component {
 
   static propTypes = {
-    onImageClick: PropTypes.func,
     toggleBlockType: PropTypes.func,
     selectedBlockType: PropTypes.string,
-  };
-
-  static defaultProps = {
-    iconColor: '#000000',
-    iconSelectedColor: '#2000FF',
-  };
-
-  state = {
-    canAddBlockAsset: true 
   };
 
   render = () => {
 
     const { 
-      iconColor, 
-      iconSelectedColor, 
-      popoverStyle, 
       buttons,
       editorState,
       updateEditorState,
@@ -46,10 +33,6 @@ export default class SideControl extends Component {
       allowNotesInsertion = false
             
     } = this.props;
-
-    const {
-      canAddBlockAsset
-    } = this.state;
 
     const handleFigureClick = () => {
       const currentSelection = editorState && editorState.getSelection();
@@ -64,7 +47,6 @@ export default class SideControl extends Component {
         className="scholar-draft-SideControl"
         ref={bindToolbar}
       >
-
         {allowNotesInsertion && 
         <NoteButton onClick={onNoteAdd} />
         }

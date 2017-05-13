@@ -124,14 +124,14 @@ export default class ContentEditorContainer extends Component {
     } = this.state;
 
     const editorState = inputEditorState || this.state.editorState;
-
+    const selection = contextualizationRequestSelection || editorState.getSelection();
     const id = generateId();
     const contextualization = {
       id,
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
     }
-    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, contextualizationRequestSelection);
+    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, selection);
     this.setState({
       contextualizationRequest: false,
       contextualizationRequestSelection: undefined,
@@ -185,7 +185,7 @@ export default class ContentEditorContainer extends Component {
   }
 
   deleteContextualization = id => {
-    deleteAssetFromEditor(this.state.editorState, ['inlineContextualization', 'blockContextualization'], id, newEditorState => {
+    deleteAssetFromEditor(this.state.editorState, id, newEditorState => {
       const contextualizations = {...this.state.contextualizations};
       delete contextualizations[id];
       this.setState({
@@ -256,8 +256,17 @@ export default class ContentEditorContainer extends Component {
     };
 
    const onDrop = (payload, selection) => {
+    console.log('to selection', selection.toJS());
+    // const editorState = EditorState.forceSelection(this.state.editorState, selection);
+    // this.setState({
+    //   editorState
+    // });
     this.insertContextualization(EditorState.acceptSelection(this.state.editorState, selection));
    };
+
+   const onBlur = (e, editorState) => {
+    
+   }
 
    const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
@@ -294,12 +303,16 @@ export default class ContentEditorContainer extends Component {
             overflow: 'auto'
           }}
         >
+          {contextualizationRequest && <div>
+          <button onClick={() => insertContextualization()}>Insert contextualization</button>
+            </div>}
           <div
             draggable={true} 
             onDragStart={startDrag}
             style={{
               border: '1px solid black',
-              padding: '1em'
+              padding: '1em',
+              background: 'white'
             }}
           >
             Draggable resource
@@ -338,19 +351,15 @@ export default class ContentEditorContainer extends Component {
             >
             </input>
           </div>
-          {contextualizationRequest && <div>
-          <button onClick={() => insertContextualization()}>Insert contextualization</button>
-            </div>}
         </div>
           
         <div
           style={{
-            position: 'fixed',
+            position: 'relative',
             top: '0',
-            left: '10%',
+            left: '20%',
             height: '100%',
-            width: '90%',
-            overflow: 'auto'
+            width: '80%'
           }}>
           <ContentEditor 
             ref={bindEditorRef}
@@ -373,14 +382,7 @@ export default class ContentEditorContainer extends Component {
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
             allowNotesInsertion={false}
-            editorStyle={{
-              position: 'relative',
-              left: 0,
-              top: 0,
-              width: '50%',
-              height: '100%',
-              padding:'3em 25% 3em 25%',
-            }}
+            onBlur={onBlur}
           />
         </div>
       </div>

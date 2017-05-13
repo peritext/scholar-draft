@@ -206,7 +206,7 @@ export function insertNoteInEditor(
 
 export function getAssetsToDeleteFromEditor(
   editorState, 
-  acceptedEntitiesTypes = [], 
+  // acceptedEntitiesTypes = [], 
   assets = {}
 ) {
   const contentState = editorState.getCurrentContent();
@@ -220,7 +220,7 @@ export function getAssetsToDeleteFromEditor(
     )
   , [])
   .map(entityKey => contentState.getEntity(entityKey))
-  .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
+  // .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
   .map(entity => entity.getData().asset.id);
   return Object.keys(assets)
     .filter(key => activeEntitiesIds.indexOf(key) === -1);
@@ -228,7 +228,6 @@ export function getAssetsToDeleteFromEditor(
 
 export function deleteAssetFromEditor(
   editorState, 
-  acceptedEntitiesTypes = [], 
   id, 
   callback
 ) {
