@@ -24,18 +24,30 @@ export default class SideControl extends Component {
       buttons,
       editorState,
       onAssetRequest,
+      onAssetRequestCancel,
+      onAssetChoice,
+      assetChoiceData = {},
       onNoteAdd,
       allowAssets = {
         // inline: true,
         // block: true
       },
+      assetRequestPosition,
+
+      BlockAssetChoiceComponent,
+
       allowNotesInsertion = false
             
     } = this.props;
 
-    const handleFigureClick = () => {
-      const currentSelection = editorState && editorState.getSelection();
-      onAssetRequest(currentSelection);
+    const onAssetButtonClick = e => {
+      e.stopPropagation();
+      if (assetRequestPosition) {
+        onAssetRequestCancel();
+      } else {
+        const currentSelection = editorState && editorState.getSelection();
+        onAssetRequest(currentSelection);
+      }
     };
 
     const bindToolbar = (toolbar) => {
@@ -47,10 +59,23 @@ export default class SideControl extends Component {
         ref={bindToolbar}
       >
         {allowNotesInsertion && 
-        <NoteButton onClick={onNoteAdd} />
+        <NoteButton 
+          onClick={onNoteAdd} 
+        />
         }
         {(allowAssets.inline || allowAssets.block) && 
-        <AssetButton onClick={handleFigureClick} />}
+        <AssetButton 
+          onClick={onAssetButtonClick} 
+          active={assetRequestPosition}
+        />}
+        {assetRequestPosition &&
+          <span className="block-asset-choice-container">
+            <BlockAssetChoiceComponent
+              {...assetChoiceData}
+              onAssetChoice={onAssetChoice}
+            />
+          </span>
+        }
       </div>
     );
   }

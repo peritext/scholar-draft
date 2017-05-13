@@ -31,6 +31,7 @@ const {
 
 import ExampleBlockCitation from './ExampleBlockCitation';
 import ExampleInlineCitation from './ExampleInlineCitation';
+import ExampleBlockAssetChoice from './ExampleBlockAssetChoice';
 
 const inlineAssetComponents = {
   citation: ExampleInlineCitation
@@ -94,8 +95,21 @@ export default class ContentEditorContainer extends Component {
   onAssetRequest = (selection) => {
     this.setState({
       contextualizationRequest: true,
-      contextualizationRequestSelection: selection
+      contextualizationRequestSelection: selection,
+      readOnly: true
     });
+  }
+
+  onAssetRequestCancel = () => {
+    this.setState({
+      contextualizationRequest: undefined,
+      contextualizationRequestSelection: undefined
+    });
+  }
+
+  onAssetChoice = (e) => {
+    console.log('on asset choice', e);
+    this.insertContextualization();
   }
 
   /*
@@ -220,7 +234,9 @@ export default class ContentEditorContainer extends Component {
     const {
       onEditorChange,
       onAssetRequest,
+      onAssetRequestCancel,
       onAssetClick,
+      onAssetChoice,
       onAssetMouseOver,
       onAssetMouseOut,
       insertContextualization,
@@ -281,6 +297,12 @@ export default class ContentEditorContainer extends Component {
     }
    };
 
+   const onScroll = e => {
+    if (this.editor) {
+      this.editor.updateSelection();
+    }
+   }
+
    const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
       const contextualization = contextualizations[id];
@@ -294,6 +316,13 @@ export default class ContentEditorContainer extends Component {
         }
       }
     }, {});
+
+    const assetChoiceData = {
+      options: ['asset 1', 'asset 2', 'asset 3']
+    };
+
+    const assetRequestPosition = contextualizationRequest && editorState.getSelection();
+
     return (
       <div
         style={{
@@ -303,6 +332,7 @@ export default class ContentEditorContainer extends Component {
           width: '100%',
           height: '100%',
         }}
+        onWheel={onScroll}
       >
         <div
           style={{
@@ -371,7 +401,9 @@ export default class ContentEditorContainer extends Component {
             top: '0',
             left: '20%',
             height: '100%',
-            width: '80%'
+            width: '80%',
+            paddingBottom: '2em',
+            paddingTop: '2em'
           }}>
           <ContentEditor 
             ref={bindEditorRef}
@@ -382,10 +414,15 @@ export default class ContentEditorContainer extends Component {
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
             onAssetChange={onDataChange}
+            onAssetRequestCancel={onAssetRequestCancel}
+            onAssetChoice={onAssetChoice}
 
             onAssetClick={onAssetClick}
             onAssetMouseOver={onAssetMouseOver}
             onAssetMouseOut={onAssetMouseOut}
+
+            assetRequestPosition={assetRequestPosition}
+            assetChoiceData={assetChoiceData}
 
             onDrop={onDrop}
             onClick={onClick}
@@ -393,6 +430,7 @@ export default class ContentEditorContainer extends Component {
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
+            BlockAssetChoiceComponent={ExampleBlockAssetChoice}
             allowNotesInsertion={false}
           />
         </div>

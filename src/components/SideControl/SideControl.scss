@@ -1,10 +1,11 @@
 .scholar-draft-SideControl
 {
-  position: absolute;
+  // position: absolute;
+  position: fixed;
   z-index: 999;
   display: none;
 
-  height: 24px;
+  // height: 24px;
   // left: -200px;
   // left: 0;
   // right: 100%;
@@ -20,7 +21,9 @@
     top: -27px;
     height: 27px;
     z-index :  998;
-    white-space: nowrap;
+    // white-space: nowrap;
+
+    overflow: visible;
 
     .inner-container
     {
@@ -34,5 +37,16 @@
   {
     display: inline-block;
     cursor: pointer;
+  }
+
+  .block-asset-choice-container
+  {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 1000%;
+    
+    text-align: left;
+    transition: all .1s ease;
   }
 }

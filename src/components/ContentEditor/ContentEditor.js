@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Style from 'fbjs/lib/Style.js';
 
+
 import { Map } from 'immutable';
 
 import SimpleDecorator from 'draft-js-simpledecorator';
@@ -189,13 +190,27 @@ export default class ContentEditor extends Component {
     let popoverControlVisible = false;
     let popoverControlTop = null;
     let popoverControlLeft = null;
-    
+
+
     const selectionRange = getSelectionRange();
-    
+
     if (!selectionRange) return;
     
     const editorEle = this.editor;
     if (!isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) { return; }
+    
+    let assetRequestType;
+    const {
+      assetRequestPosition
+    } = this.props;
+    if (assetRequestPosition) {
+      const currentContent = this.props.editorState.getCurrentContent();
+      const positionBlockKey = assetRequestPosition.getAnchorKey();
+      const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+      const isEmpty = positionBlock.toJS().text.length === 0;
+      assetRequestType = isEmpty ? 'block'  : 'inline';
+    }
+
     const inlineToolbarEle = this.inlineToolbar.toolbar;
     const sideControlEle = this.sideControl.toolbar;
     const rangeBounds = selectionRange.getBoundingClientRect();
@@ -211,10 +226,14 @@ export default class ContentEditor extends Component {
       // sideControlTop = this.state.selectedBlock.offsetTop
       const editorBounds = this.state.editorBounds;
       if (!editorBounds) return;
-      const top = displaceY + offsetTop;
-      sideControlTop = top;
+      // const top = displaceY + offsetTop;
+      sideControlTop = assetRequestType === 'inline' ? rangeBounds.top : blockBounds.top; // top;
       sideControlEle.style.top = `${sideControlTop}px`;
-      const left = editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
+      // position at begining of the line if no asset requested or block asset requested
+      // else position after selection
+      const left = assetRequestType === 'inline' ? rangeBounds.left : editorBounds.left - sideControlEle.offsetWidth;
+      // let left =  editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
+      // left = assetRequestType === 'inline' ? left + rangeBounds.left : left;
       sideControlEle.style.left = `${left}px`;
       sideControlEle.style.display = 'block';
 
@@ -459,6 +478,11 @@ export default class ContentEditor extends Component {
   };
 
   _handleBeforeInput = (character, props) => {
+    // todo : make that feature more subtle
+    if (character === '@') {
+      this.props.onAssetRequest();
+      return 'not-handled';
+    }
     if (character !== ' ') {
       return 'not-handled';
     }
@@ -564,9 +588,17 @@ export default class ContentEditor extends Component {
       inlineButtons,
 
       onAssetRequest: onAssetRequestUpstream,
+      assetRequestPosition,
+      onAssetRequestCancel,
+      onAssetChoice,
+
       editorStyle,
 
       onClick,
+
+      BlockAssetChoiceComponent,
+      assetChoiceData,
+
       ...otherProps
     } = this.props;
 
@@ -623,6 +655,14 @@ export default class ContentEditor extends Component {
       }
       this.focus(e);
     }
+    let assetRequestType;
+    if (assetRequestPosition) {
+      const currentContent = realEditorState.getCurrentContent();
+      const positionBlockKey = assetRequestPosition.getAnchorKey();
+      const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+      const isEmpty = positionBlock.toJS().text.length === 0;
+      assetRequestType = isEmpty ? 'block'  : 'inline';
+    }
     return (
       <div 
         className={editorClass}
@@ -647,6 +687,14 @@ export default class ContentEditor extends Component {
           allowNotesInsertion={allowNotesInsertion}
 
           onAssetRequest={onAssetRequest}
+          onAssetRequestCancel={onAssetRequestCancel}
+          onAssetChoice={onAssetChoice}
+          assetRequestPosition={assetRequestPosition}
+          assetRequestType={assetRequestType}
+          assetChoiceData={assetChoiceData}
+
+          BlockAssetChoiceComponent={BlockAssetChoiceComponent}
+
           onNoteAdd={onNoteAdd}
         />
         <Editor

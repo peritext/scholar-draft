@@ -22,11 +22,16 @@ class AssetButton extends Component {
 
     const { 
       onClick, 
+      active,
       ...otherProps 
     } = this.props;
 
     return (<div
-      style={styles.iconContainer}
+      style={{
+        ...styles.iconContainer,
+        fill: active ? 'red': null,
+        transform: active ? 'rotate(45deg)': null
+      }}
       onMouseDown={e => e.preventDefault()}
       onClick={onClick}
       {...otherProps}
