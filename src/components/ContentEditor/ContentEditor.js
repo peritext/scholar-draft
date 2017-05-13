@@ -524,7 +524,7 @@ export default class ContentEditor extends Component {
   render = () => {
     const {
       editorState,
-      editorClass = 'peritext-draft-ContentEditor',
+      editorClass = 'scholar-draft-ContentEditor',
 
       placeholder = 'write your text',
 

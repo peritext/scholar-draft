@@ -31,7 +31,7 @@ const BlockAssetContainer = (props) => {
   };
   return (
     <div
-      className="peritext-draft-BlockAssetContainer"
+      className="scholar-draft-BlockAssetContainer"
       onMouseOver={onMOver}
       onMouseOut={onMOut}
     >

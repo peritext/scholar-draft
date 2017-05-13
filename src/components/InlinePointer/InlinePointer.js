@@ -30,7 +30,7 @@ const InlinePointer = (props) => {
     <span />;
   return (
     <span
-      className="peritext-draft-InlinePointer"
+      className="scholar-draft-InlinePointer"
       onMouseOver={onMOver}
       onMouseOut={onMOut}
     >

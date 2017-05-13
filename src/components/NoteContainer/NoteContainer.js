@@ -23,7 +23,7 @@ const NoteContainer = ({
   editorStyle
 }) => (
   <section 
-    className="peritext-draft-NoteContainer"
+    className="scholar-draft-NoteContainer"
   >
     <div className="note-header">
       <button onClick={onClickDelete}>x</button>

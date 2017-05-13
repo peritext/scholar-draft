@@ -12,7 +12,7 @@ const NotePointer = ({
   onMouseClick
 }) => (
   <span
-    className="peritext-draft-NotePointer"
+    className="scholar-draft-NotePointer"
     onMouseOver={onMouseOver}
     onMouseOut={onMouseOut}
     onClick={onMouseClick}

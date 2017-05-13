@@ -23,6 +23,8 @@ export default class SectionEditor extends Component {
       mainEditorState,
       notes,
       assets,
+
+      editorClass = 'scholar-draft-SectionEditor',
       
       onEditorChange,
       onNoteAdd,
@@ -88,7 +90,7 @@ export default class SectionEditor extends Component {
       onDrop('main', payload, selection);
     };
     return (
-      <div className="SectionEditor">
+      <div className={editorState}>
         <aside className="notes-container">
           {
             Object.keys(notes || {})

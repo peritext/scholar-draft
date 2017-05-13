@@ -30,7 +30,7 @@ const InlineAssetContainer = (props) => {
     <span />;
   return (
     <span
-      className="peritext-draft-InlineAssetContainer"
+      className="scholar-draft-InlineAssetContainer"
       onMouseOver={onMOver}
       onMouseOut={onMOut}
     >

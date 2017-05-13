@@ -59,7 +59,8 @@ class BlockButton extends Component {
     const selected = this.isSelected(editorState, blockType); 
     const fill = selected ? iconSelectedColor : iconColor;
 
-    return (<div
+    return (
+    <div
       style={styles.iconContainer}
       onMouseDown={(e) => {
         e.preventDefault();
@@ -69,7 +70,8 @@ class BlockButton extends Component {
     >
       {React.Children.map(this.props.children, 
         c => React.cloneElement(c, { fill, selected }))}
-    </div>);
+    </div>
+    );
   }
 }
 

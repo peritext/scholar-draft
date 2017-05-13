@@ -61,7 +61,7 @@ export default class SideControl extends Component {
     };
     return (
       <div
-        className="peritext-draft-SideControl"
+        className="scholar-draft-SideControl"
         ref={bindToolbar}
       >
 
