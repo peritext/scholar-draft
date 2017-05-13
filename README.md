@@ -7,10 +7,10 @@ Initially inspired by https://github.com/AlastairTaft/draft-js-editor
 
 `scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented apps with `react-js` lib.
 
-This module provides two [`draft-js`](https://draftjs.org) editor wrappers that are focused on two main goals :
+This module provides two [`draft-js`](https://draftjs.org) editor wrappers that are focused on three main goals :
 
 * connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream logic's data, that is editor's entities whose state is handled in the editor's upstream application logic
-* providing callbacks to edit these upstream entities from within content editor's interface
+* provide callbacks for editing upstream entities from within content editor's interface
 * allow to insert, move and edit footnotes within a draft-js editor
 
 
