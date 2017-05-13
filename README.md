@@ -87,10 +87,6 @@ Higher level editor combining main text and side notes.
 
 `assets` (Object) -> map of the assets data to be potentially used by the editor
 
-`InlineAssetComponents` (Object) -> a map for displaying the inline assets in the editor
-
-`BlockAssetComponents` (Object) -> a map for displaying the block assets in the editor
-
 ### Method props
 
 `onEditorChange(contentType, noteId, editorState)` -> if first argument is 'main' will update main editor state, else related note
@@ -128,5 +124,9 @@ Higher level editor combining main text and side notes.
 `mainEditorStyle` (Object) -> a style object
 
 `noteEditorStyle` (Object) -> a style object
+
+`InlineAssetComponents` (Object) -> a map for displaying the inline assets in the editor
+
+`BlockAssetComponents` (Object) -> a map for displaying the block assets in the editor
 
 
