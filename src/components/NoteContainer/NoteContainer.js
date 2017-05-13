@@ -11,7 +11,7 @@ const NoteContainer = ({
   lastInsertionType,
   onEditorChange,
   onAssetRequest,
-  onDataChange,
+  onAssetChange,
   onClickDelete,
   onDrop,
 
@@ -37,7 +37,7 @@ const NoteContainer = ({
         
         onEditorChange={onEditorChange}
         onAssetRequest={onAssetRequest}
-        onDataChange={onDataChange}
+        onAssetChange={onAssetChange}
         onDrop={onDrop}
 
         onAssetClick={onAssetClick}

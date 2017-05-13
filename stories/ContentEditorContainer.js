@@ -369,7 +369,7 @@ export default class ContentEditorContainer extends Component {
             
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
-            onDataChange={onDataChange}
+            onAssetChange={onDataChange}
 
             onAssetClick={onAssetClick}
             onAssetMouseOver={onAssetMouseOver}

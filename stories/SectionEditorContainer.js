@@ -485,7 +485,7 @@ export default class ContentEditorContainer extends Component {
             onNoteAdd={addNote}
             onNoteDelete={deleteNote}
             onAssetRequest={onAssetRequest}
-            onDataChange={onDataChange}
+            onAssetChange={onDataChange}
             onDrop={onDrop}
 
             onAssetClick={onAssetClick}

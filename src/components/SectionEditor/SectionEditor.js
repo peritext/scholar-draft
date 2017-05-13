@@ -27,7 +27,7 @@ export default class SectionEditor extends Component {
       
       onEditorChange,
       onNoteAdd,
-      onDataChange,
+      onAssetChange,
       onAssetRequest,
       onAssetClick,
       onAssetMouseOver,
@@ -63,7 +63,7 @@ export default class SectionEditor extends Component {
 
           onEditorChange={onThisNoteEditorChange}
           onAssetRequest={onNoteAssetRequest}
-          onDataChange={onDataChange}
+          onAssetChange={onAssetChange}
           onDrop={onNoteDrop}
           onClickDelete={onClickDelete}
 
@@ -109,7 +109,7 @@ export default class SectionEditor extends Component {
             onDrop={onMainEditorDrop}
             onAssetRequest={onMainAssetRequest}
             onNoteAdd={onNoteAdd}
-            onDataChange={onDataChange}
+            onAssetChange={onAssetChange}
 
             onAssetClick={onAssetClick}
             onAssetMouseOver={onAssetMouseOver}

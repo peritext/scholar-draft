@@ -251,7 +251,7 @@ export default class ContentEditor extends Component {
           assets,
           onAssetMouseOver: onMouseOver,
           onAssetMouseOut: onMouseOut,
-          onDataChange,
+          onAssetChange,
           inlineAssetComponents: components
         } = this.props;
 
@@ -270,7 +270,7 @@ export default class ContentEditor extends Component {
             onMouseOver,
             onMouseOut,
             components,
-            onChange: onDataChange,
+            onChange: onAssetChange,
             onFocus,
             onBlur
           };
@@ -373,7 +373,7 @@ export default class ContentEditor extends Component {
       const AssetComponent = blockAssetComponents[asset.type] || <div />;
       const {
         assets,
-        onDataChange: onChange,
+        onAssetChange: onChange,
         onAssetMouseOver: onMouseOver,
         onAssetMouseOut: onMouseOut
       } = this.props;
