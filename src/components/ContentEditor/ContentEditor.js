@@ -208,7 +208,7 @@ export default class ContentEditor extends Component {
       const positionBlockKey = assetRequestPosition.getAnchorKey();
       const positionBlock = currentContent.getBlockForKey(positionBlockKey);
       const isEmpty = positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block'  : 'inline';
+      assetRequestType = isEmpty ? 'block' : 'inline';
     }
 
     const inlineToolbarEle = this.inlineToolbar.toolbar;
@@ -597,7 +597,7 @@ export default class ContentEditor extends Component {
 
       onClick,
 
-      BlockAssetChoiceComponent,
+      AssetChoiceComponent,
       assetChoiceProps,
 
       ...otherProps
@@ -650,19 +650,19 @@ export default class ContentEditor extends Component {
       }
     };
 
-    const onMainClick = e => {
+    const onMainClick = (e) => {
       if (typeof onClick === 'function') {
         onClick(e);
       }
       this.focus(e);
-    }
+    };
     let assetRequestType;
     if (assetRequestPosition) {
       const currentContent = realEditorState.getCurrentContent();
       const positionBlockKey = assetRequestPosition.getAnchorKey();
       const positionBlock = currentContent.getBlockForKey(positionBlockKey);
       const isEmpty = positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block'  : 'inline';
+      assetRequestType = isEmpty ? 'block' : 'inline';
     }
     return (
       <div 
@@ -694,7 +694,7 @@ export default class ContentEditor extends Component {
           assetRequestType={assetRequestType}
           assetChoiceProps={assetChoiceProps}
 
-          BlockAssetChoiceComponent={BlockAssetChoiceComponent}
+          AssetChoiceComponent={AssetChoiceComponent}
 
           onNoteAdd={onNoteAdd}
         />

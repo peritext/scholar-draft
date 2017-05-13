@@ -32,6 +32,7 @@ const {
 
 import ExampleBlockCitation from './ExampleBlockCitation';
 import ExampleInlineCitation from './ExampleInlineCitation';
+import ExampleBlockAssetChoice from './ExampleBlockAssetChoice';
 
 const inlineAssetComponents = {
   citation: ExampleInlineCitation
@@ -41,7 +42,7 @@ const blockAssetComponents = {
   citation: ExampleBlockCitation
 };
 
-export default class ContentEditorContainer extends Component {
+export default class SectionEditorContainer extends Component {
   
   state = {
     // mock related
@@ -127,6 +128,22 @@ export default class ContentEditorContainer extends Component {
       contextualizationRequestContentId: contentType === 'main' ? 'main' : noteId
     });
   }
+
+  onAssetRequestCancel = () => {
+    this.setState({
+      contextualizationRequest: undefined,
+      contextualizationRequestSelection: undefined,
+      readOnly: false
+    });
+    // setTimeout(() => {
+    //   this.editor.focus();
+    // }, 1);
+  }
+  onAsset = (e) => {
+    console.log('on asset choice', e);
+    this.insertContextualization();
+  }
+
 
   /*
    * MOCK-RELATED
@@ -334,6 +351,8 @@ export default class ContentEditorContainer extends Component {
       onAssetClick,
       onAssetMouseOver,
       onAssetMouseOut,
+      onAssetRequestCancel,
+      onAssetChoice,
 
       onNotePointerMouseOver,
       onNotePointerMouseOut,
@@ -357,6 +376,7 @@ export default class ContentEditorContainer extends Component {
       contextualizations,
       contextualizers,
       contextualizationRequest,
+      contextualizationRequestContentId,
       resources,
       readOnly,
     } = state;
@@ -413,6 +433,22 @@ export default class ContentEditorContainer extends Component {
         }
       }
     }, {});
+
+    const assetChoiceProps = {
+      options: ['asset 1', 'asset 2', 'asset 3'],
+      addPlainText: text => {
+        addTextAtCurrentSelection(text);
+        onAssetRequestCancel();
+      }
+    };
+    let assetRequestPosition;
+    if (contextualizationRequest) {
+      if (contextualizationRequestContentId === 'main') {
+        assetRequestPosition = mainEditorState.getSelection();
+      } else if(contextualizationRequestContentId && notes[contextualizationRequestContentId]) {
+        assetRequestPosition = notes[contextualizationRequestContentId].editorState.getSelection();
+      }
+    }
 
     return (
       <div
@@ -505,10 +541,7 @@ export default class ContentEditorContainer extends Component {
             resources={resources}
                         
             onEditorChange={onEditorChange}
-            onAssetRequest={onAssetRequest}
-            onNoteAdd={addNote}
-            onNoteDelete={deleteNote}
-            onAssetChange={onDataChange}
+
             onDrop={onDrop}
             onClick={handleClick}
             onBlur={onBlur}
@@ -516,13 +549,24 @@ export default class ContentEditorContainer extends Component {
             onAssetClick={onAssetClick}
             onAssetMouseOver={onAssetMouseOver}
             onAssetMouseOut={onAssetMouseOut}
+            onAssetRequest={onAssetRequest}
+            onAssetChange={onDataChange}
+            onAssetRequestCancel={onAssetRequestCancel}
+            onAssetChoice={onAssetChoice}
+
+            onNoteAdd={addNote}
+            onNoteDelete={deleteNote}
 
             onNotePointerMouseOver={onNotePointerMouseOver}
             onNotePointerMouseOut={onNotePointerMouseOut}
             onNotePointerMouseClick={onNotePointerMouseClick}
+
+            assetRequestPosition={assetRequestPosition}
+            assetChoiceProps={assetChoiceProps}
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
+            AssetChoiceComponent={ExampleBlockAssetChoice}
             
             allowNotesInsertion={true}
           />

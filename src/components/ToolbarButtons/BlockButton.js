@@ -59,20 +59,20 @@ class BlockButton extends Component {
     const selected = this.isSelected(editorState, blockType); 
     const fill = selected ? iconSelectedColor : iconColor;
 
-    const className = 'scholar-draft-BlockButton' + (selected ? ' selected': '');
+    const className = `scholar-draft-BlockButton${selected ? ' selected' : ''}`;
 
     return (
-    <div
-      style={styles.iconContainer}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
-      }}
-      {...otherProps}
-    >
-      {React.Children.map(this.props.children, 
+      <div
+        style={styles.iconContainer}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
+        }}
+        {...otherProps}
+      >
+        {React.Children.map(this.props.children, 
         c => React.cloneElement(c, { fill, selected, className }))}
-    </div>
+      </div>
     );
   }
 }

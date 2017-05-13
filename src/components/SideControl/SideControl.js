@@ -34,13 +34,13 @@ export default class SideControl extends Component {
       },
       assetRequestPosition,
 
-      BlockAssetChoiceComponent,
+      AssetChoiceComponent,
 
       allowNotesInsertion = false
             
     } = this.props;
 
-    const onAssetButtonClick = e => {
+    const onAssetButtonClick = (e) => {
       e.stopPropagation();
       if (assetRequestPosition) {
         onAssetRequestCancel();
@@ -58,7 +58,7 @@ export default class SideControl extends Component {
         className="scholar-draft-SideControl"
         ref={bindToolbar}
       >
-        {allowNotesInsertion && 
+        {allowNotesInsertion && !assetRequestPosition &&
         <NoteButton 
           onClick={onNoteAdd} 
         />
@@ -70,7 +70,7 @@ export default class SideControl extends Component {
         />}
         {assetRequestPosition &&
           <span className="block-asset-choice-container">
-            <BlockAssetChoiceComponent
+            <AssetChoiceComponent
               {...assetChoiceProps}
               onAssetChoice={onAssetChoice}
               onAssetRequestCancel={onAssetRequestCancel}

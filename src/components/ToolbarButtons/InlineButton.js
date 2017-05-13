@@ -79,7 +79,7 @@ class InlineButton extends Component {
 
     const selected = this.isSelected(editorState, inlineStyleType); 
     const fill = selected ? iconSelectedColor : iconColor;
-    const className = 'scholar-draft-InlineButton' + (selected ? ' selected': '');
+    const className = `scholar-draft-InlineButton${selected ? ' selected' : ''}`;
 
     return (<div
       style={styles.iconContainer}

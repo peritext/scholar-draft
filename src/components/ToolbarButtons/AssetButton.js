@@ -29,8 +29,8 @@ class AssetButton extends Component {
     return (<div
       style={{
         ...styles.iconContainer,
-        fill: active ? 'red': null,
-        transform: active ? 'rotate(45deg)': null
+        fill: active ? 'red' : null,
+        transform: active ? 'rotate(45deg)' : null
       }}
       onMouseDown={e => e.preventDefault()}
       onClick={onClick}

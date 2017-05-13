@@ -28,20 +28,29 @@ export default class SectionEditor extends Component {
       
       onEditorChange,
       onNoteAdd,
+
       onAssetChange,
       onAssetRequest,
+      onAssetRequestCancel,
+      onAssetChoice,
       onAssetClick,
       onAssetMouseOver,
       onAssetMouseOut,
+
       onNotePointerMouseOver,
       onNotePointerMouseOut,
       onNotePointerMouseClick,
       onDrop,
       onClick,
       onBlur,
+
+      assetRequestPosition,
+      assetChoiceProps,
       
       inlineAssetComponents,
       blockAssetComponents,
+      AssetChoiceComponent,
+
       editorStyles,
       readOnly,
     } = this.props;
@@ -63,16 +72,19 @@ export default class SectionEditor extends Component {
       };
       const note = notes[noteId];
 
-      const onNoteEditorClick = e => {
+      const onNoteEditorClick = (e) => {
         if (typeof onClick === 'function') {
           onClick(e, noteId);
         }
-      }
+      };
       return (
         <NoteContainer
           key={noteId}
           note={note}
           assets={assets}
+
+          assetRequestPosition={assetRequestPosition}
+          assetChoiceProps={assetChoiceProps}
 
           readOnly={readOnly}
 
@@ -80,16 +92,23 @@ export default class SectionEditor extends Component {
           onBlur={onBlur}
 
           onEditorChange={onThisNoteEditorChange}
+
           onAssetRequest={onNoteAssetRequest}
           onAssetChange={onAssetChange}
+          onAssetRequestCancel={onAssetRequestCancel}
+          onAssetChoice={onAssetChoice}
+
           onDrop={onNoteDrop}
           onClickDelete={onClickDelete}
 
           onAssetClick={onAssetClick}
           onAssetMouseOver={onAssetMouseOver}
           onAssetMouseOut={onAssetMouseOut}
+
           inlineAssetComponents={inlineAssetComponents}
           blockAssetComponents={blockAssetComponents}
+          AssetChoiceComponent={AssetChoiceComponent}
+
           editorStyle={editorStyles && editorStyles.noteEditor}
         />
       );
@@ -106,11 +125,12 @@ export default class SectionEditor extends Component {
       }
     };
 
-    const onMainEditorClick = e => {
+    const onMainEditorClick = (e) => {
       if (typeof onClick === 'function') {
         onClick(e, 'main');
       }
     };
+
     return (
       <div className={editorClass}>
         <section className="main-container-editor">
@@ -118,6 +138,9 @@ export default class SectionEditor extends Component {
             editorState={mainEditorState}
             notes={notes}
             assets={assets}
+
+            assetRequestPosition={assetRequestPosition}
+            assetChoiceProps={assetChoiceProps}
 
             readOnly={readOnly}
 
@@ -127,6 +150,9 @@ export default class SectionEditor extends Component {
             onEditorChange={onMainEditorChange}
             onDrop={onMainEditorDrop}
             onAssetRequest={onMainAssetRequest}
+            onAssetRequestCancel={onAssetRequestCancel}
+            onAssetChoice={onAssetChoice}
+
             onNoteAdd={onNoteAdd}
             onAssetChange={onAssetChange}
 
@@ -140,6 +166,8 @@ export default class SectionEditor extends Component {
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
+            AssetChoiceComponent={AssetChoiceComponent}
+
             allowNotesInsertion
             editorStyle={editorStyles && editorStyles.mainEditor}
           />

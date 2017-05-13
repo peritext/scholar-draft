@@ -348,7 +348,6 @@ export default class ContentEditorContainer extends Component {
         onAssetRequestCancel();
       }
     };
-
     const assetRequestPosition = contextualizationRequest && editorState.getSelection();
 
     return (
@@ -458,7 +457,7 @@ export default class ContentEditorContainer extends Component {
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
-            BlockAssetChoiceComponent={ExampleBlockAssetChoice}
+            AssetChoiceComponent={ExampleBlockAssetChoice}
             allowNotesInsertion={false}
           />
         </div>

@@ -94,7 +94,7 @@ export function insertAssetInEditor(
     const lastEntity = newContent.getEntity(newEntityKey);
     const blockMap = newContent.getBlockMap().toJS();
     const blockE = Object.keys(blockMap).map(blockId => blockMap[blockId])
-      .find(block => {
+      .find((block) => {
         if (block.type === 'atomic') {
           return block.characterList.find(char => char.entity && char.entity === newEntityKey);
         }
@@ -129,7 +129,7 @@ export function insertAssetInEditor(
     }
     const endSelection = thatSelection.merge({
       anchorOffset: thatSelection.getEndOffset() + selectedText.length,
-      focusOffset: thatSelection.getEndOffset()+ selectedText.length,
+      focusOffset: thatSelection.getEndOffset() + selectedText.length,
     });
     newContentState = Modifier.replaceText(
         newContentState,
