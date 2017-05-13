@@ -1,42 +1,35 @@
 WIP
 ===
 
+```
 Initially inspired by https://github.com/AlastairTaft/draft-js-editor
-
-# Specification
-
-The peritext draft editor must provide the following specific functionalities :
-
-* in addition to classical text editing features, it must allow to **include *contextualizations* within the editor** - the way these contextualizations are displayed must be handled upstream and the way they are inserted must be handled in two phases (request contextualization -> (upstream operations- choose a resource, choose how to contextualize it) -> add contextualization in the draft's content as an entity and related annotations) - contextualizations target is represented as draft-js *entity* annotations
-* provide a **side notes editing interface** and relative representation in upstream state, including side notes order handling in function of main text, and inline contextualizations within the side notes (no block or side notes calls within side notes)
-
-
-State of the editor (must be provided upstream through props) :
-
 ```
-{
-    mainEditor : {}, // Immutable EditorState instance
-    notesMap: {
-        uuid: {}, // Immutable EditorState instance
-    }
-    notesOrder: [uuid, uuid],
-    contextualizations: {},
-    resources: {},
-    contextualizers: {},
-    InlineContextualizationComponents: {
-        contextualizationType: {} // React component
-    },
-    BlockContextualizationComponents: {
-        contextualizationType: {} // React component
-    }
-}
-```
+
+`scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented apps with `react-js` lib.
+
+This module provides two [`draft-js`](https://draftjs.org) editor wrappers that are focused on two main goals :
+
+* connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream logic's data, that is editor's entities whose state is handled in the editor's upstream application logic
+* providing callbacks to edit these upstream entities from within content editor's interface
+* allow to insert, move and edit footnotes within a draft-js editor
+
+
+# Features
+
+* real-time and editable logic-connected entities within the editor
+* footnotes management & edition
+* assets insertion request management
+* assets drag-and-drop support
+* two types of assets wrappers : block and inline (assets contents's components are provided by user)
+* markdown shortcuts
+* side toolbar and medium-like contextual toolbar (customizable)
+
+The module provides two components :
+
+* `ContentEditor` : editor without footnotes support
+* `SectionEditor` : editor with footnotes support
 
 # ContentEditor
-
-The nano editor is exposed by the library.
-
-It must be used within the principal editor for displaying the main editor and the side notes editors
 
 ## Props
 
@@ -44,59 +37,43 @@ It must be used within the principal editor for displaying the main editor and t
 
 `editorState` (ImmutableMap) -> the state of the editor
 
-`contextualizations` (Object) -> map of the contextualizations data to be potentially used by the connector
-
-`resources` (Object) -> map of the resources data to be potentially used by the connector
-
-`contextualizers` (Object) -> map of the contextualizers data to be potentially used by the connector
-
-`lastInsertionType` (String) -> whether the last insertion was inline or block
+`assets` (Object) -> map of the assets data to be potentially used by the connector
 
 ### Method props
 
 `onEditorChange(editor)`
 
-`onContextualizationRequest()`
-
 `onNoteAdd()`
 
-`onDataChange(dataProp, id, newObject)` 
+`onAssetRequest(selection)` -> triggers when an asset insertion is requested from the editor's ui
 
-`onContextualizationClick(contextualizationId, contextualizationData, event)` 
+`onAssetChange(assetProp, id, newObject)` -> when mods are applied from editor on an asset
 
-`onContextualizationMouseOver(contextualizationId, contextualizationData, event)` 
+`onAssetClick(assetId, assetData, event)` 
 
-`onContextualizationMouseOut(contextualizationId, contextualizationData, event)` 
+`onAssetMouseOver(assetId, assetData, event)` 
 
-`onDataChange(dataProp, key, newItem)` -> when mods are applied from editor on contextualizations, contextualizers, or resources
+`onAssetMouseOut(assetId, assetData, event)` 
+
+`onDrop(payload, selection)` 
 
 ### Parametrization props
 
-`inlineContextualizationComponents` (Object) -> a map for displaying the inline contextualizations in the editor
+`inlineAssetsComponents` (Object) -> a map for displaying the inline assets components in the editor
 
-`blockContextualizationComponents` (Object) -> a map for displaying the block contextualizations in the editor
+`blockAssetsComponents` (Object) -> a map for displaying the block assets components in the editor
 
 `editorClass` (string) -> the class name to use
 
-`editorStyles` (Object) -> a style object
+`editorStyle` (Object) -> a style object
 
 `allowNotesInsertion` (Boolean)
 
-`allowContextualizations` (Object) => {inline: Boolean, block: Boolean}
+`allowAssets` (Object) => {inline: Boolean, block: Boolean}
 
 # SectionEditor
 
 Higher level editor combining main text and side notes.
-
-## Structure of SectionEditor
-
-```
--Wrapper
-    -NotesWrapper
-        - NoteEditorWrapper(loop) // for each note
-            -ContentEditor
-    -ContentEditor // main content editor
-```
 
 ## Props
 
@@ -108,33 +85,39 @@ Higher level editor combining main text and side notes.
 
 `notesOrder` (Array<String>) -> order of the notes in the section editor
 
-`contextualizations` (Object) -> map of the contextualizations data to be potentially used by the connector
+`assets` (Object) -> map of the assets data to be potentially used by the editor
 
-`resources` (Object) -> map of the resources data to be potentially used by the connector
+`InlineAssetComponents` (Object) -> a map for displaying the inline assets in the editor
 
-`contextualizers` (Object) -> map of the contextualizers data to be potentially used by the connector
-
-`InlineContextualizationComponents` (Object) -> a map for displaying the inline contextualizations in the editor
-
-`BlockContextualizationComponents` (Object) -> a map for displaying the block contextualizations in the editor
+`BlockAssetComponents` (Object) -> a map for displaying the block assets in the editor
 
 ### Method props
 
-`onEditorChange(editorState)` 
+`onEditorChange(contentType, noteId, editorState)` -> if first argument is 'main' will update main editor state, else related note
 
-`onNoteChange(noteId, editorState)` 
+`onNoteAdd()`
+
+`onNoteDelete(id)`
+
+`onNotePointerMouseOver(noteId, event)`
+
+`onNotePointerMouseOut(noteId, event)`
+
+`onNotePointerMouseClick(noteId, event)`
 
 `onNotesOrderChange(notesOrder)` -> update the note order 
 
-`onContextualizationRequest(noteIdOrMainContent, relatedEditorState)` 
+`onAssetRequest(contentType, noteId, selection)` -> triggers when an asset insertion is requested from the editor's ui
 
-`onAddNote()`
+`onAssetChange(assetProp, id, newObject)` -> when mods are applied from editor on an asset
 
-`onContextualizationClick(contextualizationId, contextualizationData, event)` 
+`onAssetClick(assetId, assetData, event)` 
 
-`onContextualizationMouseOver(contextualizationId, contextualizationData, event)` 
+`onAssetMouseOver(assetId, assetData, event)` 
 
-`onContextualizationMouseOut(contextualizationId, contextualizationData, event)` 
+`onAssetMouseOut(assetId, assetData, event)` 
+
+`onDrop(contentId, payload, selection)` 
 
 ### Parametrization props
 
@@ -142,8 +125,8 @@ Higher level editor combining main text and side notes.
 
 `noteEditorClass` (string) -> the class name to use
 
-`mainEditorStyles` (Object) -> a style object
+`mainEditorStyle` (Object) -> a style object
 
-`noteEditorStyles` (Object) -> a style object
+`noteEditorStyle` (Object) -> a style object
 
 
