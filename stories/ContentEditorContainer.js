@@ -91,9 +91,8 @@ export default class ContentEditorContainer extends Component {
     });
   }
 
-  onAssetRequest = (contextualizationRequestType, selection) => {
+  onAssetRequest = (selection) => {
     this.setState({
-      contextualizationRequestType,
       contextualizationRequest: true,
       contextualizationRequestSelection: selection
     });
@@ -118,7 +117,6 @@ export default class ContentEditorContainer extends Component {
   insertContextualization = (inputEditorState) => {
     const {
       // editorState,
-      contextualizationRequestType,
       contextualizationRequestSelection,
       resources,
       contextualizers,
@@ -132,13 +130,10 @@ export default class ContentEditorContainer extends Component {
       id,
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
-      // type: contextualizers[Object.keys(contextualizers)[0]].type,
     }
     const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, contextualizationRequestSelection);
     this.setState({
-      lastInsertionType: this.state.contextualizationRequestType,
       contextualizationRequest: false,
-      contextualizationRequestType: undefined,
       contextualizationRequestSelection: undefined,
       contextualizations: {
         ...contextualizations,
@@ -237,8 +232,7 @@ export default class ContentEditorContainer extends Component {
       contextualizations,
       contextualizers,
       contextualizationRequest,
-      resources,
-      lastInsertionType
+      resources
     } = state;
 
     const bindEditorRef = (editor) => {
@@ -365,7 +359,6 @@ export default class ContentEditorContainer extends Component {
             contextualizations={contextualizations}
             contextualizers={contextualizers}
             resources={resources}
-            lastInsertionType={lastInsertionType} 
             
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}

@@ -119,9 +119,8 @@ export default class ContentEditorContainer extends Component {
     }
   }
 
-  onAssetRequest = (contentType, noteId, contextualizationRequestType, selection) => {
+  onAssetRequest = (contentType, noteId, selection) => {
     this.setState({
-      contextualizationRequestType,
       contextualizationRequest: true,
       contextualizationRequestSelection: selection,
       contextualizationRequestContentId: contentType === 'main' ? 'main' : noteId
@@ -160,7 +159,6 @@ export default class ContentEditorContainer extends Component {
     const {
       mainEditorState,
       notes,
-      contextualizationRequestType,
       contextualizationRequestSelection,
       resources,
       contextualizers,
@@ -181,7 +179,6 @@ export default class ContentEditorContainer extends Component {
     }
     const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, contextualizationRequestSelection);
     const newState = {
-      lastInsertionType: this.state.contextualizationRequestType,
       contextualizationRequest: false,
       contextualizationRequestType: undefined,
       contextualizationRequestSelection: undefined,
@@ -351,7 +348,6 @@ export default class ContentEditorContainer extends Component {
       contextualizers,
       contextualizationRequest,
       resources,
-      lastInsertionType,
     } = state;
 
     const onResourceTitleChange = e => {
@@ -478,13 +474,11 @@ export default class ContentEditorContainer extends Component {
             contextualizations={contextualizations}
             contextualizers={contextualizers}
             resources={resources}
-            lastInsertionType={lastInsertionType} 
-            
+                        
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
             onNoteAdd={addNote}
             onNoteDelete={deleteNote}
-            onAssetRequest={onAssetRequest}
             onAssetChange={onDataChange}
             onDrop={onDrop}
 
