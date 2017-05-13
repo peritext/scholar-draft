@@ -297,13 +297,19 @@ export default class ContentEditor extends Component {
         const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
         const noteId = data.data.noteId;
         const onMouseOver = (e) => {
-          this.props.onNotePointerMouseOver(noteId, e);
+          if (typeof this.props.onNotePointerMouseOver === 'function') {
+            this.props.onNotePointerMouseOver(noteId, e);
+          }
         };
         const onMouseOut = (e) => {
-          this.props.onNotePointerMouseOut(noteId, e);
+          if (typeof this.props.onNotePointerMouseOut === 'function') {
+            this.props.onNotePointerMouseOut(noteId, e);
+          }
         };
         const onMouseClick = (e) => {
-          this.props.onNotePointerMouseClick(noteId, e);
+          if (typeof this.props.onNotePointerMouseClick === 'function') {
+            this.props.onNotePointerMouseClick(noteId, e);
+          }
         };
         const note = this.props.notes && this.props.notes[noteId];
         const props = {
@@ -471,8 +477,9 @@ export default class ContentEditor extends Component {
         ' '
       );
       this.onChange(EditorState.createWithContent(newContentState));
-
-      this.props.onDrop(payload, selection);
+      if (typeof this.props.onDrop === 'function') {
+        this.props.onDrop(payload, selection);
+      }
     }, 1);
     return false;
   }
@@ -483,7 +490,9 @@ export default class ContentEditor extends Component {
   }
 
   onChange = (editorState) => {
-    this.props.onEditorChange(editorState);
+    if (typeof this.props.onEditorChange === 'function') {
+      this.props.onEditorChange(editorState);
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -514,8 +523,7 @@ export default class ContentEditor extends Component {
   render = () => {
     const {
       editorState,
-      editorClass = '',
-      editorStyles = {},
+      editorClass = 'peritext-draft-ContentEditor',
 
       placeholder = 'write your text',
 
@@ -526,7 +534,7 @@ export default class ContentEditor extends Component {
       blockAssetComponents,
       inlineButtons,
 
-      onAssetRequest,
+      onAssetRequest: onAssetRequestUpstream,
       editorStyle,
       ...otherProps
     } = this.props;
@@ -561,18 +569,28 @@ export default class ContentEditor extends Component {
     };
 
     const onNoteAdd = () => {
-      this.props.onNoteAdd();
-      setTimeout(() => {
-        this.props.onEditorChange(this.props.editorState);        
-      });
+      if (typeof this.props.onNoteAdd === 'function') {
+        this.props.onNoteAdd();
+      }
+      if (typeof this.props.onEditorChange === 'function') {
+        setTimeout(() => {
+          this.props.onEditorChange(this.props.editorState);        
+        });
+      }
     };
 
     const onScroll = () => {
       this.updateSelection();
     };
+
+    const onAssetRequest = (contextualizationRequestType, selection) => {
+      if (typeof onAssetRequestUpstream === 'function') {
+        onAssetRequestUpstream(contextualizationRequestType, selection);
+      }
+    }
     return (
       <div 
-        className="peritext-draft-ContentEditor"
+        className={editorClass}
         onClick={this.focus}
         style={editorStyle}
 

@@ -48,10 +48,14 @@ export default class SectionEditor extends Component {
         onAssetRequest('note', noteId, assetRequestType, selection);
       };
       const onClickDelete = () => {
-        this.props.onNoteDelete(noteId);
+        if (typeof this.props.onNoteDelete === 'function') {
+          this.props.onNoteDelete(noteId);
+        }
       };
       const onNoteDrop = (payload, selection) => {
-        onDrop(noteId, payload, selection);
+        if (typeof this.props.onDrop === 'function') {
+          onDrop(noteId, payload, selection);
+        }
       };
       const note = notes[noteId];
       return (
