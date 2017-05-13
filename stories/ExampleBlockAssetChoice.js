@@ -22,6 +22,27 @@ class BlockAssetChoice extends Component {
     })
   }
 
+  onKeyUp = e => {
+    // escape pressed
+    if (e.which === 27 && typeof this.props.onAssetRequestCancel === 'function') {
+      this.props.onAssetRequestCancel();
+    }
+  }
+
+  onSubmit = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    const matching = this.props.options
+            .filter(name => name.indexOf(this.state.searchTerm) > -1);
+    // add an asset
+    if (matching.length) {
+      this.props.onAssetChoice();
+    // interpret input as text to insert within contents
+    } else {
+      this.props.addPlainText('@' + this.state.searchTerm);
+    }
+  }
+
   render () {
     const {
       onAssetChoice,
@@ -31,7 +52,6 @@ class BlockAssetChoice extends Component {
     const onOptionClick = e => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('on option click');
       onAssetChoice(e);
     }
     const bindRef = input => {
@@ -39,14 +59,15 @@ class BlockAssetChoice extends Component {
     }
     return (
       <div>
-        <div>
-          <input
+        <form onSubmit={this.onSubmit}>
+          @<input
             ref={bindRef}
             value={this.state.searchTerm}
             onChange={this.onTermChange}
+            onKeyUp={this.onKeyUp}
             placeholder="search an asset"
           />
-        </div>
+        </form>
         <ul>
           {
             options

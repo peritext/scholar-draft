@@ -103,13 +103,32 @@ export default class ContentEditorContainer extends Component {
   onAssetRequestCancel = () => {
     this.setState({
       contextualizationRequest: undefined,
-      contextualizationRequestSelection: undefined
+      contextualizationRequestSelection: undefined,
+      readOnly: false
     });
+    setTimeout(() => {
+      this.editor.focus();
+    }, 1);
   }
 
   onAssetChoice = (e) => {
     console.log('on asset choice', e);
     this.insertContextualization();
+  }
+
+  addTextAtCurrentSelection = text => {
+    const newContentState = Modifier.insertText(
+      this.state.editorState.getCurrentContent(),
+      this.state.editorState.getSelection(),
+      text,
+    );
+    this.setState({
+      editorState: EditorState.push(
+        this.state.editorState,
+        newContentState,
+        'insert-text'
+      )
+    })
   }
 
   /*
@@ -160,6 +179,7 @@ export default class ContentEditorContainer extends Component {
       this.setState({
         readOnly: false
       });
+      this.editor.focus();
     });
   }
 
@@ -239,6 +259,7 @@ export default class ContentEditorContainer extends Component {
       onAssetChoice,
       onAssetMouseOver,
       onAssetMouseOut,
+      addTextAtCurrentSelection,
       insertContextualization,
       updateContextualizerPages,
       updateResourceTitle,
@@ -320,8 +341,12 @@ export default class ContentEditorContainer extends Component {
       }
     }, {});
 
-    const assetChoiceData = {
-      options: ['asset 1', 'asset 2', 'asset 3']
+    const assetChoiceProps = {
+      options: ['asset 1', 'asset 2', 'asset 3'],
+      addPlainText: text => {
+        addTextAtCurrentSelection(text);
+        onAssetRequestCancel();
+      }
     };
 
     const assetRequestPosition = contextualizationRequest && editorState.getSelection();
@@ -425,7 +450,7 @@ export default class ContentEditorContainer extends Component {
             onAssetMouseOut={onAssetMouseOut}
 
             assetRequestPosition={assetRequestPosition}
-            assetChoiceData={assetChoiceData}
+            assetChoiceProps={assetChoiceProps}
 
             onDrop={onDrop}
             onClick={onClick}

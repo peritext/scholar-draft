@@ -26,7 +26,7 @@ export default class SideControl extends Component {
       onAssetRequest,
       onAssetRequestCancel,
       onAssetChoice,
-      assetChoiceData = {},
+      assetChoiceProps = {},
       onNoteAdd,
       allowAssets = {
         // inline: true,
@@ -71,8 +71,9 @@ export default class SideControl extends Component {
         {assetRequestPosition &&
           <span className="block-asset-choice-container">
             <BlockAssetChoiceComponent
-              {...assetChoiceData}
+              {...assetChoiceProps}
               onAssetChoice={onAssetChoice}
+              onAssetRequestCancel={onAssetRequestCancel}
             />
           </span>
         }

@@ -231,7 +231,7 @@ export default class ContentEditor extends Component {
       sideControlEle.style.top = `${sideControlTop}px`;
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
-      const left = assetRequestType === 'inline' ? rangeBounds.left : editorBounds.left - sideControlEle.offsetWidth;
+      const left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - sideControlEle.offsetWidth;
       // let left =  editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
       // left = assetRequestType === 'inline' ? left + rangeBounds.left : left;
       sideControlEle.style.left = `${left}px`;
@@ -527,7 +527,6 @@ export default class ContentEditor extends Component {
         anchorOffset
       });
 
-      console.log('anchor offset', anchorOffset);
       const newContentState = Modifier.replaceText(
         this.props.editorState.getCurrentContent(),
         payloadSel,
@@ -599,7 +598,7 @@ export default class ContentEditor extends Component {
       onClick,
 
       BlockAssetChoiceComponent,
-      assetChoiceData,
+      assetChoiceProps,
 
       ...otherProps
     } = this.props;
@@ -693,7 +692,7 @@ export default class ContentEditor extends Component {
           onAssetChoice={onAssetChoice}
           assetRequestPosition={assetRequestPosition}
           assetRequestType={assetRequestType}
-          assetChoiceData={assetChoiceData}
+          assetChoiceProps={assetChoiceProps}
 
           BlockAssetChoiceComponent={BlockAssetChoiceComponent}
 
