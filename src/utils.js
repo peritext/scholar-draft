@@ -62,9 +62,7 @@ export function insertAssetInEditor(
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
 
-  const isInEmptyBlock = activeSelection.isCollapsed() && 
-    activeSelection.getStartOffset() === 0 && 
-    currentContent.getBlockForKey(activeSelection.getStartKey()).getText().trim().length === 0;
+  const isInEmptyBlock = currentContent.getBlockForKey(activeSelection.getStartKey()).getText().trim().length === 0;
 
   const insertionType = isInEmptyBlock ? BLOCK_ASSET : INLINE_ASSET;
   let newContentState = editorState.getCurrentContent().createEntity(
