@@ -48,7 +48,7 @@ export default class ContentEditorContainer extends Component {
     contextualizationRequest: false,
     contextualizationRequestType: undefined,
     // all these should be handled by upstream logic in real applications
-    mainEditorState: undefined,
+    mainEditorState: EditorState.createEmpty(),
     notes: {},
     inlineAssetComponents,
     blockAssetComponents,
@@ -187,7 +187,8 @@ export default class ContentEditorContainer extends Component {
         ...contextualizations,
         [id]: contextualization
       },
-      notes: this.state.notes
+      notes: this.state.notes,
+      readOnly: true
       // editorState: newEditorState,
     };
     if (contextualizationRequestContentId === 'main') {
@@ -196,6 +197,11 @@ export default class ContentEditorContainer extends Component {
       newState.notes[contextualizationRequestContentId].editorState = newEditorState;
     }
     this.setState(newState);
+    setTimeout(() => {
+      this.setState({
+        readOnly: false
+      })
+    });
   }
 
   updateResourceTitle = title => {
@@ -352,6 +358,7 @@ export default class ContentEditorContainer extends Component {
       contextualizers,
       contextualizationRequest,
       resources,
+      readOnly,
     } = state;
 
     const onResourceTitleChange = e => {
@@ -370,10 +377,25 @@ export default class ContentEditorContainer extends Component {
        e.dataTransfer.setData('text', 'TEST');
     };
 
+    const handleClick = (event, contentId) => {
+      if (this.state.readOnly) {
+        this.setState({
+          readOnly: false
+        });
+        // this.editor.focus();
+      }
+    }
+
     const onDrop = (contentId, payload, selection) => {
       const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
-      this.insertContextualization(contentId, editorState /*EditorState.acceptSelection(editorState, selection)*/);
+      this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
     };
+
+    const onBlur = (event, contentId) => {
+      this.setState({
+        readOnly: true
+      });
+    }
 
     const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
@@ -419,7 +441,6 @@ export default class ContentEditorContainer extends Component {
             onDragStart={startDrag}
             style={{
               border: '1px solid black',
-              padding: '1em',
               background: 'white'
             }}
           >
@@ -472,8 +493,9 @@ export default class ContentEditorContainer extends Component {
           <SectionEditor 
             mainEditorState={mainEditorState}
             notes={notes}
-            
             assets={assets}
+
+            readOnly={readOnly}
 
             contextualizations={contextualizations}
             contextualizers={contextualizers}
@@ -485,6 +507,8 @@ export default class ContentEditorContainer extends Component {
             onNoteDelete={deleteNote}
             onAssetChange={onDataChange}
             onDrop={onDrop}
+            onClick={handleClick}
+            onBlur={onBlur}
 
             onAssetClick={onAssetClick}
             onAssetMouseOver={onAssetMouseOver}

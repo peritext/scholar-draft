@@ -152,13 +152,20 @@ export default class ContentEditor extends Component {
     super(props);
   }
 
+  componentWillReceiveProps = (nextProps) => {
+    if (!this.props.readOnly && nextProps.readOnly) {
+      this.inlineToolbar.toolbar.style.display = 'none';
+      this.sideControl.toolbar.style.display = 'none';
+    }
+  }
+
   focus = (e) => {
     if (this.props.readOnly) return;
 
     if (!this.props.readOnly && this.state.readOnly) {
       this.setState({
         readOnly: false
-      })
+      });
     }
 
     const editorNode = this.editor && this.editor.refs.editor;
@@ -428,6 +435,7 @@ export default class ContentEditor extends Component {
       this.inlineToolbar.toolbar.display = 'none';
     }
     if (this.sideControl) {
+      console.log(this.sideControl);
       this.sideControl.toolbar.display = 'none';
     }
 
@@ -514,7 +522,7 @@ export default class ContentEditor extends Component {
   }
 
   onChange = (editorState) => {
-    if (typeof this.props.onEditorChange === 'function') {
+    if (typeof this.props.onEditorChange === 'function' && !this.props.readOnly) {
       this.props.onEditorChange(editorState);
     }
   }
@@ -544,7 +552,7 @@ export default class ContentEditor extends Component {
 
   render = () => {
     const {
-      editorState,
+      editorState = EditorState.createEmpty(this.createDecorator()),
       editorClass = 'scholar-draft-ContentEditor',
 
       placeholder = 'write your text',
@@ -558,6 +566,8 @@ export default class ContentEditor extends Component {
 
       onAssetRequest: onAssetRequestUpstream,
       editorStyle,
+
+      onClick,
       ...otherProps
     } = this.props;
 
@@ -601,22 +611,25 @@ export default class ContentEditor extends Component {
       }
     };
 
-    const onScroll = () => {
-      this.updateSelection();
-    };
 
     const onAssetRequest = (selection) => {
       if (typeof onAssetRequestUpstream === 'function') {
         onAssetRequestUpstream(selection);
       }
+    };
+
+    const onMainClick = e => {
+      if (typeof onClick === 'function') {
+        onClick(e);
+      }
+      this.focus(e);
     }
     return (
       <div 
         className={editorClass}
-        onClick={this.focus}
+        onClick={onMainClick}
         style={editorStyle}
 
-        onScroll={onScroll}
         onDrop={_handleDrop}
         onDragOver={_handleDragOver}
       >
@@ -627,14 +640,13 @@ export default class ContentEditor extends Component {
         />
         <SideControl
           ref={bindSideControlRef}
-          editorState={realEditorState}
-          updateEditorState={onChange}
 
           allowAssets={{
             inline: allowInlineAsset,
             block: allowBlockAsset
           }}
           allowNotesInsertion={allowNotesInsertion}
+
           onAssetRequest={onAssetRequest}
           onNoteAdd={onNoteAdd}
         />

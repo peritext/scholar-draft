@@ -74,7 +74,6 @@ export function insertAssetInEditor(
     );
 
   const newEntityKey = newContentState.getLastCreatedEntityKey();
-
   const thatSelection = activeSelection.merge({
     anchorOffset: inputSelection.getStartOffset(),
     focusOffset: inputSelection.getEndOffset(),
@@ -102,8 +101,6 @@ export function insertAssetInEditor(
       });
     const block = newContent.getBlockAfter(blockE.key);
     const finalSelection = SelectionState.createEmpty(block.getKey());
-
-    // const finalSelection = block.getSelectionAfter();
     updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
   } else {
     const anchorKey = thatSelection.getAnchorKey();
@@ -349,9 +346,10 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     order++;
     if (notes[noteId]) {
       notes[noteId].order = order;
-    } else {
+    } /* else {
       console.log('could note attribute order to note', noteId, ' in ', notes, notes[noteId]);
     }
+    */
   });
   // filter unused notes
   return Object.keys(notes)

@@ -47,7 +47,7 @@ export default class ContentEditorContainer extends Component {
     contextualizationRequest: false,
     contextualizationRequestType: undefined,
     // all these should be handled by upstream logic in real applications
-    editorState: undefined,
+    editorState: EditorState.createEmpty(),
     inlineAssetComponents,
     blockAssetComponents,
     contextualizations: {
@@ -87,7 +87,7 @@ export default class ContentEditorContainer extends Component {
 
   onEditorChange = (editorState) => {
     this.setState({
-      editorState
+        editorState
     });
   }
 
@@ -103,15 +103,15 @@ export default class ContentEditorContainer extends Component {
    */
 
   onAssetMouseClick = (contextualizationId, contextualizationData, event) => {
-    console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
+    // console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
   }
 
   onAssetMouseOver = (contextualizationId, contextualizationData, event) => {
-    console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
+    // console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
   }
 
   onAssetMouseOut = (contextualizationId, contextualizationData, event) => {
-    console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
+    // console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
   }
 
   insertContextualization = (inputEditorState) => {
@@ -131,7 +131,7 @@ export default class ContentEditorContainer extends Component {
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
     }
-    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, selection);
+    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id});
     this.setState({
       contextualizationRequest: false,
       contextualizationRequestSelection: undefined,
@@ -140,6 +140,13 @@ export default class ContentEditorContainer extends Component {
         [id]: contextualization
       },
       editorState: newEditorState,
+      readOnly: true
+    });
+    setTimeout(() => {
+      this.setState({
+        readOnly: false
+      })
+      this.editor.focus();
     });
   }
 
@@ -231,8 +238,9 @@ export default class ContentEditorContainer extends Component {
       blockAssetComponents,
       contextualizations,
       contextualizers,
+      resources,
+      readOnly,
       contextualizationRequest,
-      resources
     } = state;
 
     const bindEditorRef = (editor) => {
@@ -256,18 +264,23 @@ export default class ContentEditorContainer extends Component {
     };
 
    const onDrop = (payload, selection) => {
-    console.log('to selection', selection.toJS());
-    // const editorState = EditorState.forceSelection(this.state.editorState, selection);
-    // this.setState({
-    //   editorState
-    // });
     this.insertContextualization(EditorState.acceptSelection(this.state.editorState, selection));
    };
 
    const onBlur = (e, editorState) => {
-    
+    this.setState({
+      readOnly: true
+    });
    }
 
+   const onClick = (e) => {
+    if (this.state.readOnly) {
+      this.setState({
+        readOnly: false
+      });
+      this.editor.focus();
+    }
+   }
    const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
       const contextualization = contextualizations[id];
@@ -311,7 +324,6 @@ export default class ContentEditorContainer extends Component {
             onDragStart={startDrag}
             style={{
               border: '1px solid black',
-              padding: '1em',
               background: 'white'
             }}
           >
@@ -365,10 +377,8 @@ export default class ContentEditorContainer extends Component {
             ref={bindEditorRef}
             editorState={editorState}
             assets={assets}
-            contextualizations={contextualizations}
-            contextualizers={contextualizers}
-            resources={resources}
-            
+            readOnly={readOnly}
+
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
             onAssetChange={onDataChange}
@@ -378,11 +388,12 @@ export default class ContentEditorContainer extends Component {
             onAssetMouseOut={onAssetMouseOut}
 
             onDrop={onDrop}
+            onClick={onClick}
+            onBlur={onBlur}
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
             allowNotesInsertion={false}
-            onBlur={onBlur}
           />
         </div>
       </div>

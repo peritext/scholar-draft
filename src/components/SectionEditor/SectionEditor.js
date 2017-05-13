@@ -37,10 +37,13 @@ export default class SectionEditor extends Component {
       onNotePointerMouseOut,
       onNotePointerMouseClick,
       onDrop,
+      onClick,
+      onBlur,
       
       inlineAssetComponents,
       blockAssetComponents,
       editorStyles,
+      readOnly,
     } = this.props;
 
     const renderNoteEditor = (noteId, order) => {
@@ -59,11 +62,22 @@ export default class SectionEditor extends Component {
         }
       };
       const note = notes[noteId];
+
+      const onNoteEditorClick = e => {
+        if (typeof onClick === 'function') {
+          onClick(e, noteId);
+        }
+      }
       return (
         <NoteContainer
           key={noteId}
           note={note}
           assets={assets}
+
+          readOnly={readOnly}
+
+          onClick={onNoteEditorClick}
+          onBlur={onBlur}
 
           onEditorChange={onThisNoteEditorChange}
           onAssetRequest={onNoteAssetRequest}
@@ -87,7 +101,15 @@ export default class SectionEditor extends Component {
     };
 
     const onMainEditorDrop = (payload, selection) => {
-      onDrop('main', payload, selection);
+      if (typeof onDrop === 'function') {
+        onDrop('main', payload, selection);
+      }
+    };
+
+    const onMainEditorClick = e => {
+      if (typeof onClick === 'function') {
+        onClick(e, 'main');
+      }
     };
     return (
       <div className={editorClass}>
@@ -96,6 +118,11 @@ export default class SectionEditor extends Component {
             editorState={mainEditorState}
             notes={notes}
             assets={assets}
+
+            readOnly={readOnly}
+
+            onClick={onMainEditorClick}
+            onBlur={onBlur}
             
             onEditorChange={onMainEditorChange}
             onDrop={onMainEditorDrop}

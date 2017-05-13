@@ -23,7 +23,6 @@ export default class SideControl extends Component {
     const { 
       buttons,
       editorState,
-      updateEditorState,
       onAssetRequest,
       onNoteAdd,
       allowAssets = {
