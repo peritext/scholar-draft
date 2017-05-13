@@ -145,8 +145,7 @@ export default class ContentEditorContainer extends Component {
     setTimeout(() => {
       this.setState({
         readOnly: false
-      })
-      this.editor.focus();
+      });
     });
   }
 
@@ -280,7 +279,8 @@ export default class ContentEditorContainer extends Component {
       });
       this.editor.focus();
     }
-   }
+   };
+
    const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
       const contextualization = contextualizations[id];

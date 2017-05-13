@@ -162,17 +162,17 @@ export default class ContentEditor extends Component {
   focus = (e) => {
     if (this.props.readOnly) return;
 
+    const stateMods = {};
     if (!this.props.readOnly && this.state.readOnly) {
-      this.setState({
-        readOnly: false
-      });
+      stateMods.readOnly = true;
     }
 
     const editorNode = this.editor && this.editor.refs.editor;
-    const editorBounds = editorNode.getBoundingClientRect();
-    this.setState({
-      editorBounds,
-    });
+    stateMods.editorBounds = editorNode.getBoundingClientRect();
+
+    if (Object.keys(stateMods).length) {
+      this.setState(stateMods);
+    }
 
     setTimeout(() => {
       if (!this.state.readOnly) {
@@ -435,7 +435,6 @@ export default class ContentEditor extends Component {
       this.inlineToolbar.toolbar.display = 'none';
     }
     if (this.sideControl) {
-      console.log(this.sideControl);
       this.sideControl.toolbar.display = 'none';
     }
 
@@ -666,8 +665,6 @@ export default class ContentEditor extends Component {
           onChange={onChange}
           ref={bindEditorRef}
           onBlur={this.onBlur}
-
-          onDrop={e => console.log('on editor drop')}
 
           {...otherProps}
         />

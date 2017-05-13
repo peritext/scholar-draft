@@ -102,6 +102,7 @@ export function insertAssetInEditor(
     const block = newContent.getBlockAfter(blockE.key);
     const finalSelection = SelectionState.createEmpty(block.getKey());
     updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
+  // inline entity
   } else {
     const anchorKey = thatSelection.getAnchorKey();
     const currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -128,7 +129,7 @@ export function insertAssetInEditor(
     }
     const endSelection = thatSelection.merge({
       anchorOffset: thatSelection.getEndOffset() + selectedText.length,
-      focusOffset: thatSelection.getEndOffset() + selectedText.length,
+      focusOffset: thatSelection.getEndOffset()+ selectedText.length,
     });
     newContentState = Modifier.replaceText(
         newContentState,
@@ -346,10 +347,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     order++;
     if (notes[noteId]) {
       notes[noteId].order = order;
-    } /* else {
-      console.log('could note attribute order to note', noteId, ' in ', notes, notes[noteId]);
     }
-    */
   });
   // filter unused notes
   return Object.keys(notes)
