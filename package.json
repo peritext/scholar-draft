@@ -1,8 +1,8 @@
 {
-  "name": "peritext-draft-editor",
+  "name": "scholar-draft",
   "version": "0.0.1",
-  "description": "draft editor handling side notes and inline/block contextualizations display",
-  "main": "dist/peritext-draft-editor.js",
+  "description": "draft editor handling footnotes editing and inline/block assets connected to upstream logic",
+  "main": "build/index.js",
   "scripts": {
     "autocommit-add": "git add dist",
     "build": "rm -rf build && gulp build",
@@ -17,19 +17,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/peritext/peritext-core.git"
+    "url": "git+https://github.com/peritext/scholar-draft.git"
   },
   "keywords": [
-    "publishing",
-    "academic",
-    "multimodal"
+    "draft-js",
   ],
   "author": "Robin de Mourat",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/peritext/peritext-core/issues"
+    "url": "https://github.com/peritext/scholar-draft/issues"
   },
-  "homepage": "https://github.com/peritext/peritext-core#readme",
+  "homepage": "https://github.com/peritext/scholar-draft#readme",
   "pre-commit": [
     "lint",
     "test",
@@ -78,6 +76,7 @@
       "func-names": 0,
       "no-multi-spaces": 1,
       "no-cond-assign": 0,
+      "no-set-state": 0,
       "no-trailing-spaces": 0,
       "jsx-a11y/no-static-element-interactions": 0,
       "react/jsx-filename-extension": 0,
