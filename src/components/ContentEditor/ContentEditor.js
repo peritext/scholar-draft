@@ -158,6 +158,12 @@ export default class ContentEditor extends Component {
       this.inlineToolbar.toolbar.style.display = 'none';
       this.sideControl.toolbar.style.display = 'none';
     }
+
+    if (this.state.readOnly !== nextProps.readOnly) {
+      this.setState({
+        readOnly: nextProps.readOnly
+      })
+    }
   }
 
   focus = (e) => {
@@ -232,6 +238,7 @@ export default class ContentEditor extends Component {
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
       const left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - sideControlEle.offsetWidth;
+      
       // let left =  editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
       // left = assetRequestType === 'inline' ? left + rangeBounds.left : left;
       sideControlEle.style.left = `${left}px`;

@@ -7,7 +7,7 @@ const styles = {
   iconContainer: {
     display: 'inline-block',
     height: 24,
-    width: 24,
+    width: 24
   },
 };
 

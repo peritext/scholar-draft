@@ -8,6 +8,7 @@ const styles = {
     display: 'inline-block',
     height: 24,
     width: 24,
+    transition: 'all .1s ease',
   },
 };
 

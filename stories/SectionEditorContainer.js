@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import {debounce} from 'lodash';
+
 import {mapSeries} from 'async';
 import {
   EditorState,
@@ -77,6 +79,7 @@ export default class SectionEditorContainer extends Component {
 
   constructor(props) {
     super(props);
+    this.updateNotesFromEditor = debounce(updateNotesFromEditor, 500);
   }
 
   clearContextualizations = () => {
@@ -101,7 +104,9 @@ export default class SectionEditorContainer extends Component {
     // list all editor states to purge unused assets
     // (very expensive for performance)
     // setTimeout(this.clearContextualizations, 1);
+    console.time('editor change');
     if (contentType === 'main') {
+      // this is very expensive - todo : don't know how to improve it
       const notes = updateNotesFromEditor(editorState, this.state.notes);
       this.setState({
         mainEditorState: editorState,
@@ -119,6 +124,7 @@ export default class SectionEditorContainer extends Component {
           }
       });
     }
+    console.timeEnd('editor change');
   }
 
   onAssetRequest = (contentType, noteId, selection) => {
@@ -316,17 +322,23 @@ export default class SectionEditorContainer extends Component {
     // add related entity in main editor
     const mainEditorState = insertNoteInEditor(this.state.mainEditorState, id);
     // add note
-    const notes = {
+    let notes = {
       ...this.state.notes,
       [id]: {
         id,
         editorState: EditorState.createEmpty()
       }
     };
+    notes = updateNotesFromEditor(mainEditorState, notes);
     this.setState({
       notes,
-      mainEditorState
+      mainEditorState,
+      readOnly: false
     });
+
+    setTimeout(() => {
+      this.editor.focus(id);
+    }, 1);
   }
 
   deleteNote = id => {
@@ -405,6 +417,9 @@ export default class SectionEditorContainer extends Component {
         this.setState({
           readOnly: false
         });
+        setTimeout(() => {
+          this.editor.focus(contentId);
+        })
         // this.editor.focus();
       }
     }
@@ -448,6 +463,10 @@ export default class SectionEditorContainer extends Component {
       } else if(contextualizationRequestContentId && notes[contextualizationRequestContentId]) {
         assetRequestPosition = notes[contextualizationRequestContentId].editorState.getSelection();
       }
+    }
+
+    const bindRef = editor => {
+      this.editor = editor;
     }
 
     return (
@@ -533,6 +552,8 @@ export default class SectionEditorContainer extends Component {
             mainEditorState={mainEditorState}
             notes={notes}
             assets={assets}
+
+            ref={bindRef}
 
             readOnly={readOnly}
 

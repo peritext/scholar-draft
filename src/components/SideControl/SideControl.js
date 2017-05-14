@@ -53,6 +53,7 @@ export default class SideControl extends Component {
     const bindToolbar = (toolbar) => {
       this.toolbar = toolbar;
     };
+    const stopEventPropagation = e => e.stopPropagation();
     return (
       <div
         className="scholar-draft-SideControl"
@@ -69,7 +70,9 @@ export default class SideControl extends Component {
           active={assetRequestPosition}
         />}
         {assetRequestPosition &&
-          <span className="block-asset-choice-container">
+          <span className="block-asset-choice-container" 
+            onClick={stopEventPropagation}
+          >
             <AssetChoiceComponent
               {...assetChoiceProps}
               onAssetChoice={onAssetChoice}

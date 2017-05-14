@@ -16,6 +16,16 @@ export default class SectionEditor extends Component {
 
   constructor(props) {
     super(props);
+
+    this.notes = {};
+  }
+
+  focus = (contentId) => {
+    if (contentId === 'main' && this.mainEditor) {
+      this.mainEditor.focus();
+    } else if (this.notes[contentId]) {
+      this.notes[contentId].editor.focus();
+    }
   }
 
   render() {
@@ -55,6 +65,10 @@ export default class SectionEditor extends Component {
       readOnly,
     } = this.props;
 
+    const bindMainEditor = editor => {
+      this.mainEditor = editor;
+    }
+
     const renderNoteEditor = (noteId, order) => {
       const onThisNoteEditorChange = editor => onEditorChange('note', noteId, editor);
       const onNoteAssetRequest = (selection) => {
@@ -77,18 +91,23 @@ export default class SectionEditor extends Component {
           onClick(e, noteId);
         }
       };
+      const bindNote = note => {
+        this.notes[noteId] = note;
+      }
       return (
         <NoteContainer
           key={noteId}
           note={note}
           assets={assets}
 
+          ref={bindNote}
+
           assetRequestPosition={assetRequestPosition}
           assetChoiceProps={assetChoiceProps}
 
           readOnly={readOnly}
 
-          onClick={onNoteEditorClick}
+          onEditorClick={onNoteEditorClick}
           onBlur={onBlur}
 
           onEditorChange={onThisNoteEditorChange}
@@ -138,6 +157,7 @@ export default class SectionEditor extends Component {
             editorState={mainEditorState}
             notes={notes}
             assets={assets}
+            ref={bindMainEditor}
 
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}
