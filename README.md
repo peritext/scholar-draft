@@ -5,33 +5,34 @@ WIP
 Initially inspired by https://github.com/AlastairTaft/draft-js-editor
 ```
 
-`scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented apps with `react-js` lib.
+`scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented editing apps with `react-js` and [`draft-js`](https://draftjs.org) libs.
+
+# Goals and raison d'être of `scholar-draft`
 
 This module provides two [`draft-js`](https://draftjs.org) editor wrappers that are focused on three main goals :
 
-* connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream logic's data, that is editor's entities whose state is handled in the editor's upstream application logic
-* provide callbacks for editing upstream entities from within content editor's interface
-* allow to insert, move and edit footnotes within a draft-js editor
+* connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream applicationnal logic's assets data in a "one-way binding" manner (entities state is entirely contained upstream separately from the editor state)
+* provide callbacks for adding, removing, & editing upstream entities from within the editor's interface
+* allow to insert, move and edit footnotes within a draft-js editor, supporting entities as well
 
-The two component as provided as not state autonomous, a lot of operations provided by `lib.utils` must be handled upstream when implementing them, excepting the ones concerning their contents (editors and assets). See the `stories` folder to see example of implementation needs.
-
-# Features
-
-* real-time and editable logic-connected entities within the editor
-* footnotes management & edition
-* assets can be managed (CRUD) both within and out of the editor UI
-* assets drag-and-drop support
-* two types of assets wrappers are provided : block and inline (assets contents's components are provided by user)
-* components host a developper-supported component for displaying asset choice
-* markdown shortcuts
-* side toolbar and medium-like contextual toolbar (customizable)
-
-The module provides two components :
+To do so, the module provides two components :
 
 * `ContentEditor` : editor without footnotes support
 * `SectionEditor` : editor with footnotes support
 
-# ContentEditor
+It also provides a set of `utils` functions for manipulating editor's content upstream (CRUD notes, CRUD assets, ...). Take a look at the `stories` folder for implementation examples.
+
+# Features
+
+* real-time and editable logic-connected entities within the editor
+* footnotes management & edition support
+* assets drag-and-drop support
+* block and inline asset wrappers allowing developpers to provide their own assets components (examples : image preview, video preview, reference preview, ...)
+* asset choice wrapper allowing developpers to provide their own asset selection component (example : input connected to server endpoint query, ...)
+* markdown shortcuts handling
+* customizable medium-like contextual toolbar
+
+# ContentEditor API
 
 ## Props
 
@@ -89,9 +90,7 @@ The module provides two components :
 
 `allowAssets` (Object) => {inline: Boolean, block: Boolean}
 
-# SectionEditor
-
-Higher level editor combining main text and side notes.
+# SectionEditor API
 
 ## Props
 
