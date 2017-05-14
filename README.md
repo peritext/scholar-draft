@@ -13,14 +13,16 @@ This module provides two [`draft-js`](https://draftjs.org) editor wrappers that 
 * provide callbacks for editing upstream entities from within content editor's interface
 * allow to insert, move and edit footnotes within a draft-js editor
 
+The two component as provided as not state autonomous, a lot of operations provided by `lib.utils` must be handled upstream when implementing them, excepting the ones concerning their contents (editors and assets). See the `stories` folder to see example of implementation needs.
 
 # Features
 
 * real-time and editable logic-connected entities within the editor
 * footnotes management & edition
-* assets insertion request management
+* assets can be managed (CRUD) both within and out of the editor UI
 * assets drag-and-drop support
-* two types of assets wrappers : block and inline (assets contents's components are provided by user)
+* two types of assets wrappers are provided : block and inline (assets contents's components are provided by user)
+* components host a developper-supported component for displaying asset choice
 * markdown shortcuts
 * side toolbar and medium-like contextual toolbar (customizable)
 
@@ -37,7 +39,13 @@ The module provides two components :
 
 `editorState` (ImmutableMap) -> the state of the editor
 
+`readOnly` (Boolean)
+
 `assets` (Object) -> map of the assets data to be potentially used by the connector
+
+`assetChoiceProps` (Object) -> props to pass to the component displaying asset choice within the editor
+
+`assetRequestPosition` (ImmutableMap) -> position where asset is requested (if requested)
 
 ### Method props
 
@@ -46,6 +54,10 @@ The module provides two components :
 `onNoteAdd()`
 
 `onAssetRequest(selection)` -> triggers when an asset insertion is requested from the editor's ui
+
+`onAssetRequestCancel()`
+
+`onAssetRequestChoice(choice)`
 
 `onAssetChange(assetProp, id, newObject)` -> when mods are applied from editor on an asset
 
@@ -57,11 +69,17 @@ The module provides two components :
 
 `onDrop(payload, selection)` 
 
+`onClick(event)` 
+
+`onBlur(event)` 
+
 ### Parametrization props
 
 `inlineAssetsComponents` (Object) -> a map for displaying the inline assets components in the editor
 
 `blockAssetsComponents` (Object) -> a map for displaying the block assets components in the editor
+
+`AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
 
 `editorClass` (string) -> the class name to use
 
@@ -79,6 +97,8 @@ Higher level editor combining main text and side notes.
 
 ### State-related props
 
+`readOnly` (Boolean)
+
 `mainEditor` (ImmutableMap) -> the state of the editor of the main object
 
 `notesMap` (Object) -> map of `editorState` maps representing the editors of each map
@@ -86,6 +106,10 @@ Higher level editor combining main text and side notes.
 `notesOrder` (Array<String>) -> order of the notes in the section editor
 
 `assets` (Object) -> map of the assets data to be potentially used by the editor
+
+`assetChoiceProps` (Object) -> props to pass to the component displaying asset choice within the editor
+
+`assetRequestPosition` (ImmutableMap) -> position where asset is requested (if requested)
 
 ### Method props
 
@@ -104,6 +128,10 @@ Higher level editor combining main text and side notes.
 `onNotesOrderChange(notesOrder)` -> update the note order 
 
 `onAssetRequest(contentType, noteId, selection)` -> triggers when an asset insertion is requested from the editor's ui
+
+`onAssetRequestCancel()`
+
+`onAssetRequestChoice(choice)`
 
 `onAssetChange(assetProp, id, newObject)` -> when mods are applied from editor on an asset
 
@@ -128,5 +156,7 @@ Higher level editor combining main text and side notes.
 `InlineAssetComponents` (Object) -> a map for displaying the inline assets in the editor
 
 `BlockAssetComponents` (Object) -> a map for displaying the block assets in the editor
+
+`AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
 
 
