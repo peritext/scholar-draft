@@ -20,7 +20,7 @@
     "url": "git+https://github.com/peritext/scholar-draft.git"
   },
   "keywords": [
-    "draft-js",
+    "draft-js"
   ],
   "author": "Robin de Mourat",
   "license": "LGPL-3.0",
