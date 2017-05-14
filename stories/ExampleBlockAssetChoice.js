@@ -36,7 +36,7 @@ class BlockAssetChoice extends Component {
             .filter(name => name.indexOf(this.state.searchTerm) > -1);
     // add an asset
     if (matching.length) {
-      this.props.onAssetChoice();
+      this.props.onAssetChoice(matching[0]);
     // interpret input as text to insert within contents
     } else {
       this.props.addPlainText('@' + this.state.searchTerm);
@@ -49,14 +49,12 @@ class BlockAssetChoice extends Component {
       options = []
     } = this.props;
 
-    const onOptionClick = e => {
-      e.preventDefault();
-      e.stopPropagation();
-      onAssetChoice(e);
+    const onOptionClick = option => {
+      onAssetChoice(option);
     }
     const bindRef = input => {
       this.input = input;
-    }
+    };
     return (
       <div>
         <form onSubmit={this.onSubmit}>
@@ -79,7 +77,7 @@ class BlockAssetChoice extends Component {
                   background: 'white'
                 }}
                 key={index} 
-                onClick={onOptionClick}
+                onClick={e => onOptionClick(name)}
               >{name}</li>
               )
           }
