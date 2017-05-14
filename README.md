@@ -5,22 +5,24 @@ WIP
 Initially inspired by https://github.com/AlastairTaft/draft-js-editor
 ```
 
-`scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented editing apps with `react-js` and [`draft-js`](https://draftjs.org) libs.
+`scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented editing apps with `react-js` and [`draft-js`](https://draftjs.org) libraries.
 
-# Goals and raison d'être of `scholar-draft`
+# Goals and *raison d'être* of `scholar-draft`
 
-This module provides two [`draft-js`](https://draftjs.org) editor wrappers that are focused on three main goals :
+This module provides two react editor components that pursue three main goals :
 
-* connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream applicationnal logic's assets data in a "one-way binding" manner (entities state is entirely contained upstream separately from the editor state)
-* provide callbacks for adding, removing, & editing upstream entities from within the editor's interface
-* allow to insert, move and edit footnotes within a draft-js editor, supporting entities as well
+* easily connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream applicationnal logic's assets data in a "one-way binding" manner : **in scholar-draft, entities state is entirely contained upstream separately from the editor state, as a map of data objects called assets**.
+* provide callbacks for adding, removing, & editing upstream assets from within the editor's interface
+* **allow to insert, move and edit footnotes** within a draft-js editor, while supporting assets as well
 
 To do so, the module provides two components :
 
 * `ContentEditor` : editor without footnotes support
 * `SectionEditor` : editor with footnotes support
 
-It also provides a set of `utils` functions for manipulating editor's content upstream (CRUD notes, CRUD assets, ...). Take a look at the `stories` folder for implementation examples.
+These components are as "pure" as possible, that is they do not contain their content's state but rather receive it in their props and trigger callbacks when subjected to user's change.
+
+For that reason the module also provides a set of `utils` functions for manipulating editor's state upstream of the editor (CRUD notes, CRUD assets, ...). Take a look at the `stories` folder for implementation examples.
 
 # Features
 
@@ -28,7 +30,7 @@ It also provides a set of `utils` functions for manipulating editor's content up
 * footnotes management & edition support
 * assets drag-and-drop support
 * block and inline asset wrappers allowing developpers to provide their own assets components (examples : image preview, video preview, reference preview, ...)
-* asset choice wrapper allowing developpers to provide their own asset selection component (example : input connected to server endpoint query, ...)
+* asset choice wrapper allowing developpers to provide their own asset selection component (example : input enabling to search in the list of relevant assets, ...)
 * markdown shortcuts handling
 * customizable medium-like contextual toolbar
 
