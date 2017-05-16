@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import './NoteContainer.scss';
 
-import ContentEditor from '../ContentEditor/ContentEditor';
+import BasicEditor from '../BasicEditor/BasicEditor';
 
 class NoteContainer extends Component {
   constructor(props) {
@@ -17,12 +17,17 @@ class NoteContainer extends Component {
     const {
       note,
       assets,
+      assetRequestPosition,
+      addTextAtCurrentSelection,
       
       onEditorChange,
       onAssetRequest,
+      onAssetRequestCancel,
+      onAssetChoice,
       onAssetChange,
       onClickDelete,
       onDrop,
+      onBlur,
       onEditorClick,
 
       onAssetClick,
@@ -30,6 +35,10 @@ class NoteContainer extends Component {
       onAssetMouseOut,
       inlineAssetComponents,
       blockAssetComponents,
+      AssetChoiceComponent,
+      
+      assetChoiceProps,
+
       readOnly,
       editorStyle
     } = this.props;
@@ -57,17 +66,26 @@ class NoteContainer extends Component {
           <h3>Note {note.order}</h3>
         </div>
         <div className="note-body">
-          <ContentEditor 
+          <BasicEditor 
             editorState={note.editorState}
             assets={assets}
             readOnly={readOnly}
             ref={bindRef}
             onClick={onClick}
-            
+            onDrop={onDrop}
+            onBlur={onBlur}
+            addTextAtCurrentSelection={addTextAtCurrentSelection}
+
+            assetRequestPosition={assetRequestPosition}
+            onAssetRequestCancel={onAssetRequestCancel}
+            AssetChoiceComponent={AssetChoiceComponent}
+            assetChoiceProps={assetChoiceProps}
+
+
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
             onAssetChange={onAssetChange}
-            onDrop={onDrop}
+            onAssetChoice={onAssetChoice}
 
             onAssetClick={onAssetClick}
             onAssetMouseOver={onAssetMouseOver}

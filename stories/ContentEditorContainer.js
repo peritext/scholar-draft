@@ -13,7 +13,7 @@ import {
 } from 'uuid';
 
 import {
-  ContentEditor,
+  BasicEditor,
   constants,
   utils,
 } from '../src';
@@ -93,6 +93,7 @@ export default class ContentEditorContainer extends Component {
   }
 
   onAssetRequest = (selection) => {
+    console.log('on asset request', selection);
     this.setState({
       contextualizationRequest: true,
       contextualizationRequestSelection: selection,
@@ -432,11 +433,14 @@ export default class ContentEditorContainer extends Component {
             paddingBottom: '2em',
             paddingTop: '2em'
           }}>
-          <ContentEditor 
+          <BasicEditor 
             ref={bindEditorRef}
             editorState={editorState}
-            assets={assets}
             readOnly={readOnly}
+
+            assets={assets}
+            assetRequestPosition={assetRequestPosition}
+            assetChoiceProps={assetChoiceProps}
 
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
@@ -448,8 +452,6 @@ export default class ContentEditorContainer extends Component {
             onAssetMouseOver={onAssetMouseOver}
             onAssetMouseOut={onAssetMouseOut}
 
-            assetRequestPosition={assetRequestPosition}
-            assetChoiceProps={assetChoiceProps}
 
             onDrop={onDrop}
             onClick={onClick}

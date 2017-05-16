@@ -1,9 +1,11 @@
-import contentEditor from './components/ContentEditor/ContentEditor';
-import sectionEditor from './components/SectionEditor/SectionEditor';
+import basicEditor from './components/BasicEditor/BasicEditor';
+import editor from './components/Editor/Editor';
 import * as Utils from './utils';
 import * as Constants from './constants';
 
-export const ContentEditor = contentEditor;
-export const SectionEditor = sectionEditor;
+export const BasicEditor = basicEditor;
+const Editor = editor;
 export const utils = Utils;
 export const constants = Constants;
+export default Editor;
+

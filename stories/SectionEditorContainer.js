@@ -15,8 +15,7 @@ import {
   v4 as generateId
 } from 'uuid';
 
-import {
-  SectionEditor,
+import Editor, {
   utils
 } from '../src';
 
@@ -48,8 +47,8 @@ export default class SectionEditorContainer extends Component {
   
   state = {
     // mock related
-    contextualizationRequest: false,
-    contextualizationRequestType: undefined,
+    assetRequest: false,
+    assetRequestType: undefined,
     // all these should be handled by upstream logic in real applications
     mainEditorState: EditorState.createEmpty(),
     notes: {},
@@ -73,6 +72,9 @@ export default class SectionEditorContainer extends Component {
         type: 'citation',
         pages: '12-13'
       }
+    },
+    readOnly: {
+      main: false
     }
   }
 
@@ -102,12 +104,12 @@ export default class SectionEditorContainer extends Component {
 
   onEditorChange = (contentType, noteId, editorState) => {
     // list all editor states to purge unused assets
-    // (very expensive for performance)
-    // setTimeout(this.clearContextualizations, 1);
-    console.time('editor change');
+    
     if (contentType === 'main') {
       // this is very expensive - todo : don't know how to improve it
       const notes = updateNotesFromEditor(editorState, this.state.notes);
+      // (very expensive for performance)
+      // this.clearContextualizations()
       this.setState({
         mainEditorState: editorState,
         notes
@@ -124,32 +126,43 @@ export default class SectionEditorContainer extends Component {
           }
       });
     }
-    console.timeEnd('editor change');
   }
 
   onAssetRequest = (contentType, noteId, selection) => {
+
     this.setState({
-      contextualizationRequest: true,
-      contextualizationRequestSelection: selection,
-      contextualizationRequestContentId: contentType === 'main' ? 'main' : noteId
+      readOnly: {
+        ...this.state.readOnly,
+        [noteId || 'main']: false
+      }
     });
+
+    setTimeout(() => {
+      this.setState({
+        assetRequest: true,
+        assetRequestSelection: selection,
+        assetRequestContentId: contentType === 'main' ? 'main' : noteId,
+        readOnly: {
+          ...this.state.readOnly,
+          [noteId || 'main']: true
+        }
+      });
+      this.editor.focus(noteId || 'main');
+
+    }, 1);
+  }
+
+  onAssetChoice = () => {
+    this.insertContextualization();
   }
 
   onAssetRequestCancel = () => {
     this.setState({
-      contextualizationRequest: undefined,
-      contextualizationRequestSelection: undefined,
-      readOnly: false
+      assetRequest: undefined,
+      assetRequestSelection: undefined,
+      readOnly: {}
     });
-    // setTimeout(() => {
-    //   this.editor.focus();
-    // }, 1);
   }
-  onAsset = (e) => {
-    console.log('on asset choice', e);
-    this.insertContextualization();
-  }
-
 
   /*
    * MOCK-RELATED
@@ -183,13 +196,13 @@ export default class SectionEditorContainer extends Component {
     const {
       mainEditorState,
       notes,
-      contextualizationRequestSelection,
+      assetRequestSelection,
       resources,
       contextualizers,
       contextualizations
     } = this.state;
 
-    const contextualizationRequestContentId = contentId || this.state.contextualizationRequestContentId;
+    const assetRequestContentId = contentId || this.state.assetRequestContentId;
     const id = generateId();
     const contextualization = {
       id,
@@ -199,30 +212,36 @@ export default class SectionEditorContainer extends Component {
     };
     let editorState = inputEditorState;
     if (!editorState){
-      editorState = contextualizationRequestContentId === 'main' ? mainEditorState : notes[contextualizationRequestContentId].editorState;
+      editorState = assetRequestContentId === 'main' ? mainEditorState : notes[assetRequestContentId].editorState;
     }
-    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, contextualizationRequestSelection);
+    const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id}, assetRequestSelection);
     const newState = {
-      contextualizationRequest: false,
-      contextualizationRequestType: undefined,
-      contextualizationRequestSelection: undefined,
+      assetRequest: false,
+      assetRequestType: undefined,
+      assetRequestSelection: undefined,
       contextualizations: {
         ...contextualizations,
         [id]: contextualization
       },
       notes: this.state.notes,
-      readOnly: true
+      readOnly: {
+        ...this.state.readOnly,
+        [assetRequestContentId]: true
+      }
       // editorState: newEditorState,
     };
-    if (contextualizationRequestContentId === 'main') {
+    if (assetRequestContentId === 'main') {
       newState.mainEditorState = newEditorState;
     } else {
-      newState.notes[contextualizationRequestContentId].editorState = newEditorState;
+      newState.notes[assetRequestContentId].editorState = newEditorState;
     }
     this.setState(newState);
     setTimeout(() => {
       this.setState({
-        readOnly: false
+        readOnly: {
+          ...this.state.readOnly,
+          [assetRequestContentId]: false
+        }
       })
     });
   }
@@ -333,7 +352,10 @@ export default class SectionEditorContainer extends Component {
     this.setState({
       notes,
       mainEditorState,
-      readOnly: false
+      readOnly: {
+        ...this.state.readOnly,
+        [id]: false
+      }
     });
 
     setTimeout(() => {
@@ -349,9 +371,49 @@ export default class SectionEditorContainer extends Component {
       delete notes[id];
       this.setState({
         mainEditorState,
-        notes
+        notes,
+        readOnly: {
+          ...this.state.readOnly,
+          main: false
+        }
       });
     });
+    this.editor.focus('main');
+  }
+
+  addTextAtCurrentSelection = (text) => {
+    const contentId = this.state.assetRequestContentId;
+    const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
+    console.log('content id', contentId, editorState);
+
+    const newContentState = Modifier.insertText(
+      editorState.getCurrentContent(),
+      editorState.getSelection(),
+      text,
+    );
+    if (contentId === 'main') {
+      this.setState({
+        mainEditorState: EditorState.push(
+          this.state.mainEditorState,
+          newContentState,
+          'insert-text'
+        )
+      });
+    } else {
+      this.setState({
+        notes: {
+          ...this.state.notes,
+          [contentId]: {
+            ...this.state.notes[contentId],
+            editorState: EditorState.push(
+              this.state.notes[contentId].editorState,
+              newContentState,
+              'insert-text'
+            )
+          }
+        }
+      });
+    }
   }
 
   render = () => {
@@ -378,6 +440,7 @@ export default class SectionEditorContainer extends Component {
       refreshContextualizationsList,
       addNote,
       deleteNote,
+      addTextAtCurrentSelection,
       state
     } = this;
     const {
@@ -387,8 +450,8 @@ export default class SectionEditorContainer extends Component {
       blockAssetComponents,
       contextualizations,
       contextualizers,
-      contextualizationRequest,
-      contextualizationRequestContentId,
+      assetRequest,
+      assetRequestContentId,
       resources,
       readOnly,
     } = state;
@@ -408,32 +471,39 @@ export default class SectionEditorContainer extends Component {
        e.dataTransfer.dropEffect = 'copy';
        e.dataTransfer.setData('text', 'TEST');
        this.setState({
-        readOnly: false
+        readOnly: {}
        });
     };
-
-    const handleClick = (event, contentId) => {
-      if (this.state.readOnly) {
-        this.setState({
-          readOnly: false
-        });
-        setTimeout(() => {
-          this.editor.focus(contentId);
-        })
-        // this.editor.focus();
-      }
-    }
 
     const onDrop = (contentId, payload, selection) => {
       const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
       this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
     };
 
-    const onBlur = (event, contentId) => {
-      this.setState({
-        readOnly: true
-      });
+    const onClick = (event, contentId = 'main') => {
+      // console.log('on click', this.state.readOnly[contentId]);
+      if (this.state.readOnly[contentId]) {
+        // console.log('set readonly to false for', contentId);
+        this.setState({
+          readOnly: {
+            ...this.state.readOnly,
+            [contentId]: false
+          }
+        });
+        setTimeout(() => {
+          this.editor.focus(contentId);
+        }, 1);
+      }
     }
+
+    const onBlur = (event, contentId = 'main') => {
+      this.setState({
+        readOnly: {
+          ...this.state.readOnly,
+          [contentId]: true
+        }
+      });
+    };
 
     const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
@@ -451,17 +521,17 @@ export default class SectionEditorContainer extends Component {
 
     const assetChoiceProps = {
       options: ['asset 1', 'asset 2', 'asset 3'],
-      addPlainText: text => {
+      addPlainText: (text) => {
         addTextAtCurrentSelection(text);
         onAssetRequestCancel();
       }
     };
     let assetRequestPosition;
-    if (contextualizationRequest) {
-      if (contextualizationRequestContentId === 'main') {
+    if (assetRequest) {
+      if (assetRequestContentId === 'main') {
         assetRequestPosition = mainEditorState.getSelection();
-      } else if(contextualizationRequestContentId && notes[contextualizationRequestContentId]) {
-        assetRequestPosition = notes[contextualizationRequestContentId].editorState.getSelection();
+      } else if(assetRequestContentId && notes[assetRequestContentId]) {
+        assetRequestPosition = notes[assetRequestContentId].editorState.getSelection();
       }
     }
 
@@ -491,7 +561,7 @@ export default class SectionEditorContainer extends Component {
             overflow: 'auto'
           }}
         >
-          {contextualizationRequest && <div>
+          {assetRequest && <div>
           <button onClick={() => insertContextualization()}>Insert contextualization</button>
             </div>}
           <div
@@ -548,7 +618,7 @@ export default class SectionEditorContainer extends Component {
             height: '100%',
             width: '80%'
           }}>
-          <SectionEditor 
+          <Editor 
             mainEditorState={mainEditorState}
             notes={notes}
             assets={assets}
@@ -564,7 +634,7 @@ export default class SectionEditorContainer extends Component {
             onEditorChange={onEditorChange}
 
             onDrop={onDrop}
-            onClick={handleClick}
+            onClick={onClick}
             onBlur={onBlur}
 
             onAssetClick={onAssetClick}

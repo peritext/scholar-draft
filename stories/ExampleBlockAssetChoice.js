@@ -7,11 +7,11 @@ class BlockAssetChoice extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      if (this.input){
+    if (this.input){
+      setTimeout(() => {
         this.input.focus();
-      }
-    }, 1);
+      })
+    }
   }
 
   onTermChange = (e) => {
@@ -43,6 +43,13 @@ class BlockAssetChoice extends Component {
     }
   }
 
+  onInputClick = e => {
+    e.stopPropagation();
+    if (this.input) {
+      this.input.focus();        
+    }
+  }
+
   render () {
     const {
       onAssetChoice,
@@ -61,8 +68,10 @@ class BlockAssetChoice extends Component {
           @<input
             ref={bindRef}
             value={this.state.searchTerm}
+            onBlur={this.onBlur}
             onChange={this.onTermChange}
             onKeyUp={this.onKeyUp}
+            onClick={this.onInputClick}
             placeholder="search an asset"
           />
         </form>

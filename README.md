@@ -11,14 +11,14 @@ Initially inspired by https://github.com/AlastairTaft/draft-js-editor
 
 This module provides two react editor components that pursue three main goals :
 
-* easily connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream applicationnal logic's assets data in a "one-way binding" manner : **in scholar-draft, entities state is entirely contained upstream separately from the editor state, as a map of data objects called assets**.
+* easily connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream applicationnal logic's assets data in a "one-way binding" manner : **in scholar-draft, entities state and components are entirely handled upstream separately from the editor state**. An entity's data is called an `asset` in the module's vocabulary
 * provide callbacks for adding, removing, & editing upstream assets from within the editor's interface
 * **allow to insert, move and edit footnotes** within a draft-js editor, while supporting assets as well
 
 To do so, the module provides two components :
 
-* `ContentEditor` : editor without footnotes support
-* `SectionEditor` : editor with footnotes support
+* `BasicEditor` : editor without footnotes support
+* `Editor` : editor with footnotes support
 
 These components are as "pure" as possible, that is they do not contain their content's state but rather receive it in their props and trigger callbacks when subjected to user's change.
 
@@ -26,15 +26,16 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 # Features
 
-* real-time and editable logic-connected entities within the editor
+* upstream-connected entities support
 * footnotes management & edition support
 * assets drag-and-drop support
-* block and inline asset wrappers allowing developpers to provide their own assets components (examples : image preview, video preview, reference preview, ...)
-* asset choice wrapper allowing developpers to provide their own asset selection component (example : input enabling to search in the list of relevant assets, ...)
+* block and inline asset wrappers allowing developpers to provide their own assets components (examples : image preview component, video preview component, reference preview component, ...). These components can be provided as plain previews, or can host user interactions and trigger callbacks to change upstream assets.
+* asset choice wrapper allowing developpers to provide their own asset selection component (example : an input field enabling to search in the list of relevant assets, ...)
 * markdown shortcuts handling
 * customizable medium-like contextual toolbar
+* customizable style, through css classes selectors
 
-# ContentEditor API
+# BasicEditor API
 
 ## Props
 
@@ -44,11 +45,11 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 `readOnly` (Boolean)
 
-`assets` (Object) -> map of the assets data to be potentially used by the connector
+`assets` (Object) -> map of the assets data to be potentially used by the editor
 
 `assetChoiceProps` (Object) -> props to pass to the component displaying asset choice within the editor
 
-`assetRequestPosition` (ImmutableMap) -> position where asset is requested (if requested)
+`assetRequestPosition` (ImmutableMap) -> position where an asset is requested (if requested)
 
 ### Method props
 
@@ -78,9 +79,9 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 ### Parametrization props
 
-`inlineAssetsComponents` (Object) -> a map for displaying the inline assets components in the editor
+`inlineAssetsComponents` (Object) -> a map for displaying the inline assets components in the editor according to assets `type` property
 
-`blockAssetsComponents` (Object) -> a map for displaying the block assets components in the editor
+`blockAssetsComponents` (Object) -> a map for displaying the block assets components in the editor according to assets `type` property
 
 `AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
 
@@ -92,7 +93,7 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 `allowAssets` (Object) => {inline: Boolean, block: Boolean}
 
-# SectionEditor API
+# Editor API
 
 ## Props
 

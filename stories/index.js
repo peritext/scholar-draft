@@ -4,10 +4,10 @@ import { storiesOf, action, linkTo } from '@kadira/storybook';
 import ContentEditorContainer from './ContentEditorContainer'
 import SectionEditorContainer from './SectionEditorContainer'
 
-storiesOf('Peritext editor', module)
-  .add('Content editor (default)', () => (
+storiesOf('Scholarly editor', module)
+  .add('Simple editor (without footnotes support)', () => (
     <ContentEditorContainer />
   ))
-  .add('Section editor (default)', () => (
+  .add('Complete editor (with footnotes support)', () => (
     <SectionEditorContainer />
   ))
