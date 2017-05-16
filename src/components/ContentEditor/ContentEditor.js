@@ -158,7 +158,6 @@ export default class ContentEditor extends Component {
       this.inlineToolbar.toolbar.style.display = 'none';
       this.sideControl.toolbar.style.display = 'none';
     }
-
     if (this.state.readOnly !== nextProps.readOnly) {
       this.setState({
         readOnly: nextProps.readOnly
@@ -183,6 +182,7 @@ export default class ContentEditor extends Component {
 
     setTimeout(() => {
       if (!this.state.readOnly) {
+        console.log('focusing the editor');
         editorNode.focus();
       }
     }, 1);
@@ -488,7 +488,7 @@ export default class ContentEditor extends Component {
     // todo : make that feature more subtle
     if (character === '@') {
       this.props.onAssetRequest();
-      return 'not-handled';
+      return 'handled';
     }
     if (character !== ' ') {
       return 'not-handled';
