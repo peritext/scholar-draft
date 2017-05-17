@@ -152,6 +152,7 @@
     "draft-js-markdown-shortcuts-plugin": "^0.1.0",
     "draft-js-multidecorators": "^1.0.0",
     "draft-js-simpledecorator": "^1.0.2",
+    "draftjs-utils": "^0.7.5",
     "prop-type": "0.0.1",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",

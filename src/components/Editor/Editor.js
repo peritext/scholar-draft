@@ -63,6 +63,7 @@ export default class SectionEditor extends Component {
       keyBindingFn,
 
       editorStyles,
+      clipboard,
       readOnly = {},
     } = this.props;
 
@@ -122,6 +123,8 @@ export default class SectionEditor extends Component {
           onAssetChange={onAssetChange}
           onAssetRequestCancel={onAssetRequestCancel}
           onAssetChoice={onAssetChoice}
+
+          clipboard={clipboard}
 
           onDrop={onNoteDrop}
           onClickDelete={onClickDelete}
@@ -196,6 +199,8 @@ export default class SectionEditor extends Component {
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
             AssetChoiceComponent={AssetChoiceComponent}
+
+            clipboard={clipboard}
 
             allowNotesInsertion
             editorStyle={editorStyles && editorStyles.mainEditor}

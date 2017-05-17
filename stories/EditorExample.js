@@ -8,16 +8,27 @@ import {
   EditorState,
   Modifier,
   Entity,
-  AtomicBlockUtils
+  AtomicBlockUtils,
+  convertToRaw,
+  convertFromRaw
 } from 'draft-js';
+
+import {
+  getSelectedBlocksList
+} from 'draftjs-utils';
 
 import {
   v4 as generateId
 } from 'uuid';
 
 import Editor, {
-  utils
+  utils,
+  constants
 } from '../src';
+const {
+  NOTE_POINTER,
+  INLINE_ASSET
+} = constants;
 
 const {
   getAssetsToDeleteFromEditor,
@@ -28,7 +39,8 @@ const {
   getUnusedAssets,
   updateNotesFromEditor,
   insertNoteInEditor,
-  updateAssetsFromEditors
+  updateAssetsFromEditors,
+  insertFragment
 } = utils;
 
 import ExampleBlockCitation from './ExampleBlockCitation';
@@ -43,7 +55,7 @@ const blockAssetComponents = {
   citation: ExampleBlockCitation
 };
 
-export default class SectionEditorContainer extends Component {
+export default class EditorExample extends Component {
   
   state = {
     // mock related
@@ -82,6 +94,245 @@ export default class SectionEditorContainer extends Component {
   constructor(props) {
     super(props);
     this.updateNotesFromEditor = debounce(updateNotesFromEditor, 500);
+  }
+
+  componentDidMount() {
+    document.addEventListener('copy', this.onCopy);
+    document.addEventListener('cut', this.onCopy);
+    document.addEventListener('paste', this.onPaste);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('copy', this.onCopy);
+    document.removeEventListener('cut', this.onCopy);
+    document.removeEventListener('paste', this.onPaste);
+  }
+
+  // loading data into the clipboard
+  onCopy = e => {
+    // must do --> we store entities data as js object to reinject them at parsing in editor states
+    const copiedEntities = {};
+    const copiedNotes = [];
+    // for mocks purposes
+    const copiedContextualizers = [];
+    const copiedContextualizations = [];
+
+    let clipboard = null;
+    let currentContent;
+    let editorState;
+    let activeId;
+    const {
+      readOnly
+    } = this.state;
+    if (!readOnly.main) {
+      clipboard = this.editor.mainEditor.editor.getClipboard();
+      editorState = this.state.mainEditorState;
+    } else {
+      activeId = Object.keys(this.state.notes)
+        .find(id => !readOnly[id]);
+      console.log('active id', activeId);
+      editorState = this.state.notes[activeId].editorState;
+      clipboard = this.editor.notes[activeId].editor.getClipboard();
+    }
+    // todo : this is bad, due to problems with readonly management
+    if (!activeId) {
+      activeId = 'main';
+    }
+    copiedEntities[activeId] = [];
+    currentContent = editorState.getCurrentContent();
+    const selectedBlocksList = getSelectedBlocksList(editorState);
+
+    this.setState({
+      clipboard
+    });
+
+    selectedBlocksList.forEach(contentBlock => {
+      const block = contentBlock.toJS();
+      const entitiesIds = block.characterList.filter(char => char.entity).map(char => char.entity);
+      let entity;
+      let eData;
+      entitiesIds.forEach(entityKey => {
+        entity = currentContent.getEntity(entityKey);
+        eData = entity.toJS();
+        copiedEntities[activeId].push({
+          key: entityKey,
+          entity: eData
+        });
+        const type = eData.type;
+        // copying note pointer and note
+        if (type === NOTE_POINTER) {
+          const noteId = eData.data.noteId;
+          const noteContent = this.state.notes[noteId].editorState.getCurrentContent();
+          const rawContent = convertToRaw(noteContent);
+          copiedEntities[noteId] = [];
+          copiedNotes.push({
+            id: noteId,
+            // ...this.state.notes[noteId],
+            rawContent
+          });
+          // copying note's entities
+          noteContent.getBlockMap().forEach(block => {
+            block.getCharacterList().map(char => {
+              if (char.entity) {
+                entityKey = char.entity;
+                entity = currentContent.getEntity(entityKey);
+                eData = entity.toJS();
+                copiedEntities[noteId].push({
+                  key: entityKey,
+                  entity: eData
+                });
+              }
+            })
+            return true;
+          });
+        // copying asset pointer
+        } else {
+          // mock
+          const assetId = entity.data.asset.id;
+          const contextualization = this.state.contextualizations[assetId];
+          copiedContextualizations.push({...contextualization});
+          copiedContextualizers.push({
+            ...this.state.contextualizers[contextualization.contextualizerId],
+            id: contextualization.contextualizerId
+          });
+        }
+      });
+      return true;
+    });
+    const copiedData = {
+      copiedEntities,
+      copiedContextualizations,
+      copiedContextualizers,
+      copiedNotes
+    };
+    const serializedCopiedData = JSON.stringify(copiedData);
+    e.clipboardData.setData('data', serializedCopiedData);
+    this.setState({
+      copiedData
+    });
+  }
+
+  onPaste = e => {
+    // let currentContent;
+    let editorState;
+    let activeId;
+    const {
+      readOnly,
+      clipboard,
+      copiedData
+    } = this.state;
+    if (!readOnly.main) {
+      activeId = 'main';
+      editorState = this.state.mainEditorState;
+    } else {
+      activeId = Object.keys(this.state.notes)
+        .find(id => !readOnly[id]);
+      editorState = this.state.notes[activeId].editorState;
+    }
+    const currentContent = editorState.getCurrentContent();
+    const stateMods = {
+      mainEditorState: this.state.mainEditorState,
+      notes: {...this.state.notes},
+      contextualizers: {...this.state.contextualizers},
+      contextualizations: {...this.state.contextualizations},
+      resources: {...this.state.resources}
+    };
+    let newEditorState = editorState;
+    if (typeof copiedData === 'object') {
+      try{
+        const data = copiedData;
+        if (data.copiedContextualizations) {
+          stateMods.contextualizations = data.copiedContextualizations.reduce((result, contextualization) => {
+            return {
+              ...result,
+              [contextualization.id]: contextualization
+            }
+          }, {...this.state.contextualizations});
+        }
+        if (data.copiedContextualizers) {
+          stateMods.contextualizers = data.copiedContextualizers.reduce((result, contextualizer) => {
+            return {
+              ...result,
+              [contextualizer.id]: contextualizer
+            }
+          }, {...this.state.contextualizer});
+        }
+        // notes
+        if (data.copiedNotes) {
+          stateMods.notes = {
+            ...stateMods.notes,
+            ...data.copiedNotes.reduce((result, note) => {
+              const newEditorState = EditorState.createWithContent(convertFromRaw(note.rawContent));
+              return {
+                ...result,
+                [note.id]: {
+                  ...note,
+                  editorState: newEditorState
+                }
+              };
+            }, {...stateMods.notes})
+          }
+        }
+        // integrate entities in respective editorStates
+        if (Object.keys(data.copiedEntities).length) {
+          let newContentState;
+          Object.keys(data.copiedEntities).forEach(contentId => {
+            if (contentId === 'main') {
+              const editor = stateMods.mainEditorState;
+              newContentState = editor.getCurrentContent();
+              data.copiedEntities[contentId].forEach(entity => {
+                newContentState = newContentState.createEntity(entity.entity);
+                // storing old entity key
+                // entity.oldKey = entity.key;
+                // storing new entity key
+                entity.key  = newContentState.getLastCreatedEntityKey();
+              });
+              stateMods.mainEditorState = EditorState.push(
+                newEditorState,
+                newContentState,
+                'add-entity'
+              );
+            } else {
+              const editor = stateMods.notes[contentId].editorState;
+              newContentState = editor.getCurrentContent();
+              data.copiedEntities[contentId].forEach(entity => {
+                newContentState = newContentState.createEntity(entity.entity);
+                // storing old entity key
+                // entity.oldKey = entity.key;
+                // storing new entity key
+                entity.key  = newContentState.getLastCreatedEntityKey();
+              });
+              stateMods.notes[contentId].editorState = EditorState.push(
+                newEditorState,
+                newContentState,
+                'add-entity'
+              );
+            }
+          });
+        }
+      } catch(e) {
+      }
+    }
+
+    if (clipboard) {
+      e.preventDefault();
+      newEditorState = insertFragment(newEditorState, clipboard);
+    }
+    if (activeId === 'main') {
+      stateMods.mainEditorState = newEditorState;
+      stateMods.notes = updateNotesFromEditor(stateMods.mainEditorState, stateMods.notes);
+    } else {
+      stateMods.notes = {
+        ...this.state.notes,
+        [activeId]: {
+          ...this.state.notes[activeId],
+          editorState: newEditorState
+        }
+      }
+    }
+    if (Object.keys(stateMods).length) {
+      this.setState(stateMods);
+    }
   }
 
   clearContextualizations = () => {
@@ -208,7 +459,7 @@ export default class SectionEditorContainer extends Component {
       id,
       resourceId: Object.keys(resources)[0],
       contextualizerId: Object.keys(contextualizers)[0],
-      type: contextualizers[Object.keys(contextualizers)[0]].type,
+      type: Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].type : INLINE_ASSET,
     };
     let editorState = inputEditorState;
     if (!editorState){
@@ -445,6 +696,7 @@ export default class SectionEditorContainer extends Component {
 
     const {
       mainEditorState,
+      clipboard,
       notes,
       inlineAssetComponents,
       blockAssetComponents,
@@ -505,16 +757,19 @@ export default class SectionEditorContainer extends Component {
       });
     };
 
+    // console.log(Object.keys(contextualizers));
+
     const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
       const contextualization = contextualizations[id];
+      const contextualizer = contextualizers[contextualization.contextualizerId]
       return {
         ...ass,
         [id]: {
           ...contextualization,
           resource: resources[contextualization.resourceId],
-          contextualizer: contextualizers[contextualization.contextualizerId],
-          type: contextualizers[contextualization.contextualizerId].type
+          contextualizer: contextualizer,
+          type: contextualizer ? contextualizer.type : INLINE_ASSET
         }
       }
     }, {});
@@ -607,7 +862,7 @@ export default class SectionEditorContainer extends Component {
           </div>}
             Change the contextualizer page :
             <input
-              value={contextualizers[Object.keys(contextualizers)[0]].pages}
+              value={Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages: ''}
               onChange={onContextualizerPagesChange}
             >
             </input>
@@ -615,7 +870,7 @@ export default class SectionEditorContainer extends Component {
           <div>
             Change the contextualizer title :
             <input
-              value={resources[Object.keys(resources)[0]].title}
+              value={Object.keys(resources).length ? resources[Object.keys(resources)[0]].title: 0}
               onChange={onResourceTitleChange}
             >
             </input>
@@ -636,6 +891,8 @@ export default class SectionEditorContainer extends Component {
             mainEditorState={mainEditorState}
             notes={notes}
             assets={assets}
+
+            clipboard={clipboard}
 
             ref={bindRef}
 

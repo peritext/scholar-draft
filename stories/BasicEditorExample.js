@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { OrderedMap, Map } from 'immutable';
+
 import {
   EditorState,
+  ContentState,
+  ContentBlock,
   Modifier,
   Entity,
   AtomicBlockUtils
 } from 'draft-js';
+
+import {
+  getSelectedBlocksList
+} from 'draftjs-utils';
 
 import {
   v4 as generateId
@@ -26,7 +34,9 @@ const {
   getAssetsToDeleteFromEditor,
   insertAssetInEditor,
   deleteAssetFromEditor,
-  getUnusedAssets 
+  getUnusedAssets,
+  insertFragment,
+  BlockMapBuilder,
 } = utils;
 
 import ExampleBlockCitation from './ExampleBlockCitation';
@@ -41,7 +51,7 @@ const blockAssetComponents = {
   citation: ExampleBlockCitation
 };
 
-export default class ContentEditorContainer extends Component {
+export default class BasicEditorExample extends Component {
   
   state = {
     // mock related
@@ -130,6 +140,117 @@ export default class ContentEditorContainer extends Component {
         'insert-text'
       )
     })
+  }
+
+  componentDidMount() {
+    document.addEventListener('copy', this.onCopy);
+    document.addEventListener('cut', this.onCopy);
+    document.addEventListener('paste', this.onPaste);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('copy', this.onCopy);
+    document.removeEventListener('cut', this.onCopy);
+    document.removeEventListener('paste', this.onPaste);
+  }
+
+  // loading data into the clipboard
+  onCopy = e => {
+    let clipboard = null;
+    const currentContent = this.state.editorState.getCurrentContent();
+    const selectedBlocksList = getSelectedBlocksList(this.state.editorState);
+    // must do --> we store entities data as js object to reinject them at parsing
+    const copiedEntities = [];
+    // for mocks purposes
+    const copiedContextualizers = [];
+    const copiedContextualizations = [];
+
+    clipboard = this.editor.editor.getClipboard();
+
+    this.setState({
+      clipboard
+    });
+
+    selectedBlocksList.forEach(contentBlock => {
+      const block = contentBlock.toJS();
+      const entitiesIds = block.characterList.filter(char => char.entity).map(char => char.entity);
+      entitiesIds.forEach(entityKey => {
+        const entity = currentContent.getEntity(entityKey);
+        copiedEntities.push({
+          key: entityKey,
+          entity: entity.toJS()
+        });
+        // mock
+        const assetId = entity.data.asset.id;
+        const contextualization = this.state.contextualizations[assetId];
+        copiedContextualizations.push({...contextualization});
+        copiedContextualizers.push({
+          ...this.state.contextualizers[contextualization.contextualizerId],
+          id: contextualization.contextualizerId
+        });
+      });
+      return true;
+    });
+    const copiedData = {
+      copiedEntities,
+      copiedContextualizations,
+      copiedContextualizers
+    };
+    e.clipboardData.setData('data', JSON.stringify(copiedData));
+  }
+
+  onPaste = e => {
+    const copiedData = e.clipboardData.getData('data');
+    const currentContent = this.state.editorState.getCurrentContent();
+    let data;
+    const stateMods = {
+    };
+    if (copiedData.length) {
+      try{
+        data = JSON.parse(copiedData);
+        if (data.copiedContextualizations) {
+          stateMods.contextualizations = data.copiedContextualizations.reduce((result, contextualization) => {
+            return {
+              ...result,
+              [contextualization.id]: contextualization
+            }
+          }, {...this.state.contextualizations});
+        }
+        if (data.copiedContextualizers) {
+          stateMods.contextualizers = data.copiedContextualizers.reduce((result, contextualizer) => {
+            return {
+              ...result,
+              [contextualizer.id]: contextualizer
+            }
+          }, {...this.state.contextualizer});
+        }
+        let newContentState = currentContent;
+        if (data.copiedEntities) {
+          data.copiedEntities.forEach(entity => {
+            newContentState = newContentState.createEntity(entity.entity);
+            // storing old entity key
+            // entity.oldKey = entity.key;
+            // storing new entity key
+            entity.key  = newContentState.getLastCreatedEntityKey();
+          });
+        }
+        stateMods.editorState = EditorState.push(
+          this.state.editorState,
+          newContentState,
+          'add-entity'
+        );
+      } catch(e) {
+      }
+    }
+    const clipboard = this.state.clipboard;
+    if (clipboard) {
+      e.preventDefault();
+      const editorState = stateMods.editorState || this.state.editorState;
+      stateMods.editorState = insertFragment(editorState, clipboard);
+    }
+    if (Object.keys(stateMods).length) {
+      this.setState(stateMods);
+    }
   }
 
   /*
@@ -278,6 +399,7 @@ export default class ContentEditorContainer extends Component {
       resources,
       readOnly,
       contextualizationRequest,
+      clipboard,
     } = state;
 
     const bindEditorRef = (editor) => {
@@ -408,7 +530,7 @@ export default class ContentEditorContainer extends Component {
           </div>}
             Change the contextualizer page :
             <input
-              value={contextualizers[Object.keys(contextualizers)[0]].pages}
+              value={Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages: ''}
               onChange={onContextualizerPagesChange}
             >
             </input>
@@ -416,7 +538,7 @@ export default class ContentEditorContainer extends Component {
           <div>
             Change the contextualizer title :
             <input
-              value={resources[Object.keys(resources)[0]].title}
+              value={Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : ''}
               onChange={onResourceTitleChange}
             >
             </input>
@@ -456,6 +578,7 @@ export default class ContentEditorContainer extends Component {
             onDrop={onDrop}
             onClick={onClick}
             onBlur={onBlur}
+            clipboard={clipboard}
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}

@@ -1,13 +1,13 @@
 import React from 'react';
 import { storiesOf, action, linkTo } from '@kadira/storybook';
 
-import ContentEditorContainer from './ContentEditorContainer'
-import SectionEditorContainer from './SectionEditorContainer'
+import BasicEditorExample from './BasicEditorExample'
+import EditorExample from './EditorExample'
 
 storiesOf('Scholarly editor', module)
-  .add('Simple editor (without footnotes support)', () => (
-    <ContentEditorContainer />
+  .add('Basic editor (without footnotes support)', () => (
+    <BasicEditorExample />
   ))
   .add('Complete editor (with footnotes support)', () => (
-    <SectionEditorContainer />
+    <EditorExample />
   ))

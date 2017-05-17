@@ -7,7 +7,7 @@ import {
   ContentBlock
 } from 'draft-js';
 
-import { List } from 'immutable';
+import { List, OrderedMap } from 'immutable';
 
 import {
   NOTE_POINTER,
@@ -446,3 +446,24 @@ export function getUsedAssets(editorState, assets) {
   .keys(assets)
   .filter(id => getAssetEntity(editorState, id) !== undefined);
 }
+
+export function insertFragment(editorState, fragment) {
+  let newContent = Modifier.replaceWithFragment(
+    editorState.getCurrentContent(),
+    editorState.getSelection(),
+    fragment
+  );
+  return EditorState.push(
+    editorState,
+    newContent,
+    'insert-fragment'
+  );
+}
+
+export const BlockMapBuilder = {
+  createFromArray: function(blocks){
+    return OrderedMap(
+      blocks.map(block => [block.getKey(), block])
+    );
+  },
+};

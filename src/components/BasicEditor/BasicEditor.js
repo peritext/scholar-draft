@@ -32,6 +32,12 @@ import {
   Editor
 } from 'draft-js';
 
+import {
+  insertFragment
+} from '../../utils';
+
+
+
 const {hasCommandModifier} = KeyBindingUtil;
 
 import {
@@ -118,7 +124,7 @@ function checkReturnForState(editorState, ev) {
 }
 
 
-export default class ContentEditor extends Component {
+export default class BasicEditor extends Component {
 
   static propTypes = {
     /*
@@ -488,9 +494,15 @@ export default class ContentEditor extends Component {
   };
 
   defaultKeyBindingFn = e => {
-    if (e.keyCode === 229 /* `^` key */ && hasCommandModifier(e)) {
-      return 'add-note';
-    }
+    // hasCommandModifier sometimes throws in a strange way
+    // so wrap it in a try/catch
+    // try {
+    //   if (e.keyCode === 229 /* `^` key */ && hasCommandModifier(e)) {
+    //     return 'add-note';
+    //   }
+    // } catch (e) {
+    //   return getDefaultKeyBinding(e);
+    // }
     return getDefaultKeyBinding(e);
   }
 
@@ -578,6 +590,13 @@ export default class ContentEditor extends Component {
     }
   }
 
+  _handlePastedText = (text, html) => {
+    if (this.props.clipboard) {
+      this.editor.setClipboard(null);
+      return true;
+    }
+  }
+
   onNoteAdd = () => {
     if (typeof this.props.onNoteAdd === 'function') {
       this.props.onNoteAdd();
@@ -590,9 +609,7 @@ export default class ContentEditor extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // console.log('will update selection in component did update');
     this.updateSelection();
-    // console.log('side control display after selection update: ', this.sideControl.toolbar.style.display);
     // force render of inline and atomic block elements
     const {
       forceRender
@@ -657,6 +674,7 @@ export default class ContentEditor extends Component {
       _onTab,
       _handleDrop,
       _handleDragOver,
+      _handlePastedText,
       onNoteAdd,
       defaultKeyBindingFn
     } = this;
@@ -740,6 +758,7 @@ export default class ContentEditor extends Component {
 
           handleDrop={_handleDrop}
 
+          handlePastedText={_handlePastedText}
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
           handleReturn={_handleReturn}
