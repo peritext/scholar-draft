@@ -60,6 +60,7 @@ export default class SectionEditor extends Component {
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
+      keyBindingFn,
 
       editorStyles,
       readOnly = {},
@@ -132,6 +133,7 @@ export default class SectionEditor extends Component {
           inlineAssetComponents={inlineAssetComponents}
           blockAssetComponents={blockAssetComponents}
           AssetChoiceComponent={AssetChoiceComponent}
+          keyBindingFn={keyBindingFn}
 
           editorStyle={editorStyles && editorStyles.noteEditor}
         />

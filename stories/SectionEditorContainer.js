@@ -384,7 +384,6 @@ export default class SectionEditorContainer extends Component {
   addTextAtCurrentSelection = (text) => {
     const contentId = this.state.assetRequestContentId;
     const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
-    console.log('content id', contentId, editorState);
 
     const newContentState = Modifier.insertText(
       editorState.getCurrentContent(),

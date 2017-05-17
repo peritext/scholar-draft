@@ -24,11 +24,15 @@ import { addText, addEmptyBlock } from '../../utils';
 import {
   EditorState,
   CompositeDecorator,
+  KeyBindingUtil,
+  getDefaultKeyBinding,
   RichUtils,
   Modifier,
   Entity,
   Editor
 } from 'draft-js';
+
+const {hasCommandModifier} = KeyBindingUtil;
 
 import {
   INLINE_ASSET,
@@ -483,7 +487,17 @@ export default class ContentEditor extends Component {
     }
   };
 
+  defaultKeyBindingFn = e => {
+    if (e.keyCode === 229 /* `^` key */ && hasCommandModifier(e)) {
+      return 'add-note';
+    }
+    return getDefaultKeyBinding(e);
+  }
+
   _handleKeyCommand = (command) => {
+    if (command === 'add-note' && this.props.allowNotesInsertion && typeof this.props.onNoteAdd === 'function') {
+      this.onNoteAdd();
+    }
     const { editorState } = this.props;
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
@@ -567,6 +581,17 @@ export default class ContentEditor extends Component {
     }
   }
 
+  onNoteAdd = () => {
+    if (typeof this.props.onNoteAdd === 'function') {
+      this.props.onNoteAdd();
+    }
+    if (typeof this.props.onEditorChange === 'function') {
+      setTimeout(() => {
+        this.props.onEditorChange(this.props.editorState);        
+      }, 1);
+    }
+  }
+
   componentDidUpdate(prevProps) {
     // console.log('will update selection in component did update');
     this.updateSelection();
@@ -634,7 +659,9 @@ export default class ContentEditor extends Component {
       _handleReturn,
       _onTab,
       _handleDrop,
-      _handleDragOver
+      _handleDragOver,
+      onNoteAdd,
+      defaultKeyBindingFn
     } = this;
 
     const realEditorState = editorState || this.generateEmptyEditor();
@@ -648,17 +675,6 @@ export default class ContentEditor extends Component {
 
     const bindInlineToolbar = (inlineToolbar) => {
       this.inlineToolbar = inlineToolbar;
-    };
-
-    const onNoteAdd = () => {
-      if (typeof this.props.onNoteAdd === 'function') {
-        this.props.onNoteAdd();
-      }
-      if (typeof this.props.onEditorChange === 'function') {
-        setTimeout(() => {
-          this.props.onEditorChange(this.props.editorState);        
-        }, 1);
-      }
     };
 
 
@@ -682,6 +698,8 @@ export default class ContentEditor extends Component {
       const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
       assetRequestType = isEmpty ? 'block' : 'inline';
     }
+
+    const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
     return (
       <div 
         className={editorClass}
@@ -721,6 +739,8 @@ export default class ContentEditor extends Component {
           spellCheck
           readOnly={readOnly}
           placeholder={placeholder}
+
+          keyBindingFn={keyBindingFn}
 
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
