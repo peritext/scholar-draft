@@ -108,7 +108,7 @@ export default class SectionEditorContainer extends Component {
     if (contentType === 'main') {
       // this is very expensive - todo : don't know how to improve it
       const notes = updateNotesFromEditor(editorState, this.state.notes);
-      // (very expensive for performance)
+      // (other editorState-to-state very expensive for performance)
       // this.clearContextualizations()
       this.setState({
         mainEditorState: editorState,
@@ -443,6 +443,7 @@ export default class SectionEditorContainer extends Component {
       addTextAtCurrentSelection,
       state
     } = this;
+
     const {
       mainEditorState,
       notes,
@@ -539,6 +540,17 @@ export default class SectionEditorContainer extends Component {
       this.editor = editor;
     }
 
+    const onScroll = e => {
+      if (this.editor && !this.state.readOnly['main']) {
+        this.editor.mainEditor.updateSelection();
+      }
+      if (this.editor.notes) {
+        Object.keys(this.editor.notes)
+        .filter(noteId => !this.state.readOnly[noteId])
+        .map(noteId => this.editor.notes[noteId].editor.updateSelection());
+      }
+   }
+
     return (
       <div
         style={{
@@ -547,6 +559,7 @@ export default class SectionEditorContainer extends Component {
           top: 0,
           width: '100%',
           height: '100%',
+          overflow: 'hidden'
         }}
       >
         <div
@@ -611,12 +624,14 @@ export default class SectionEditorContainer extends Component {
         </div>
           
         <div
+          onScroll={onScroll}
           style={{
             position: 'relative',
             top: '0',
             left: '20%',
             height: '100%',
-            width: '80%'
+            width: '80%',
+            overflow: 'auto'
           }}>
           <Editor 
             mainEditorState={mainEditorState}
