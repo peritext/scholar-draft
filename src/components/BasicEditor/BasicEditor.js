@@ -543,11 +543,8 @@ export default class ContentEditor extends Component {
     return 'not-handled';
   }
 
-  _handleDrop = (e) => {
-    const payload = e.dataTransfer.getData('text');
-    e.preventDefault();
-    e.stopPropagation();
-
+  _handleDrop = (sel, dataTransfer, isInternal) => {
+    const payload = dataTransfer.data.getData('text');
     // Set timeout to allow cursor/selection to move to drop location
     setTimeout(() => {
       const selection = this.props.editorState.getSelection();
@@ -706,7 +703,6 @@ export default class ContentEditor extends Component {
         onClick={onMainClick}
         style={editorStyle}
 
-        onDrop={_handleDrop}
         onDragOver={_handleDragOver}
       >
         <PopoverControl
@@ -741,6 +737,8 @@ export default class ContentEditor extends Component {
           placeholder={placeholder}
 
           keyBindingFn={keyBindingFn}
+
+          handleDrop={_handleDrop}
 
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
