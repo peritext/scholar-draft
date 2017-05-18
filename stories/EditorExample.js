@@ -93,19 +93,37 @@ export default class EditorExample extends Component {
 
   constructor(props) {
     super(props);
-    this.updateNotesFromEditor = debounce(updateNotesFromEditor, 500);
+    this.cleanStuffFromEditorInspection = debounce(this.cleanStuffFromEditorInspection, 1000);
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     document.addEventListener('copy', this.onCopy);
     document.addEventListener('cut', this.onCopy);
     document.addEventListener('paste', this.onPaste);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     document.removeEventListener('copy', this.onCopy);
     document.removeEventListener('cut', this.onCopy);
     document.removeEventListener('paste', this.onPaste);
+  }
+
+  updateNotesFromEditor = () => {
+    const notes = updateNotesFromEditor(this.state.mainEditorState, this.state.notes);
+    this.setState({
+      notes
+    });
+  }
+
+  cleanStuffFromEditorInspection = () => {
+    // this.clearContextualizations();
+    this.updateNotesFromEditor();
+  }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (this.state.mainEditorState !== prevState.mainEditorState) {
+      this.cleanStuffFromEditorInspection();
+    }
   }
 
   // loading data into the clipboard
@@ -130,7 +148,6 @@ export default class EditorExample extends Component {
     } else {
       activeId = Object.keys(this.state.notes)
         .find(id => !readOnly[id]);
-      console.log('active id', activeId);
       editorState = this.state.notes[activeId].editorState;
       clipboard = this.editor.notes[activeId].editor.getClipboard();
     }
@@ -207,12 +224,22 @@ export default class EditorExample extends Component {
     };
     const serializedCopiedData = JSON.stringify(copiedData);
     e.clipboardData.setData('data', serializedCopiedData);
+    e.clipboardData.setData('text/plain', '$$$internal-clipboard');
+    e.preventDefault();
     this.setState({
       copiedData
     });
   }
 
   onPaste = e => {
+    // if data comes from out of the editor
+    if (e.clipboardData.getData('text/plain') !== '$$$internal-clipboard') {
+      this.setState({
+        clipboard: null,
+        copiedData: null
+      });
+      return;
+    }
     // let currentContent;
     let editorState;
     let activeId;
@@ -355,15 +382,10 @@ export default class EditorExample extends Component {
 
   onEditorChange = (contentType, noteId, editorState) => {
     // list all editor states to purge unused assets
-    
     if (contentType === 'main') {
-      // this is very expensive - todo : don't know how to improve it
-      const notes = updateNotesFromEditor(editorState, this.state.notes);
-      // (other editorState-to-state very expensive for performance)
-      // this.clearContextualizations()
       this.setState({
         mainEditorState: editorState,
-        notes
+        // notes
       });
     } else {
       this.setState({
@@ -371,7 +393,6 @@ export default class EditorExample extends Component {
             ...this.state.notes,
             [noteId]: {
               ...this.state.notes[noteId],
-
               editorState
             }
           }
@@ -600,18 +621,39 @@ export default class EditorExample extends Component {
       }
     };
     notes = updateNotesFromEditor(mainEditorState, notes);
+    console.log('added note');
     this.setState({
-      notes,
-      mainEditorState,
       readOnly: {
         ...this.state.readOnly,
+        'main': true,
         [id]: false
       }
     });
-
     setTimeout(() => {
+        this.setState({
+        notes,
+        mainEditorState,
+        readOnly: {
+          ...this.state.readOnly,
+          'main': true,
+          [id]: false
+        }
+      });
       this.editor.focus(id);
-    }, 1);
+    }, 100);
+    // this.setState({
+    //   notes,
+    //   mainEditorState,
+    //   readOnly: {
+    //     ...this.state.readOnly,
+    //     'main': true,
+    //     [id]: false
+    //   }
+    // });
+
+    // setTimeout(() => {
+    //   this.editor.focus(id);
+    // }, 1);
   }
 
   deleteNote = id => {
@@ -667,7 +709,6 @@ export default class EditorExample extends Component {
   }
 
   render = () => {
-    
     const {
       onEditorChange,
       onAssetRequest,

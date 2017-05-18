@@ -167,10 +167,6 @@ export default class BasicEditorExample extends Component {
 
     clipboard = this.editor.editor.getClipboard();
 
-    this.setState({
-      clipboard
-    });
-
     selectedBlocksList.forEach(contentBlock => {
       const block = contentBlock.toJS();
       const entitiesIds = block.characterList.filter(char => char.entity).map(char => char.entity);
@@ -197,17 +193,30 @@ export default class BasicEditorExample extends Component {
       copiedContextualizers
     };
     e.clipboardData.setData('data', JSON.stringify(copiedData));
+    e.clipboardData.setData('text/plain', '$$$internal-clipboard');
+    e.preventDefault();
+    this.setState({
+      clipboard,
+      copiedData
+    });
   }
 
   onPaste = e => {
-    const copiedData = e.clipboardData.getData('data');
+    if (e.clipboardData.getData('text/plain') !== '$$$internal-clipboard') {
+      this.setState({
+        clipboard: null,
+        copiedData: null
+      });
+      return;
+    }
+    const copiedData = this.state.copiedData; // e.clipboardData.getData('data');
     const currentContent = this.state.editorState.getCurrentContent();
     let data;
     const stateMods = {
     };
-    if (copiedData.length) {
+    if (copiedData) {
       try{
-        data = JSON.parse(copiedData);
+        data = copiedData; // JSON.parse(copiedData);
         if (data.copiedContextualizations) {
           stateMods.contextualizations = data.copiedContextualizations.reduce((result, contextualization) => {
             return {

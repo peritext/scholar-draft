@@ -163,6 +163,16 @@ export default class BasicEditor extends Component {
     super(props);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      !nextProps.readOnly ||
+      this.state.editorState !== nextProps.editorState ||
+      this.state.assets !== nextProps.assets
+    ) {
+      return true;
+    }
+  }
+
   componentWillReceiveProps = (nextProps) => {
     // console.log('receiving asset request position', nextProps.assetRequestPosition);
     // console.log('readonlies', this.props.readOnly, nextProps.readOnly);
@@ -629,6 +639,7 @@ export default class BasicEditor extends Component {
     ) {
       this.editor.focus();
     }
+
   }
 
   render = () => {

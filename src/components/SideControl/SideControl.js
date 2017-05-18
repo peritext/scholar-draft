@@ -18,6 +18,14 @@ export default class SideControl extends Component {
     selectedBlockType: PropTypes.string,
   };
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return (
+      this.props.editorState !== nextProps.editorState ||
+      this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
+      this.props.allowNotesInsertion !== nextProps.allowNotesInsertion
+    );
+  }
+
   render = () => {
 
     const { 

@@ -47,6 +47,11 @@ export default class PopoverControl extends Component {
     iconSelectedColor: '#2000FF',
   };
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return (
+      this.props.editorState !== nextProps.editorState
+    );
+  }
 
   render = () => {
 
