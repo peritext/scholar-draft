@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Style from 'fbjs/lib/Style.js';
 
+import { debounce } from 'lodash';
 
 import { Map } from 'immutable';
 
@@ -161,11 +162,14 @@ export default class BasicEditor extends Component {
 
   constructor(props) {
     super(props);
+    // this.onChange = debounce(this.onChange, 200);
+    this.updateSelection = debounce(this.updateSelection, 100);
+    this.forceRender = debounce(this.forceRender, 200);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     if (
-      !nextProps.readOnly ||
+      // !nextProps.readOnly ||
       this.state.editorState !== nextProps.editorState ||
       this.state.assets !== nextProps.assets
     ) {
