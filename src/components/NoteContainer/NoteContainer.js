@@ -17,6 +17,7 @@ class NoteContainer extends Component {
     const {
       note,
       assets,
+      notes,
       assetRequestPosition,
       addTextAtCurrentSelection,
       
@@ -69,6 +70,7 @@ class NoteContainer extends Component {
           <BasicEditor 
             editorState={note.editorState}
             assets={assets}
+            notes={notes}
             readOnly={readOnly}
             ref={bindRef}
             onClick={onClick}

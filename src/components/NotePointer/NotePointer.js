@@ -10,17 +10,19 @@ const NotePointer = ({
   onMouseOver,
   onMouseOut,
   onMouseClick
-}) => (
+}) => {
+  return (
   <sup
     className="scholar-draft-NotePointer"
     onMouseOver={onMouseOver}
     onMouseOut={onMouseOut}
     onClick={onMouseClick}
   >
-    <span>{note && note.order || '°'}</span>
+    <span>{note && note.order || '*'}</span>
     {children}
   </sup>
   );
+};
 
 
 NotePointer.propTypes = {

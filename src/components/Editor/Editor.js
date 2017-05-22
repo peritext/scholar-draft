@@ -6,7 +6,7 @@ import NoteContainer from '../NoteContainer/NoteContainer';
 
 import './Editor.scss';
 
-export default class SectionEditor extends Component {
+export default class Editor extends Component {
   static PropTypes = {
   }
 

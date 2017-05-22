@@ -164,7 +164,7 @@ export default class BasicEditor extends Component {
     super(props);
     // this.onChange = debounce(this.onChange, 200);
     this.updateSelection = debounce(this.updateSelection, 100);
-    this.forceRender = debounce(this.forceRender, 200);
+    this.forceRenderDebounced = debounce(this.forceRender, 100);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -193,7 +193,7 @@ export default class BasicEditor extends Component {
     if (this.state.editorState !== nextProps.editorState) {
       this.setState({
         editorState: nextProps.editorState
-      })
+      });
     }
   }
 
@@ -231,11 +231,13 @@ export default class BasicEditor extends Component {
 
     const selectionRange = getSelectionRange();
     // console.log('selection range', selectionRange);
-    if (!selectionRange) return;
     
     const editorEle = this.editor;
-    // console.log('isparentof truc', isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor), selectionRange.commonAncestorContainer, editorEle.refs.editor);
-    if (!isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) { return; }
+
+    if (!selectionRange) return;
+
+    if (!editorEle || !isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) { return; }
+
     let assetRequestType;
     const {
       assetRequestPosition
@@ -270,7 +272,8 @@ export default class BasicEditor extends Component {
       sideControlEle.style.top = `${sideControlTop}px`;
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
-      const left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - sideControlEle.offsetWidth;
+      const controlWidth = sideControlEle.offsetWidth || 50;
+      const left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - controlWidth;
       // let left =  editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
       // left = assetRequestType === 'inline' ? left + rangeBounds.left : left;
       sideControlEle.style.left = `${left}px`;
@@ -511,26 +514,27 @@ export default class BasicEditor extends Component {
     // hasCommandModifier sometimes throws in a strange way
     // so wrap it in a try/catch
     // try {
-    //   if (e.keyCode === 229 /* `^` key */ && hasCommandModifier(e)) {
-    //     return 'add-note';
-    //   }
+      if (e && e.keyCode === 229 /* `^` key */ && hasCommandModifier(e)) {
+        return 'add-note';
+      }
     // } catch (e) {
-    //   return getDefaultKeyBinding(e);
+      return getDefaultKeyBinding(e);
     // }
-    return getDefaultKeyBinding(e);
+    // return getDefaultKeyBinding(e);
   }
 
   _handleKeyCommand = (command) => {
     if (command === 'add-note' && this.props.allowNotesInsertion && typeof this.props.onNoteAdd === 'function') {
       this.onNoteAdd();
+      return 'handled';
     }
     const { editorState } = this.props;
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       this.onChange(newState);
-      return true;
+      return 'handled';
     }
-    return false;
+    return 'not-handled';
   };
 
   _handleBeforeInput = (character, props) => {
@@ -626,15 +630,17 @@ export default class BasicEditor extends Component {
     this.updateSelection();
     // force render of inline and atomic block elements
     const {
-      forceRender
+      forceRenderDebounced,
+      // forceRender
     } = this;
 
-    if (this.props.editorState !== prevProps.editorState 
+    if (
+      this.props.editorState !== prevProps.editorState 
       || prevProps.assets !== this.props.assets
       || prevProps.readOnly !== this.props.readOnly
       || prevProps.notes !== this.props.notes
     ) {
-      forceRender(this.props);
+      forceRenderDebounced(this.props);
     }
 
     if (
