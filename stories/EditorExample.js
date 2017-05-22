@@ -93,7 +93,7 @@ export default class EditorExample extends Component {
 
   constructor(props) {
     super(props);
-    this.cleanStuffFromEditorInspection = debounce(this.cleanStuffFromEditorInspection, 1000);
+    this.debouncedCleanStuffFromEditorInspection = debounce(this.cleanStuffFromEditorInspection, 1000);
   }
 
   componentDidMount = () => {
@@ -116,13 +116,13 @@ export default class EditorExample extends Component {
   }
 
   cleanStuffFromEditorInspection = () => {
-    // this.clearContextualizations();
+    this.clearContextualizations();
     this.updateNotesFromEditor();
   }
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.state.mainEditorState !== prevState.mainEditorState) {
-      this.cleanStuffFromEditorInspection();
+      this.debouncedCleanStuffFromEditorInspection();
     }
   }
 
@@ -621,39 +621,19 @@ export default class EditorExample extends Component {
       }
     };
     notes = updateNotesFromEditor(mainEditorState, notes);
-    console.log('added note');
     this.setState({
+      notes,
+      mainEditorState,
       readOnly: {
         ...this.state.readOnly,
         'main': true,
         [id]: false
       }
     });
+
     setTimeout(() => {
-        this.setState({
-        notes,
-        mainEditorState,
-        readOnly: {
-          ...this.state.readOnly,
-          'main': true,
-          [id]: false
-        }
-      });
       this.editor.focus(id);
     }, 100);
-    // this.setState({
-    //   notes,
-    //   mainEditorState,
-    //   readOnly: {
-    //     ...this.state.readOnly,
-    //     'main': true,
-    //     [id]: false
-    //   }
-    // });
-
-    // setTimeout(() => {
-    //   this.editor.focus(id);
-    // }, 1);
   }
 
   deleteNote = id => {
@@ -842,10 +822,13 @@ export default class EditorExample extends Component {
       if (this.editor.notes) {
         Object.keys(this.editor.notes)
         .filter(noteId => !this.state.readOnly[noteId])
-        .map(noteId => this.editor.notes[noteId].editor.updateSelection());
+        .forEach(noteId => {
+          if (this.editor.notes[noteId]) {
+            this.editor.notes[noteId].editor.updateSelection();
+          }
+        });
       }
    }
-
     return (
       <div
         style={{

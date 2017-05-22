@@ -11,7 +11,7 @@ class BlockAssetChoice extends Component {
       setTimeout(() => {
         this.input.focus();
         console.log('focus');
-      }, 1000)
+      }, 300);
     }
   }
 
