@@ -164,7 +164,7 @@ export default class BasicEditor extends Component {
     super(props);
     // this.onChange = debounce(this.onChange, 200);
     this.updateSelection = debounce(this.updateSelection, 100);
-    this.forceRenderDebounced = debounce(this.forceRender, 100);
+    this.forceRenderDebounced = debounce(this.forceRender, 200);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -415,13 +415,20 @@ export default class BasicEditor extends Component {
     const content = editorState.getCurrentContent();
 
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
-    const selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
-    this.setState({ editorState: selectedEditorState });
+    const inlineStyle = this.state.editorState.getCurrentInlineStyle();
+
+    let selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
+
+    this.setState({ 
+      editorState: selectedEditorState 
+    });
   }
 
 
-  generateEmptyEditor = () => 
-    EditorState.createEmpty(this.createDecorator())
+  generateEmptyEditor = () => {
+    return EditorState.createEmpty(this.createDecorator())
+  }
 
   state = {
     editorState: this.generateEmptyEditor()
@@ -631,7 +638,7 @@ export default class BasicEditor extends Component {
     // force render of inline and atomic block elements
     const {
       forceRenderDebounced,
-      // forceRender
+      forceRender
     } = this;
 
     if (
@@ -640,7 +647,8 @@ export default class BasicEditor extends Component {
       || prevProps.readOnly !== this.props.readOnly
       || prevProps.notes !== this.props.notes
     ) {
-      forceRenderDebounced(this.props);
+      forceRender(this.props);
+      // forceRenderDebounced(this.props);
     }
 
     if (
@@ -736,6 +744,7 @@ export default class BasicEditor extends Component {
     }
 
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
+    
     return (
       <div 
         className={editorClass}
