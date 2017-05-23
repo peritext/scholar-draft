@@ -162,7 +162,7 @@ export default class EditorExample extends Component {
       activeId = Object.keys(this.state.notes)
         .find(id => !readOnly[id]);
       editorState = this.state.notes[activeId].editorState;
-      clipboard = this.editor.notes[activeId].editor.getClipboard();
+      clipboard = this.editor.notes[activeId].editor.editor.getClipboard();
     }
     // todo : this is bad, due to problems with readonly management
     if (!activeId) {
@@ -202,6 +202,7 @@ export default class EditorExample extends Component {
           // copying note's entities
           noteContent.getBlockMap().forEach(block => {
             block.getCharacterList().map(char => {
+              // copying note's entity and related contextualization
               if (char.entity) {
                 entityKey = char.entity;
                 entity = currentContent.getEntity(entityKey);
@@ -210,6 +211,9 @@ export default class EditorExample extends Component {
                   key: entityKey,
                   entity: eData
                 });
+                copiedContextualizations.push({
+                  ...this.state.contextualizations[eData.data.asset.id]
+                })
               }
             })
             return true;
@@ -289,7 +293,6 @@ export default class EditorExample extends Component {
       resources: {...this.state.resources}
     };
     let newEditorState = editorState;
-    // console.log('start', copiedData.copiedEntities);
     // console.log('state notes', this.state.notes);
     // let firstBlock = newEditorState.getCurrentContent().toJS().blockMap[Object.keys(newEditorState.getCurrentContent().toJS().blockMap)[0]];
     // let firstEntityId = firstBlock.characterList[0].entity;
@@ -314,16 +317,7 @@ export default class EditorExample extends Component {
             }
           }, {...this.state.contextualizations});
         }
-        // ensure all necessary data is there
-        // if (data.copiedContextualizers) {
-        //   stateMods.contextualizers = data.copiedContextualizers.reduce((result, contextualizer) => {
-        //     return {
-        //       ...result,
-        //       [contextualizer.id]: contextualizer
-        //     }
-        //   }, {...this.state.contextualizer});
-        // }
-        // paste notes (attributing them a new id)
+        // paste notes (attributing them a new id to duplicate them if in situation of copy/paste)
         if (data.copiedNotes) {
           stateMods.notes = {
             ...stateMods.notes,
@@ -343,13 +337,38 @@ export default class EditorExample extends Component {
             }, {...stateMods.notes})
           }
         }
-        // console.log('notes modified');
+        // update copied entities addresses for entities stored in pasted notes
+        console.log('will update entities storing with', stateMods.notes)
+        data.copiedEntities = Object.keys(data.copiedEntities)
+        .reduce((result, id) => {
+          console.log('to process', id);
+          if (id !== 'main') {
+            const noteId = Object.keys(stateMods.notes)
+              .find(noteId => {
+                const note = stateMods.notes[noteId];
+                console.log('note', JSON.parse(JSON.stringify(note)), id);
+                return note.oldId === id;
+              });
+            // if the target note is a "ghost" one, attribute correct id
+            if (noteId && stateMods.notes[noteId].oldId) {
+              return {
+                ...result,
+                [stateMods.notes[noteId].id]: data.copiedEntities[stateMods.notes[noteId].oldId]
+              }
+            }
+          }
+          return {
+            ...result,
+            [id]: data.copiedEntities[id]
+          }
+        }, {})
         // let firstBlock = newEditorState.getCurrentContent().toJS().blockMap[Object.keys(newEditorState.getCurrentContent().toJS().blockMap)[0]];
         // let firstEntityId = firstBlock.characterList[0].entity;
         // console.log('first entity key', firstEntityId);
         // console.log('first entity', newEditorState.getCurrentContent().getEntity(firstEntityId).toJS().data.noteId);
          
         // integrate new draftjs entities in respective editorStates
+        // editorStates as stored as a map in which each keys corresponds to a category of content ('main' + uuids for each note)
         if (Object.keys(data.copiedEntities).length) {
           // update entities data with correct notes and contextualizations ids pointers
           const copiedEntities = Object.keys(data.copiedEntities).reduce((result, contentId) => {
@@ -359,6 +378,7 @@ export default class EditorExample extends Component {
                 // console.log('input entity', inputEntity);
                 const entity = {...inputEntity};
                 const data = entity.entity.data;
+                // case: copying note entity
                 if (data && data.noteId) {
                   const id = Object.keys(stateMods.notes).find(key => {
                     if (stateMods.notes[key].oldId === data.noteId) {
@@ -367,6 +387,7 @@ export default class EditorExample extends Component {
                   });
                   // console.log('attributing note id', id);
                   if (id) {
+                    console.log('copying note', id);
                     return {
                       ...entity,
                       entity: {
@@ -378,6 +399,7 @@ export default class EditorExample extends Component {
                       }
                     }
                   }
+                // case: copying asset entity
                 } else if (data.asset && data.asset.id) {
                   const id = Object.keys(stateMods.contextualizations).find(key => {
                     if (stateMods.contextualizations[key].oldId === data.asset.id) {
@@ -385,6 +407,7 @@ export default class EditorExample extends Component {
                     }
                   });
                   if (id) {
+                    console.log('copying asset', entity.entity.data.asset.id);
                     return {
                       ...entity,
                       entity: {
@@ -404,7 +427,6 @@ export default class EditorExample extends Component {
               })
             };
           }, {});
-          // console.log('will add entities');
           // let firstBlock = newEditorState.getCurrentContent().toJS().blockMap[Object.keys(newEditorState.getCurrentContent().toJS().blockMap)[0]];
           // let firstEntityId = firstBlock.characterList[0].entity;
           // console.log('first entity key', firstEntityId);
@@ -425,26 +447,26 @@ export default class EditorExample extends Component {
                   'create-entity'
                 );
                 const newEntityKey = newContentState.getLastCreatedEntityKey();
-                // console.log('last created entity', newContentState.getEntity(newEntityKey).toJS());
-                // console.log('must replace in fragment key %s with %s', entity.key, newEntityKey);
-                newClipboard = clipboard.map(block => {
+                newClipboard = newClipboard.map(block => {
                   const characters = block.getCharacterList();
                   const newCharacters = characters.map(char => {
                     if (char.getEntity() && char.getEntity() === entity.key) {
-                      // console.log('ok');
+                      console.log('update new characters for new clipboard', entity, newEntityKey);
                       return CharacterMetadata.applyEntity(char, newEntityKey);
                     }
                     return char;
                   })
                   return block.set('characterList', newCharacters) // block;
                 });
-                // console.log('last created entity', newContentState.getEntity(newEntityKey).toJS());
               });
             } else {
               copiedEntities[contentId].forEach(entity => {
                 const editor = stateMods.notes[contentId].editorState;
+
+                console.log('in a note editor');
+
                 newContentState = editor.getCurrentContent();
-                newContentState = newContentState.createEntity(entity.entity);
+                newContentState = newContentState.createEntity(entity.entity.type, entity.entity.mutability, {...entity.entity.data});
                 
                 stateMods.notes[contentId].editorState = EditorState.push(
                   newEditorState,
@@ -452,13 +474,10 @@ export default class EditorExample extends Component {
                   'create-entity'
                 );
                 const newEntityKey = newContentState.getLastCreatedEntityKey();
-                // console.log('last created entity', newContentState.getEntity(newEntityKey).toJS());
-                // console.log('must replace in fragment key %s with %s', entity.key, newEntityKey);
-                newClipboard = clipboard.map(block => {
+                newClipboard = newClipboard.map(block => {
                   const characters = block.getCharacterList();
                   const newCharacters = characters.map(char => {
                     if (char.getEntity() && char.getEntity() === entity.key) {
-                      // console.log('ok');
                       return CharacterMetadata.applyEntity(char, newEntityKey);
                     }
                     return char;
@@ -471,27 +490,26 @@ export default class EditorExample extends Component {
         }
     }
 
-    // console.log('did create entities');
+    console.log('did create entities, clipboard: ', JSON.stringify(newClipboard.toJS()));
     // firstBlock = newEditorState.getCurrentContent().toJS().blockMap[Object.keys(newEditorState.getCurrentContent().toJS().blockMap)[0]];
     // firstEntityId = firstBlock.characterList[0].entity;
     // console.log('first entity key', firstEntityId);
     // console.log('first entity', newEditorState.getCurrentContent().getEntity(firstEntityId).toJS().data.noteId);
      
 
-    newEditorState = insertFragment(newEditorState, newClipboard);
-    
+
     if (activeId === 'main') {
-      stateMods.mainEditorState = newEditorState;
-      // console.log('before cleaning notes', stateMods.notes);
-      // console.log('state before', newEditorState.getCurrentContent().toJS().blockMap);
+      stateMods.mainEditorState = insertFragment(stateMods.mainEditorState, newClipboard);
+      console.log('before cleaning notes', stateMods.notes);
+      console.log('state before cleaning notes', newEditorState.getCurrentContent().toJS().blockMap);
       stateMods.notes = updateNotesFromEditor(stateMods.mainEditorState, stateMods.notes);
-      // console.log('after cleaning notes', stateMods.notes);
+      console.log('state after cleaning notes', stateMods.notes);
     } else {
       stateMods.notes = {
         ...this.state.notes,
         [activeId]: {
           ...this.state.notes[activeId],
-          editorState: newEditorState
+          editorState: insertFragment(stateMods.notes[activeId].editorState, newClipboard)
         }
       }
     }
