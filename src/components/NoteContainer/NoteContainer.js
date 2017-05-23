@@ -40,6 +40,8 @@ class NoteContainer extends Component {
       
       assetChoiceProps,
 
+      clipboard,
+
       readOnly,
       editorStyle
     } = this.props;
@@ -77,6 +79,7 @@ class NoteContainer extends Component {
             onDrop={onDrop}
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
+            clipboard={clipboard}
 
             assetRequestPosition={assetRequestPosition}
             onAssetRequestCancel={onAssetRequestCancel}

@@ -1,7 +1,9 @@
 import {
   EditorState,
+  Entity,
   Modifier,
   AtomicBlockUtils,
+  CharacterMetadata,
   SelectionState,
   genKey, 
   ContentBlock

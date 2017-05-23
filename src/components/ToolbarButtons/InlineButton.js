@@ -81,13 +81,15 @@ class InlineButton extends Component {
     const fill = selected ? iconSelectedColor : iconColor;
     const className = `scholar-draft-InlineButton${selected ? ' selected' : ''}`;
 
+    const onMouseDown = e => {
+      e.preventDefault();
+      updateEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyleType));
+    }
+
     return (<div
       style={styles.iconContainer}
       className={className}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        updateEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyleType));
-      }}
+      onMouseDown={onMouseDown}
       {...otherProps}
     >
       {React.Children.map(this.props.children, 
