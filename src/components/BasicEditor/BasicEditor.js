@@ -165,6 +165,8 @@ export default class BasicEditor extends Component {
     // this.onChange = debounce(this.onChange, 200);
     this.updateSelection = debounce(this.updateSelection, 100);
     this.forceRenderDebounced = debounce(this.forceRender, 200);
+
+    this.feedUndoStack = debounce(this.feedUndoStack, 1000);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -410,18 +412,71 @@ export default class BasicEditor extends Component {
        new SimpleDecorator(this.findNotePointers, NotePointer),
      ]);
 
+  feedUndoStack = editorState => {
+    const {
+      undoStack
+    } = this.state;
+    // max length for undo stack
+    const newUndoStack = undoStack.length > 50 ? undoStack.slice(undoStack.length - 50) : undoStack;
+    this.setState({
+      undoStack: [
+        ...newUndoStack,
+        editorState
+      ]
+    });
+  }
+
+  undo = () => {
+    const {
+      undoStack,
+      redoStack
+    } = this.state;
+    const newUndoStack = [...undoStack];
+    if (undoStack.length > 1) {
+      const last = newUndoStack.pop();
+      this.setState({
+        redoStack: [
+          ...redoStack,
+          last
+        ],
+        undoStack: newUndoStack
+      });
+      this.onChange(newUndoStack[newUndoStack.length - 1]);
+    }
+  }
+
+  redo = () => {
+    const {
+      undoStack,
+      redoStack
+    } = this.state;
+    const newRedoStack = [...redoStack];
+    if (redoStack.length) {
+      const last = newRedoStack.pop();
+      this.setState({
+        undoStack: [
+          ...undoStack,
+          last
+        ],
+        redoStack: newRedoStack
+      });
+      this.onChange(last);
+    }
+  }
+
   forceRender = (props) => {
     const editorState = props.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
 
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
+
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
 
     let selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
-
+    this.feedUndoStack(this.state.editorState);
     this.setState({ 
-      editorState: selectedEditorState 
+      editorState: selectedEditorState,
     });
   }
 
@@ -431,7 +486,9 @@ export default class BasicEditor extends Component {
   }
 
   state = {
-    editorState: this.generateEmptyEditor()
+    editorState: this.generateEmptyEditor(),
+    undoStack: [],
+    redoStack: []
   };
 
 
@@ -518,22 +575,33 @@ export default class BasicEditor extends Component {
   };
 
   defaultKeyBindingFn = e => {
-    // hasCommandModifier sometimes throws in a strange way
-    // so wrap it in a try/catch
-    // try {
-      if (e && e.keyCode === 229 /* `^` key */ && hasCommandModifier(e)) {
-        return 'add-note';
+    if (e && hasCommandModifier(e)) {
+      switch (e.keyCode) {
+        // `^`
+        case 229:
+          return 'add-note';
+        // `z`
+        case 90:
+          return 'editor-undo';
+
+        case 89:
+          return 'editor-redo';
+
+        default:
+          break;
       }
-    // } catch (e) {
-      return getDefaultKeyBinding(e);
-    // }
-    // return getDefaultKeyBinding(e);
+    }
+    return getDefaultKeyBinding(e);
   }
 
   _handleKeyCommand = (command) => {
     if (command === 'add-note' && this.props.allowNotesInsertion && typeof this.props.onNoteAdd === 'function') {
       this.onNoteAdd();
       return 'handled';
+    } else if (command === 'editor-undo') {
+      this.undo();
+    } else if (command === 'editor-redo') {
+      this.redo();
     }
     const { editorState } = this.props;
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -616,6 +684,11 @@ export default class BasicEditor extends Component {
   }
 
   _handlePastedText = (text, html) => {
+
+    setTimeout(() => {
+      this.feedUndoStack(this.state.editorState);
+    })
+
     if (this.props.clipboard) {
       this.editor.setClipboard(null);
       return true;
