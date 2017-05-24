@@ -406,11 +406,13 @@ export default class BasicEditor extends Component {
     );
   }
 
-  createDecorator = () => 
-     new MultiDecorator([
+  createDecorator = () => {
+    const ActiveNotePointer = this.props.NotePointerComponent || NotePointer;
+    return new MultiDecorator([
        new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
-       new SimpleDecorator(this.findNotePointers, NotePointer),
+       new SimpleDecorator(this.findNotePointers, ActiveNotePointer),
      ]);
+  }
 
   feedUndoStack = editorState => {
     const {

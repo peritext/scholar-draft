@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
-import NoteContainer from '../NoteContainer/NoteContainer';
+import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 
 import './Editor.scss';
 
@@ -60,6 +60,8 @@ export default class Editor extends Component {
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
+      NotePointerComponent,
+
       keyBindingFn,
 
       editorStyles,
@@ -99,6 +101,8 @@ export default class Editor extends Component {
       const onNoteBlur = e => {
         onBlur(e, noteId);
       }
+
+      const NoteContainer = this.props.NoteContainerComponent || DefaultNoteContainer;
 
       return (
         <NoteContainer
@@ -199,6 +203,7 @@ export default class Editor extends Component {
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
             AssetChoiceComponent={AssetChoiceComponent}
+            NotePointerComponent={NotePointerComponent}
 
             clipboard={clipboard}
 
