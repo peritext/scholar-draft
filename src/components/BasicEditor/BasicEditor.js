@@ -471,9 +471,9 @@ export default class BasicEditor extends Component {
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
 
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
-
     let selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
+
     this.feedUndoStack(this.state.editorState);
     this.setState({ 
       editorState: selectedEditorState,
