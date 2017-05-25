@@ -3,14 +3,6 @@ import PropTypes from 'prop-types';
 import SVGInline from 'react-svg-inline';
 import iconSVG from '../../icons/note.svg';
 
-const styles = {
-  iconContainer: {
-    display: 'inline-block',
-    height: 24,
-    width: 24
-  },
-};
-
 class NoteButton extends Component {
   
   static propTypes = {
@@ -22,18 +14,17 @@ class NoteButton extends Component {
 
     const { 
       onClick, 
+      iconMap,
       ...otherProps 
     } = this.props;
 
     return (<div
-      style={styles.iconContainer}
+      className="scholar-draft-NoteButton"
       onClick={onClick}
       onMouseDown={e => e.preventDefault()}
       {...otherProps}
     >
-      <SVGInline
-        svg={iconSVG}
-      />
+      {iconMap.note}
     </div>);
   }
 }

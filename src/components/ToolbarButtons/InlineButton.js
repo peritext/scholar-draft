@@ -4,18 +4,8 @@ import PropTypes from 'prop-types';
 
 import './ButtonStyles.scss';
 
-const styles = {
-  iconContainer: {
-    display: 'inline-block',
-    height: 24,
-    width: 24,
-    cursor: 'pointer',
-    verticalAlign: 'middle',
-  },
-};
-
 /**
- * Helper class to remove the boiler plate in getButtons. And make the 
+ * Abstract class to remove the boiler plate in getButtons. And make the 
  * getButtons function easier to read. 
  *
  * As a convenience this passes down the selected and fill props to the children
@@ -26,17 +16,6 @@ const styles = {
 class InlineButton extends Component {
 
   static propTypes = {
-
-    /**
-     * The icon colour. This gets passed down from the Editor.
-     */
-    iconColor: PropTypes.string,
-    
-    /**
-     * The icon colour when selected. This gets passed down from the Editor.
-     */
-    iconSelectedColor: PropTypes.string,
-
     /**
      * The current editorState. This gets passed down from the editor.
      */
@@ -58,10 +37,16 @@ class InlineButton extends Component {
     selected: false,
   };
 
+  /**
+   * Checks wether current styling button is selected
+   * @param {Record} editorState - editorState to check for selection
+   * @param {string} inlineStyleType - inline style to inspect against the provided editorState
+   * @return {boolean} isSelected - 
+   */
   isSelected = (editorState, inlineStyleType) => {
-
     // Check the editor is focused
     const selection = editorState.getSelection();
+
     const selectedBlock = editorState
       .getCurrentContent()
       .getBlockForKey(selection.getStartKey());
@@ -73,13 +58,16 @@ class InlineButton extends Component {
 
   render = () => {
 
-    const { editorState, updateEditorState, iconColor, iconSelectedColor, 
+    const { 
+      editorState, 
+      updateEditorState, 
+      iconMap,
       inlineStyleType,
-      ...otherProps } = this.props;
+      ...otherProps 
+    } = this.props;
 
     const selected = this.isSelected(editorState, inlineStyleType); 
-    const fill = selected ? iconSelectedColor : iconColor;
-    const className = `scholar-draft-InlineButton${selected ? ' selected' : ''}`;
+    const className = `scholar-draft-InlineButton${selected ? ' active' : ''} `;
 
     const onMouseDown = e => {
       e.preventDefault();
@@ -87,13 +75,14 @@ class InlineButton extends Component {
     }
 
     return (<div
-      style={styles.iconContainer}
-      className={className}
       onMouseDown={onMouseDown}
+      className={className}
       {...otherProps}
     >
       {React.Children.map(this.props.children, 
-        c => React.cloneElement(c, { fill, selected }))}
+        c => React.cloneElement(c, { 
+          selected
+        }))}
     </div>);
   };
 }

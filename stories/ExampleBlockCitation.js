@@ -1,10 +1,31 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 class BlockCitation extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      
+    }
   }
+
+  // static contextTypes = {
+  //   emitter: PropTypes.object
+  // }
+
+  // componentDidMount() {
+  //   this.unsubscribe = this.context.emitter.subscribe(assets => {
+  //     const asset = assets[this.props.assetId];
+  //     this.setState({
+  //       asset
+  //     })
+  //   });
+  // }
+
+  // componentWillUnmount() {
+  //   this.unsubscribe();
+  // }
 
   render = () => {
     const {
@@ -16,6 +37,13 @@ class BlockCitation extends Component {
       onFocus,
       onBlur
     } = this.props;
+
+    // const {
+    //   asset
+    // } = this.state;
+    if (!asset) {
+      return null;
+    }
 
     const {
       resource,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { OrderedMap, Map } from 'immutable';
+import { OrderedMap } from 'immutable';
 
 import {
   EditorState,
@@ -51,6 +51,23 @@ const blockAssetComponents = {
   citation: ExampleBlockCitation
 };
 
+export class Emitter {
+  listeners = new Map()
+
+  subscribe = listener => {
+    const id = generateId();
+    this.listeners.set(id, listener);
+    return () => this.listeners.delete(id);
+  }
+
+  dispatch = assets => {
+    console.log('dispatcher dispatches');
+    this.listeners.forEach(listener => {
+      listener(assets);
+    });
+  }
+}
+
 export default class BasicEditorExample extends Component {
   
   state = {
@@ -79,7 +96,8 @@ export default class BasicEditorExample extends Component {
         type: 'citation',
         pages: '12-13'
       }
-    }
+    },
+    assets: {}
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -94,12 +112,47 @@ export default class BasicEditorExample extends Component {
 
   constructor(props) {
     super(props);
+    this.emitter = new Emitter();
+    // this.setState({
+    //   assets: this.buildAssets()
+    // });
   }
+
+  getChildContext = () => ({
+    emitter: this.emitter
+  })
+
+  static childContextTypes = {
+    emitter: PropTypes.object
+  }
+
 
   onEditorChange = (editorState) => {
     this.setState({
         editorState
     });
+  }
+
+  componentDidMount() {
+    const assets = this.buildAssets();
+    this.setState({
+      assets
+    });
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (
+      this.state.resources !== nextState.resources ||
+      this.state.contextualizers !== nextState.contextualizers ||
+      this.state.contextualizations !== nextState.contextualizations
+    ) {
+      const assets = this.buildAssets();
+    console.log('dispatch');
+      this.emitter.dispatch(assets);
+      this.setState({
+        assets
+      });
+    }
   }
 
   onAssetRequest = (selection) => {
@@ -307,9 +360,13 @@ export default class BasicEditorExample extends Component {
       readOnly: true
     });
     setTimeout(() => {
+      const assets = this.buildAssets();
       this.setState({
-        readOnly: false
+        readOnly: false,
+        assets
       });
+      this.emitter.dispatch(assets);
+
       this.editor.focus();
     });
   }
@@ -380,6 +437,27 @@ export default class BasicEditorExample extends Component {
     });
   }
 
+  buildAssets = () => {
+    const {
+      contextualizations,
+      resources,
+      contextualizers
+    } = this.state;
+    return Object.keys(contextualizations)
+    .reduce((ass, id) => {
+      const contextualization = contextualizations[id];
+      return {
+        ...ass,
+        [id]: {
+          ...contextualization,
+          resource: resources[contextualization.resourceId],
+          contextualizer: contextualizers[contextualization.contextualizerId],
+          type: contextualizers[contextualization.contextualizerId].type
+        }
+      }
+    }, {});
+  }
+
   render = () => {
     
     const {
@@ -409,6 +487,7 @@ export default class BasicEditorExample extends Component {
       readOnly,
       contextualizationRequest,
       clipboard,
+      // assets
     } = state;
 
     const bindEditorRef = (editor) => {
@@ -459,19 +538,7 @@ export default class BasicEditorExample extends Component {
     }
    }
 
-   const assets = Object.keys(contextualizations)
-    .reduce((ass, id) => {
-      const contextualization = contextualizations[id];
-      return {
-        ...ass,
-        [id]: {
-          ...contextualization,
-          resource: resources[contextualization.resourceId],
-          contextualizer: contextualizers[contextualization.contextualizerId],
-          type: contextualizers[contextualization.contextualizerId].type
-        }
-      }
-    }, {});
+   const assets = this.buildAssets();
 
     const assetChoiceProps = {
       options: ['asset 1', 'asset 2', 'asset 3'],

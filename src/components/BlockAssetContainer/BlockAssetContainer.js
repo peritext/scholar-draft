@@ -10,6 +10,7 @@ const BlockAssetContainer = (props) => {
 
   const {
     asset,
+    assetId,
     AssetComponent,
     onChange,
     onBlur,
@@ -38,6 +39,7 @@ const BlockAssetContainer = (props) => {
       onMouseOut={onMOut}
     >
       <AssetComponent
+        assetId={assetId}
         asset={asset}
         onChange={onChange}
         onBlur={onBlur}

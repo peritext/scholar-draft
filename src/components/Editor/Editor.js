@@ -61,6 +61,7 @@ export default class Editor extends Component {
       blockAssetComponents,
       AssetChoiceComponent,
       NotePointerComponent,
+      iconMap,
 
       keyBindingFn,
 
@@ -140,6 +141,7 @@ export default class Editor extends Component {
           inlineAssetComponents={inlineAssetComponents}
           blockAssetComponents={blockAssetComponents}
           AssetChoiceComponent={AssetChoiceComponent}
+          iconMap={iconMap}
           keyBindingFn={keyBindingFn}
 
           editorStyle={editorStyles && editorStyles.noteEditor}
@@ -204,6 +206,7 @@ export default class Editor extends Component {
             blockAssetComponents={blockAssetComponents}
             AssetChoiceComponent={AssetChoiceComponent}
             NotePointerComponent={NotePointerComponent}
+            iconMap={iconMap}
 
             clipboard={clipboard}
 

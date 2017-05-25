@@ -53,6 +53,8 @@ import InlineAssetContainer from '../InlineAssetContainer/InlineAssetContainer';
 import BlockAssetContainer from '../BlockAssetContainer/BlockAssetContainer';
 import NotePointer from '../NotePointer/NotePointer';
 
+import defaultIconMap from '../../icons/defaultIconMap';
+
 import './BasicEditor.scss';
 
 const getSelectedBlockElement = (range) => {
@@ -348,6 +350,7 @@ export default class BasicEditor extends Component {
         let props = {};
         if (asset) {
           props = {
+            assetId: id,
             asset,
             onMouseOver,
             onMouseOut,
@@ -532,7 +535,8 @@ export default class BasicEditor extends Component {
         assets,
         onAssetChange: onChange,
         onAssetMouseOver: onMouseOver,
-        onAssetMouseOut: onMouseOut
+        onAssetMouseOut: onMouseOut,
+        iconMap
       } = this.props;
 
       const {
@@ -544,13 +548,15 @@ export default class BasicEditor extends Component {
           component: BlockAssetContainer,
           editable: false,
           props: {
+            assetId: id,
             asset,
             onFocus,
             onBlur,
             onChange,
             onMouseOver,
             onMouseOut,
-            AssetComponent
+            AssetComponent,
+            iconMap
           },
         };
       }
@@ -723,7 +729,6 @@ export default class BasicEditor extends Component {
       || prevProps.notes !== this.props.notes
     ) {
       forceRender(this.props);
-      // forceRenderDebounced(this.props);
     }
 
     if (
@@ -819,7 +824,7 @@ export default class BasicEditor extends Component {
     }
 
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
-    
+    const iconMap = this.props.iconMap ? this.props.iconMap : defaultIconMap;
     return (
       <div 
         className={editorClass}
@@ -832,6 +837,7 @@ export default class BasicEditor extends Component {
           ref={bindInlineToolbar}
           editorState={realEditorState}
           updateEditorState={onChange}
+          iconMap={iconMap}
         />
         <SideControl
           ref={bindSideControlRef}
@@ -850,6 +856,7 @@ export default class BasicEditor extends Component {
           assetChoiceProps={assetChoiceProps}
 
           AssetChoiceComponent={AssetChoiceComponent}
+          iconMap={iconMap}
 
           onNoteAdd={onNoteAdd}
         />

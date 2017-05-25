@@ -7,23 +7,9 @@ import './PopoverControl.scss';
 export default class PopoverControl extends Component {
 
   static propTypes = {
-		/**
-		 * The popover container style
-		 */
-    style: PropTypes.object,
 		
     toggleInlineStyle: PropTypes.func,
     currentInlineStyle: PropTypes.object,
-
-		/**
-		 * The icon fill colour
-		 */
-    iconColor: PropTypes.string,
-
-		/**
-		 * The icon fill colour when selected
-		 */
-    iconSelectedColor: PropTypes.string,
 
     /**
      * The current editorState
@@ -42,11 +28,6 @@ export default class PopoverControl extends Component {
     buttons: PropTypes.array,
   };
 
-  static defaultProps = {
-    iconColor: '#000000',
-    iconSelectedColor: '#2000FF',
-  };
-
   shouldComponentUpdate = (nextProps, nextState) => {
     return (
       this.props.editorState !== nextProps.editorState
@@ -58,8 +39,7 @@ export default class PopoverControl extends Component {
     const { 
       updateEditorState, 
       editorState, 
-      iconColor = 'black', 
-      iconSelectedColor = 'red', 
+      iconMap, 
       buttons, 
     } = this.props;
     const bindRef = (toolbar) => {
@@ -68,7 +48,6 @@ export default class PopoverControl extends Component {
 
     return (<div
       className="scholar-draft-PopoverControl"
-      style={Object.assign({}, this.props.style)}
       ref={bindRef}
     >
 
@@ -76,8 +55,7 @@ export default class PopoverControl extends Component {
           // Pass down some useful props to each button
         updateEditorState,
         editorState,
-        iconColor,
-        iconSelectedColor,
+        iconMap,
         key
       })
       )}

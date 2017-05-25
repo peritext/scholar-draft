@@ -2,28 +2,9 @@ import React, { Component } from 'react';
 import { RichUtils } from 'draft-js';
 import PropTypes from 'prop-types';
 
-const styles = {
-  iconContainer: {
-    display: 'inline-block',
-    height: 24,
-    width: 24,
-  },
-};
-
 class BlockButton extends Component {
 	
   static propTypes = {
-
-    /**
-     * The icon colour. This gets passed down from the Editor.
-     */
-    iconColor: PropTypes.string,
-    
-    /**
-     * The icon colour when selected. This gets passed down from the Editor.
-     */
-    iconSelectedColor: PropTypes.string,
-
     /**
      * The current editorState. This gets passed down from the editor.
      */
@@ -53,25 +34,29 @@ class BlockButton extends Component {
 
   render = () => {
 
-    const { editorState, blockType, children, updateEditorState,
-			iconColor, iconSelectedColor, ...otherProps } = this.props;
+    const { 
+      editorState, 
+      blockType, 
+      children, 
+      updateEditorState,
+      iconMap,
+      ...otherProps 
+    } = this.props;
 
     const selected = this.isSelected(editorState, blockType); 
-    const fill = selected ? iconSelectedColor : iconColor;
-
-    const className = `scholar-draft-BlockButton${selected ? ' selected' : ''}`;
+    const className = `scholar-draft-BlockButton${selected ? ' active' : ''}`;
 
     return (
       <div
-        style={styles.iconContainer}
         onMouseDown={(e) => {
           e.preventDefault();
           updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
         }}
+        className={className}
         {...otherProps}
       >
         {React.Children.map(this.props.children, 
-        c => React.cloneElement(c, { fill, selected, className }))}
+        c => React.cloneElement(c, { selected, iconMap }))}
       </div>
     );
   }

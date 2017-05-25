@@ -3,15 +3,6 @@ import PropTypes from 'prop-types';
 import SVGInline from 'react-svg-inline';
 import iconSVG from '../../icons/asset.svg';
 
-const styles = {
-  iconContainer: {
-    display: 'inline-block',
-    height: 24,
-    width: 24,
-    transition: 'all .1s ease',
-  },
-};
-
 class AssetButton extends Component {
   
   static propTypes = {
@@ -24,22 +15,17 @@ class AssetButton extends Component {
     const { 
       onClick, 
       active,
+      iconMap,
       ...otherProps 
     } = this.props;
 
     return (<div
-      style={{
-        ...styles.iconContainer,
-        fill: active ? 'red' : null,
-        transform: active ? 'rotate(45deg)' : null
-      }}
+      className={'scholar-draft-AssetButton' + (active ? ' active': '')}
       onMouseDown={e => e.preventDefault()}
       onClick={onClick}
       {...otherProps}
     >
-      <SVGInline
-        svg={iconSVG}
-      />
+      {iconMap.asset}
     </div>);
   }
 }

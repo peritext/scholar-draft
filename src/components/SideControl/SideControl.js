@@ -40,6 +40,7 @@ export default class SideControl extends Component {
         // inline: true,
         // block: true
       },
+      iconMap,
       assetRequestPosition,
 
       AssetChoiceComponent,
@@ -70,12 +71,14 @@ export default class SideControl extends Component {
         {allowNotesInsertion &&
         <NoteButton 
           onClick={onNoteAdd} 
+          iconMap={iconMap}
         />
         }
         {(allowAssets.inline || allowAssets.block) && 
         <AssetButton 
           onClick={onAssetButtonClick} 
           active={assetRequestPosition}
+          iconMap={iconMap}
         />}
         {assetRequestPosition &&
           <span className="block-asset-choice-container" 

@@ -37,6 +37,7 @@ class NoteContainer extends Component {
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
+      iconMap,
       
       assetChoiceProps,
 
@@ -98,6 +99,7 @@ class NoteContainer extends Component {
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
+            iconMap={iconMap}
             allowNotesInsertion={false}
             editorStyle={editorStyle}
           />
