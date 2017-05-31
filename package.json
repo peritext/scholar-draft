@@ -4,12 +4,12 @@
   "description": "draft editor handling footnotes editing and inline/block assets connected to upstream logic",
   "main": "build/index.js",
   "scripts": {
-    "autocommit-add": "git add dist",
+    "autocommit-add": "git add build",
     "build": "rm -rf build && gulp build",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
     "lint:watch": "node_modules/eslint-watch/bin/esw --watch src",
-    "test": "mocha --compilers js:babel-core/register --recursive",
+    "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "test:watch": "npm run test -- --watch",
     "storybook": "start-storybook -p 6007",
     "build-storybook": "build-storybook",
@@ -30,7 +30,6 @@
   "homepage": "https://github.com/peritext/scholar-draft#readme",
   "pre-commit": [
     "lint",
-    "test",
     "build",
     "autocommit-add"
   ],
