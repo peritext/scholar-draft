@@ -13,4 +13,10 @@ const Image = ({ entityKey, children, contentState }) => {
   );
 };
 
+Image.propTypes = {
+  contentState: PropTypes.object,
+  entityKey: PropTypes.string,
+  children: PropTypes.array
+}
+
 export default Image;

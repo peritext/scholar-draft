@@ -2,6 +2,7 @@
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Link = (props) => {
   const { href, title } = props.contentState.getEntity(props.entityKey).getData();
@@ -11,5 +12,9 @@ const Link = (props) => {
     </a>
   );
 };
+
+Link.propTypes = {
+  contentState: PropTypes.object,
+}
 
 export default Link;

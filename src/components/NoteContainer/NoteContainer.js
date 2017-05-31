@@ -1,10 +1,46 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 import './NoteContainer.scss';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 
 class NoteContainer extends Component {
+
+  static propTypes= {
+    note: PropTypes.object,
+    assets: PropTypes.object,
+    notes: PropTypes.object,
+    assetRequestPosition: PropTypes.object,
+
+
+    addTextAtCurrentSelection: PropTypes.func,
+    onEditorChange: PropTypes.func,
+    onAssetRequest: PropTypes.func,
+    onAssetRequestCancel: PropTypes.func,
+    onAssetChoice: PropTypes.func,
+    onAssetChange: PropTypes.func,
+    onClickDelete: PropTypes.func,
+    onDrop: PropTypes.func,
+    onBlur: PropTypes.func,
+    onEditorClick: PropTypes.func,
+    onAssetClick: PropTypes.func,
+    onAssetMouseOver: PropTypes.func,
+    onAssetMouseOut: PropTypes.func,
+
+    inlineAssetComponents: PropTypes.object,
+    blockAssetComponents: PropTypes.object,
+    AssetChoiceComponent: PropTypes.func,
+    editorStyle: PropTypes.object,
+    iconMap: PropTypes.object,
+    
+    assetChoiceProps: PropTypes.object,
+    clipboard: PropTypes.object,
+
+
+    readOnly: PropTypes.bool,
+  }
+
   constructor(props) {
     super(props);
   }

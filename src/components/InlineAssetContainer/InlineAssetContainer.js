@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './InlineAssetContainer.scss';
 
@@ -46,5 +47,17 @@ const InlineAssetContainer = (props) => {
     </span>
   ) : null;
 };
+
+InlineAssetContainer.propTypes = {
+  children: PropTypes.array,
+  contentState: PropTypes.object,
+  asset: PropTypes.object,
+  onChange: PropTypes.func,
+  onBlur: PropTypes.func,
+  onFocus: PropTypes.func,
+  onMouseOver: PropTypes.func,
+  onMouseOut: PropTypes.func,
+  components: PropTypes.object,
+}
 
 export default InlineAssetContainer;

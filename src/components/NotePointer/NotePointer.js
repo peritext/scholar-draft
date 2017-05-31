@@ -26,7 +26,13 @@ const NotePointer = ({
 
 
 NotePointer.propTypes = {
-  children: PropTypes.array
+  children: PropTypes.array,
+  noteId: PropTypes.string,
+  note: PropTypes.object,
+
+  onMouseOver: PropTypes.func,
+  onMouseOut: PropTypes.func,
+  onMouseClick: PropTypes.func,
 };
 
 

@@ -4,15 +4,6 @@ import PropTypes from 'prop-types';
 
 import './ButtonStyles.scss';
 
-/**
- * Abstract class to remove the boiler plate in getButtons. And make the 
- * getButtons function easier to read. 
- *
- * As a convenience this passes down the selected and fill props to the children
- * The selected prop is a boolean that's true if the highlighted text in the 
- * editor relates to the inlineStyleType and the fill is the icon colour. Will
- * match the iconColour or selectedIconColor based on the selected property.
- */
 class InlineButton extends Component {
 
   static propTypes = {
@@ -74,16 +65,18 @@ class InlineButton extends Component {
       updateEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyleType));
     }
 
-    return (<div
-      onMouseDown={onMouseDown}
-      className={className}
-      {...otherProps}
-    >
-      {React.Children.map(this.props.children, 
-        c => React.cloneElement(c, { 
-          selected
-        }))}
-    </div>);
+    return (
+      <div
+        onMouseDown={onMouseDown}
+        className={className}
+        {...otherProps}
+      >
+        {React.Children.map(this.props.children, 
+          c => React.cloneElement(c, { 
+            selected
+          }))}
+      </div>
+    );
   };
 }
 

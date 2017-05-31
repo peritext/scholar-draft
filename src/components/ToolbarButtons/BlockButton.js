@@ -39,12 +39,13 @@ class BlockButton extends Component {
       blockType, 
       children, 
       updateEditorState,
-      iconMap,
-      ...otherProps 
+      // iconMap,
+      // ...otherProps 
     } = this.props;
 
     const selected = this.isSelected(editorState, blockType); 
     const className = `scholar-draft-BlockButton${selected ? ' active' : ''}`;
+
 
     return (
       <div
@@ -53,10 +54,11 @@ class BlockButton extends Component {
           updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
         }}
         className={className}
-        {...otherProps}
       >
         {React.Children.map(this.props.children, 
-        c => React.cloneElement(c, { selected, iconMap }))}
+        c => React.cloneElement(c, { 
+            selected
+        }))}
       </div>
     );
   }

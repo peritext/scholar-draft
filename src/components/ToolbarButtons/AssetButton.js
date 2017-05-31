@@ -7,6 +7,10 @@ class AssetButton extends Component {
   
   static propTypes = {
 
+    active: PropTypes.bool,
+
+    iconMap: PropTypes.object,
+
     onClick: PropTypes.func
   };
 

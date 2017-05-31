@@ -11,6 +11,8 @@ export default class PopoverControl extends Component {
     toggleInlineStyle: PropTypes.func,
     currentInlineStyle: PropTypes.object,
 
+    iconMap: PropTypes.object,
+
     /**
      * The current editorState
      */

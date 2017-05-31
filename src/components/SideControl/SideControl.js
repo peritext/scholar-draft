@@ -14,8 +14,23 @@ import './SideControl.scss';
 export default class SideControl extends Component {
 
   static propTypes = {
-    toggleBlockType: PropTypes.func,
-    selectedBlockType: PropTypes.string,
+    editorState: PropTypes.object,
+    assetChoiceProps: PropTypes.object,
+    
+    iconMap: PropTypes.object,
+    assetRequestPosition: PropTypes.object,
+
+    allowNotesInsertion: PropTypes.bool,
+    allowAssets: PropTypes.shape({
+      inline: PropTypes.bool,
+      block: PropTypes.bool
+    }),
+
+    AssetChoiceComponent: PropTypes.func,
+    onNoteAdd: PropTypes.func,
+    onAssetChoice: PropTypes.func,
+    onAssetRequest: PropTypes.func,
+    onAssetRequestCancel: PropTypes.func,
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -29,7 +44,6 @@ export default class SideControl extends Component {
   render = () => {
 
     const { 
-      buttons,
       editorState,
       onAssetRequest,
       onAssetRequestCancel,
@@ -77,7 +91,7 @@ export default class SideControl extends Component {
         {(allowAssets.inline || allowAssets.block) && 
         <AssetButton 
           onClick={onAssetButtonClick} 
-          active={assetRequestPosition}
+          active={assetRequestPosition !== undefined}
           iconMap={iconMap}
         />}
         {assetRequestPosition &&

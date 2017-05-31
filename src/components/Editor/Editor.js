@@ -8,10 +8,46 @@ import './Editor.scss';
 
 export default class Editor extends Component {
   static PropTypes = {
-  }
+    mainEditorState: PropTypes.object,
+    notes: PropTypes.object,
+    assets: PropTypes.object,
 
-  static defaultProps = {
+    editorClass: PropTypes.string,
+    
+    onEditorChange: PropTypes.func,
+    onNoteAdd: PropTypes.func,
 
+    onAssetChange: PropTypes.func,
+    onAssetRequest: PropTypes.func,
+    onAssetRequestCancel: PropTypes.func,
+    onAssetChoice: PropTypes.func,
+    onAssetClick: PropTypes.func,
+    onAssetMouseOver: PropTypes.func,
+    onAssetMouseOut: PropTypes.func,
+
+    onNotePointerMouseOver: PropTypes.func,
+    onNotePointerMouseOut: PropTypes.func,
+    onNotePointerMouseClick: PropTypes.func,
+    onNoteDelete: PropTypes.func,
+    onDrop: PropTypes.func,
+    onClick: PropTypes.func,
+    onBlur: PropTypes.func,
+
+    assetRequestPosition: PropTypes.object,
+    assetChoiceProps: PropTypes.object,
+    
+    inlineAssetComponents: PropTypes.array,
+    blockAssetComponents: PropTypes.array,
+    AssetChoiceComponent: PropTypes.func,
+    NotePointerComponent: PropTypes.func,
+    iconMap: PropTypes.object,
+
+    keyBindingFn: PropTypes.func,
+
+    editorStyles: PropTypes.object,
+    clipboard: PropTypes.object,
+    readOnly: PropTypes.object,
+    NoteContainerComponent: PropTypes.func,
   }
 
   constructor(props) {
@@ -50,6 +86,7 @@ export default class Editor extends Component {
       onNotePointerMouseOver,
       onNotePointerMouseOut,
       onNotePointerMouseClick,
+      onNoteDelete,
       onDrop,
       onClick,
       onBlur,
@@ -68,6 +105,7 @@ export default class Editor extends Component {
       editorStyles,
       clipboard,
       readOnly = {},
+      NoteContainerComponent
     } = this.props;
 
     const bindMainEditor = editor => {
@@ -80,12 +118,12 @@ export default class Editor extends Component {
         onAssetRequest('note', noteId, selection);
       };
       const onClickDelete = () => {
-        if (typeof this.props.onNoteDelete === 'function') {
+        if (typeof onNoteDelete === 'function') {
           this.props.onNoteDelete(noteId);
         }
       };
       const onNoteDrop = (payload, selection) => {
-        if (typeof this.props.onDrop === 'function') {
+        if (typeof onDrop === 'function') {
           onDrop(noteId, payload, selection);
         }
       };
@@ -103,7 +141,7 @@ export default class Editor extends Component {
         onBlur(e, noteId);
       }
 
-      const NoteContainer = this.props.NoteContainerComponent || DefaultNoteContainer;
+      const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
 
       return (
         <NoteContainer

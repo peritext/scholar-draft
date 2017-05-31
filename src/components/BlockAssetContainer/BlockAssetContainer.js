@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import './BlockAssetContainer.scss';
 
@@ -49,5 +50,20 @@ const BlockAssetContainer = (props) => {
     </div>
   );
 };
+
+BlockAssetContainer.propTypes = {
+  children: PropTypes.array,
+  blockProps: PropTypes.shape({
+    asset: PropTypes.object,
+    assetId: PropTypes.string,
+    
+    AssetComponent: PropTypes.func,
+    onChange: PropTypes.func,
+    onBlur: PropTypes.func,
+    onFocus: PropTypes.func,
+    onMouseOver: PropTypes.func,
+    onMouseOut: PropTypes.func,
+  })
+}
 
 export default BlockAssetContainer;
