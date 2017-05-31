@@ -34,8 +34,81 @@ For that reason the module also provides a set of `utils` functions for manipula
 * markdown shortcuts handling
 * customizable medium-like contextual toolbar
 * customizable style, through css classes selectors
+* keyboard shortcuts (default: `@` for inserting an asset, `cmd+^` for inserting a footnote)
 
-# BasicEditor API
+# Editor API
+
+## Props
+
+### State-related props
+
+`readOnly` (Boolean)
+
+`mainEditor` (ImmutableMap) -> the state of the editor of the main object
+
+`notesMap` (Object) -> map of `editorState` maps representing the editors of each map
+
+`notesOrder` (Array<String>) -> order of the notes in the section editor
+
+`assets` (Object) -> map of the assets data to be potentially used by the editor
+
+`assetChoiceProps` (Object) -> props to pass to the component displaying asset choice within the editor
+
+`assetRequestPosition` (ImmutableMap) -> position where asset is requested (if requested)
+
+### Method props [not updated]
+
+`onEditorChange(contentType, noteId, editorState)` -> if first argument is 'main' will update main editor state, else related note
+
+`onNoteAdd()`
+
+`onNoteDelete(id)`
+
+`onNotePointerMouseOver(noteId, event)`
+
+`onNotePointerMouseOut(noteId, event)`
+
+`onNotePointerMouseClick(noteId, event)`
+
+`onNotesOrderChange(notesOrder)` -> update the note order 
+
+`onAssetRequest(contentType, noteId, selection)` -> triggers when an asset insertion is requested from the editor's ui
+
+`onAssetRequestCancel()`
+
+`onAssetRequestChoice(choice)`
+
+`onAssetChange(assetProp, id, newObject)` -> when mods are applied from editor on an asset
+
+`onAssetClick(assetId, assetData, event)` 
+
+`onAssetMouseOver(assetId, assetData, event)` 
+
+`onAssetMouseOut(assetId, assetData, event)` 
+
+`onDrop(contentId, payload, selection)` 
+
+### Parametrization props
+
+`mainEditorClass` (string) -> the class name to use
+
+`noteEditorClass` (string) -> the class name to use
+
+`mainEditorStyle` (Object) -> a style object
+
+`noteEditorStyle` (Object) -> a style object
+
+`InlineAssetComponents` (Object) -> a map for displaying the inline assets in the editor
+
+`BlockAssetComponents` (Object) -> a map for displaying the block assets in the editor
+
+`AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
+
+`NotePointerComponent`
+
+`NoteContainerComponent`
+
+# BasicEditor API [not updated]
 
 ## Props
 
@@ -93,76 +166,24 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 `allowAssets` (Object) => {inline: Boolean, block: Boolean}
 
-# Editor API
 
-## Props
+# Utils API
 
-### State-related props
+`insertAssetInEditor(editorState, asset, selection)` returns new editorState
 
-`readOnly` (Boolean)
+`insertNoteInEditor(editorState, noteId, selection)` returns new editorState
 
-`mainEditor` (ImmutableMap) -> the state of the editor of the main object
+`deleteAssetFromEditor(editorState, id, callback)` returns new editorState
 
-`notesMap` (Object) -> map of `editorState` maps representing the editors of each map
+`deleteNoteFromEditor(editorState, id, callback)` returns new editorState
 
-`notesOrder` (Array<String>) -> order of the notes in the section editor
+`updateNotesFromEditor(editorState, notes)` returns updated notes map 
 
-`assets` (Object) -> map of the assets data to be potentially used by the editor
+`updateAssetsFromEditor(editorState, assets)` returns new assets map
 
-`assetChoiceProps` (Object) -> props to pass to the component displaying asset choice within the editor
+`getUnusedAssets(editorState, assets)` returns asset map
 
-`assetRequestPosition` (ImmutableMap) -> position where asset is requested (if requested)
+`getUsedAssets(editorState, assets)` returns asset map
 
-### Method props
-
-`onEditorChange(contentType, noteId, editorState)` -> if first argument is 'main' will update main editor state, else related note
-
-`onNoteAdd()`
-
-`onNoteDelete(id)`
-
-`onNotePointerMouseOver(noteId, event)`
-
-`onNotePointerMouseOut(noteId, event)`
-
-`onNotePointerMouseClick(noteId, event)`
-
-`onNotesOrderChange(notesOrder)` -> update the note order 
-
-`onAssetRequest(contentType, noteId, selection)` -> triggers when an asset insertion is requested from the editor's ui
-
-`onAssetRequestCancel()`
-
-`onAssetRequestChoice(choice)`
-
-`onAssetChange(assetProp, id, newObject)` -> when mods are applied from editor on an asset
-
-`onAssetClick(assetId, assetData, event)` 
-
-`onAssetMouseOver(assetId, assetData, event)` 
-
-`onAssetMouseOut(assetId, assetData, event)` 
-
-`onDrop(contentId, payload, selection)` 
-
-### Parametrization props
-
-`mainEditorClass` (string) -> the class name to use
-
-`noteEditorClass` (string) -> the class name to use
-
-`mainEditorStyle` (Object) -> a style object
-
-`noteEditorStyle` (Object) -> a style object
-
-`InlineAssetComponents` (Object) -> a map for displaying the inline assets in the editor
-
-`BlockAssetComponents` (Object) -> a map for displaying the block assets in the editor
-
-`AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
-
-`NotePointerComponent`
-
-`NoteContainerComponent`
-
+`insertFragment(editorState, fragment)`
 
