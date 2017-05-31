@@ -22,6 +22,12 @@ class InlineButton extends Component {
      * The inline style type this button is responsible for.
      */
     styleType: PropTypes.string,
+
+    children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+
+    inlineStyleType: PropTypes.string,
+
+    iconMap: PropTypes.object
   };
 
   static defaultProps = {
@@ -52,18 +58,18 @@ class InlineButton extends Component {
     const { 
       editorState, 
       updateEditorState, 
-      iconMap,
       inlineStyleType,
+      iconMap, /* eslint  no-unused-vars:0 */
       ...otherProps 
     } = this.props;
 
     const selected = this.isSelected(editorState, inlineStyleType); 
     const className = `scholar-draft-InlineButton${selected ? ' active' : ''} `;
 
-    const onMouseDown = e => {
-      e.preventDefault();
+    const onMouseDown = (event) => {
+      event.preventDefault();
       updateEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyleType));
-    }
+    };
 
     return (
       <div
@@ -72,7 +78,7 @@ class InlineButton extends Component {
         {...otherProps}
       >
         {React.Children.map(this.props.children, 
-          c => React.cloneElement(c, { 
+          child => React.cloneElement(child, { 
             selected
           }))}
       </div>

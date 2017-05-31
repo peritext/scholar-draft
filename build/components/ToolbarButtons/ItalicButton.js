@@ -12,27 +12,19 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _InlineButton = require('./InlineButton.js');
+var _InlineButton = require('./InlineButton');
 
 var _InlineButton2 = _interopRequireDefault(_InlineButton);
 
-var _reactSvgInline = require('react-svg-inline');
-
-var _reactSvgInline2 = _interopRequireDefault(_reactSvgInline);
-
-var _italic = require('../../icons/italic.svg');
-
-var _italic2 = _interopRequireDefault(_italic);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* eslint react/prop-types: 0 */
 
 exports.default = function (props) {
   return _react2.default.createElement(
     _InlineButton2.default,
-    (0, _extends3.default)({}, props, { inlineStyleType: 'ITALIC', className: 'DraftJsEditor-ItalicButton' }),
-    _react2.default.createElement(_reactSvgInline2.default, {
-      svg: _italic2.default
-    })
+    (0, _extends3.default)({}, props, { inlineStyleType: 'ITALIC' }),
+    props.iconMap.italic
   );
 };
 

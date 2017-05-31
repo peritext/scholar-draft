@@ -25,13 +25,13 @@ const handleInlineStyle = (editorState, character) => {
   const text = editorState.getCurrentContent().getBlockForKey(key).getText();
   const line = `${text}${character}`;
   let newEditorState = editorState;
-  Object.keys(inlineMatchers).some((k) => {
-    inlineMatchers[k].some((re) => {
+  Object.keys(inlineMatchers).some((index) => {
+    inlineMatchers[index].some((re) => {
       let matchArr;
       do {
         matchArr = re.exec(line);
         if (matchArr) {
-          newEditorState = changeCurrentInlineStyle(newEditorState, matchArr, k);
+          newEditorState = changeCurrentInlineStyle(newEditorState, matchArr, index);
         }
       } while (matchArr);
       return newEditorState !== editorState;

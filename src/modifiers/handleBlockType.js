@@ -34,9 +34,9 @@ const handleBlockType = (editorState, character) => {
   const position = currentSelection.getAnchorOffset();
   const line = [text.slice(0, position), character, text.slice(position)].join('');
   const blockType = RichUtils.getCurrentBlockType(editorState);
-  for (let i = 1; i <= 6; i += 1) {
-    if (line.indexOf(`${sharps(i)} `) === 0) {
-      return changeCurrentBlockType(editorState, blockTypes[i], line.replace(/^#+\s/, ''));
+  for (let index = 1; index <= 6; index += 1) {
+    if (line.indexOf(`${sharps(index)} `) === 0) {
+      return changeCurrentBlockType(editorState, blockTypes[index], line.replace(/^#+\s/, ''));
     }
   }
   let matchArr = line.match(/^[*-] (.*)$/);

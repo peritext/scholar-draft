@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: 0 */
 import React from 'react';
 import { ContentState } from 'draft-js';
 import { shallow } from 'enzyme';

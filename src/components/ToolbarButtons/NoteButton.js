@@ -1,32 +1,28 @@
-import React, { Component } from 'react';
+
+import React from 'react';
 import PropTypes from 'prop-types';
-import SVGInline from 'react-svg-inline';
-import iconSVG from '../../icons/note.svg';
 
-class NoteButton extends Component {
-  
-  static propTypes = {
+const NoteButton = ({ 
+  onClick, 
+  iconMap,
+  ...otherProps 
+}) => {
 
-    onClick: PropTypes.func
-  };
+  const onMouseDown = event => event.preventDefault();
 
-  render = () => {
+  return (<div
+    className="scholar-draft-NoteButton"
+    onClick={onClick}
+    onMouseDown={onMouseDown}
+    {...otherProps}
+  >
+    {iconMap.note}
+  </div>);
+};
 
-    const { 
-      onClick, 
-      iconMap,
-      ...otherProps 
-    } = this.props;
-
-    return (<div
-      className="scholar-draft-NoteButton"
-      onClick={onClick}
-      onMouseDown={e => e.preventDefault()}
-      {...otherProps}
-    >
-      {iconMap.note}
-    </div>);
-  }
-}
+NoteButton.propTypes = {
+  onClick: PropTypes.func,
+  iconMap: PropTypes.object 
+};
 
 export default NoteButton;

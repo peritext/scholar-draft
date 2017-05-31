@@ -41,8 +41,6 @@ var _NoteButton = require('../ToolbarButtons/NoteButton');
 
 var _NoteButton2 = _interopRequireDefault(_NoteButton);
 
-var _constants = require('../../constants');
-
 require('./SideControl.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -61,9 +59,10 @@ var SideControl = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideControl.__proto__ || (0, _getPrototypeOf2.default)(SideControl)).call.apply(_ref, [this].concat(args))), _this), _this.render = function () {
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideControl.__proto__ || (0, _getPrototypeOf2.default)(SideControl)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
+      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion;
+    }, _this.render = function () {
       var _this$props = _this.props,
-          buttons = _this$props.buttons,
           editorState = _this$props.editorState,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -76,14 +75,15 @@ var SideControl = function (_Component) {
         // inline: true,
         // block: true
       } : _this$props$allowAsse,
+          iconMap = _this$props.iconMap,
           assetRequestPosition = _this$props.assetRequestPosition,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
           _this$props$allowNote = _this$props.allowNotesInsertion,
           allowNotesInsertion = _this$props$allowNote === undefined ? false : _this$props$allowNote;
 
 
-      var onAssetButtonClick = function onAssetButtonClick(e) {
-        e.stopPropagation();
+      var onAssetButtonClick = function onAssetButtonClick(event) {
+        event.stopPropagation();
         if (assetRequestPosition) {
           onAssetRequestCancel();
         } else {
@@ -95,8 +95,8 @@ var SideControl = function (_Component) {
       var bindToolbar = function bindToolbar(toolbar) {
         _this.toolbar = toolbar;
       };
-      var stopEventPropagation = function stopEventPropagation(e) {
-        return e.stopPropagation();
+      var stopEventPropagation = function stopEventPropagation(event) {
+        return event.stopPropagation();
       };
       return _react2.default.createElement(
         'div',
@@ -105,15 +105,18 @@ var SideControl = function (_Component) {
           ref: bindToolbar
         },
         allowNotesInsertion && _react2.default.createElement(_NoteButton2.default, {
-          onClick: onNoteAdd
+          onClick: onNoteAdd,
+          iconMap: iconMap
         }),
         (allowAssets.inline || allowAssets.block) && _react2.default.createElement(_AssetButton2.default, {
           onClick: onAssetButtonClick,
-          active: assetRequestPosition
+          active: assetRequestPosition !== undefined,
+          iconMap: iconMap
         }),
         assetRequestPosition && _react2.default.createElement(
           'span',
-          { className: 'block-asset-choice-container',
+          {
+            className: 'block-asset-choice-container',
             onClick: stopEventPropagation
           },
           _react2.default.createElement(AssetChoiceComponent, (0, _extends3.default)({}, assetChoiceProps, {
@@ -129,8 +132,24 @@ var SideControl = function (_Component) {
 }(_react.Component);
 
 SideControl.propTypes = {
-  toggleBlockType: _propTypes2.default.func,
-  selectedBlockType: _propTypes2.default.string
+  editorState: _propTypes2.default.object,
+  assetChoiceProps: _propTypes2.default.object,
+
+  iconMap: _propTypes2.default.object,
+  assetRequestPosition: _propTypes2.default.object,
+
+  allowNotesInsertion: _propTypes2.default.bool,
+  allowAssets: _propTypes2.default.shape({
+    inline: _propTypes2.default.bool,
+    block: _propTypes2.default.bool
+  }),
+
+  AssetChoiceComponent: _propTypes2.default.func,
+  onNoteAdd: _propTypes2.default.func,
+  onAssetChoice: _propTypes2.default.func,
+  onAssetRequest: _propTypes2.default.func,
+  onAssetRequestCancel: _propTypes2.default.func
+
 };
 exports.default = SideControl;
 module.exports = exports['default'];

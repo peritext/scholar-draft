@@ -28,10 +28,6 @@ var _HeaderTwoButton = require('../ToolbarButtons/HeaderTwoButton');
 
 var _HeaderTwoButton2 = _interopRequireDefault(_HeaderTwoButton);
 
-var _InlineButton = require('../ToolbarButtons/InlineButton');
-
-var _InlineButton2 = _interopRequireDefault(_InlineButton);
-
 var _ItalicButton = require('../ToolbarButtons/ItalicButton');
 
 var _ItalicButton2 = _interopRequireDefault(_ItalicButton);

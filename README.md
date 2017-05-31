@@ -161,4 +161,8 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 `AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
 
+`NotePointerComponent`
+
+`NoteContainerComponent`
+
 

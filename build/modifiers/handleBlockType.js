@@ -36,9 +36,9 @@ var handleBlockType = function handleBlockType(editorState, character) {
   var position = currentSelection.getAnchorOffset();
   var line = [text.slice(0, position), character, text.slice(position)].join('');
   var blockType = _draftJs.RichUtils.getCurrentBlockType(editorState);
-  for (var i = 1; i <= 6; i += 1) {
-    if (line.indexOf(sharps(i) + ' ') === 0) {
-      return (0, _changeCurrentBlockType2.default)(editorState, blockTypes[i], line.replace(/^#+\s/, ''));
+  for (var index = 1; index <= 6; index += 1) {
+    if (line.indexOf(sharps(index) + ' ') === 0) {
+      return (0, _changeCurrentBlockType2.default)(editorState, blockTypes[index], line.replace(/^#+\s/, ''));
     }
   }
   var matchArr = line.match(/^[*-] (.*)$/);

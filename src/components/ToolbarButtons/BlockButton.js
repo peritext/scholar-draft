@@ -3,7 +3,7 @@ import { RichUtils } from 'draft-js';
 import PropTypes from 'prop-types';
 
 class BlockButton extends Component {
-	
+
   static propTypes = {
     /**
      * The current editorState. This gets passed down from the editor.
@@ -20,6 +20,11 @@ class BlockButton extends Component {
      * The block type this button is responsible for.
      */
     blockType: PropTypes.string,
+
+    children: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.object
+    ])
   };
 
   isSelected = (editorState, blockType) => {
@@ -29,7 +34,7 @@ class BlockButton extends Component {
       .getBlockForKey(selection.getStartKey());
     if (!selectedBlock) return false;
     const selectedBlockType = selectedBlock.getType();
-    return selectedBlockType == blockType;
+    return selectedBlockType === blockType;
   };
 
   render = () => {
@@ -46,18 +51,19 @@ class BlockButton extends Component {
     const selected = this.isSelected(editorState, blockType); 
     const className = `scholar-draft-BlockButton${selected ? ' active' : ''}`;
 
+    const onMouseDown = (event) => {
+      event.preventDefault();
+      updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
+    };
 
     return (
       <div
-        onMouseDown={(e) => {
-          e.preventDefault();
-          updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
-        }}
+        onMouseDown={onMouseDown}
         className={className}
       >
-        {React.Children.map(this.props.children, 
-        c => React.cloneElement(c, { 
-            selected
+        {React.Children.map(children, 
+        child => React.cloneElement(child, { 
+          selected
         }))}
       </div>
     );

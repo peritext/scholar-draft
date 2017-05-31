@@ -24,6 +24,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 require('./NoteContainer.scss');
 
 var _BasicEditor = require('../BasicEditor/BasicEditor');
@@ -35,19 +39,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var NoteContainer = function (_Component) {
   (0, _inherits3.default)(NoteContainer, _Component);
 
-  function NoteContainer(props) {
+  function NoteContainer() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     (0, _classCallCheck3.default)(this, NoteContainer);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (NoteContainer.__proto__ || (0, _getPrototypeOf2.default)(NoteContainer)).call(this, props));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _this.focus = function () {
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = NoteContainer.__proto__ || (0, _getPrototypeOf2.default)(NoteContainer)).call.apply(_ref, [this].concat(args))), _this), _this.focus = function () {
       _this.editor.focus();
-    };
-
-    _this.render = function () {
+    }, _this.render = function () {
       var _this$props = _this.props,
           note = _this$props.note,
           assets = _this$props.assets,
+          notes = _this$props.notes,
           assetRequestPosition = _this$props.assetRequestPosition,
           addTextAtCurrentSelection = _this$props.addTextAtCurrentSelection,
           onEditorChange = _this$props.onEditorChange,
@@ -65,7 +74,9 @@ var NoteContainer = function (_Component) {
           inlineAssetComponents = _this$props.inlineAssetComponents,
           blockAssetComponents = _this$props.blockAssetComponents,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
+          iconMap = _this$props.iconMap,
           assetChoiceProps = _this$props.assetChoiceProps,
+          clipboard = _this$props.clipboard,
           readOnly = _this$props.readOnly,
           editorStyle = _this$props.editorStyle;
 
@@ -74,14 +85,14 @@ var NoteContainer = function (_Component) {
         _this.editor = editor;
       };
 
-      var onClick = function onClick(e) {
-        e.stopPropagation();
-        onEditorClick(e);
+      var onClick = function onClick(event) {
+        event.stopPropagation();
+        onEditorClick(event);
       };
 
-      var onHeaderClick = function onHeaderClick(e) {
-        e.stopPropagation();
-        onEditorClick(e);
+      var onHeaderClick = function onHeaderClick(event) {
+        event.stopPropagation();
+        onEditorClick(event);
       };
 
       return _react2.default.createElement(
@@ -110,12 +121,14 @@ var NoteContainer = function (_Component) {
           _react2.default.createElement(_BasicEditor2.default, {
             editorState: note.editorState,
             assets: assets,
+            notes: notes,
             readOnly: readOnly,
             ref: bindRef,
             onClick: onClick,
             onDrop: onDrop,
             onBlur: onBlur,
             addTextAtCurrentSelection: addTextAtCurrentSelection,
+            clipboard: clipboard,
 
             assetRequestPosition: assetRequestPosition,
             onAssetRequestCancel: onAssetRequestCancel,
@@ -133,18 +146,48 @@ var NoteContainer = function (_Component) {
 
             inlineAssetComponents: inlineAssetComponents,
             blockAssetComponents: blockAssetComponents,
+            iconMap: iconMap,
             allowNotesInsertion: false,
             editorStyle: editorStyle
           })
         )
       );
-    };
-
-    return _this;
+    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
   return NoteContainer;
 }(_react.Component);
 
+NoteContainer.propTypes = {
+  note: _propTypes2.default.object,
+  assets: _propTypes2.default.object,
+  notes: _propTypes2.default.object,
+  assetRequestPosition: _propTypes2.default.object,
+
+  addTextAtCurrentSelection: _propTypes2.default.func,
+  onEditorChange: _propTypes2.default.func,
+  onAssetRequest: _propTypes2.default.func,
+  onAssetRequestCancel: _propTypes2.default.func,
+  onAssetChoice: _propTypes2.default.func,
+  onAssetChange: _propTypes2.default.func,
+  onClickDelete: _propTypes2.default.func,
+  onDrop: _propTypes2.default.func,
+  onBlur: _propTypes2.default.func,
+  onEditorClick: _propTypes2.default.func,
+  onAssetClick: _propTypes2.default.func,
+  onAssetMouseOver: _propTypes2.default.func,
+  onAssetMouseOut: _propTypes2.default.func,
+
+  inlineAssetComponents: _propTypes2.default.object,
+  blockAssetComponents: _propTypes2.default.object,
+  AssetChoiceComponent: _propTypes2.default.func,
+  editorStyle: _propTypes2.default.object,
+  iconMap: _propTypes2.default.object,
+
+  assetChoiceProps: _propTypes2.default.object,
+  clipboard: _propTypes2.default.object,
+
+  readOnly: _propTypes2.default.bool
+};
 exports.default = NoteContainer;
 module.exports = exports['default'];

@@ -15,6 +15,8 @@ const Link = (props) => {
 
 Link.propTypes = {
   contentState: PropTypes.object,
-}
+  children: PropTypes.array,
+  entityKey: PropTypes.string
+};
 
 export default Link;

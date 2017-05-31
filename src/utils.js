@@ -1,15 +1,11 @@
 import {
   EditorState,
-  Entity,
   Modifier,
   AtomicBlockUtils,
-  CharacterMetadata,
-  SelectionState,
-  genKey, 
-  ContentBlock
+  SelectionState
 } from 'draft-js';
 
-import { List, OrderedMap } from 'immutable';
+import { OrderedMap } from 'immutable';
 
 import {
   NOTE_POINTER,
@@ -21,35 +17,30 @@ import {
  * Utils taken from draft-js-markdown-plugin
  */
 
-function getEmptyContentBlock() {
-  return new ContentBlock({
-    key: genKey(),
-    text: '',
-    characterList: List(),
-  });
-}
+// function getEmptyContentBlock() {
+//   return new ContentBlock({
+//     key: genKey(),
+//     text: '',
+//     characterList: List(),
+//   });
+// }
 
-export function addText(editorState, bufferText) {
-  const contentState = Modifier.insertText(editorState.getCurrentContent(), editorState.getSelection(), bufferText);
-  return EditorState.push(editorState, contentState, 'insert-characters');
-}
-
-export function addEmptyBlock(editorState) {
-  let contentState = editorState.getCurrentContent();
-  const emptyBlock = getEmptyContentBlock();
-  const blockMap = contentState.getBlockMap();
-  const selectionState = editorState.getSelection();
-  contentState = contentState.merge({
-    blockMap: blockMap.set(emptyBlock.getKey(), emptyBlock),
-    selectionAfter: selectionState.merge({
-      anchorKey: emptyBlock.getKey(),
-      focusKey: emptyBlock.getKey(),
-      anchorOffset: 0,
-      focusOffset: 0,
-    }),
-  });
-  return EditorState.push(editorState, contentState, 'insert-characters');
-}
+// export function addEmptyBlock(editorState) {
+//   let contentState = editorState.getCurrentContent();
+//   const emptyBlock = getEmptyContentBlock();
+//   const blockMap = contentState.getBlockMap();
+//   const selectionState = editorState.getSelection();
+//   contentState = contentState.merge({
+//     blockMap: blockMap.set(emptyBlock.getKey(), emptyBlock),
+//     selectionAfter: selectionState.merge({
+//       anchorKey: emptyBlock.getKey(),
+//       focusKey: emptyBlock.getKey(),
+//       anchorOffset: 0,
+//       focusOffset: 0,
+//     }),
+//   });
+//   return EditorState.push(editorState, contentState, 'insert-characters');
+// }
 
 /**
  * Other utils
@@ -62,9 +53,12 @@ export function insertAssetInEditor(
   ) {
   const currentContent = editorState.getCurrentContent();
   const activeSelection = editorState.getSelection();
-  const inputSelection = selection || activeSelection;
+  const inputSelection = selection || activeSelection;
 
-  const isInEmptyBlock = currentContent.getBlockForKey(inputSelection.getStartKey()).getText().trim().length === 0;
+  const isInEmptyBlock = currentContent
+                          .getBlockForKey(inputSelection.getStartKey())
+                          .getText()
+                          .trim().length === 0;
   const insertionType = isInEmptyBlock ? BLOCK_ASSET : INLINE_ASSET;
   let newContentState = editorState.getCurrentContent().createEntity(
       insertionType,
@@ -93,13 +87,13 @@ export function insertAssetInEditor(
         ' '
       );
     const newContent = updatedEditor.getCurrentContent();
-    const lastEntity = newContent.getEntity(newEntityKey);
     const blockMap = newContent.getBlockMap().toJS();
     const blockE = Object.keys(blockMap).map(blockId => blockMap[blockId])
       .find((block) => {
         if (block.type === 'atomic') {
           return block.characterList.find(char => char.entity && char.entity === newEntityKey);
         }
+        return undefined;
       });
     const block = newContent.getBlockAfter(blockE.key);
     const finalSelection = SelectionState.createEmpty(block.getKey());
@@ -172,10 +166,6 @@ export function insertNoteInEditor(
     EditorState.createWithContent(newContentState), 
     thatSelection
   );
-  const anchorKey = thatSelection.getAnchorKey();
-  const currentContentBlock = currentContent.getBlockForKey(anchorKey);
-  const start = thatSelection.getStartOffset();
-  const end = thatSelection.getEndOffset();
   const selectedText = ' ';
 
   newContentState = Modifier.replaceText(
@@ -204,27 +194,27 @@ export function insertNoteInEditor(
   return updatedEditor;
 }
 
-export function getAssetsToDeleteFromEditor(
-  editorState, 
-  // acceptedEntitiesTypes = [], 
-  assets = {}
-) {
-  const contentState = editorState.getCurrentContent();
-  const blockMap = contentState.getBlockMap().toJS();
-  const activeEntitiesIds = Object.keys(blockMap).reduce((finalList, blockMapId) => 
-    finalList.concat(
-      blockMap[blockMapId]
-        .characterList
-        .filter(chara => chara.entity !== null)
-        .map(chara => chara.entity)
-    )
-  , [])
-  .map(entityKey => contentState.getEntity(entityKey))
-  // .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
-  .map(entity => entity.getData().asset.id);
-  return Object.keys(assets)
-    .filter(key => activeEntitiesIds.indexOf(key) === -1);
-}
+// export function getAssetsToDeleteFromEditor(
+//   editorState, 
+//   // acceptedEntitiesTypes = [], 
+//   assets = {}
+// ) {
+//   const contentState = editorState.getCurrentContent();
+//   const blockMap = contentState.getBlockMap().toJS();
+//   const activeEntitiesIds = Object.keys(blockMap).reduce((finalList, blockMapId) => 
+//     finalList.concat(
+//       blockMap[blockMapId]
+//         .characterList
+//         .filter(chara => chara.entity !== null)
+//         .map(chara => chara.entity)
+//     )
+//   , [])
+//   .map(entityKey => contentState.getEntity(entityKey))
+//   // .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
+//   .map(entity => entity.getData().asset.id);
+//   return Object.keys(assets)
+//     .filter(key => activeEntitiesIds.indexOf(key) === -1);
+// }
 
 export function deleteAssetFromEditor(
   editorState, 
@@ -354,9 +344,10 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   // filter unused notes
   return Object.keys(notes)
   .filter((noteId) => {
-    const note = notes[noteId];
-    let entityIndex;
-    const entity = noteEntities.find((noteEntity, index) => noteEntity.entity.getData().noteId === noteId);
+    const entity = noteEntities.find(
+      (noteEntity, index) => 
+        noteEntity.entity.getData().noteId === noteId
+    );
     return entity !== undefined;
   })
   .reduce((finalNotes, noteId) => {
@@ -398,9 +389,10 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
   // filter unused assets
   return Object.keys(assets)
   .filter((assetId) => {
-    const asset = assets[assetId];
-    let entityIndex;
-    const entity = assetsEntities.find((assetEntity, index) => assetEntity.entity.getData().asset.id === assetId);
+    const entity = assetsEntities.find(
+      (assetEntity, index) => 
+        assetEntity.entity.getData().asset.id === assetId
+    );
     return entity !== undefined;
   })
   .reduce((finalAssets, assetId) => {
@@ -450,7 +442,7 @@ export function getUsedAssets(editorState, assets) {
 }
 
 export function insertFragment(editorState, fragment) {
-  let newContent = Modifier.replaceWithFragment(
+  const newContent = Modifier.replaceWithFragment(
     editorState.getCurrentContent(),
     editorState.getSelection(),
     fragment
@@ -463,7 +455,7 @@ export function insertFragment(editorState, fragment) {
 }
 
 export const BlockMapBuilder = {
-  createFromArray: function(blocks){
+  createFromArray(blocks) {
     return OrderedMap(
       blocks.map(block => [block.getKey(), block])
     );

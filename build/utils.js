@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateAssetsFromEditors = exports.updateNotesFromEditor = undefined;
+exports.BlockMapBuilder = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = undefined;
 
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
@@ -17,15 +17,13 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-exports.addText = addText;
-exports.addEmptyBlock = addEmptyBlock;
 exports.insertAssetInEditor = insertAssetInEditor;
 exports.insertNoteInEditor = insertNoteInEditor;
-exports.getAssetsToDeleteFromEditor = getAssetsToDeleteFromEditor;
 exports.deleteAssetFromEditor = deleteAssetFromEditor;
 exports.deleteNoteFromEditor = deleteNoteFromEditor;
 exports.getUnusedAssets = getUnusedAssets;
 exports.getUsedAssets = getUsedAssets;
+exports.insertFragment = insertFragment;
 
 var _draftJs = require('draft-js');
 
@@ -39,35 +37,30 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Utils taken from draft-js-markdown-plugin
  */
 
-function getEmptyContentBlock() {
-  return new _draftJs.ContentBlock({
-    key: (0, _draftJs.genKey)(),
-    text: '',
-    characterList: (0, _immutable.List)()
-  });
-}
+// function getEmptyContentBlock() {
+//   return new ContentBlock({
+//     key: genKey(),
+//     text: '',
+//     characterList: List(),
+//   });
+// }
 
-function addText(editorState, bufferText) {
-  var contentState = _draftJs.Modifier.insertText(editorState.getCurrentContent(), editorState.getSelection(), bufferText);
-  return _draftJs.EditorState.push(editorState, contentState, 'insert-characters');
-}
-
-function addEmptyBlock(editorState) {
-  var contentState = editorState.getCurrentContent();
-  var emptyBlock = getEmptyContentBlock();
-  var blockMap = contentState.getBlockMap();
-  var selectionState = editorState.getSelection();
-  contentState = contentState.merge({
-    blockMap: blockMap.set(emptyBlock.getKey(), emptyBlock),
-    selectionAfter: selectionState.merge({
-      anchorKey: emptyBlock.getKey(),
-      focusKey: emptyBlock.getKey(),
-      anchorOffset: 0,
-      focusOffset: 0
-    })
-  });
-  return _draftJs.EditorState.push(editorState, contentState, 'insert-characters');
-}
+// export function addEmptyBlock(editorState) {
+//   let contentState = editorState.getCurrentContent();
+//   const emptyBlock = getEmptyContentBlock();
+//   const blockMap = contentState.getBlockMap();
+//   const selectionState = editorState.getSelection();
+//   contentState = contentState.merge({
+//     blockMap: blockMap.set(emptyBlock.getKey(), emptyBlock),
+//     selectionAfter: selectionState.merge({
+//       anchorKey: emptyBlock.getKey(),
+//       focusKey: emptyBlock.getKey(),
+//       anchorOffset: 0,
+//       focusOffset: 0,
+//     }),
+//   });
+//   return EditorState.push(editorState, contentState, 'insert-characters');
+// }
 
 /**
  * Other utils
@@ -96,7 +89,6 @@ function insertAssetInEditor(editorState, asset, selection) {
   if (insertionType === _constants.BLOCK_ASSET) {
     updatedEditor = _draftJs.AtomicBlockUtils.insertAtomicBlock(updatedEditor, newEntityKey, ' ');
     var newContent = updatedEditor.getCurrentContent();
-    var lastEntity = newContent.getEntity(newEntityKey);
     var blockMap = newContent.getBlockMap().toJS();
     var blockE = (0, _keys2.default)(blockMap).map(function (blockId) {
       return blockMap[blockId];
@@ -106,6 +98,7 @@ function insertAssetInEditor(editorState, asset, selection) {
           return char.entity && char.entity === newEntityKey;
         });
       }
+      return undefined;
     });
     var block = newContent.getBlockAfter(blockE.key);
     var finalSelection = _draftJs.SelectionState.createEmpty(block.getKey());
@@ -152,10 +145,6 @@ function insertNoteInEditor(editorState, noteId, selection) {
     anchorKey: activeSelection.getAnchorKey()
   });
   var updatedEditor = _draftJs.EditorState.acceptSelection(_draftJs.EditorState.createWithContent(newContentState), thatSelection);
-  var anchorKey = thatSelection.getAnchorKey();
-  var currentContentBlock = currentContent.getBlockForKey(anchorKey);
-  var start = thatSelection.getStartOffset();
-  var end = thatSelection.getEndOffset();
   var selectedText = ' ';
 
   newContentState = _draftJs.Modifier.replaceText(currentContent, thatSelection, selectedText, null,
@@ -173,28 +162,27 @@ function insertNoteInEditor(editorState, noteId, selection) {
   return updatedEditor;
 }
 
-function getAssetsToDeleteFromEditor(editorState) {
-  var assets = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  var contentState = editorState.getCurrentContent();
-  var blockMap = contentState.getBlockMap().toJS();
-  var activeEntitiesIds = (0, _keys2.default)(blockMap).reduce(function (finalList, blockMapId) {
-    return finalList.concat(blockMap[blockMapId].characterList.filter(function (chara) {
-      return chara.entity !== null;
-    }).map(function (chara) {
-      return chara.entity;
-    }));
-  }, []).map(function (entityKey) {
-    return contentState.getEntity(entityKey);
-  })
-  // .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
-  .map(function (entity) {
-    return entity.getData().asset.id;
-  });
-  return (0, _keys2.default)(assets).filter(function (key) {
-    return activeEntitiesIds.indexOf(key) === -1;
-  });
-}
+// export function getAssetsToDeleteFromEditor(
+//   editorState, 
+//   // acceptedEntitiesTypes = [], 
+//   assets = {}
+// ) {
+//   const contentState = editorState.getCurrentContent();
+//   const blockMap = contentState.getBlockMap().toJS();
+//   const activeEntitiesIds = Object.keys(blockMap).reduce((finalList, blockMapId) => 
+//     finalList.concat(
+//       blockMap[blockMapId]
+//         .characterList
+//         .filter(chara => chara.entity !== null)
+//         .map(chara => chara.entity)
+//     )
+//   , [])
+//   .map(entityKey => contentState.getEntity(entityKey))
+//   // .filter(entity => acceptedEntitiesTypes.indexOf(entity.getType()) > -1)
+//   .map(entity => entity.getData().asset.id);
+//   return Object.keys(assets)
+//     .filter(key => activeEntitiesIds.indexOf(key) === -1);
+// }
 
 function deleteAssetFromEditor(editorState, id, callback) {
   var contentState = editorState.getCurrentContent();
@@ -332,8 +320,6 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
   });
   // filter unused notes
   return (0, _keys2.default)(notes).filter(function (noteId) {
-    var note = notes[noteId];
-    var entityIndex = void 0;
     var entity = noteEntities.find(function (noteEntity, index) {
       return noteEntity.entity.getData().noteId === noteId;
     });
@@ -377,8 +363,6 @@ var updateAssetsFromEditors = exports.updateAssetsFromEditors = function updateA
   }, []);
   // filter unused assets
   return (0, _keys2.default)(assets).filter(function (assetId) {
-    var asset = assets[assetId];
-    var entityIndex = void 0;
     var entity = assetsEntities.find(function (assetEntity, index) {
       return assetEntity.entity.getData().asset.id === assetId;
     });
@@ -432,3 +416,16 @@ function getUsedAssets(editorState, assets) {
     return getAssetEntity(editorState, id) !== undefined;
   });
 }
+
+function insertFragment(editorState, fragment) {
+  var newContent = _draftJs.Modifier.replaceWithFragment(editorState.getCurrentContent(), editorState.getSelection(), fragment);
+  return _draftJs.EditorState.push(editorState, newContent, 'insert-fragment');
+}
+
+var BlockMapBuilder = exports.BlockMapBuilder = {
+  createFromArray: function createFromArray(blocks) {
+    return (0, _immutable.OrderedMap)(blocks.map(function (block) {
+      return [block.getKey(), block];
+    }));
+  }
+};

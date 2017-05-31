@@ -16,23 +16,14 @@ var _BlockButton = require('./BlockButton');
 
 var _BlockButton2 = _interopRequireDefault(_BlockButton);
 
-var _reactSvgInline = require('react-svg-inline');
-
-var _reactSvgInline2 = _interopRequireDefault(_reactSvgInline);
-
-var _unorderedlist = require('../../icons/unorderedlist.svg');
-
-var _unorderedlist2 = _interopRequireDefault(_unorderedlist);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint react/prop-types: 0 */
 exports.default = function (props) {
   return _react2.default.createElement(
     _BlockButton2.default,
-    (0, _extends3.default)({}, props, { blockType: 'unordered-list-item', className: 'DraftJsEditor-unordered-list-item' }),
-    _react2.default.createElement(_reactSvgInline2.default, {
-      svg: _unorderedlist2.default
-    })
+    (0, _extends3.default)({}, props, { blockType: 'unordered-list-item' }),
+    props.iconMap.unorderedlist
   );
 };
 

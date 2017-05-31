@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import './NoteContainer.scss';
@@ -41,10 +41,6 @@ class NoteContainer extends Component {
     readOnly: PropTypes.bool,
   }
 
-  constructor(props) {
-    super(props);
-  }
-
   focus = () => {
     this.editor.focus();
   }
@@ -83,19 +79,19 @@ class NoteContainer extends Component {
       editorStyle
     } = this.props;
 
-    const bindRef= editor => {
+    const bindRef = (editor) => {
       this.editor = editor;
-    }
+    };
 
-    const onClick = e => {
-      e.stopPropagation();
-      onEditorClick(e);
-    }
+    const onClick = (event) => {
+      event.stopPropagation();
+      onEditorClick(event);
+    };
 
-    const onHeaderClick = e => {
-      e.stopPropagation();
-      onEditorClick(e);
-    }
+    const onHeaderClick = (event) => {
+      event.stopPropagation();
+      onEditorClick(event);
+    };
 
     return (
       <section 

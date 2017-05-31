@@ -42,26 +42,6 @@ require('./ButtonStyles.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var styles = {
-  iconContainer: {
-    display: 'inline-block',
-    height: 24,
-    width: 24,
-    cursor: 'pointer',
-    verticalAlign: 'middle'
-  }
-};
-
-/**
- * Helper class to remove the boiler plate in getButtons. And make the 
- * getButtons function easier to read. 
- *
- * As a convenience this passes down the selected and fill props to the children
- * The selected prop is a boolean that's true if the highlighted text in the 
- * editor relates to the inlineStyleType and the fill is the icon colour. Will
- * match the iconColour or selectedIconColor based on the selected property.
- */
-
 var InlineButton = function (_Component) {
   (0, _inherits3.default)(InlineButton, _Component);
 
@@ -77,9 +57,9 @@ var InlineButton = function (_Component) {
     }
 
     return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = InlineButton.__proto__ || (0, _getPrototypeOf2.default)(InlineButton)).call.apply(_ref, [this].concat(args))), _this), _this.isSelected = function (editorState, inlineStyleType) {
-
       // Check the editor is focused
       var selection = editorState.getSelection();
+
       var selectedBlock = editorState.getCurrentContent().getBlockForKey(selection.getStartKey());
       if (!selectedBlock) return false;
 
@@ -89,48 +69,46 @@ var InlineButton = function (_Component) {
       var _this$props = _this.props,
           editorState = _this$props.editorState,
           updateEditorState = _this$props.updateEditorState,
-          iconColor = _this$props.iconColor,
-          iconSelectedColor = _this$props.iconSelectedColor,
           inlineStyleType = _this$props.inlineStyleType,
-          otherProps = (0, _objectWithoutProperties3.default)(_this$props, ['editorState', 'updateEditorState', 'iconColor', 'iconSelectedColor', 'inlineStyleType']);
+          iconMap = _this$props.iconMap,
+          otherProps = (0, _objectWithoutProperties3.default)(_this$props, ['editorState', 'updateEditorState', 'inlineStyleType', 'iconMap']);
 
 
       var selected = _this.isSelected(editorState, inlineStyleType);
-      var fill = selected ? iconSelectedColor : iconColor;
-      var className = 'scholar-draft-InlineButton' + (selected ? ' selected' : '');
+      var className = 'scholar-draft-InlineButton' + (selected ? ' active' : '') + ' ';
+
+      var onMouseDown = function onMouseDown(event) {
+        event.preventDefault();
+        updateEditorState(_draftJs.RichUtils.toggleInlineStyle(editorState, inlineStyleType));
+      };
 
       return _react2.default.createElement(
         'div',
         (0, _extends3.default)({
-          style: styles.iconContainer,
-          className: className,
-          onMouseDown: function onMouseDown(e) {
-            e.preventDefault();
-            updateEditorState(_draftJs.RichUtils.toggleInlineStyle(editorState, inlineStyleType));
-          }
+          onMouseDown: onMouseDown,
+          className: className
         }, otherProps),
-        _react2.default.Children.map(_this.props.children, function (c) {
-          return _react2.default.cloneElement(c, { fill: fill, selected: selected });
+        _react2.default.Children.map(_this.props.children, function (child) {
+          return _react2.default.cloneElement(child, {
+            selected: selected
+          });
         })
       );
     }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
+  /**
+   * Checks wether current styling button is selected
+   * @param {Record} editorState - editorState to check for selection
+   * @param {string} inlineStyleType - inline style to inspect against the provided editorState
+   * @return {boolean} isSelected - 
+   */
+
+
   return InlineButton;
 }(_react.Component);
 
 InlineButton.propTypes = {
-
-  /**
-   * The icon colour. This gets passed down from the Editor.
-   */
-  iconColor: _propTypes2.default.string,
-
-  /**
-   * The icon colour when selected. This gets passed down from the Editor.
-   */
-  iconSelectedColor: _propTypes2.default.string,
-
   /**
    * The current editorState. This gets passed down from the editor.
    */
@@ -145,7 +123,13 @@ InlineButton.propTypes = {
   /**
    * The inline style type this button is responsible for.
    */
-  styleType: _propTypes2.default.string
+  styleType: _propTypes2.default.string,
+
+  children: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.object]),
+
+  inlineStyleType: _propTypes2.default.string,
+
+  iconMap: _propTypes2.default.object
 };
 InlineButton.defaultProps = {
   selected: false

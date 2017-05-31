@@ -20,17 +20,17 @@ const BlockAssetContainer = (props) => {
     onMouseOut,
   } = blockProps;
 
-  const onMOver = (e) => {
-    e.stopPropagation();
+  const onMOver = (event) => {
+    event.stopPropagation();
     if (typeof onMouseOver === 'function') {
-      onMouseOver(asset.id, asset, e);
+      onMouseOver(asset.id, asset, event);
     }
   };
 
-  const onMOut = (e) => {
-    e.stopPropagation();
+  const onMOut = (event) => {
+    event.stopPropagation();
     if (typeof onMouseOut === 'function') {
-      onMouseOut(asset.id, asset, e);
+      onMouseOut(asset.id, asset, event);
     }
   };
   return (
@@ -64,6 +64,6 @@ BlockAssetContainer.propTypes = {
     onMouseOver: PropTypes.func,
     onMouseOut: PropTypes.func,
   })
-}
+};
 
 export default BlockAssetContainer;

@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = undefined;
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -29,13 +25,13 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _defaultButtons = require('./defaultButtons.js');
-
-var _defaultButtons2 = _interopRequireDefault(_defaultButtons);
-
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _defaultButtons = require('./defaultButtons');
+
+var _defaultButtons2 = _interopRequireDefault(_defaultButtons);
 
 require('./PopoverControl.scss');
 
@@ -55,14 +51,13 @@ var PopoverControl = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = PopoverControl.__proto__ || (0, _getPrototypeOf2.default)(PopoverControl)).call.apply(_ref, [this].concat(args))), _this), _this.render = function () {
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = PopoverControl.__proto__ || (0, _getPrototypeOf2.default)(PopoverControl)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
+      return _this.props.editorState !== nextProps.editorState;
+    }, _this.render = function () {
       var _this$props = _this.props,
           updateEditorState = _this$props.updateEditorState,
           editorState = _this$props.editorState,
-          _this$props$iconColor = _this$props.iconColor,
-          iconColor = _this$props$iconColor === undefined ? 'black' : _this$props$iconColor,
-          _this$props$iconSelec = _this$props.iconSelectedColor,
-          iconSelectedColor = _this$props$iconSelec === undefined ? 'red' : _this$props$iconSelec,
+          iconMap = _this$props.iconMap,
           buttons = _this$props.buttons;
 
       var bindRef = function bindRef(toolbar) {
@@ -73,7 +68,6 @@ var PopoverControl = function (_Component) {
         'div',
         {
           className: 'scholar-draft-PopoverControl',
-          style: (0, _assign2.default)({}, _this.props.style),
           ref: bindRef
         },
         (buttons || _defaultButtons2.default).map(function (button, key) {
@@ -81,9 +75,8 @@ var PopoverControl = function (_Component) {
             // Pass down some useful props to each button
             updateEditorState: updateEditorState,
             editorState: editorState,
-            iconColor: iconColor,
-            iconSelectedColor: iconSelectedColor,
-            key: key
+            iconMap: iconMap,
+            key: key /* eslint react/no-array-index-key:0 */
           });
         })
       );
@@ -94,23 +87,7 @@ var PopoverControl = function (_Component) {
 }(_react.Component);
 
 PopoverControl.propTypes = {
-  /**
-   * The popover container style
-   */
-  style: _propTypes2.default.object,
-
-  toggleInlineStyle: _propTypes2.default.func,
-  currentInlineStyle: _propTypes2.default.object,
-
-  /**
-   * The icon fill colour
-   */
-  iconColor: _propTypes2.default.string,
-
-  /**
-   * The icon fill colour when selected
-   */
-  iconSelectedColor: _propTypes2.default.string,
+  iconMap: _propTypes2.default.object,
 
   /**
    * The current editorState
@@ -127,10 +104,6 @@ PopoverControl.propTypes = {
    * buttons, bold, italic and link.
    */
   buttons: _propTypes2.default.array
-};
-PopoverControl.defaultProps = {
-  iconColor: '#000000',
-  iconSelectedColor: '#2000FF'
 };
 exports.default = PopoverControl;
 module.exports = exports['default'];

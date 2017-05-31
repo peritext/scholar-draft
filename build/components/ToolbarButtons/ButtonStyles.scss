@@ -1,12 +1,24 @@
 
 
-.scholar-draft-InlineButton
+.scholar-draft-InlineButton,
+.scholar-draft-BlockButton,
+.scholar-draft-NoteButton,
+.scholar-draft-AssetButton
 {
   display: inline-block;
   height: 24px;
   width: 24px;
+  transition: all .1s ease;
 
   &.active{
+    fill: red;
+  }
+}
 
+.scholar-draft-AssetButton
+{
+  &.active{
+    transform: rotate(45deg);
+    color: red;
   }
 }

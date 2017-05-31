@@ -9,10 +9,6 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
-
-var _defineProperty3 = _interopRequireDefault(_defineProperty2);
-
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -53,13 +49,13 @@ require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var SectionEditor = function (_Component) {
-  (0, _inherits3.default)(SectionEditor, _Component);
+var Editor = function (_Component) {
+  (0, _inherits3.default)(Editor, _Component);
 
-  function SectionEditor(props) {
-    (0, _classCallCheck3.default)(this, SectionEditor);
+  function Editor(props) {
+    (0, _classCallCheck3.default)(this, Editor);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (SectionEditor.__proto__ || (0, _getPrototypeOf2.default)(SectionEditor)).call(this, props));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
 
     _this.focus = function (contentId) {
       if (contentId === 'main' && _this.mainEditor) {
@@ -73,7 +69,7 @@ var SectionEditor = function (_Component) {
     return _this;
   }
 
-  (0, _createClass3.default)(SectionEditor, [{
+  (0, _createClass3.default)(Editor, [{
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -96,6 +92,7 @@ var SectionEditor = function (_Component) {
           onNotePointerMouseOver = _props.onNotePointerMouseOver,
           onNotePointerMouseOut = _props.onNotePointerMouseOut,
           onNotePointerMouseClick = _props.onNotePointerMouseClick,
+          onNoteDelete = _props.onNoteDelete,
           onDrop = _props.onDrop,
           onClick = _props.onClick,
           onBlur = _props.onBlur,
@@ -104,9 +101,14 @@ var SectionEditor = function (_Component) {
           inlineAssetComponents = _props.inlineAssetComponents,
           blockAssetComponents = _props.blockAssetComponents,
           AssetChoiceComponent = _props.AssetChoiceComponent,
+          NotePointerComponent = _props.NotePointerComponent,
+          iconMap = _props.iconMap,
+          keyBindingFn = _props.keyBindingFn,
           editorStyles = _props.editorStyles,
+          clipboard = _props.clipboard,
           _props$readOnly = _props.readOnly,
-          readOnly = _props$readOnly === undefined ? {} : _props$readOnly;
+          readOnly = _props$readOnly === undefined ? {} : _props$readOnly,
+          NoteContainerComponent = _props.NoteContainerComponent;
 
 
       var bindMainEditor = function bindMainEditor(editor) {
@@ -114,8 +116,6 @@ var SectionEditor = function (_Component) {
       };
 
       var renderNoteEditor = function renderNoteEditor(noteId, order) {
-        var _React$createElement;
-
         var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
           return onEditorChange('note', noteId, editor);
         };
@@ -123,30 +123,32 @@ var SectionEditor = function (_Component) {
           onAssetRequest('note', noteId, selection);
         };
         var onClickDelete = function onClickDelete() {
-          if (typeof _this2.props.onNoteDelete === 'function') {
+          if (typeof onNoteDelete === 'function') {
             _this2.props.onNoteDelete(noteId);
           }
         };
         var onNoteDrop = function onNoteDrop(payload, selection) {
-          if (typeof _this2.props.onDrop === 'function') {
+          if (typeof onDrop === 'function') {
             onDrop(noteId, payload, selection);
           }
         };
         var note = notes[noteId];
 
-        var onNoteEditorClick = function onNoteEditorClick(e) {
+        var onNoteEditorClick = function onNoteEditorClick(event) {
           if (typeof onClick === 'function') {
-            onClick(e, noteId);
+            onClick(event, noteId);
           }
         };
-        var bindNote = function bindNote(note) {
-          _this2.notes[noteId] = note;
+        var bindNote = function bindNote(thatNote) {
+          _this2.notes[noteId] = thatNote;
         };
-        var onNoteBlur = function onNoteBlur(e) {
-          onBlur(e, noteId);
+        var onNoteBlur = function onNoteBlur(event) {
+          onBlur(event, noteId);
         };
 
-        return _react2.default.createElement(_NoteContainer2.default, (_React$createElement = {
+        var NoteContainer = NoteContainerComponent || _NoteContainer2.default;
+
+        return _react2.default.createElement(NoteContainer, {
           key: noteId,
           note: note,
           assets: assets,
@@ -165,8 +167,26 @@ var SectionEditor = function (_Component) {
 
           onAssetRequest: onNoteAssetRequest,
           onAssetRequestCancel: onAssetRequestCancel,
-          onAssetChange: onAssetChange
-        }, (0, _defineProperty3.default)(_React$createElement, 'onAssetRequestCancel', onAssetRequestCancel), (0, _defineProperty3.default)(_React$createElement, 'onAssetChoice', onAssetChoice), (0, _defineProperty3.default)(_React$createElement, 'onDrop', onNoteDrop), (0, _defineProperty3.default)(_React$createElement, 'onClickDelete', onClickDelete), (0, _defineProperty3.default)(_React$createElement, 'onAssetClick', onAssetClick), (0, _defineProperty3.default)(_React$createElement, 'onAssetMouseOver', onAssetMouseOver), (0, _defineProperty3.default)(_React$createElement, 'onAssetMouseOut', onAssetMouseOut), (0, _defineProperty3.default)(_React$createElement, 'inlineAssetComponents', inlineAssetComponents), (0, _defineProperty3.default)(_React$createElement, 'blockAssetComponents', blockAssetComponents), (0, _defineProperty3.default)(_React$createElement, 'AssetChoiceComponent', AssetChoiceComponent), (0, _defineProperty3.default)(_React$createElement, 'editorStyle', editorStyles && editorStyles.noteEditor), _React$createElement));
+          onAssetChange: onAssetChange,
+          onAssetChoice: onAssetChoice,
+
+          clipboard: clipboard,
+
+          onDrop: onNoteDrop,
+          onClickDelete: onClickDelete,
+
+          onAssetClick: onAssetClick,
+          onAssetMouseOver: onAssetMouseOver,
+          onAssetMouseOut: onAssetMouseOut,
+
+          inlineAssetComponents: inlineAssetComponents,
+          blockAssetComponents: blockAssetComponents,
+          AssetChoiceComponent: AssetChoiceComponent,
+          iconMap: iconMap,
+          keyBindingFn: keyBindingFn,
+
+          editorStyle: editorStyles && editorStyles.noteEditor
+        });
       };
 
       var onMainEditorChange = function onMainEditorChange(editor) {
@@ -182,13 +202,13 @@ var SectionEditor = function (_Component) {
         }
       };
 
-      var onMainEditorClick = function onMainEditorClick(e) {
+      var onMainEditorClick = function onMainEditorClick(event) {
         if (typeof onClick === 'function') {
-          onClick(e, 'main');
+          onClick(event, 'main');
         }
       };
-      var onMainBlur = function onMainBlur(e) {
-        onBlur(e, 'main');
+      var onMainBlur = function onMainBlur(event) {
+        onBlur(event, 'main');
       };
       return _react2.default.createElement(
         'div',
@@ -230,6 +250,10 @@ var SectionEditor = function (_Component) {
             inlineAssetComponents: inlineAssetComponents,
             blockAssetComponents: blockAssetComponents,
             AssetChoiceComponent: AssetChoiceComponent,
+            NotePointerComponent: NotePointerComponent,
+            iconMap: iconMap,
+
+            clipboard: clipboard,
 
             allowNotesInsertion: true,
             editorStyle: editorStyles && editorStyles.mainEditor
@@ -238,8 +262,8 @@ var SectionEditor = function (_Component) {
         _react2.default.createElement(
           'aside',
           { className: 'notes-container' },
-          (0, _keys2.default)(notes || {}).sort(function (a, b) {
-            if (notes[a].order > notes[b].order) {
+          (0, _keys2.default)(notes || {}).sort(function (first, second) {
+            if (notes[first].order > notes[second].order) {
               return 1;
             }return -1;
           }).map(renderNoteEditor)
@@ -247,10 +271,50 @@ var SectionEditor = function (_Component) {
       );
     }
   }]);
-  return SectionEditor;
+  return Editor;
 }(_react.Component);
 
-SectionEditor.PropTypes = {};
-SectionEditor.defaultProps = {};
-exports.default = SectionEditor;
+Editor.propTypes = {
+  mainEditorState: _propTypes2.default.object,
+  notes: _propTypes2.default.object,
+  assets: _propTypes2.default.object,
+
+  editorClass: _propTypes2.default.string,
+
+  onEditorChange: _propTypes2.default.func,
+  onNoteAdd: _propTypes2.default.func,
+
+  onAssetChange: _propTypes2.default.func,
+  onAssetRequest: _propTypes2.default.func,
+  onAssetRequestCancel: _propTypes2.default.func,
+  onAssetChoice: _propTypes2.default.func,
+  onAssetClick: _propTypes2.default.func,
+  onAssetMouseOver: _propTypes2.default.func,
+  onAssetMouseOut: _propTypes2.default.func,
+
+  onNotePointerMouseOver: _propTypes2.default.func,
+  onNotePointerMouseOut: _propTypes2.default.func,
+  onNotePointerMouseClick: _propTypes2.default.func,
+  onNoteDelete: _propTypes2.default.func,
+  onDrop: _propTypes2.default.func,
+  onClick: _propTypes2.default.func,
+  onBlur: _propTypes2.default.func,
+
+  assetRequestPosition: _propTypes2.default.object,
+  assetChoiceProps: _propTypes2.default.object,
+
+  inlineAssetComponents: _propTypes2.default.object,
+  blockAssetComponents: _propTypes2.default.object,
+  AssetChoiceComponent: _propTypes2.default.func,
+  NotePointerComponent: _propTypes2.default.func,
+  iconMap: _propTypes2.default.object,
+
+  keyBindingFn: _propTypes2.default.func,
+
+  editorStyles: _propTypes2.default.object,
+  clipboard: _propTypes2.default.object,
+  readOnly: _propTypes2.default.object,
+  NoteContainerComponent: _propTypes2.default.func
+};
+exports.default = Editor;
 module.exports = exports['default'];

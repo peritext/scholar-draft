@@ -7,7 +7,8 @@ import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 import './Editor.scss';
 
 export default class Editor extends Component {
-  static PropTypes = {
+
+  static propTypes = {
     mainEditorState: PropTypes.object,
     notes: PropTypes.object,
     assets: PropTypes.object,
@@ -36,8 +37,8 @@ export default class Editor extends Component {
     assetRequestPosition: PropTypes.object,
     assetChoiceProps: PropTypes.object,
     
-    inlineAssetComponents: PropTypes.array,
-    blockAssetComponents: PropTypes.array,
+    inlineAssetComponents: PropTypes.object,
+    blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
     NotePointerComponent: PropTypes.func,
     iconMap: PropTypes.object,
@@ -108,9 +109,9 @@ export default class Editor extends Component {
       NoteContainerComponent
     } = this.props;
 
-    const bindMainEditor = editor => {
+    const bindMainEditor = (editor) => {
       this.mainEditor = editor;
-    }
+    };
 
     const renderNoteEditor = (noteId, order) => {
       const onThisNoteEditorChange = editor => onEditorChange('note', noteId, editor);
@@ -129,19 +130,19 @@ export default class Editor extends Component {
       };
       const note = notes[noteId];
 
-      const onNoteEditorClick = (e) => {
+      const onNoteEditorClick = (event) => {
         if (typeof onClick === 'function') {
-          onClick(e, noteId);
+          onClick(event, noteId);
         }
       };
-      const bindNote = note => {
-        this.notes[noteId] = note;
-      }
-      const onNoteBlur = e => {
-        onBlur(e, noteId);
-      }
+      const bindNote = (thatNote) => {
+        this.notes[noteId] = thatNote;
+      };
+      const onNoteBlur = (event) => {
+        onBlur(event, noteId);
+      };
 
-      const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
+      const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
 
       return (
         <NoteContainer
@@ -164,7 +165,6 @@ export default class Editor extends Component {
           onAssetRequest={onNoteAssetRequest}
           onAssetRequestCancel={onAssetRequestCancel}
           onAssetChange={onAssetChange}
-          onAssetRequestCancel={onAssetRequestCancel}
           onAssetChoice={onAssetChoice}
 
           clipboard={clipboard}
@@ -198,14 +198,14 @@ export default class Editor extends Component {
       }
     };
 
-    const onMainEditorClick = (e) => {
+    const onMainEditorClick = (event) => {
       if (typeof onClick === 'function') {
-        onClick(e, 'main');
+        onClick(event, 'main');
       }
     };
-    const onMainBlur = e => {
-      onBlur(e, 'main');
-    }
+    const onMainBlur = (event) => {
+      onBlur(event, 'main');
+    };
     return (
       <div className={editorClass}>
         <section className="main-container-editor">
@@ -254,9 +254,9 @@ export default class Editor extends Component {
         </section>
         <aside className="notes-container">
           {
-            Object.keys(notes || {})
-            .sort((a, b) => {
-              if (notes[a].order > notes[b].order) {
+            Object.keys(notes || {})
+            .sort((first, second) => {
+              if (notes[first].order > notes[second].order) {
                 return 1;
               } return -1;
             })

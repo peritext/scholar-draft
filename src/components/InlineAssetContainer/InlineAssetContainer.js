@@ -16,15 +16,15 @@ const InlineAssetContainer = (props) => {
     components
   } = props;
 
-  const onMOver = (e) => {
+  const onMOver = (event) => {
     if (typeof onMouseOver === 'function') {
-      onMouseOver(asset.id, asset, e);
+      onMouseOver(asset.id, asset, event);
     }
   };
 
-  const onMOut = (e) => {
+  const onMOut = (event) => {
     if (typeof onMouseOut === 'function') {
-      onMouseOut(asset.id, asset, e);
+      onMouseOut(asset.id, asset, event);
     }
   };
   const Component = (asset && asset.type && components[asset.type]) ||
@@ -58,6 +58,6 @@ InlineAssetContainer.propTypes = {
   onMouseOver: PropTypes.func,
   onMouseOut: PropTypes.func,
   components: PropTypes.object,
-}
+};
 
 export default InlineAssetContainer;

@@ -8,11 +8,11 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _BoldButton = require('./BoldButton.js');
+var _BoldButton = require('./BoldButton');
 
 var _BoldButton2 = _interopRequireDefault(_BoldButton);
 
-var _ItalicButton = require('./ItalicButton.js');
+var _ItalicButton = require('./ItalicButton');
 
 var _ItalicButton2 = _interopRequireDefault(_ItalicButton);
 

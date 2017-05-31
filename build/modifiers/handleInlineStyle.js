@@ -29,13 +29,13 @@ var handleInlineStyle = function handleInlineStyle(editorState, character) {
   var text = editorState.getCurrentContent().getBlockForKey(key).getText();
   var line = '' + text + character;
   var newEditorState = editorState;
-  (0, _keys2.default)(inlineMatchers).some(function (k) {
-    inlineMatchers[k].some(function (re) {
+  (0, _keys2.default)(inlineMatchers).some(function (index) {
+    inlineMatchers[index].some(function (re) {
       var matchArr = void 0;
       do {
         matchArr = re.exec(line);
         if (matchArr) {
-          newEditorState = (0, _changeCurrentInlineStyle2.default)(newEditorState, matchArr, k);
+          newEditorState = (0, _changeCurrentInlineStyle2.default)(newEditorState, matchArr, index);
         }
       } while (matchArr);
       return newEditorState !== editorState;

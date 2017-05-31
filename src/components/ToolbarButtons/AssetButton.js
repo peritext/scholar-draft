@@ -1,37 +1,33 @@
-import React, { Component } from 'react';
+/* eslint react/prop-types: 0 */
+
+import React from 'react';
 import PropTypes from 'prop-types';
-import SVGInline from 'react-svg-inline';
-import iconSVG from '../../icons/asset.svg';
 
-class AssetButton extends Component {
-  
-  static propTypes = {
-
-    active: PropTypes.bool,
-
-    iconMap: PropTypes.object,
-
-    onClick: PropTypes.func
-  };
-
-  render = () => {
-
-    const { 
-      onClick, 
-      active,
-      iconMap,
-      ...otherProps 
-    } = this.props;
-
-    return (<div
-      className={'scholar-draft-AssetButton' + (active ? ' active': '')}
-      onMouseDown={e => e.preventDefault()}
+const AssetButton = ({ 
+  onClick, 
+  active,
+  iconMap,
+  ...otherProps 
+}) => {
+  const onMouseDown = event => event.preventDefault();
+  return (
+    <div
+      className={`scholar-draft-AssetButton${active ? ' active' : ''}`}
+      onMouseDown={onMouseDown}
       onClick={onClick}
       {...otherProps}
     >
       {iconMap.asset}
     </div>);
-  }
-}
+};
+
+AssetButton.propTypes = {
+
+  active: PropTypes.bool,
+
+  iconMap: PropTypes.object,
+
+  onClick: PropTypes.func
+};
 
 export default AssetButton;

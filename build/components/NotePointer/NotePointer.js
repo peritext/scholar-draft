@@ -34,14 +34,21 @@ var NotePointer = function NotePointer(_ref) {
     _react2.default.createElement(
       'span',
       null,
-      note && note.order || '°'
+      note && note.order || '*'
     ),
     children
   );
 };
 
 NotePointer.propTypes = {
-  children: _propTypes2.default.array
+  children: _propTypes2.default.array,
+  noteId: _propTypes2.default.string,
+  note: _propTypes2.default.object,
+  // iconMap: PropTypes.object,
+
+  onMouseOver: _propTypes2.default.func,
+  onMouseOut: _propTypes2.default.func,
+  onMouseClick: _propTypes2.default.func
 };
 
 exports.default = NotePointer;

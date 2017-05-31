@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
-import defaultButtons from './defaultButtons.js';
 import PropTypes from 'prop-types';
+
+import defaultButtons from './defaultButtons';
 
 import './PopoverControl.scss';
 
 export default class PopoverControl extends Component {
 
   static propTypes = {
-		
-    toggleInlineStyle: PropTypes.func,
-    currentInlineStyle: PropTypes.object,
-
     iconMap: PropTypes.object,
 
     /**
@@ -30,11 +27,9 @@ export default class PopoverControl extends Component {
     buttons: PropTypes.array,
   };
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    return (
+  shouldComponentUpdate = (nextProps, nextState) => (
       this.props.editorState !== nextProps.editorState
-    );
-  }
+    )
 
   render = () => {
 
@@ -52,13 +47,12 @@ export default class PopoverControl extends Component {
       className="scholar-draft-PopoverControl"
       ref={bindRef}
     >
-
       {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
           // Pass down some useful props to each button
         updateEditorState,
         editorState,
         iconMap,
-        key
+        key /* eslint react/no-array-index-key:0 */
       })
       )}
     </div>);

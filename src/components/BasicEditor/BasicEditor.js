@@ -1,45 +1,36 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Style from 'fbjs/lib/Style.js';
 
 import { debounce } from 'lodash';
 
-import { Map } from 'immutable';
-
 import SimpleDecorator from 'draft-js-simpledecorator';
 import MultiDecorator from 'draft-js-multidecorators';
+
+import {
+  EditorState,
+  KeyBindingUtil,
+  getDefaultKeyBinding,
+  RichUtils,
+  Modifier,
+  Editor
+} from 'draft-js';
 
 import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
 import handleBlockType from '../../modifiers/handleBlockType';
 import handleInlineStyle from '../../modifiers/handleInlineStyle';
 import handleNewCodeBlock from '../../modifiers/handleNewCodeBlock';
 import insertEmptyBlock from '../../modifiers/insertEmptyBlock';
-import handleLink from '../../modifiers/handleLink';
-import handleImage from '../../modifiers/handleImage';
+// import handleLink from '../../modifiers/handleLink';
+// import handleImage from '../../modifiers/handleImage';
 import leaveList from '../../modifiers/leaveList';
 import insertText from '../../modifiers/insertText';
 // import createLinkDecorator from './decorators/link';
 // import createImageDecorator from './decorators/image';
-import { addText, addEmptyBlock } from '../../utils';
+// import { 
+//   // addText, 
+//   addEmptyBlock 
+// } from '../../utils';
 
-import {
-  EditorState,
-  CompositeDecorator,
-  KeyBindingUtil,
-  getDefaultKeyBinding,
-  RichUtils,
-  Modifier,
-  Entity,
-  Editor
-} from 'draft-js';
-
-import {
-  insertFragment
-} from '../../utils';
-
-
-
-const {hasCommandModifier} = KeyBindingUtil;
 
 import {
   INLINE_ASSET,
@@ -57,10 +48,20 @@ import defaultIconMap from '../../icons/defaultIconMap';
 
 import './BasicEditor.scss';
 
+
+const { hasCommandModifier } = KeyBindingUtil;
+
+
 const getSelectedBlockElement = (range) => {
   let node = range.startContainer;
   do {
-    if (node.getAttribute && (node.getAttribute('data-block') == 'true' || node.getAttribute('data-contents') == 'true')) { 
+    if (
+      node.getAttribute && 
+      (
+        node.getAttribute('data-block') == 'true' ||
+        node.getAttribute('data-contents') == 'true'
+      )
+    ) { 
       return node; 
     }
     node = node.parentNode;
@@ -74,9 +75,9 @@ const getSelectionRange = () => {
   return selection.getRangeAt(0);
 };
 
-const isParentOf = (ele, maybeParent) => {
-
-  while (ele.parentNode != null && ele.parentNode != document.body) {
+const isParentOf = (inputEle, maybeParent) => {
+  let ele = inputEle;
+  while (ele.parentNode != null && ele.parentNode != document.body) { /* eslint eqeqeq:0 */
     if (ele.parentNode === maybeParent) return true;
     ele = ele.parentNode;
   }
@@ -134,9 +135,13 @@ export default class BasicEditor extends Component {
      * State-related props
      */
     editorState: PropTypes.object,
+    readOnly: PropTypes.bool,
     assets: PropTypes.object,
+    notes: PropTypes.object,
+    clipboard: PropTypes.object,
     inlineAssetComponents: PropTypes.object,
     blockAssetComponents: PropTypes.object,
+    assetRequestPosition: PropTypes.object,
     /*
      * Method props
      */
@@ -147,14 +152,32 @@ export default class BasicEditor extends Component {
     onAssetClick: PropTypes.func,
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
+    onDrop: PropTypes.func,
+    onClick: PropTypes.func,
+    onBlur: PropTypes.func,
+    onAssetChoice: PropTypes.func,
+    onAssetChange: PropTypes.func,
+    onAssetRequestCancel: PropTypes.func,
+    onNotePointerMouseClick: PropTypes.func,
+    onNotePointerMouseOver: PropTypes.func,
+    onNotePointerMouseOut: PropTypes.func,
     /*
      * Parametrization props
      */
     editorClass: PropTypes.string,
     editorStyle: PropTypes.object,
-    allowFootnotesInsertion: PropTypes.bool,
-    allowInlineAssetInsertion: PropTypes.bool,
-    allowBlockAssetInsertion: PropTypes.bool,
+    allowNotesInsertion: PropTypes.bool,
+    allowInlineAsset: PropTypes.bool,
+    allowBlockAsset: PropTypes.bool,
+    AssetChoiceComponent: PropTypes.func,
+    assetChoiceProps: PropTypes.object,
+    keyBindingFn: PropTypes.func,
+    inlineButtons: PropTypes.object,
+    NotePointerComponent: PropTypes.object,
+
+    placeholder: PropTypes.string,
+
+    iconMap: PropTypes.object,
   }
 
 
@@ -171,15 +194,12 @@ export default class BasicEditor extends Component {
     this.feedUndoStack = debounce(this.feedUndoStack, 1000);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (
-      // !nextProps.readOnly ||
-      this.state.editorState !== nextProps.editorState ||
-      this.state.assets !== nextProps.assets
-    ) {
-      return true;
-    }
-  }
+
+  state = {
+    editorState: EditorState.createEmpty(),
+    undoStack: [],
+    redoStack: []
+  };
 
   componentWillReceiveProps = (nextProps) => {
     // console.log('receiving asset request position', nextProps.assetRequestPosition);
@@ -192,7 +212,7 @@ export default class BasicEditor extends Component {
     if (this.state.readOnly !== nextProps.readOnly) {
       this.setState({
         readOnly: nextProps.readOnly
-      })
+      });
     }
     if (this.state.editorState !== nextProps.editorState) {
       this.setState({
@@ -201,223 +221,93 @@ export default class BasicEditor extends Component {
     }
   }
 
-  focus = (e) => {
-    if (this.props.readOnly) return;
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      // !nextProps.readOnly ||
+      this.state.editorState !== nextProps.editorState ||
+      this.state.assets !== nextProps.assets
+    ) {
+      return true;
+    }
+  }
 
-    const stateMods = {};
-    if (!this.props.readOnly && this.state.readOnly) {
-      stateMods.readOnly = true;
+  componentDidUpdate(prevProps) {
+    this.updateSelection();
+    // force render of inline and atomic block elements
+    const {
+      // forceRenderDebounced,
+      forceRender
+    } = this;
+
+    if (
+      this.props.editorState !== prevProps.editorState 
+      || prevProps.assets !== this.props.assets
+      || prevProps.readOnly !== this.props.readOnly
+      || prevProps.notes !== this.props.notes
+    ) {
+      forceRender(this.props);
     }
 
-    const editorNode = this.editor && this.editor.refs.editor;
-    stateMods.editorBounds = editorNode.getBoundingClientRect();
-
-    if (Object.keys(stateMods).length) {
-      this.setState(stateMods);
+    if (
+      this.props.editorState !== prevProps.editorState && 
+      this.editor
+    ) {
+      this.editor.focus();
     }
 
-    setTimeout(() => {
-      if (!this.state.readOnly) {
-        editorNode.focus();
-      }
-    }, 1);
+  }
+
+  onNoteAdd = () => {
+    if (typeof this.props.onNoteAdd === 'function') {
+      this.props.onNoteAdd();
+    }
+    if (typeof this.props.onEditorChange === 'function') {
+      setTimeout(() => {
+        this.props.onEditorChange(this.props.editorState);        
+      }, 1);
+    }
+  }
+
+  onAssetFocus = (event) => {
+    event.stopPropagation();
+    this.setState({
+      readOnly: true
+    });
+  }
+
+  onInputBlur = (event) => {
+    event.stopPropagation();
+    this.setState({
+      readOnly: false
+    });
+  }
+
+  onBlur = (event) => {
+
+    if (this.inlineToolbar) {
+      this.inlineToolbar.toolbar.display = 'none';
+    }
+    if (this.sideControl) {
+      this.sideControl.toolbar.display = 'none';
+    }
+
+    this.setState({
+      readOnly: true
+    });
+
+    const { onBlur } = this.props;
+    if (onBlur) {
+      onBlur(event);
+    }
   };
 
-  updateSelection = () => {
-    const selectionRangeIsCollapsed = null;
-    const sideControlLeft = -92;
-    let sideControlVisible = false;
-    let sideControlTop = null;
-    let popoverControlVisible = false;
-    let popoverControlTop = null;
-    let popoverControlLeft = null;
-
-
-    const selectionRange = getSelectionRange();
-    // console.log('selection range', selectionRange);
-    
-    const editorEle = this.editor;
-
-    if (!selectionRange) return;
-
-    if (!editorEle || !isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) { return; }
-
-    let assetRequestType;
-    const {
-      assetRequestPosition
-    } = this.props;
-
-    if (assetRequestPosition) {
-      const currentContent = this.props.editorState.getCurrentContent();
-      const positionBlockKey = assetRequestPosition.getAnchorKey();
-      const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-      const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block' : 'inline';
+  onChange = (editorState) => {
+    if (typeof this.props.onEditorChange === 'function' && !this.props.readOnly) {
+      this.props.onEditorChange(editorState);
     }
-
-    const inlineToolbarEle = this.inlineToolbar.toolbar;
-    const sideControlEle = this.sideControl.toolbar;
-    const rangeBounds = selectionRange.getBoundingClientRect();
-
-    const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
-    const selectedBlock = getSelectedBlockElement(selectionRange);
-    const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
-    const top = displaceY + offsetTop;
-    // console.log('selected block', selectedBlock, selectionRange);
-    if (selectedBlock) {
-      const blockBounds = selectedBlock.getBoundingClientRect();
-      sideControlVisible = true;
-      // sideControlTop = this.state.selectedBlock.offsetTop
-      const editorBounds = this.state.editorBounds;
-      if (!editorBounds) return;
-      // const top = displaceY + offsetTop;
-      sideControlTop = rangeBounds.top || blockBounds.top;
-      // sideControlTop = assetRequestType === 'inline' ? rangeBounds.top : blockBounds.top; // top;
-      sideControlEle.style.top = `${sideControlTop}px`;
-      // position at begining of the line if no asset requested or block asset requested
-      // else position after selection
-      const controlWidth = sideControlEle.offsetWidth || 50;
-      const left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - controlWidth;
-      // let left =  editorEle.refs.editorContainer.parentNode.offsetLeft - sideControlEle.offsetWidth; //  blockBounds.left - sideControlEle.offsetWidth - editorEle.refs.editorContainer.parentNode.offsetLeft;
-      // left = assetRequestType === 'inline' ? left + rangeBounds.left : left;
-      sideControlEle.style.left = `${left}px`;
-      sideControlEle.style.display = 'block';
-
-      if (!selectionRange.collapsed) {
-        // The control needs to be visible so that we can get it's width
-        inlineToolbarEle.style.position = 'fixed';
-        inlineToolbarEle.style.display = 'block';
-        const popoverWidth = inlineToolbarEle.clientWidth;
-
-        popoverControlVisible = true;
-        let rangeWidth = rangeBounds.right - rangeBounds.left,
-          rangeHeight = rangeBounds.bottom - rangeBounds.top;
-        popoverControlTop = top;
-
-        popoverControlLeft = 0;
-        let startNode = selectionRange.startContainer;
-        while (startNode.nodeType === 3) {
-          startNode = startNode.parentNode;
-        }
-        const height = rangeBounds.bottom - rangeBounds.top;
-        const popTop = rangeBounds.top /* - editorBounds.top + displaceY */ - popoverSpacing;
-        const left = rangeBounds.left;
-        inlineToolbarEle.style.left = `${left}px`;
-        inlineToolbarEle.style.top = `${popTop}px`;
-      } else {
-        inlineToolbarEle.style.display = 'none';
-      }
-    } else {
-      sideControlEle.style.display = 'none';
-      inlineToolbarEle.style.display = 'none';
-    }
-    // console.log('after update: ', sideControlEle.style.display);
   }
 
-  findInlineAsset = (contentBlock, callback, contentState) => {
-    if (!this.props.editorState) {
-      callback(null);
-    }
-    if (contentState === undefined) {
-      contentState = this.props.editorState.getCurrentContent();
-    }
-    contentBlock.findEntityRanges(
-      (character) => {
-        const entityKey = character.getEntity();
-        return (
-          entityKey !== null &&
-          contentState.getEntity(entityKey).getType() === INLINE_ASSET
-        );
-      },
-      (start, end) => {
-        const {
-          resources,
-          assets,
-          onAssetMouseOver: onMouseOver,
-          onAssetMouseOut: onMouseOut,
-          onAssetChange,
-          inlineAssetComponents: components
-        } = this.props;
-
-        const {
-          onAssetFocus: onFocus,
-          onInputBlur: onBlur
-        } = this;
-        const entityKey = contentBlock.getEntityAt(start);
-        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
-        const id = data.data.asset.id;
-        const asset = assets[id];
-        let props = {};
-        if (asset) {
-          props = {
-            assetId: id,
-            asset,
-            onMouseOver,
-            onMouseOut,
-            components,
-            onChange: onAssetChange,
-            onFocus,
-            onBlur
-          };
-        }
-        callback(start, end, props);
-      }
-    );
-  }
-
-  findNotePointers = (contentBlock, callback, contentState) => {
-    if (contentState === undefined) {
-      contentState = this.props.editorState.getCurrentContent();
-    }
-    contentBlock.findEntityRanges(
-      (character) => {
-        const entityKey = character.getEntity();
-        return (
-          entityKey !== null &&
-          contentState.getEntity(entityKey).getType() === NOTE_POINTER
-        );
-      },
-      (start, end) => {
-        const entityKey = contentBlock.getEntityAt(start);
-        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
-        const noteId = data.data.noteId;
-        const onMouseOver = (e) => {
-          if (typeof this.props.onNotePointerMouseOver === 'function') {
-            this.props.onNotePointerMouseOver(noteId, e);
-          }
-        };
-        const onMouseOut = (e) => {
-          if (typeof this.props.onNotePointerMouseOut === 'function') {
-            this.props.onNotePointerMouseOut(noteId, e);
-          }
-        };
-        const onMouseClick = (e) => {
-          if (typeof this.props.onNotePointerMouseClick === 'function') {
-            this.props.onNotePointerMouseClick(noteId, e);
-          }
-        };
-        const note = this.props.notes && this.props.notes[noteId];
-        const props = {
-          ...data.data,
-          note,
-          onMouseOver,
-          onMouseOut,
-          onMouseClick
-        };
-        callback(start, end, props);
-      }
-    );
-  }
-
-  createDecorator = () => {
-    const ActiveNotePointer = this.props.NotePointerComponent || NotePointer;
-    return new MultiDecorator([
-       new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
-       new SimpleDecorator(this.findNotePointers, ActiveNotePointer),
-     ]);
-  }
-
-  feedUndoStack = editorState => {
+  feedUndoStack = (editorState) => {
     const {
       undoStack
     } = this.state;
@@ -470,44 +360,21 @@ export default class BasicEditor extends Component {
   }
 
   forceRender = (props) => {
-    const editorState = props.editorState || this.generateEmptyEditor();
+    const editorState = props.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
 
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
 
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
-    let selectedEditorState = EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    let selectedEditorState = EditorState.acceptSelection(
+      newEditorState, 
+      editorState.getSelection()
+    );
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
     this.feedUndoStack(this.state.editorState);
     this.setState({ 
       editorState: selectedEditorState,
-    });
-  }
-
-
-  generateEmptyEditor = () => {
-    return EditorState.createEmpty(this.createDecorator())
-  }
-
-  state = {
-    editorState: this.generateEmptyEditor(),
-    undoStack: [],
-    redoStack: []
-  };
-
-
-  onAssetFocus = (e) => {
-    e.stopPropagation();
-    this.setState({
-      readOnly: true
-    });
-  }
-
-  onInputBlur = (e) => {
-    e.stopPropagation();
-    this.setState({
-      readOnly: false
     });
   }
 
@@ -521,8 +388,8 @@ export default class BasicEditor extends Component {
       let data;
       try {
         data = contentState.getEntity(entityKey).toJS();
-      } catch (e) {
-        return;
+      } catch (error) {
+        return undefined;
       }
       const id = data.data.asset.id;
       const asset = this.props.assets[id];
@@ -530,9 +397,8 @@ export default class BasicEditor extends Component {
         return;
       }
       const { blockAssetComponents } = this.props;
-      const AssetComponent = blockAssetComponents[asset.type] || <div />;
+      const AssetComponent = blockAssetComponents[asset.type] || <div />;
       const {
-        assets,
         onAssetChange: onChange,
         onAssetMouseOver: onMouseOver,
         onAssetMouseOut: onMouseOut,
@@ -544,7 +410,7 @@ export default class BasicEditor extends Component {
         onInputBlur: onBlur
       } = this;
       if (asset) {
-        return {
+        return {/* eslint consistent-return:0 */
           component: BlockAssetContainer,
           editable: false,
           props: {
@@ -563,43 +429,24 @@ export default class BasicEditor extends Component {
     }
   }
 
-  onBlur = (e) => {
-
-    if (this.inlineToolbar) {
-      this.inlineToolbar.toolbar.display = 'none';
-    }
-    if (this.sideControl) {
-      this.sideControl.toolbar.display = 'none';
-    }
-
-    this.setState({
-      readOnly: true
-    });
-
-    const { onBlur } = this.props;
-    if (onBlur) {
-      onBlur(e);
-    }
-  };
-
-  defaultKeyBindingFn = e => {
-    if (e && hasCommandModifier(e)) {
-      switch (e.keyCode) {
+  defaultKeyBindingFn = (event) => {
+    if (event && hasCommandModifier(event)) {
+      switch (event.keyCode) {
         // `^`
-        case 229:
-          return 'add-note';
+      case 229:
+        return 'add-note';
         // `z`
-        case 90:
-          return 'editor-undo';
+      case 90:
+        return 'editor-undo';
+        // `y`
+      case 89:
+        return 'editor-redo';
 
-        case 89:
-          return 'editor-redo';
-
-        default:
-          break;
+      default:
+        break;
       }
     }
-    return getDefaultKeyBinding(e);
+    return getDefaultKeyBinding(event);
   }
 
   _handleKeyCommand = (command) => {
@@ -635,6 +482,7 @@ export default class BasicEditor extends Component {
       this.onChange(newEditorState);
       return 'handled';
     }
+    return 'not-handled';
   }
 
   _onTab = (ev) => {
@@ -680,65 +528,231 @@ export default class BasicEditor extends Component {
     return false;
   }
 
-  _handleDragOver = (e) => {
-    e.preventDefault();
+  _handleDragOver = (event) => {
+    event.preventDefault();
     return false;
-  }
-
-  onChange = (editorState) => {
-    if (typeof this.props.onEditorChange === 'function' && !this.props.readOnly) {
-      this.props.onEditorChange(editorState);
-    }
   }
 
   _handlePastedText = (text, html) => {
 
     setTimeout(() => {
       this.feedUndoStack(this.state.editorState);
-    })
+    }, 1);
 
     if (this.props.clipboard) {
       this.editor.setClipboard(null);
       return true;
     }
+    return false;
   }
 
-  onNoteAdd = () => {
-    if (typeof this.props.onNoteAdd === 'function') {
-      this.props.onNoteAdd();
+  findInlineAsset = (contentBlock, callback, inputContentState) => {
+    let contentState = inputContentState;
+    if (!this.props.editorState) {
+      callback(null);
     }
-    if (typeof this.props.onEditorChange === 'function') {
-      setTimeout(() => {
-        this.props.onEditorChange(this.props.editorState);        
-      }, 1);
+    if (contentState === undefined) {
+      contentState = this.props.editorState.getCurrentContent();
     }
+    contentBlock.findEntityRanges(
+      (character) => {
+        const entityKey = character.getEntity();
+        return (
+          entityKey !== null &&
+          contentState.getEntity(entityKey).getType() === INLINE_ASSET
+        );
+      },
+      (start, end) => {
+        const {
+          assets,
+          onAssetMouseOver: onMouseOver,
+          onAssetMouseOut: onMouseOut,
+          onAssetChange,
+          inlineAssetComponents: components
+        } = this.props;
+
+        const {
+          onAssetFocus: onFocus,
+          onInputBlur: onBlur
+        } = this;
+        const entityKey = contentBlock.getEntityAt(start);
+        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+        const id = data.data.asset.id;
+        const asset = assets[id];
+        let props = {};
+        if (asset) {
+          props = {
+            assetId: id,
+            asset,
+            onMouseOver,
+            onMouseOut,
+            components,
+            onChange: onAssetChange,
+            onFocus,
+            onBlur
+          };
+        }
+        callback(start, end, props);
+      }
+    );
   }
 
-  componentDidUpdate(prevProps) {
-    this.updateSelection();
-    // force render of inline and atomic block elements
+  findNotePointers = (contentBlock, callback, inputContentState) => {
+    let contentState = inputContentState;
+    if (contentState === undefined) {
+      contentState = this.props.editorState.getCurrentContent();
+    }
+    contentBlock.findEntityRanges(
+      (character) => {
+        const entityKey = character.getEntity();
+        return (
+          entityKey !== null &&
+          contentState.getEntity(entityKey).getType() === NOTE_POINTER
+        );
+      },
+      (start, end) => {
+        const entityKey = contentBlock.getEntityAt(start);
+        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+        const noteId = data.data.noteId;
+        const onMouseOver = (event) => {
+          if (typeof this.props.onNotePointerMouseOver === 'function') {
+            this.props.onNotePointerMouseOver(noteId, event);
+          }
+        };
+        const onMouseOut = (event) => {
+          if (typeof this.props.onNotePointerMouseOut === 'function') {
+            this.props.onNotePointerMouseOut(noteId, event);
+          }
+        };
+        const onMouseClick = (event) => {
+          if (typeof this.props.onNotePointerMouseClick === 'function') {
+            this.props.onNotePointerMouseClick(noteId, event);
+          }
+        };
+        const note = this.props.notes && this.props.notes[noteId];
+        const props = {
+          ...data.data,
+          note,
+          onMouseOver,
+          onMouseOut,
+          onMouseClick
+        };
+        callback(start, end, props);
+      }
+    );
+  }
+
+  generateEmptyEditor = () => EditorState.createEmpty(this.createDecorator())
+
+  createDecorator = () => {
+    const ActiveNotePointer = this.props.NotePointerComponent || NotePointer;
+    return new MultiDecorator([
+      new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
+      new SimpleDecorator(this.findNotePointers, ActiveNotePointer),
+    ]);
+  }
+
+  // todo: clean this function from all unnecessary things
+  updateSelection = () => {
+    let left;
+    // let sideControlVisible;
+    let sideControlTop;
+    // let popoverControlLeft;
+
+    const selectionRange = getSelectionRange();
+    
+    const editorEle = this.editor;
+
+    if (!selectionRange) return;
+
+    if (
+      !editorEle 
+      || !isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)
+    ) { 
+      return; 
+    }
+
+    let assetRequestType;
     const {
-      forceRenderDebounced,
-      forceRender
-    } = this;
+      assetRequestPosition
+    } = this.props;
 
-    if (
-      this.props.editorState !== prevProps.editorState 
-      || prevProps.assets !== this.props.assets
-      || prevProps.readOnly !== this.props.readOnly
-      || prevProps.notes !== this.props.notes
-    ) {
-      forceRender(this.props);
+    if (assetRequestPosition) {
+      const currentContent = this.props.editorState.getCurrentContent();
+      const positionBlockKey = assetRequestPosition.getAnchorKey();
+      const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+      const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
+      assetRequestType = isEmpty ? 'block' : 'inline';
     }
 
-    if (
-      this.props.editorState !== prevProps.editorState && 
-      this.editor
-    ) {
-      this.editor.focus();
-    }
+    const inlineToolbarEle = this.inlineToolbar.toolbar;
+    const sideControlEle = this.sideControl.toolbar;
+    const rangeBounds = selectionRange.getBoundingClientRect();
 
+    // const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
+    const selectedBlock = getSelectedBlockElement(selectionRange);
+    // const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
+    if (selectedBlock) {
+      const blockBounds = selectedBlock.getBoundingClientRect();
+      // sideControlVisible = true;
+      const editorBounds = this.state.editorBounds;
+      if (!editorBounds) return;
+      sideControlTop = rangeBounds.top || blockBounds.top;
+      sideControlEle.style.top = `${sideControlTop}px`;
+      // position at begining of the line if no asset requested or block asset requested
+      // else position after selection
+      const controlWidth = sideControlEle.offsetWidth || 50;
+      left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - controlWidth;
+      sideControlEle.style.left = `${left}px`;
+      sideControlEle.style.display = 'block';
+
+      if (!selectionRange.collapsed) {
+        // The control needs to be visible so that we can get it's width
+        inlineToolbarEle.style.position = 'fixed';
+        inlineToolbarEle.style.display = 'block';
+
+        // popoverControlVisible = true;
+
+        // popoverControlLeft = 0;
+        let startNode = selectionRange.startContainer;
+        while (startNode.nodeType === 3) {
+          startNode = startNode.parentNode;
+        }
+        const popTop = rangeBounds.top /* - editorBounds.top + displaceY */ - popoverSpacing;
+        left = rangeBounds.left;
+        inlineToolbarEle.style.left = `${left}px`;
+        inlineToolbarEle.style.top = `${popTop}px`;
+      } else {
+        inlineToolbarEle.style.display = 'none';
+      }
+    } else {
+      sideControlEle.style.display = 'none';
+      inlineToolbarEle.style.display = 'none';
+    }
+    // console.log('after update: ', sideControlEle.style.display);
   }
+
+  focus = (event) => {
+    if (this.props.readOnly) return;
+
+    const stateMods = {};
+    if (!this.props.readOnly && this.state.readOnly) {
+      stateMods.readOnly = true;
+    }
+
+    const editorNode = this.editor && this.editor.refs.editor;
+    stateMods.editorBounds = editorNode.getBoundingClientRect();
+
+    if (Object.keys(stateMods).length) {
+      this.setState(stateMods);
+    }
+
+    setTimeout(() => {
+      if (!this.state.readOnly) {
+        editorNode.focus();
+      }
+    }, 1);
+  };
 
   render = () => {
     const {
@@ -751,8 +765,8 @@ export default class BasicEditor extends Component {
       allowInlineAsset = true,
       allowBlockAsset = true,
 
-      blockAssetComponents,
-      inlineButtons,
+      // blockAssetComponents,
+      // inlineButtons,
 
       onAssetRequest: onAssetRequestUpstream,
       assetRequestPosition,
@@ -808,11 +822,11 @@ export default class BasicEditor extends Component {
       }
     };
 
-    const onMainClick = (e) => {
+    const onMainClick = (event) => {
       if (typeof onClick === 'function') {
-        onClick(e);
+        onClick(event);
       }
-      this.focus(e);
+      this.focus(event);
     };
     let assetRequestType;
     if (assetRequestPosition) {
