@@ -23,7 +23,9 @@ gulp.task('build', function(){
     .pipe(gulp.dest('build'));
 
   gulp.src([
-      'src/**/*.json'
+      'src/**/*.json',
+      'src/**/**/*.svg',
+      'src/**/*.svg'
     ])
     .pipe(strip())
     .pipe(gulp.dest('build'));
