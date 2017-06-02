@@ -327,7 +327,7 @@ var _initialiseProps = function _initialiseProps() {
     }
     if (_this2.state.editorState !== nextProps.editorState) {
       _this2.setState({
-        editorState: nextProps.editorState
+        editorState: nextProps.editorState || _draftJs.EditorState.createEmpty()
       });
     }
   };

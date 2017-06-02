@@ -2,10 +2,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(jpe?g|png|gif)$/i,
+        test: /\.(jpe?g|png|gif|svg)$/i,
         use: [
             'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+            'image-webpack?bypassOnDebug&optipng.optimizationLevel=7&gifsicle.interlaced=false'
         ]
       },
       // {
@@ -19,7 +19,6 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style', 'css']
-      }
-    ]
+      }    ]
   }
 };

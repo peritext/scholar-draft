@@ -8,18 +8,18 @@ gulp.task('build', function(){
       'src/**/*.js'
     ])
     .pipe(babel({
-    "plugins": [
-      "add-module-exports",
-      "transform-class-properties",
-      "transform-decorators-legacy",
-      "transform-object-rest-spread",
-      "transform-export-extensions"
-    ],
-    "presets": [
-      "es2015",
-      "react"
-    ]
-  }))
+      "plugins": [
+        "add-module-exports",
+        "transform-class-properties",
+        "transform-decorators-legacy",
+        "transform-object-rest-spread",
+        "transform-export-extensions"
+      ],
+      "presets": [
+        "es2015",
+        "react"
+      ]
+    }))
     .pipe(gulp.dest('build'));
 
   gulp.src([

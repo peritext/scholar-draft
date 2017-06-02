@@ -1,5 +1,6 @@
+/* eslint jsx-a11y/img-has-alt: 0 */
 import React from 'react';
-import SVGInline from 'react-svg-inline';
+// import SVGInline from 'react-svg-inline';
 
 import asset from './asset.svg';
 import bold from './bold.svg';
@@ -13,14 +14,14 @@ import quoteblock from './quoteblock.svg';
 import unorderedlist from './unorderedlist.svg';
 
 export default {
-  asset: <SVGInline svg={asset} />,
-  bold: <SVGInline svg={bold} />,
-  codeblock: <SVGInline svg={codeblock} />,
-  h1: <SVGInline svg={h1} />,
-  h2: <SVGInline svg={h2} />,
-  italic: <SVGInline svg={italic} />,
-  note: <SVGInline svg={note} />,
-  orderedlist: <SVGInline svg={orderedlist} />,
-  quoteblock: <SVGInline svg={quoteblock} />,
-  unorderedlist: <SVGInline svg={unorderedlist} />,
+  asset: <img src={asset} />,
+  bold: <img src={bold} />,
+  codeblock: <img src={codeblock} />,
+  h1: <img src={h1} />,
+  h2: <img src={h2} />,
+  italic: <img src={italic} />,
+  note: <img src={note} />,
+  orderedlist: <img src={orderedlist} />,
+  quoteblock: <img src={quoteblock} />,
+  unorderedlist: <img src={unorderedlist} />,
 };
