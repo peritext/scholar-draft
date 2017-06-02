@@ -114,7 +114,7 @@ export default class Editor extends Component {
     };
 
     const renderNoteEditor = (noteId, order) => {
-      const onThisNoteEditorChange = editor => onEditorChange('note', noteId, editor);
+      const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
       const onNoteAssetRequest = (selection) => {
         onAssetRequest('note', noteId, selection);
       };
@@ -187,7 +187,7 @@ export default class Editor extends Component {
       );
     };
 
-    const onMainEditorChange = editor => onEditorChange('main', undefined, editor);
+    const onMainEditorChange = editor => onEditorChange('main', editor);
     const onMainAssetRequest = (selection) => {
       onAssetRequest('main', undefined, selection);
     };

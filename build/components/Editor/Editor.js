@@ -116,7 +116,7 @@ var Editor = function (_Component) {
 
       var renderNoteEditor = function renderNoteEditor(noteId, order) {
         var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
-          return onEditorChange('note', noteId, editor);
+          return onEditorChange(noteId, editor);
         };
         var onNoteAssetRequest = function onNoteAssetRequest(selection) {
           onAssetRequest('note', noteId, selection);
@@ -189,7 +189,7 @@ var Editor = function (_Component) {
       };
 
       var onMainEditorChange = function onMainEditorChange(editor) {
-        return onEditorChange('main', undefined, editor);
+        return onEditorChange('main', editor);
       };
       var onMainAssetRequest = function onMainAssetRequest(selection) {
         onAssetRequest('main', undefined, selection);

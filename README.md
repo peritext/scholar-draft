@@ -58,7 +58,7 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 ### Method props [not updated]
 
-`onEditorChange(contentType, noteId, editorState)` -> if first argument is 'main' will update main editor state, else related note
+`onEditorChange(editorStateId, editorState)` -> if first argument is 'main' will update main editor state, else related note
 
 `onNoteAdd()`
 

@@ -564,9 +564,9 @@ export default class EditorExample extends Component {
     });
   }
 
-  onEditorChange = (contentType, noteId, editorState) => {
+  onEditorChange = (editorStateId, editorState) => {
     // list all editor states to purge unused assets
-    if (contentType === 'main') {
+    if (editorStateId === 'main') {
       this.setState({
         mainEditorState: editorState,
         // notes
