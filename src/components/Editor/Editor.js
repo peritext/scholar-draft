@@ -116,7 +116,7 @@ export default class Editor extends Component {
     const renderNoteEditor = (noteId, order) => {
       const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
       const onNoteAssetRequest = (selection) => {
-        onAssetRequest('note', noteId, selection);
+        onAssetRequest(noteId, selection);
       };
       const onClickDelete = () => {
         if (typeof onNoteDelete === 'function') {
@@ -189,7 +189,7 @@ export default class Editor extends Component {
 
     const onMainEditorChange = editor => onEditorChange('main', editor);
     const onMainAssetRequest = (selection) => {
-      onAssetRequest('main', undefined, selection);
+      onAssetRequest('main', selection);
     };
 
     const onMainEditorDrop = (payload, selection) => {

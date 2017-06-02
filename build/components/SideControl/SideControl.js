@@ -104,7 +104,7 @@ var SideControl = function (_Component) {
           className: 'scholar-draft-SideControl',
           ref: bindToolbar
         },
-        allowNotesInsertion && _react2.default.createElement(_NoteButton2.default, {
+        allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(_NoteButton2.default, {
           onClick: onNoteAdd,
           iconMap: iconMap
         }),

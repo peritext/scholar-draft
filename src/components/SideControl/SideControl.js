@@ -76,7 +76,7 @@ export default class SideControl extends Component {
         className="scholar-draft-SideControl"
         ref={bindToolbar}
       >
-        {allowNotesInsertion &&
+        {allowNotesInsertion && !assetRequestPosition &&
         <NoteButton 
           onClick={onNoteAdd} 
           iconMap={iconMap}

@@ -575,8 +575,8 @@ export default class EditorExample extends Component {
       this.setState({
         notes: {
             ...this.state.notes,
-            [noteId]: {
-              ...this.state.notes[noteId],
+            [editorStateId]: {
+              ...this.state.notes[editorStateId],
               editorState
             }
           }
@@ -584,21 +584,20 @@ export default class EditorExample extends Component {
     }
   }
 
-  onAssetRequest = (contentType, noteId, selection) => {
+  onAssetRequest = (contentId, selection) => {
 
     this.setState({
-      focusedEditorId: noteId || 'main'
+      focusedEditorId: undefined //  contentId
     });
 
     setTimeout(() => {
       this.setState({
         assetRequest: true,
         assetRequestSelection: selection,
-        assetRequestContentId: contentType === 'main' ? 'main' : noteId,
-        focusedEditorId: noteId || 'main',
+        assetRequestContentId: contentId,
+        focusedEditorId: undefined,
       });
-      this.editor.focus(noteId || 'main');
-
+      // this.editor.focus(contentId);
     }, 1);
   }
 
@@ -607,10 +606,14 @@ export default class EditorExample extends Component {
   }
 
   onAssetRequestCancel = () => {
+    setTimeout(() => {
+      this.editor.focus(this.state.assetRequestContentId);
+    });
+
     this.setState({
       assetRequest: undefined,
       assetRequestSelection: undefined,
-      focusedEditorId: undefined
+      focusedEditorId: this.state.assetRequestContentId
     });
   }
 
@@ -686,8 +689,9 @@ export default class EditorExample extends Component {
     setTimeout(() => {
       this.setState({
         focusedEditorId: assetRequestContentId,
-      })
-    });
+      });
+      this.editor.focus(assetRequestContentId);
+    }, 1);
   }
 
   updateResourceTitle = title => {

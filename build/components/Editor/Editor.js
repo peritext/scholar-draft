@@ -119,7 +119,7 @@ var Editor = function (_Component) {
           return onEditorChange(noteId, editor);
         };
         var onNoteAssetRequest = function onNoteAssetRequest(selection) {
-          onAssetRequest('note', noteId, selection);
+          onAssetRequest(noteId, selection);
         };
         var onClickDelete = function onClickDelete() {
           if (typeof onNoteDelete === 'function') {
@@ -192,7 +192,7 @@ var Editor = function (_Component) {
         return onEditorChange('main', editor);
       };
       var onMainAssetRequest = function onMainAssetRequest(selection) {
-        onAssetRequest('main', undefined, selection);
+        onAssetRequest('main', selection);
       };
 
       var onMainEditorDrop = function onMainEditorDrop(payload, selection) {
