@@ -89,9 +89,7 @@ export default class EditorExample extends Component {
         pages: '12-13'
       }
     },
-    readOnly: {
-      main: false
-    }
+    focusedEditorId: 'main'
   }
 
 
@@ -151,16 +149,16 @@ export default class EditorExample extends Component {
 
 
     const {
-      readOnly
+      focusedEditorId
     } = this.state;
     // case: data is copied from the main editor
-    if (!readOnly.main) {
+    if (focusedEditorId !== 'main') {
       clipboard = this.editor.mainEditor.editor.getClipboard();
       editorState = this.state.mainEditorState;
     // case: data is copied from a note
     } else {
       activeId = Object.keys(this.state.notes)
-        .find(id => !readOnly[id]);
+        .find(id => id === focusedEditorId);
       editorState = this.state.notes[activeId].editorState;
       clipboard = this.editor.notes[activeId].editor.editor.getClipboard();
     }
@@ -252,7 +250,7 @@ export default class EditorExample extends Component {
   onPaste = e => {
 
     const {
-      readOnly, // will be used to define with which editorState to work
+      focusedEditorId, // will be used to define with which editorState to work
       clipboard, // blockMap of the data copied to clipboard
       copiedData // model-dependent set of data objects saved to clipboard
     } = this.state;
@@ -278,12 +276,12 @@ export default class EditorExample extends Component {
 
     // defining the relevant editor state to work with
     // (todo: this is badly done - an "activeEditorState" prop would be better)
-    if (!readOnly.main) {
+    if (focusedEditorId === 'main') {
       activeId = 'main';
       editorState = this.state.mainEditorState;
     } else {
       activeId = Object.keys(this.state.notes)
-        .find(id => !readOnly[id]);
+        .find(id => focusedEditorId === id);
       editorState = this.state.notes[activeId].editorState;
     }
 
@@ -589,10 +587,7 @@ export default class EditorExample extends Component {
   onAssetRequest = (contentType, noteId, selection) => {
 
     this.setState({
-      readOnly: {
-        ...this.state.readOnly,
-        [noteId || 'main']: false
-      }
+      focusedEditorId: noteId || 'main'
     });
 
     setTimeout(() => {
@@ -600,10 +595,7 @@ export default class EditorExample extends Component {
         assetRequest: true,
         assetRequestSelection: selection,
         assetRequestContentId: contentType === 'main' ? 'main' : noteId,
-        readOnly: {
-          ...this.state.readOnly,
-          [noteId || 'main']: true
-        }
+        focusedEditorId: noteId || 'main',
       });
       this.editor.focus(noteId || 'main');
 
@@ -618,7 +610,7 @@ export default class EditorExample extends Component {
     this.setState({
       assetRequest: undefined,
       assetRequestSelection: undefined,
-      readOnly: {}
+      focusedEditorId: undefined
     });
   }
 
@@ -682,10 +674,7 @@ export default class EditorExample extends Component {
         [id]: contextualization
       },
       notes: this.state.notes,
-      readOnly: {
-        ...this.state.readOnly,
-        [assetRequestContentId]: true
-      }
+      focusedEditorId: 'main'
       // editorState: newEditorState,
     };
     if (assetRequestContentId === 'main') {
@@ -696,10 +685,7 @@ export default class EditorExample extends Component {
     this.setState(newState);
     setTimeout(() => {
       this.setState({
-        readOnly: {
-          ...this.state.readOnly,
-          [assetRequestContentId]: false
-        }
+        focusedEditorId: assetRequestContentId,
       })
     });
   }
@@ -810,11 +796,7 @@ export default class EditorExample extends Component {
     this.setState({
       notes,
       mainEditorState,
-      readOnly: {
-        ...this.state.readOnly,
-        'main': true,
-        [id]: false
-      }
+      focusedEditorId: id
     });
 
     setTimeout(() => {
@@ -831,10 +813,7 @@ export default class EditorExample extends Component {
       this.setState({
         mainEditorState,
         notes,
-        readOnly: {
-          ...this.state.readOnly,
-          main: false
-        }
+        focusedEditorId: 'main',
       });
     });
     this.editor.focus('main');
@@ -912,7 +891,7 @@ export default class EditorExample extends Component {
       assetRequest,
       assetRequestContentId,
       resources,
-      readOnly,
+      focusedEditorId,
     } = state;
 
     const onResourceTitleChange = e => {
@@ -930,7 +909,7 @@ export default class EditorExample extends Component {
        e.dataTransfer.dropEffect = 'copy';
        e.dataTransfer.setData('text', 'TEST');
        this.setState({
-        readOnly: {}
+        focusedEditorId: undefined
        });
     };
 
@@ -940,14 +919,10 @@ export default class EditorExample extends Component {
     };
 
     const onClick = (event, contentId = 'main') => {
-      // console.log('on click', this.state.readOnly[contentId]);
-      if (this.state.readOnly[contentId]) {
+      if (this.state.focusedEditorId !== contentId) {
         // console.log('set readonly to false for', contentId);
         this.setState({
-          readOnly: {
-            ...this.state.readOnly,
-            [contentId]: false
-          }
+          focusedEditorId: contentId
         });
         setTimeout(() => {
           this.editor.focus(contentId);
@@ -957,10 +932,7 @@ export default class EditorExample extends Component {
 
     const onBlur = (event, contentId = 'main') => {
       this.setState({
-        readOnly: {
-          ...this.state.readOnly,
-          [contentId]: true
-        }
+        focusedEditorId: undefined
       });
     };
 
@@ -1000,12 +972,12 @@ export default class EditorExample extends Component {
     }
 
     const onScroll = e => {
-      if (this.editor && !this.state.readOnly['main']) {
+      if (this.editor && this.state.focusedEditorId === 'main') {
         this.editor.mainEditor.updateSelection();
       }
       if (this.editor.notes) {
         Object.keys(this.editor.notes)
-        .filter(noteId => !this.state.readOnly[noteId])
+        .filter(noteId => this.state.focusedEditorId === noteId)
         .forEach(noteId => {
           if (this.editor.notes[noteId]) {
             this.editor.notes[noteId].editor.updateSelection();
@@ -1104,7 +1076,7 @@ export default class EditorExample extends Component {
 
             ref={bindRef}
 
-            readOnly={readOnly}
+            focusedEditorId={focusedEditorId}
                         
             onEditorChange={onEditorChange}
 

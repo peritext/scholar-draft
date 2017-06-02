@@ -106,8 +106,7 @@ var Editor = function (_Component) {
           keyBindingFn = _props.keyBindingFn,
           editorStyles = _props.editorStyles,
           clipboard = _props.clipboard,
-          _props$readOnly = _props.readOnly,
-          readOnly = _props$readOnly === undefined ? {} : _props$readOnly,
+          focusedEditorId = _props.focusedEditorId,
           NoteContainerComponent = _props.NoteContainerComponent;
 
 
@@ -158,7 +157,7 @@ var Editor = function (_Component) {
           assetRequestPosition: assetRequestPosition,
           assetChoiceProps: assetChoiceProps,
 
-          readOnly: readOnly[noteId],
+          readOnly: noteId !== focusedEditorId,
 
           onEditorClick: onNoteEditorClick,
           onBlur: onNoteBlur,
@@ -225,7 +224,7 @@ var Editor = function (_Component) {
             assetRequestPosition: assetRequestPosition,
             assetChoiceProps: assetChoiceProps,
 
-            readOnly: readOnly.main,
+            readOnly: focusedEditorId !== 'main',
 
             onClick: onMainEditorClick,
             onBlur: onMainBlur,
@@ -313,7 +312,7 @@ Editor.propTypes = {
 
   editorStyles: _propTypes2.default.object,
   clipboard: _propTypes2.default.object,
-  readOnly: _propTypes2.default.object,
+  focusedEditorId: _propTypes2.default.string,
   NoteContainerComponent: _propTypes2.default.func
 };
 exports.default = Editor;

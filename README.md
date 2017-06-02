@@ -42,7 +42,7 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 ### State-related props
 
-`readOnly` (Boolean)
+`focusedEditorId` (string) -> 'main', [noteId], or undefined - defines which editor to focus on
 
 `mainEditor` (ImmutableMap) -> the state of the editor of the main object
 

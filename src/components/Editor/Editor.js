@@ -47,7 +47,7 @@ export default class Editor extends Component {
 
     editorStyles: PropTypes.object,
     clipboard: PropTypes.object,
-    readOnly: PropTypes.object,
+    focusedEditorId: PropTypes.string,
     NoteContainerComponent: PropTypes.func,
   }
 
@@ -105,8 +105,8 @@ export default class Editor extends Component {
 
       editorStyles,
       clipboard,
-      readOnly = {},
-      NoteContainerComponent
+      focusedEditorId,
+      NoteContainerComponent,
     } = this.props;
 
     const bindMainEditor = (editor) => {
@@ -155,7 +155,7 @@ export default class Editor extends Component {
           assetRequestPosition={assetRequestPosition}
           assetChoiceProps={assetChoiceProps}
 
-          readOnly={readOnly[noteId]}
+          readOnly={noteId !== focusedEditorId}
 
           onEditorClick={onNoteEditorClick}
           onBlur={onNoteBlur}
@@ -218,7 +218,7 @@ export default class Editor extends Component {
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}
 
-            readOnly={readOnly.main}
+            readOnly={focusedEditorId !== 'main'}
 
             onClick={onMainEditorClick}
             onBlur={onMainBlur}
