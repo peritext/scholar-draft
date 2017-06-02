@@ -216,7 +216,7 @@ export default class BasicEditor extends Component {
     }
     if (this.state.editorState !== nextProps.editorState) {
       this.setState({
-        editorState: nextProps.editorState
+        editorState: nextProps.editorState || EditorState.createEmpty()
       });
     }
   }

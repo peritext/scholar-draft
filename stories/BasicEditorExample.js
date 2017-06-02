@@ -547,7 +547,7 @@ export default class BasicEditorExample extends Component {
         onAssetRequestCancel();
       }
     };
-    const assetRequestPosition = contextualizationRequest && editorState.getSelection();
+    const assetRequestPosition = contextualizationRequest ? editorState.getSelection() : undefined;
 
     return (
       <div

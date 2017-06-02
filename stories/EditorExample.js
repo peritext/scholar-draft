@@ -1012,7 +1012,7 @@ export default class EditorExample extends Component {
           }
         });
       }
-   }
+    }
     return (
       <div
         style={{
@@ -1105,10 +1105,6 @@ export default class EditorExample extends Component {
             ref={bindRef}
 
             readOnly={readOnly}
-
-            contextualizations={contextualizations}
-            contextualizers={contextualizers}
-            resources={resources}
                         
             onEditorChange={onEditorChange}
 
@@ -1136,9 +1132,7 @@ export default class EditorExample extends Component {
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
-            AssetChoiceComponent={ExampleBlockAssetChoice}
-            
-            allowNotesInsertion={true}
+            AssetChoiceComponent={ExampleBlockAssetChoice}            
           />
         </div>
       </div>
