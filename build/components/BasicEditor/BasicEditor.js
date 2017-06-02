@@ -273,6 +273,7 @@ BasicEditor.propTypes = {
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
   onDrop: _propTypes2.default.func,
+  onDragOver: _propTypes2.default.func,
   onClick: _propTypes2.default.func,
   onBlur: _propTypes2.default.func,
   onAssetChoice: _propTypes2.default.func,
@@ -588,6 +589,9 @@ var _initialiseProps = function _initialiseProps() {
 
   this._handleDragOver = function (event) {
     event.preventDefault();
+    if (typeof _this2.props.onDragOver === 'function') {
+      _this2.props.onDragOver(event);
+    }
     return false;
   };
 
@@ -709,7 +713,6 @@ var _initialiseProps = function _initialiseProps() {
       return;
     }
 
-    var assetRequestType = void 0;
     var assetRequestPosition = _this2.props.assetRequestPosition;
 
 
@@ -738,7 +741,7 @@ var _initialiseProps = function _initialiseProps() {
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
       var controlWidth = sideControlEle.offsetWidth || 50;
-      left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - controlWidth;
+      left = assetRequestPosition ? (rangeBounds.right || editorBounds.left) + controlWidth : editorBounds.left - controlWidth;
       sideControlEle.style.left = left + 'px';
       sideControlEle.style.display = 'block';
 
@@ -765,7 +768,6 @@ var _initialiseProps = function _initialiseProps() {
       sideControlEle.style.display = 'none';
       inlineToolbarEle.style.display = 'none';
     }
-    // console.log('after update: ', sideControlEle.style.display);
   };
 
   this.focus = function (event) {
@@ -854,13 +856,12 @@ var _initialiseProps = function _initialiseProps() {
       }
       _this2.focus(event);
     };
-    var assetRequestType = void 0;
     if (assetRequestPosition) {
       var currentContent = realEditorState.getCurrentContent();
       var positionBlockKey = assetRequestPosition.getAnchorKey();
       var positionBlock = currentContent.getBlockForKey(positionBlockKey);
       var isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block' : 'inline';
+      // assetRequestType = isEmpty ? 'block' : 'inline';
     }
 
     var keyBindingFn = typeof _this2.props.keyBindingFn === 'function' ? _this2.props.keyBindingFn : defaultKeyBindingFn;
@@ -868,7 +869,7 @@ var _initialiseProps = function _initialiseProps() {
     return _react2.default.createElement(
       'div',
       {
-        className: editorClass,
+        className: editorClass + (readOnly ? '' : ' active'),
         onClick: onMainClick,
         style: editorStyle,
 
@@ -893,7 +894,6 @@ var _initialiseProps = function _initialiseProps() {
         onAssetRequestCancel: onAssetRequestCancel,
         onAssetChoice: onAssetChoice,
         assetRequestPosition: assetRequestPosition,
-        assetRequestType: assetRequestType,
         assetChoiceProps: assetChoiceProps,
 
         AssetChoiceComponent: AssetChoiceComponent,
@@ -909,8 +909,6 @@ var _initialiseProps = function _initialiseProps() {
 
         keyBindingFn: keyBindingFn,
 
-        handleDrop: _handleDrop,
-
         handlePastedText: _handlePastedText,
         handleKeyCommand: _handleKeyCommand,
         handleBeforeInput: _handleBeforeInput,
@@ -918,6 +916,8 @@ var _initialiseProps = function _initialiseProps() {
         onTab: _onTab,
 
         editorState: stateEditorState,
+
+        handleDrop: _handleDrop,
 
         onChange: onChange,
         ref: bindEditorRef,

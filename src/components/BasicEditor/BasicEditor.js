@@ -153,6 +153,7 @@ export default class BasicEditor extends Component {
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
     onDrop: PropTypes.func,
+    onDragOver: PropTypes.func,
     onClick: PropTypes.func,
     onBlur: PropTypes.func,
     onAssetChoice: PropTypes.func,
@@ -254,7 +255,6 @@ export default class BasicEditor extends Component {
     ) {
       this.editor.focus();
     }
-
   }
 
   onNoteAdd = () => {
@@ -530,6 +530,9 @@ export default class BasicEditor extends Component {
 
   _handleDragOver = (event) => {
     event.preventDefault();
+    if (typeof this.props.onDragOver === 'function') {
+      this.props.onDragOver(event);
+    }
     return false;
   }
 
@@ -672,7 +675,6 @@ export default class BasicEditor extends Component {
       return; 
     }
 
-    let assetRequestType;
     const {
       assetRequestPosition
     } = this.props;
@@ -702,7 +704,9 @@ export default class BasicEditor extends Component {
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
       const controlWidth = sideControlEle.offsetWidth || 50;
-      left = assetRequestType === 'inline' ? rangeBounds.right : editorBounds.left - controlWidth;
+      left = assetRequestPosition ? 
+        (rangeBounds.right || editorBounds.left) + controlWidth 
+        : editorBounds.left - controlWidth;
       sideControlEle.style.left = `${left}px`;
       sideControlEle.style.display = 'block';
 
@@ -729,7 +733,6 @@ export default class BasicEditor extends Component {
       sideControlEle.style.display = 'none';
       inlineToolbarEle.style.display = 'none';
     }
-    // console.log('after update: ', sideControlEle.style.display);
   }
 
   focus = (event) => {
@@ -828,20 +831,19 @@ export default class BasicEditor extends Component {
       }
       this.focus(event);
     };
-    let assetRequestType;
     if (assetRequestPosition) {
       const currentContent = realEditorState.getCurrentContent();
       const positionBlockKey = assetRequestPosition.getAnchorKey();
       const positionBlock = currentContent.getBlockForKey(positionBlockKey);
       const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block' : 'inline';
+      // assetRequestType = isEmpty ? 'block' : 'inline';
     }
 
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
     const iconMap = this.props.iconMap ? this.props.iconMap : defaultIconMap;
     return (
       <div 
-        className={editorClass}
+        className={editorClass + (readOnly ? '' : ' active')}
         onClick={onMainClick}
         style={editorStyle}
 
@@ -866,7 +868,6 @@ export default class BasicEditor extends Component {
           onAssetRequestCancel={onAssetRequestCancel}
           onAssetChoice={onAssetChoice}
           assetRequestPosition={assetRequestPosition}
-          assetRequestType={assetRequestType}
           assetChoiceProps={assetChoiceProps}
 
           AssetChoiceComponent={AssetChoiceComponent}
@@ -882,8 +883,6 @@ export default class BasicEditor extends Component {
 
           keyBindingFn={keyBindingFn}
 
-          handleDrop={_handleDrop}
-
           handlePastedText={_handlePastedText}
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
@@ -891,6 +890,8 @@ export default class BasicEditor extends Component {
           onTab={_onTab}
 
           editorState={stateEditorState}
+
+          handleDrop={_handleDrop}
 
           onChange={onChange}
           ref={bindEditorRef}

@@ -31,6 +31,7 @@ export default class Editor extends Component {
     onNotePointerMouseClick: PropTypes.func,
     onNoteDelete: PropTypes.func,
     onDrop: PropTypes.func,
+    onDragOver: PropTypes.func,
     onClick: PropTypes.func,
     onBlur: PropTypes.func,
 
@@ -89,6 +90,7 @@ export default class Editor extends Component {
       onNotePointerMouseClick,
       onNoteDelete,
       onDrop,
+      onDragOver,
       onClick,
       onBlur,
 
@@ -126,6 +128,11 @@ export default class Editor extends Component {
       const onNoteDrop = (payload, selection) => {
         if (typeof onDrop === 'function') {
           onDrop(noteId, payload, selection);
+        }
+      };
+      const onNoteDragOver = (event) => {
+        if (typeof onDragOver === 'function') {
+          onDragOver(noteId, event);
         }
       };
       const note = notes[noteId];
@@ -170,6 +177,7 @@ export default class Editor extends Component {
           clipboard={clipboard}
 
           onDrop={onNoteDrop}
+          onDragOver={onNoteDragOver}
           onClickDelete={onClickDelete}
 
           onAssetClick={onAssetClick}
@@ -195,6 +203,12 @@ export default class Editor extends Component {
     const onMainEditorDrop = (payload, selection) => {
       if (typeof onDrop === 'function') {
         onDrop('main', payload, selection);
+      }
+    };
+
+    const onMainDragOver = (event) => {
+      if (typeof onDragOver === 'function') {
+        onDragOver('main', event);
       }
     };
 
@@ -224,6 +238,7 @@ export default class Editor extends Component {
             onBlur={onMainBlur}
             
             onEditorChange={onMainEditorChange}
+            onDragOver={onMainDragOver}
             onDrop={onMainEditorDrop}
             onAssetRequest={onMainAssetRequest}
             onAssetRequestCancel={onAssetRequestCancel}

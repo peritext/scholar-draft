@@ -913,7 +913,7 @@ export default class EditorExample extends Component {
        e.dataTransfer.dropEffect = 'copy';
        e.dataTransfer.setData('text', 'TEST');
        this.setState({
-        focusedEditorId: undefined
+        focusedEditorId: 'main'
        });
     };
 
@@ -921,6 +921,13 @@ export default class EditorExample extends Component {
       const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
       this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
     };
+    const onDragOver = id => {
+      if (this.state.focusedEditorId !== id) {
+        this.setState({
+          focusedEditorId: id
+        })
+      }
+    }
 
     const onClick = (event, contentId = 'main') => {
       if (this.state.focusedEditorId !== contentId) {
@@ -1085,6 +1092,7 @@ export default class EditorExample extends Component {
             onEditorChange={onEditorChange}
 
             onDrop={onDrop}
+            onDragOver={onDragOver}
             onClick={onClick}
             onBlur={onBlur}
 

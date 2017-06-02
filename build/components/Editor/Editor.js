@@ -94,6 +94,7 @@ var Editor = function (_Component) {
           onNotePointerMouseClick = _props.onNotePointerMouseClick,
           onNoteDelete = _props.onNoteDelete,
           onDrop = _props.onDrop,
+          onDragOver = _props.onDragOver,
           onClick = _props.onClick,
           onBlur = _props.onBlur,
           assetRequestPosition = _props.assetRequestPosition,
@@ -129,6 +130,11 @@ var Editor = function (_Component) {
         var onNoteDrop = function onNoteDrop(payload, selection) {
           if (typeof onDrop === 'function') {
             onDrop(noteId, payload, selection);
+          }
+        };
+        var onNoteDragOver = function onNoteDragOver(event) {
+          if (typeof onDragOver === 'function') {
+            onDragOver(noteId, event);
           }
         };
         var note = notes[noteId];
@@ -172,6 +178,7 @@ var Editor = function (_Component) {
           clipboard: clipboard,
 
           onDrop: onNoteDrop,
+          onDragOver: onNoteDragOver,
           onClickDelete: onClickDelete,
 
           onAssetClick: onAssetClick,
@@ -198,6 +205,12 @@ var Editor = function (_Component) {
       var onMainEditorDrop = function onMainEditorDrop(payload, selection) {
         if (typeof onDrop === 'function') {
           onDrop('main', payload, selection);
+        }
+      };
+
+      var onMainDragOver = function onMainDragOver(event) {
+        if (typeof onDragOver === 'function') {
+          onDragOver('main', event);
         }
       };
 
@@ -230,6 +243,7 @@ var Editor = function (_Component) {
             onBlur: onMainBlur,
 
             onEditorChange: onMainEditorChange,
+            onDragOver: onMainDragOver,
             onDrop: onMainEditorDrop,
             onAssetRequest: onMainAssetRequest,
             onAssetRequestCancel: onAssetRequestCancel,
@@ -296,6 +310,7 @@ Editor.propTypes = {
   onNotePointerMouseClick: _propTypes2.default.func,
   onNoteDelete: _propTypes2.default.func,
   onDrop: _propTypes2.default.func,
+  onDragOver: _propTypes2.default.func,
   onClick: _propTypes2.default.func,
   onBlur: _propTypes2.default.func,
 

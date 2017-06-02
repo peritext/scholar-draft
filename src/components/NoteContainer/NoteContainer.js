@@ -22,6 +22,7 @@ class NoteContainer extends Component {
     onAssetChange: PropTypes.func,
     onClickDelete: PropTypes.func,
     onDrop: PropTypes.func,
+    onDragOver: PropTypes.func,
     onBlur: PropTypes.func,
     onEditorClick: PropTypes.func,
     onAssetClick: PropTypes.func,
@@ -60,6 +61,7 @@ class NoteContainer extends Component {
       onAssetChange,
       onClickDelete,
       onDrop,
+      onDragOver,
       onBlur,
       onEditorClick,
 
@@ -110,6 +112,7 @@ class NoteContainer extends Component {
             ref={bindRef}
             onClick={onClick}
             onDrop={onDrop}
+            onDragOver={onDragOver}
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
