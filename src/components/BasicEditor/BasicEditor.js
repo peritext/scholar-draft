@@ -679,13 +679,13 @@ export default class BasicEditor extends Component {
       assetRequestPosition
     } = this.props;
 
-    if (assetRequestPosition) {
-      const currentContent = this.props.editorState.getCurrentContent();
-      const positionBlockKey = assetRequestPosition.getAnchorKey();
-      const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-      const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block' : 'inline';
-    }
+    // if (assetRequestPosition) {
+    //   const currentContent = this.props.editorState.getCurrentContent();
+    //   const positionBlockKey = assetRequestPosition.getAnchorKey();
+    //   const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+    //   const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
+    //   // assetRequestType = isEmpty ? 'block' : 'inline';
+    // }
 
     const inlineToolbarEle = this.inlineToolbar.toolbar;
     const sideControlEle = this.sideControl.toolbar;
@@ -831,13 +831,13 @@ export default class BasicEditor extends Component {
       }
       this.focus(event);
     };
-    if (assetRequestPosition) {
-      const currentContent = realEditorState.getCurrentContent();
-      const positionBlockKey = assetRequestPosition.getAnchorKey();
-      const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-      const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
+    // if (assetRequestPosition) {
+      // const currentContent = realEditorState.getCurrentContent();
+      // const positionBlockKey = assetRequestPosition.getAnchorKey();
+      // const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+      // const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
       // assetRequestType = isEmpty ? 'block' : 'inline';
-    }
+    // }
 
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
     const iconMap = this.props.iconMap ? this.props.iconMap : defaultIconMap;

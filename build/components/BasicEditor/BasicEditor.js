@@ -715,14 +715,13 @@ var _initialiseProps = function _initialiseProps() {
 
     var assetRequestPosition = _this2.props.assetRequestPosition;
 
-
-    if (assetRequestPosition) {
-      var currentContent = _this2.props.editorState.getCurrentContent();
-      var positionBlockKey = assetRequestPosition.getAnchorKey();
-      var positionBlock = currentContent.getBlockForKey(positionBlockKey);
-      var isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      assetRequestType = isEmpty ? 'block' : 'inline';
-    }
+    // if (assetRequestPosition) {
+    //   const currentContent = this.props.editorState.getCurrentContent();
+    //   const positionBlockKey = assetRequestPosition.getAnchorKey();
+    //   const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+    //   const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
+    //   // assetRequestType = isEmpty ? 'block' : 'inline';
+    // }
 
     var inlineToolbarEle = _this2.inlineToolbar.toolbar;
     var sideControlEle = _this2.sideControl.toolbar;
@@ -856,13 +855,13 @@ var _initialiseProps = function _initialiseProps() {
       }
       _this2.focus(event);
     };
-    if (assetRequestPosition) {
-      var currentContent = realEditorState.getCurrentContent();
-      var positionBlockKey = assetRequestPosition.getAnchorKey();
-      var positionBlock = currentContent.getBlockForKey(positionBlockKey);
-      var isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      // assetRequestType = isEmpty ? 'block' : 'inline';
-    }
+    // if (assetRequestPosition) {
+    // const currentContent = realEditorState.getCurrentContent();
+    // const positionBlockKey = assetRequestPosition.getAnchorKey();
+    // const positionBlock = currentContent.getBlockForKey(positionBlockKey);
+    // const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
+    // assetRequestType = isEmpty ? 'block' : 'inline';
+    // }
 
     var keyBindingFn = typeof _this2.props.keyBindingFn === 'function' ? _this2.props.keyBindingFn : defaultKeyBindingFn;
     var iconMap = _this2.props.iconMap ? _this2.props.iconMap : _defaultIconMap2.default;
