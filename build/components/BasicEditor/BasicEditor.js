@@ -211,7 +211,7 @@ var BasicEditor = function (_Component) {
 
     _initialiseProps.call(_this);
 
-    _this.updateSelection = (0, _lodash.debounce)(_this.updateSelection, 100);
+    _this.debouncedUpdateSelection = (0, _lodash.debounce)(_this.updateSelection, 100);
     _this.forceRenderDebounced = (0, _lodash.debounce)(_this.forceRender, 200);
 
     _this.feedUndoStack = (0, _lodash.debounce)(_this.feedUndoStack, 1000);
@@ -230,7 +230,7 @@ var BasicEditor = function (_Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
-      this.updateSelection();
+      this.debouncedUpdateSelection();
       // force render of inline and atomic block elements
       var forceRender = this.forceRender;
 
@@ -318,17 +318,22 @@ var _initialiseProps = function _initialiseProps() {
     // console.log('readonlies', this.props.readOnly, nextProps.readOnly);
     if (!_this2.props.readOnly && nextProps.readOnly) {
       _this2.inlineToolbar.toolbar.style.display = 'none';
-      _this2.sideControl.toolbar.style.display = 'none';
+      if (!nextProps.assetRequestPosition) {
+        _this2.sideControl.toolbar.style.display = 'none';
+      }
       // console.log('hide side control', this.sideControl.toolbar.style.display);
     }
     if (_this2.state.readOnly !== nextProps.readOnly) {
       _this2.setState({
         readOnly: nextProps.readOnly
       });
+      setTimeout(function () {
+        return _this2.updateSelection();
+      });
     }
     if (_this2.state.editorState !== nextProps.editorState) {
       _this2.setState({
-        editorState: nextProps.editorState || _draftJs.EditorState.createEmpty()
+        editorState: nextProps.editorState || _draftJs.EditorState.createEmpty(_this2.createDecorator())
       });
     }
   };
@@ -359,7 +364,6 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.onBlur = function (event) {
-
     if (_this2.inlineToolbar) {
       _this2.inlineToolbar.toolbar.display = 'none';
     }
@@ -797,6 +801,7 @@ var _initialiseProps = function _initialiseProps() {
         editorState = _props3$editorState === undefined ? _draftJs.EditorState.createEmpty(_this2.createDecorator()) : _props3$editorState,
         _props3$editorClass = _props3.editorClass,
         editorClass = _props3$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props3$editorClass,
+        contentId = _props3.contentId,
         _props3$placeholder = _props3.placeholder,
         placeholder = _props3$placeholder === undefined ? 'write your text' : _props3$placeholder,
         _props3$allowNotesIns = _props3.allowNotesInsertion,
@@ -813,7 +818,7 @@ var _initialiseProps = function _initialiseProps() {
         onClick = _props3.onClick,
         AssetChoiceComponent = _props3.AssetChoiceComponent,
         assetChoiceProps = _props3.assetChoiceProps,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
     var _state3 = _this2.state,
         readOnly = _state3.readOnly,
         stateEditorState = _state3.editorState;
@@ -897,6 +902,8 @@ var _initialiseProps = function _initialiseProps() {
 
         AssetChoiceComponent: AssetChoiceComponent,
         iconMap: iconMap,
+
+        contentId: contentId,
 
         onNoteAdd: onNoteAdd
       }),

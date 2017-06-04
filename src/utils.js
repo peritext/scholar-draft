@@ -140,6 +140,127 @@ export function insertAssetInEditor(
   return updatedEditor;
 }
 
+export function insertInlineAssetInEditor(
+    editorState, 
+    asset, 
+    selection
+  ) {
+  const currentContent = editorState.getCurrentContent();
+  const activeSelection = editorState.getSelection();
+  const inputSelection = selection || activeSelection;
+  let newContentState = editorState.getCurrentContent().createEntity(
+      INLINE_ASSET,
+      'IMMUTABLE',
+    {
+      insertionType: INLINE_ASSET,
+      asset
+    }
+    );
+
+  const newEntityKey = newContentState.getLastCreatedEntityKey();
+  const thatSelection = activeSelection.merge({
+    anchorOffset: inputSelection.getStartOffset(),
+    focusOffset: inputSelection.getEndOffset(),
+    focusKey: inputSelection.getFocusKey(),
+    anchorKey: inputSelection.getAnchorKey(),
+  });
+  let updatedEditor = EditorState.acceptSelection(
+    EditorState.createWithContent(newContentState), 
+    thatSelection
+  );
+  const anchorKey = thatSelection.getAnchorKey();
+  const currentContentBlock = currentContent.getBlockForKey(anchorKey);
+  const start = thatSelection.getStartOffset();
+  const end = thatSelection.getEndOffset();
+  let selectedText = currentContentBlock.getText().slice(start, end);
+  if (selectedText.length > 0) {
+    newContentState = Modifier.applyEntity(
+        currentContent,
+        thatSelection,
+        newEntityKey
+      );
+  } else {
+    selectedText = ' ';
+
+    newContentState = Modifier.replaceText(
+        currentContent,
+        thatSelection,
+        selectedText,
+        null,
+        // inlineStyle?: DraftInlineStyle,
+        newEntityKey
+      );
+  }
+  const endSelection = thatSelection.merge({
+    anchorOffset: thatSelection.getEndOffset() + selectedText.length,
+    focusOffset: thatSelection.getEndOffset() + selectedText.length,
+  });
+  newContentState = Modifier.replaceText(
+      newContentState,
+      endSelection,
+      '  ',
+      null,
+      null
+    );
+  updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
+  updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
+  return updatedEditor;
+}
+
+
+export function insertBlockAssetInEditor(
+    editorState, 
+    asset, 
+    selection
+  ) {
+  const currentContent = editorState.getCurrentContent();
+  const activeSelection = editorState.getSelection();
+  const inputSelection = selection || activeSelection;
+
+  let newContentState = editorState.getCurrentContent().createEntity(
+      BLOCK_ASSET,
+      'IMMUTABLE',
+    {
+      insertionType: BLOCK_ASSET,
+      asset
+    }
+    );
+
+  const newEntityKey = newContentState.getLastCreatedEntityKey();
+  const thatSelection = activeSelection.merge({
+    anchorOffset: inputSelection.getStartOffset(),
+    focusOffset: inputSelection.getEndOffset(),
+    focusKey: inputSelection.getFocusKey(),
+    anchorKey: inputSelection.getAnchorKey(),
+  });
+  let updatedEditor = EditorState.acceptSelection(
+    EditorState.createWithContent(newContentState), 
+    thatSelection
+  );
+  updatedEditor = AtomicBlockUtils.insertAtomicBlock(
+      updatedEditor,
+      newEntityKey,
+      ' '
+    );
+  /**
+   * UPDATE SELECTION
+   */
+  const newContent = updatedEditor.getCurrentContent();
+  const blockMap = newContent.getBlockMap().toJS();
+  const blockE = Object.keys(blockMap).map(blockId => blockMap[blockId])
+    .find((block) => {
+      if (block.type === 'atomic') {
+        return block.characterList.find(char => char.entity && char.entity === newEntityKey);
+      }
+      return undefined;
+    });
+  const block = newContent.getBlockAfter(blockE.key);
+  const finalSelection = SelectionState.createEmpty(block.getKey());
+  updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
+
+  return updatedEditor;
+}
+
 export function insertNoteInEditor(
     editorState, 
     noteId, 

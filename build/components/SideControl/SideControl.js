@@ -64,6 +64,7 @@ var SideControl = function (_Component) {
     }, _this.render = function () {
       var _this$props = _this.props,
           editorState = _this$props.editorState,
+          contentId = _this$props.contentId,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
           onAssetChoice = _this$props.onAssetChoice,
@@ -120,6 +121,7 @@ var SideControl = function (_Component) {
             onClick: stopEventPropagation
           },
           _react2.default.createElement(AssetChoiceComponent, (0, _extends3.default)({}, assetChoiceProps, {
+            contentId: contentId,
             onAssetChoice: onAssetChoice,
             onAssetRequestCancel: onAssetRequestCancel
           }))
@@ -134,6 +136,7 @@ var SideControl = function (_Component) {
 SideControl.propTypes = {
   editorState: _propTypes2.default.object,
   assetChoiceProps: _propTypes2.default.object,
+  contentId: _propTypes2.default.string,
 
   iconMap: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,

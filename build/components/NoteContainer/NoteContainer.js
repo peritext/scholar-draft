@@ -59,6 +59,7 @@ var NoteContainer = function (_Component) {
           notes = _this$props.notes,
           assetRequestPosition = _this$props.assetRequestPosition,
           addTextAtCurrentSelection = _this$props.addTextAtCurrentSelection,
+          contentId = _this$props.contentId,
           onEditorChange = _this$props.onEditorChange,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -121,6 +122,7 @@ var NoteContainer = function (_Component) {
           { className: 'note-body' },
           _react2.default.createElement(_BasicEditor2.default, {
             editorState: note.editorState,
+            contentId: contentId,
             assets: assets,
             notes: notes,
             readOnly: readOnly,
@@ -165,6 +167,7 @@ NoteContainer.propTypes = {
   assets: _propTypes2.default.object,
   notes: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
+  contentId: _propTypes2.default.string,
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,

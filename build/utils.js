@@ -18,6 +18,8 @@ var _keys = require('babel-runtime/core-js/object/keys');
 var _keys2 = _interopRequireDefault(_keys);
 
 exports.insertAssetInEditor = insertAssetInEditor;
+exports.insertInlineAssetInEditor = insertInlineAssetInEditor;
+exports.insertBlockAssetInEditor = insertBlockAssetInEditor;
 exports.insertNoteInEditor = insertNoteInEditor;
 exports.deleteAssetFromEditor = deleteAssetFromEditor;
 exports.deleteNoteFromEditor = deleteNoteFromEditor;
@@ -127,6 +129,88 @@ function insertAssetInEditor(editorState, asset, selection) {
     updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
     updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
   }
+  return updatedEditor;
+}
+
+function insertInlineAssetInEditor(editorState, asset, selection) {
+  var currentContent = editorState.getCurrentContent();
+  var activeSelection = editorState.getSelection();
+  var inputSelection = selection || activeSelection;
+  var newContentState = editorState.getCurrentContent().createEntity(_constants.INLINE_ASSET, 'IMMUTABLE', {
+    insertionType: _constants.INLINE_ASSET,
+    asset: asset
+  });
+
+  var newEntityKey = newContentState.getLastCreatedEntityKey();
+  var thatSelection = activeSelection.merge({
+    anchorOffset: inputSelection.getStartOffset(),
+    focusOffset: inputSelection.getEndOffset(),
+    focusKey: inputSelection.getFocusKey(),
+    anchorKey: inputSelection.getAnchorKey()
+  });
+  var updatedEditor = _draftJs.EditorState.acceptSelection(_draftJs.EditorState.createWithContent(newContentState), thatSelection);
+  var anchorKey = thatSelection.getAnchorKey();
+  var currentContentBlock = currentContent.getBlockForKey(anchorKey);
+  var start = thatSelection.getStartOffset();
+  var end = thatSelection.getEndOffset();
+  var selectedText = currentContentBlock.getText().slice(start, end);
+  if (selectedText.length > 0) {
+    newContentState = _draftJs.Modifier.applyEntity(currentContent, thatSelection, newEntityKey);
+  } else {
+    selectedText = ' ';
+
+    newContentState = _draftJs.Modifier.replaceText(currentContent, thatSelection, selectedText, null,
+    // inlineStyle?: DraftInlineStyle,
+    newEntityKey);
+  }
+  var endSelection = thatSelection.merge({
+    anchorOffset: thatSelection.getEndOffset() + selectedText.length,
+    focusOffset: thatSelection.getEndOffset() + selectedText.length
+  });
+  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '  ', null, null);
+  updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
+  updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
+  return updatedEditor;
+}
+
+function insertBlockAssetInEditor(editorState, asset, selection) {
+  var currentContent = editorState.getCurrentContent();
+  var activeSelection = editorState.getSelection();
+  var inputSelection = selection || activeSelection;
+
+  var newContentState = editorState.getCurrentContent().createEntity(_constants.BLOCK_ASSET, 'IMMUTABLE', {
+    insertionType: _constants.BLOCK_ASSET,
+    asset: asset
+  });
+
+  var newEntityKey = newContentState.getLastCreatedEntityKey();
+  var thatSelection = activeSelection.merge({
+    anchorOffset: inputSelection.getStartOffset(),
+    focusOffset: inputSelection.getEndOffset(),
+    focusKey: inputSelection.getFocusKey(),
+    anchorKey: inputSelection.getAnchorKey()
+  });
+  var updatedEditor = _draftJs.EditorState.acceptSelection(_draftJs.EditorState.createWithContent(newContentState), thatSelection);
+  updatedEditor = _draftJs.AtomicBlockUtils.insertAtomicBlock(updatedEditor, newEntityKey, ' ');
+  /**
+   * UPDATE SELECTION
+   */
+  var newContent = updatedEditor.getCurrentContent();
+  var blockMap = newContent.getBlockMap().toJS();
+  var blockE = (0, _keys2.default)(blockMap).map(function (blockId) {
+    return blockMap[blockId];
+  }).find(function (block) {
+    if (block.type === 'atomic') {
+      return block.characterList.find(function (char) {
+        return char.entity && char.entity === newEntityKey;
+      });
+    }
+    return undefined;
+  });
+  var block = newContent.getBlockAfter(blockE.key);
+  var finalSelection = _draftJs.SelectionState.createEmpty(block.getKey());
+  updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, finalSelection);
+
   return updatedEditor;
 }
 
