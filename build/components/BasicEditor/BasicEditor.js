@@ -107,6 +107,10 @@ var _BlockAssetContainer = require('../BlockAssetContainer/BlockAssetContainer')
 
 var _BlockAssetContainer2 = _interopRequireDefault(_BlockAssetContainer);
 
+var _QuoteContainer = require('../QuoteContainer/QuoteContainer');
+
+var _QuoteContainer2 = _interopRequireDefault(_QuoteContainer);
+
 var _NotePointer = require('../NotePointer/NotePointer');
 
 var _NotePointer2 = _interopRequireDefault(_NotePointer);
@@ -119,6 +123,7 @@ require('./BasicEditor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var hasCommandModifier = _draftJs.KeyBindingUtil.hasCommandModifier;
 // import createLinkDecorator from './decorators/link';
 // import createImageDecorator from './decorators/image';
 // import { 
@@ -129,8 +134,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // import handleLink from '../../modifiers/handleLink';
 // import handleImage from '../../modifiers/handleImage';
-var hasCommandModifier = _draftJs.KeyBindingUtil.hasCommandModifier;
-
 
 var getSelectedBlockElement = function getSelectedBlockElement(range) {
   var node = range.startContainer;
@@ -693,13 +696,28 @@ var _initialiseProps = function _initialiseProps() {
     });
   };
 
+  this.findQuotes = function (contentBlock, callback, contentState) {
+    var QUOTE_REGEX = /("[^"]+")/gi;
+    _this2.findWithRegex(QUOTE_REGEX, contentBlock, callback);
+  };
+
+  this.findWithRegex = function (regex, contentBlock, callback) {
+    var text = contentBlock.getText();
+    var matchArr = void 0,
+        start = void 0;
+    while ((matchArr = regex.exec(text)) !== null) {
+      start = matchArr.index;
+      callback(start, start + matchArr[0].length);
+    }
+  };
+
   this.generateEmptyEditor = function () {
     return _draftJs.EditorState.createEmpty(_this2.createDecorator());
   };
 
   this.createDecorator = function () {
     var ActiveNotePointer = _this2.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this2.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this2.findNotePointers, ActiveNotePointer)]);
+    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this2.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this2.findNotePointers, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this2.findQuotes, _QuoteContainer2.default)]);
   };
 
   this.updateSelection = function () {

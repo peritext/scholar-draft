@@ -42,6 +42,7 @@ import PopoverControl from '../PopoverControl/PopoverControl';
 
 import InlineAssetContainer from '../InlineAssetContainer/InlineAssetContainer';
 import BlockAssetContainer from '../BlockAssetContainer/BlockAssetContainer';
+import QuoteContainer from '../QuoteContainer/QuoteContainer';
 import NotePointer from '../NotePointer/NotePointer';
 
 import defaultIconMap from '../../icons/defaultIconMap';
@@ -648,6 +649,21 @@ export default class BasicEditor extends Component {
     );
   }
 
+  findQuotes = (contentBlock, callback, contentState) => {
+    const QUOTE_REGEX = /("[^"]+")/gi;
+    this.findWithRegex(QUOTE_REGEX, contentBlock, callback);
+  }
+
+  findWithRegex = (regex, contentBlock, callback) => {
+    const text = contentBlock.getText();
+    let matchArr, start;
+    while ((matchArr = regex.exec(text)) !== null) {
+      start = matchArr.index;
+      callback(start, start + matchArr[0].length);
+    }
+  }
+
+
   generateEmptyEditor = () => EditorState.createEmpty(this.createDecorator())
 
   createDecorator = () => {
@@ -655,6 +671,7 @@ export default class BasicEditor extends Component {
     return new MultiDecorator([
       new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
       new SimpleDecorator(this.findNotePointers, ActiveNotePointer),
+      new SimpleDecorator(this.findQuotes, QuoteContainer),
     ]);
   }
 
