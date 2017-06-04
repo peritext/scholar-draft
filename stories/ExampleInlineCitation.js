@@ -3,7 +3,26 @@ import React, {Component} from 'react';
 class InlineCitation extends Component {
   constructor(props) {
     super(props);
-    
+    this.state = {
+      title: props.asset.resource && props.asset.resource.title,
+      pages: props.asset.contextualizer && props.asset.contextualizer.pages,
+    }
+  }
+
+  componentDidMount() {
+    console.log('inline citation did mount', this.state);
+    // this.setState({
+    //   title: this.props.asset.resource && this.props.asset.resource.title,
+    //   pages: this.props.asset.contextualizer && this.props.asset.contextualizer.pages,
+    // });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.props.asset !== nextProps.asset
+      || this.state.pages !== nextState.pages
+      || this.state.title !== nextState.title
+    );
   }
 
   render() {
@@ -23,19 +42,26 @@ class InlineCitation extends Component {
   } = asset;
 
   const onResourceTitleChange = (e) => {
-    const title = e.target.value;
-    onChange('resources', resourceId, {
-      ...resource,
-      title
+    console.log('change title');
+    this.setState({
+      title: e.target.value
     });
+    // const title = e.target.value;
+    // onChange('resources', resourceId, {
+    //   ...resource,
+    //   title
+    // });
   };
 
   const onContextualizerPageChange = (e) => {
-    const pages = e.target.value;
-    onChange('contextualizers', contextualizerId, {
-      ...contextualizer,
-      pages
+    this.setState({
+      page: e.target.value
     });
+    // const pages = e.target.value;
+    // onChange('contextualizers', contextualizerId, {
+    //   ...contextualizer,
+    //   pages
+    // });
   };
   const bindTitle = title => {
     this.title = title;
@@ -55,23 +81,40 @@ class InlineCitation extends Component {
       this.page.focus();
     }, 1);
   };
+
+  const onPagesBlur = e => {
+    const pages = this.state.pages;
+    onChange('contextualizers', contextualizerId, {
+      ...contextualizer,
+      pages
+    });
+    onBlur(e);
+  }
+  const onTitleBlur = e => {
+    const title = this.state.title;
+    onChange('resources', resourceId, {
+      ...resource,
+      title
+    });
+    onBlur(e);
+  }
   return (
     <span
     >
       <input
-        value={resource.title}
+        value={this.state.title}
         onChange={onResourceTitleChange}
         onFocus={onFocus}
-        onBlur={onBlur}
+        onBlur={onTitleBlur}
         onClick={onTitleClick}
         ref={bindTitle}
       />, pp.
       <input
-        value={contextualizer.pages}
+        value={this.state.pages}
         onChange={onContextualizerPageChange}
         onClick={onPageClick}
         onFocus={onFocus}
-        onBlur={onBlur}
+        onBlur={onPagesBlur}
         ref={bindPage}
       />
 

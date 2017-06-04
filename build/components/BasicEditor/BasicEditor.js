@@ -262,6 +262,7 @@ BasicEditor.propTypes = {
   inlineAssetComponents: _propTypes2.default.object,
   blockAssetComponents: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
+  contentId: _propTypes2.default.string,
   /*
    * Method props
    */

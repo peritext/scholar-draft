@@ -159,6 +159,8 @@ export default class Editor extends Component {
 
           ref={bindNote}
 
+          contentId={noteId}
+
           assetRequestPosition={assetRequestPosition}
           assetChoiceProps={assetChoiceProps}
 
@@ -228,6 +230,8 @@ export default class Editor extends Component {
             notes={notes}
             assets={assets}
             ref={bindMainEditor}
+
+            contentId="main"
 
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}

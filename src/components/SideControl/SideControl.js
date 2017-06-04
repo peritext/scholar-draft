@@ -11,7 +11,8 @@ export default class SideControl extends Component {
   static propTypes = {
     editorState: PropTypes.object,
     assetChoiceProps: PropTypes.object,
-    
+    contentId: PropTypes.string,
+
     iconMap: PropTypes.object,
     assetRequestPosition: PropTypes.object,
 
@@ -39,6 +40,7 @@ export default class SideControl extends Component {
 
     const { 
       editorState,
+      contentId,
       onAssetRequest,
       onAssetRequestCancel,
       onAssetChoice,
@@ -95,6 +97,7 @@ export default class SideControl extends Component {
           >
             <AssetChoiceComponent
               {...assetChoiceProps}
+              contentId={contentId}
               onAssetChoice={onAssetChoice}
               onAssetRequestCancel={onAssetRequestCancel}
             />

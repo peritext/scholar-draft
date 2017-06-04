@@ -558,7 +558,9 @@ export default class EditorExample extends Component {
       ...notesEditorStates,
     };
     editorStates = Object.keys(editorStates).map(id => editorStates[id]).filter(e => e);
+    console.log('editor states', editorStates);
     const contextualizations = updateAssetsFromEditors(editorStates, {...this.state.contextualizations});
+    console.log('contextualizations', contextualizations);
     this.setState({
       contextualizations
     });

@@ -142,6 +142,7 @@ export default class BasicEditor extends Component {
     inlineAssetComponents: PropTypes.object,
     blockAssetComponents: PropTypes.object,
     assetRequestPosition: PropTypes.object,
+    contentId: PropTypes.string,
     /*
      * Method props
      */
@@ -189,7 +190,7 @@ export default class BasicEditor extends Component {
   constructor(props) {
     super(props);
     // this.onChange = debounce(this.onChange, 200);
-    this.updateSelection = debounce(this.updateSelection, 100);
+    this.debouncedUpdateSelection = debounce(this.updateSelection, 100);
     this.forceRenderDebounced = debounce(this.forceRender, 200);
 
     this.feedUndoStack = debounce(this.feedUndoStack, 1000);
@@ -207,17 +208,20 @@ export default class BasicEditor extends Component {
     // console.log('readonlies', this.props.readOnly, nextProps.readOnly);
     if (!this.props.readOnly && nextProps.readOnly) {
       this.inlineToolbar.toolbar.style.display = 'none';
-      this.sideControl.toolbar.style.display = 'none';
+      if (!nextProps.assetRequestPosition) {
+        this.sideControl.toolbar.style.display = 'none';
+      }
       // console.log('hide side control', this.sideControl.toolbar.style.display);
     }
     if (this.state.readOnly !== nextProps.readOnly) {
       this.setState({
         readOnly: nextProps.readOnly
       });
+      setTimeout(() => this.updateSelection());
     }
     if (this.state.editorState !== nextProps.editorState) {
       this.setState({
-        editorState: nextProps.editorState || EditorState.createEmpty()
+        editorState: nextProps.editorState || EditorState.createEmpty(this.createDecorator())
       });
     }
   }
@@ -233,7 +237,7 @@ export default class BasicEditor extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    this.updateSelection();
+    this.debouncedUpdateSelection();
     // force render of inline and atomic block elements
     const {
       // forceRenderDebounced,
@@ -283,7 +287,6 @@ export default class BasicEditor extends Component {
   }
 
   onBlur = (event) => {
-
     if (this.inlineToolbar) {
       this.inlineToolbar.toolbar.display = 'none';
     }
@@ -762,6 +765,8 @@ export default class BasicEditor extends Component {
       editorState = EditorState.createEmpty(this.createDecorator()),
       editorClass = 'scholar-draft-BasicEditor',
 
+      contentId,
+
       placeholder = 'write your text',
 
       allowNotesInsertion = false,
@@ -872,6 +877,8 @@ export default class BasicEditor extends Component {
 
           AssetChoiceComponent={AssetChoiceComponent}
           iconMap={iconMap}
+
+          contentId={contentId}
 
           onNoteAdd={onNoteAdd}
         />

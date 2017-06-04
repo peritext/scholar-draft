@@ -14,35 +14,6 @@ import {
 } from './constants';
 
 /**
- * Utils taken from draft-js-markdown-plugin
- */
-
-// function getEmptyContentBlock() {
-//   return new ContentBlock({
-//     key: genKey(),
-//     text: '',
-//     characterList: List(),
-//   });
-// }
-
-// export function addEmptyBlock(editorState) {
-//   let contentState = editorState.getCurrentContent();
-//   const emptyBlock = getEmptyContentBlock();
-//   const blockMap = contentState.getBlockMap();
-//   const selectionState = editorState.getSelection();
-//   contentState = contentState.merge({
-//     blockMap: blockMap.set(emptyBlock.getKey(), emptyBlock),
-//     selectionAfter: selectionState.merge({
-//       anchorKey: emptyBlock.getKey(),
-//       focusKey: emptyBlock.getKey(),
-//       anchorOffset: 0,
-//       focusOffset: 0,
-//     }),
-//   });
-//   return EditorState.push(editorState, contentState, 'insert-characters');
-// }
-
-/**
  * Other utils
  */
 
@@ -213,11 +184,10 @@ export function insertBlockAssetInEditor(
     asset, 
     selection
   ) {
-  const currentContent = editorState.getCurrentContent();
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
 
-  let newContentState = editorState.getCurrentContent().createEntity(
+  const newContentState = editorState.getCurrentContent().createEntity(
       BLOCK_ASSET,
       'IMMUTABLE',
     {

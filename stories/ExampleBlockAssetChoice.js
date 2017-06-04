@@ -39,6 +39,7 @@ class BlockAssetChoice extends Component {
       this.props.onAssetChoice(matching[0]);
     // interpret input as text to insert within contents
     } else {
+      console.log('submit', this.props.contentId);
       this.props.addPlainText('@' + this.state.searchTerm);
     }
   }

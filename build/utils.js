@@ -36,35 +36,6 @@ var _constants = require('./constants');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * Utils taken from draft-js-markdown-plugin
- */
-
-// function getEmptyContentBlock() {
-//   return new ContentBlock({
-//     key: genKey(),
-//     text: '',
-//     characterList: List(),
-//   });
-// }
-
-// export function addEmptyBlock(editorState) {
-//   let contentState = editorState.getCurrentContent();
-//   const emptyBlock = getEmptyContentBlock();
-//   const blockMap = contentState.getBlockMap();
-//   const selectionState = editorState.getSelection();
-//   contentState = contentState.merge({
-//     blockMap: blockMap.set(emptyBlock.getKey(), emptyBlock),
-//     selectionAfter: selectionState.merge({
-//       anchorKey: emptyBlock.getKey(),
-//       focusKey: emptyBlock.getKey(),
-//       anchorOffset: 0,
-//       focusOffset: 0,
-//     }),
-//   });
-//   return EditorState.push(editorState, contentState, 'insert-characters');
-// }
-
-/**
  * Other utils
  */
 
@@ -174,7 +145,6 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
 }
 
 function insertBlockAssetInEditor(editorState, asset, selection) {
-  var currentContent = editorState.getCurrentContent();
   var activeSelection = editorState.getSelection();
   var inputSelection = selection || activeSelection;
 

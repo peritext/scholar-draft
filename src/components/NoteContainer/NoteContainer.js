@@ -12,6 +12,7 @@ class NoteContainer extends Component {
     assets: PropTypes.object,
     notes: PropTypes.object,
     assetRequestPosition: PropTypes.object,
+    contentId: PropTypes.string,
 
 
     addTextAtCurrentSelection: PropTypes.func,
@@ -53,6 +54,7 @@ class NoteContainer extends Component {
       notes,
       assetRequestPosition,
       addTextAtCurrentSelection,
+      contentId,
       
       onEditorChange,
       onAssetRequest,
@@ -106,6 +108,7 @@ class NoteContainer extends Component {
         <div className="note-body">
           <BasicEditor 
             editorState={note.editorState}
+            contentId={contentId}
             assets={assets}
             notes={notes}
             readOnly={readOnly}
