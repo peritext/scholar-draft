@@ -91,13 +91,13 @@ var _insertText2 = _interopRequireDefault(_insertText);
 
 var _constants = require('../../constants');
 
-var _SideControl = require('../SideControl/SideControl');
+var _SideToolbar = require('../SideToolbar/SideToolbar');
 
-var _SideControl2 = _interopRequireDefault(_SideControl);
+var _SideToolbar2 = _interopRequireDefault(_SideToolbar);
 
-var _PopoverControl = require('../PopoverControl/PopoverControl');
+var _InlineToolbar = require('../InlineToolbar/InlineToolbar');
 
-var _PopoverControl2 = _interopRequireDefault(_PopoverControl);
+var _InlineToolbar2 = _interopRequireDefault(_InlineToolbar);
 
 var _InlineAssetContainer = require('../InlineAssetContainer/InlineAssetContainer');
 
@@ -723,9 +723,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this.updateSelection = function () {
     var left = void 0;
-    // let sideControlVisible;
     var sideControlTop = void 0;
-    // let popoverControlLeft;
 
     var selectionRange = getSelectionRange();
 
@@ -739,24 +737,14 @@ var _initialiseProps = function _initialiseProps() {
 
     var assetRequestPosition = _this2.props.assetRequestPosition;
 
-    // if (assetRequestPosition) {
-    //   const currentContent = this.props.editorState.getCurrentContent();
-    //   const positionBlockKey = assetRequestPosition.getAnchorKey();
-    //   const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-    //   const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-    //   // assetRequestType = isEmpty ? 'block' : 'inline';
-    // }
 
     var inlineToolbarEle = _this2.inlineToolbar.toolbar;
     var sideControlEle = _this2.sideControl.toolbar;
     var rangeBounds = selectionRange.getBoundingClientRect();
 
-    // const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
     var selectedBlock = getSelectedBlockElement(selectionRange);
-    // const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
     if (selectedBlock) {
       var blockBounds = selectedBlock.getBoundingClientRect();
-      // sideControlVisible = true;
       var editorBounds = _this2.state.editorBounds;
       if (!editorBounds) return;
       sideControlTop = rangeBounds.top || blockBounds.top;
@@ -868,7 +856,7 @@ var _initialiseProps = function _initialiseProps() {
     var bindEditorRef = function bindEditorRef(editor) {
       _this2.editor = editor;
     };
-    var bindSideControlRef = function bindSideControlRef(sideControl) {
+    var bindSideToolbarRef = function bindSideToolbarRef(sideControl) {
       _this2.sideControl = sideControl;
     };
 
@@ -888,13 +876,6 @@ var _initialiseProps = function _initialiseProps() {
       }
       _this2.focus(event);
     };
-    // if (assetRequestPosition) {
-    // const currentContent = realEditorState.getCurrentContent();
-    // const positionBlockKey = assetRequestPosition.getAnchorKey();
-    // const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-    // const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-    // assetRequestType = isEmpty ? 'block' : 'inline';
-    // }
 
     var keyBindingFn = typeof _this2.props.keyBindingFn === 'function' ? _this2.props.keyBindingFn : defaultKeyBindingFn;
     var iconMap = _this2.props.iconMap ? _this2.props.iconMap : _defaultIconMap2.default;
@@ -907,14 +888,14 @@ var _initialiseProps = function _initialiseProps() {
 
         onDragOver: _handleDragOver
       },
-      _react2.default.createElement(_PopoverControl2.default, {
+      _react2.default.createElement(_InlineToolbar2.default, {
         ref: bindInlineToolbar,
         editorState: realEditorState,
         updateEditorState: onChange,
         iconMap: iconMap
       }),
-      _react2.default.createElement(_SideControl2.default, {
-        ref: bindSideControlRef,
+      _react2.default.createElement(_SideToolbar2.default, {
+        ref: bindSideToolbarRef,
 
         allowAssets: {
           inline: allowInlineAsset,

@@ -36,7 +36,6 @@ var AssetButton = function AssetButton(_ref) {
   var onMouseDown = function onMouseDown(event) {
     return event.preventDefault();
   };
-  console.log('active', active);
   return _react2.default.createElement(
     'div',
     (0, _extends3.default)({

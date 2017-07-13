@@ -41,25 +41,25 @@ var _NoteButton = require('../ToolbarButtons/NoteButton');
 
 var _NoteButton2 = _interopRequireDefault(_NoteButton);
 
-require('./SideControl.scss');
+require('./SideToolbar.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var SideControl = function (_Component) {
-  (0, _inherits3.default)(SideControl, _Component);
+var SideToolbar = function (_Component) {
+  (0, _inherits3.default)(SideToolbar, _Component);
 
-  function SideControl() {
+  function SideToolbar() {
     var _ref;
 
     var _temp, _this, _ret;
 
-    (0, _classCallCheck3.default)(this, SideControl);
+    (0, _classCallCheck3.default)(this, SideToolbar);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideControl.__proto__ || (0, _getPrototypeOf2.default)(SideControl)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideToolbar.__proto__ || (0, _getPrototypeOf2.default)(SideToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
       return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion;
     }, _this.render = function () {
       var _this$props = _this.props,
@@ -104,7 +104,7 @@ var SideControl = function (_Component) {
       return _react2.default.createElement(
         'div',
         {
-          className: 'scholar-draft-SideControl',
+          className: 'scholar-draft-SideToolbar',
           ref: bindToolbar
         },
         allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(_NoteButton2.default, {
@@ -134,10 +134,10 @@ var SideControl = function (_Component) {
     }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
-  return SideControl;
+  return SideToolbar;
 }(_react.Component);
 
-SideControl.propTypes = {
+SideToolbar.propTypes = {
   editorState: _propTypes2.default.object,
   assetChoiceProps: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
@@ -160,5 +160,5 @@ SideControl.propTypes = {
   onAssetRequestCancel: _propTypes2.default.func
 
 };
-exports.default = SideControl;
+exports.default = SideToolbar;
 module.exports = exports['default'];

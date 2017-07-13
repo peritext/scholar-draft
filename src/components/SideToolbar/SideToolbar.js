@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import AssetButton from '../ToolbarButtons/AssetButton';
 import NoteButton from '../ToolbarButtons/NoteButton';
   
-import './SideControl.scss';
+import './SideToolbar.scss';
 
-export default class SideControl extends Component {
+export default class SideToolbar extends Component {
 
   static propTypes = {
     editorState: PropTypes.object,
@@ -79,7 +79,7 @@ export default class SideControl extends Component {
     const assetSelectorActive = assetRequestPosition !== undefined;
     return (
       <div
-        className="scholar-draft-SideControl"
+        className="scholar-draft-SideToolbar"
         ref={bindToolbar}
       >
         {allowNotesInsertion && !assetRequestPosition &&

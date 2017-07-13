@@ -37,8 +37,8 @@ import {
   NOTE_POINTER
 } from '../../constants';
 
-import SideControl from '../SideControl/SideControl';
-import PopoverControl from '../PopoverControl/PopoverControl';
+import SideToolbar from '../SideToolbar/SideToolbar';
+import InlineToolbar from '../InlineToolbar/InlineToolbar';
 
 import InlineAssetContainer from '../InlineAssetContainer/InlineAssetContainer';
 import BlockAssetContainer from '../BlockAssetContainer/BlockAssetContainer';
@@ -680,9 +680,7 @@ export default class BasicEditor extends Component {
   // todo: clean this function from all unnecessary things
   updateSelection = () => {
     let left;
-    // let sideControlVisible;
     let sideControlTop;
-    // let popoverControlLeft;
 
     const selectionRange = getSelectionRange();
     
@@ -701,24 +699,13 @@ export default class BasicEditor extends Component {
       assetRequestPosition
     } = this.props;
 
-    // if (assetRequestPosition) {
-    //   const currentContent = this.props.editorState.getCurrentContent();
-    //   const positionBlockKey = assetRequestPosition.getAnchorKey();
-    //   const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-    //   const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-    //   // assetRequestType = isEmpty ? 'block' : 'inline';
-    // }
-
     const inlineToolbarEle = this.inlineToolbar.toolbar;
     const sideControlEle = this.sideControl.toolbar;
     const rangeBounds = selectionRange.getBoundingClientRect();
 
-    // const displaceY = this.editor.refs.editorContainer.parentNode.offsetTop;
     const selectedBlock = getSelectedBlockElement(selectionRange);
-    // const offsetTop = selectionRange.startContainer.parentNode.offsetTop || 0;
     if (selectedBlock) {
       const blockBounds = selectedBlock.getBoundingClientRect();
-      // sideControlVisible = true;
       const editorBounds = this.state.editorBounds;
       if (!editorBounds) return;
       sideControlTop = rangeBounds.top || blockBounds.top;
@@ -842,7 +829,7 @@ export default class BasicEditor extends Component {
     const bindEditorRef = (editor) => {
       this.editor = editor;
     };
-    const bindSideControlRef = (sideControl) => {
+    const bindSideToolbarRef = (sideControl) => {
       this.sideControl = sideControl;
     };
 
@@ -863,13 +850,6 @@ export default class BasicEditor extends Component {
       }
       this.focus(event);
     };
-    // if (assetRequestPosition) {
-      // const currentContent = realEditorState.getCurrentContent();
-      // const positionBlockKey = assetRequestPosition.getAnchorKey();
-      // const positionBlock = currentContent.getBlockForKey(positionBlockKey);
-      // const isEmpty = positionBlock && positionBlock.toJS().text.length === 0;
-      // assetRequestType = isEmpty ? 'block' : 'inline';
-    // }
 
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
     const iconMap = this.props.iconMap ? this.props.iconMap : defaultIconMap;
@@ -881,14 +861,14 @@ export default class BasicEditor extends Component {
 
         onDragOver={_handleDragOver}
       >
-        <PopoverControl
+        <InlineToolbar
           ref={bindInlineToolbar}
           editorState={realEditorState}
           updateEditorState={onChange}
           iconMap={iconMap}
         />
-        <SideControl
-          ref={bindSideControlRef}
+        <SideToolbar
+          ref={bindSideToolbarRef}
 
           allowAssets={{
             inline: allowInlineAsset,

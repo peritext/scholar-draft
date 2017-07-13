@@ -12,7 +12,6 @@ const AssetButton = ({
   ...otherProps 
 }) => {
   const onMouseDown = event => event.preventDefault();
-  console.log('active', active);
   return (
     <div
       className={`scholar-draft-AssetButton${active ? ' active' : ''}`}

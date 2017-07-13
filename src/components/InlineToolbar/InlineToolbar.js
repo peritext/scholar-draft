@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import defaultButtons from './defaultButtons';
 
-import './PopoverControl.scss';
+import './InlineToolbar.scss';
 
-export default class PopoverControl extends Component {
+export default class InlineToolbar extends Component {
 
   static propTypes = {
     iconMap: PropTypes.object,
@@ -44,7 +44,7 @@ export default class PopoverControl extends Component {
     };
 
     return (<div
-      className="scholar-draft-PopoverControl"
+      className="scholar-draft-InlineToolbar"
       ref={bindRef}
     >
       {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {

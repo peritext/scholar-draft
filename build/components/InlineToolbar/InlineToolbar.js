@@ -33,25 +33,25 @@ var _defaultButtons = require('./defaultButtons');
 
 var _defaultButtons2 = _interopRequireDefault(_defaultButtons);
 
-require('./PopoverControl.scss');
+require('./InlineToolbar.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var PopoverControl = function (_Component) {
-  (0, _inherits3.default)(PopoverControl, _Component);
+var InlineToolbar = function (_Component) {
+  (0, _inherits3.default)(InlineToolbar, _Component);
 
-  function PopoverControl() {
+  function InlineToolbar() {
     var _ref;
 
     var _temp, _this, _ret;
 
-    (0, _classCallCheck3.default)(this, PopoverControl);
+    (0, _classCallCheck3.default)(this, InlineToolbar);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = PopoverControl.__proto__ || (0, _getPrototypeOf2.default)(PopoverControl)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = InlineToolbar.__proto__ || (0, _getPrototypeOf2.default)(InlineToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
       return _this.props.editorState !== nextProps.editorState;
     }, _this.render = function () {
       var _this$props = _this.props,
@@ -67,7 +67,7 @@ var PopoverControl = function (_Component) {
       return _react2.default.createElement(
         'div',
         {
-          className: 'scholar-draft-PopoverControl',
+          className: 'scholar-draft-InlineToolbar',
           ref: bindRef
         },
         (buttons || _defaultButtons2.default).map(function (button, key) {
@@ -83,10 +83,10 @@ var PopoverControl = function (_Component) {
     }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
-  return PopoverControl;
+  return InlineToolbar;
 }(_react.Component);
 
-PopoverControl.propTypes = {
+InlineToolbar.propTypes = {
   iconMap: _propTypes2.default.object,
 
   /**
@@ -105,5 +105,5 @@ PopoverControl.propTypes = {
    */
   buttons: _propTypes2.default.array
 };
-exports.default = PopoverControl;
+exports.default = InlineToolbar;
 module.exports = exports['default'];
