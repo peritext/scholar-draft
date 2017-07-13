@@ -76,6 +76,7 @@ var SideControl = function (_Component) {
         // inline: true,
         // block: true
       } : _this$props$allowAsse,
+          messages = _this$props.messages,
           iconMap = _this$props.iconMap,
           assetRequestPosition = _this$props.assetRequestPosition,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
@@ -99,6 +100,7 @@ var SideControl = function (_Component) {
       var stopEventPropagation = function stopEventPropagation(event) {
         return event.stopPropagation();
       };
+      var assetSelectorActive = assetRequestPosition !== undefined;
       return _react2.default.createElement(
         'div',
         {
@@ -107,12 +109,14 @@ var SideControl = function (_Component) {
         },
         allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(_NoteButton2.default, {
           onClick: onNoteAdd,
-          iconMap: iconMap
+          iconMap: iconMap,
+          message: messages && messages.tooltips && messages.tooltips.addNote
         }),
         (allowAssets.inline || allowAssets.block) && _react2.default.createElement(_AssetButton2.default, {
           onClick: onAssetButtonClick,
-          active: assetRequestPosition !== undefined,
-          iconMap: iconMap
+          active: assetSelectorActive,
+          iconMap: iconMap,
+          message: messages && messages.tooltips && assetSelectorActive ? messages.tooltips.cancel : messages.tooltips.addAsset
         }),
         assetRequestPosition && _react2.default.createElement(
           'span',
@@ -140,6 +144,8 @@ SideControl.propTypes = {
 
   iconMap: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
+
+  messages: _propTypes2.default.object,
 
   allowNotesInsertion: _propTypes2.default.bool,
   allowAssets: _propTypes2.default.shape({

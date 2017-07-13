@@ -144,6 +144,7 @@ export default class BasicEditor extends Component {
     blockAssetComponents: PropTypes.object,
     assetRequestPosition: PropTypes.object,
     contentId: PropTypes.string,
+    messages: PropTypes.object,
     /*
      * Method props
      */
@@ -656,7 +657,8 @@ export default class BasicEditor extends Component {
 
   findWithRegex = (regex, contentBlock, callback) => {
     const text = contentBlock.getText();
-    let matchArr, start;
+    let matchArr;
+    let start;
     while ((matchArr = regex.exec(text)) !== null) {
       start = matchArr.index;
       callback(start, start + matchArr[0].length);
@@ -790,6 +792,14 @@ export default class BasicEditor extends Component {
       allowInlineAsset = true,
       allowBlockAsset = true,
 
+      messages = {
+        tooltips: {
+          addNote: 'add a note (shortcut: "cmd + ^")',
+          addAsset: 'add an asset (shortcut: "@")',
+          cancel: 'cancel',
+        }
+      },
+
       // blockAssetComponents,
       // inlineButtons,
 
@@ -894,6 +904,8 @@ export default class BasicEditor extends Component {
 
           AssetChoiceComponent={AssetChoiceComponent}
           iconMap={iconMap}
+
+          messages={messages}
 
           contentId={contentId}
 

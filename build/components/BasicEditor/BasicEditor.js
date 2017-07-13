@@ -266,6 +266,7 @@ BasicEditor.propTypes = {
   blockAssetComponents: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
+  messages: _propTypes2.default.object,
   /*
    * Method props
    */
@@ -703,8 +704,8 @@ var _initialiseProps = function _initialiseProps() {
 
   this.findWithRegex = function (regex, contentBlock, callback) {
     var text = contentBlock.getText();
-    var matchArr = void 0,
-        start = void 0;
+    var matchArr = void 0;
+    var start = void 0;
     while ((matchArr = regex.exec(text)) !== null) {
       start = matchArr.index;
       callback(start, start + matchArr[0].length);
@@ -829,6 +830,14 @@ var _initialiseProps = function _initialiseProps() {
         allowInlineAsset = _props3$allowInlineAs === undefined ? true : _props3$allowInlineAs,
         _props3$allowBlockAss = _props3.allowBlockAsset,
         allowBlockAsset = _props3$allowBlockAss === undefined ? true : _props3$allowBlockAss,
+        _props3$messages = _props3.messages,
+        messages = _props3$messages === undefined ? {
+      tooltips: {
+        addNote: 'add a note (shortcut: "cmd + ^")',
+        addAsset: 'add an asset (shortcut: "@")',
+        cancel: 'cancel'
+      }
+    } : _props3$messages,
         onAssetRequestUpstream = _props3.onAssetRequest,
         assetRequestPosition = _props3.assetRequestPosition,
         onAssetRequestCancel = _props3.onAssetRequestCancel,
@@ -837,7 +846,7 @@ var _initialiseProps = function _initialiseProps() {
         onClick = _props3.onClick,
         AssetChoiceComponent = _props3.AssetChoiceComponent,
         assetChoiceProps = _props3.assetChoiceProps,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
     var _state3 = _this2.state,
         readOnly = _state3.readOnly,
         stateEditorState = _state3.editorState;
@@ -921,6 +930,8 @@ var _initialiseProps = function _initialiseProps() {
 
         AssetChoiceComponent: AssetChoiceComponent,
         iconMap: iconMap,
+
+        messages: messages,
 
         contentId: contentId,
 
