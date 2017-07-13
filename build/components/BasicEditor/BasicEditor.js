@@ -13,6 +13,10 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
@@ -124,16 +128,7 @@ require('./BasicEditor.scss');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var hasCommandModifier = _draftJs.KeyBindingUtil.hasCommandModifier;
-// import createLinkDecorator from './decorators/link';
-// import createImageDecorator from './decorators/image';
-// import { 
-//   // addText, 
-//   addEmptyBlock 
-// } from '../../utils';
 
-
-// import handleLink from '../../modifiers/handleLink';
-// import handleImage from '../../modifiers/handleImage';
 
 var getSelectedBlockElement = function getSelectedBlockElement(range) {
   var node = range.startContainer;
@@ -246,8 +241,29 @@ var BasicEditor = function (_Component) {
         this.editor.focus();
       }
     }
+    /**
+     * Draft.js strategy for finding inline assets and loading them with relevant props
+     */
 
-    // todo: clean this function from all unnecessary things
+    /**
+     * Draft.js strategy for finding inline note pointers and loading them with relevant props
+     */
+
+    /**
+     * Draft.js strategy for finding quotes statements
+     */
+    // todo: improve with all lang./typography 
+    // quotes configurations (french quotes, english quotes, ...)
+
+
+    /**
+     * Util for Draft.js strategies building
+     */
+
+
+    /**
+     * updates the positions of toolbars relatively to current draft selection
+     */
 
   }]);
   return BasicEditor;
@@ -315,18 +331,25 @@ var _initialiseProps = function _initialiseProps() {
   this.state = {
     editorState: _draftJs.EditorState.createEmpty(),
     undoStack: [],
-    redoStack: []
+    redoStack: [],
+    styles: {
+      inlineToolbar: {},
+      sideToolbar: {}
+    }
   };
 
   this.componentWillReceiveProps = function (nextProps) {
-    // console.log('receiving asset request position', nextProps.assetRequestPosition);
-    // console.log('readonlies', this.props.readOnly, nextProps.readOnly);
     if (!_this2.props.readOnly && nextProps.readOnly) {
-      _this2.inlineToolbar.toolbar.style.display = 'none';
-      if (!nextProps.assetRequestPosition) {
-        _this2.sideControl.toolbar.style.display = 'none';
-      }
-      // console.log('hide side control', this.sideControl.toolbar.style.display);
+      _this2.setState({
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none'
+          }
+        }
+      });
     }
     if (_this2.state.readOnly !== nextProps.readOnly) {
       _this2.setState({
@@ -369,15 +392,16 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.onBlur = function (event) {
-    if (_this2.inlineToolbar) {
-      _this2.inlineToolbar.toolbar.display = 'none';
-    }
-    if (_this2.sideControl) {
-      _this2.sideControl.toolbar.display = 'none';
-    }
-
     _this2.setState({
-      readOnly: true
+      readOnly: true,
+      styles: {
+        inlineToolbar: {
+          display: 'none'
+        },
+        sideToolbar: {
+          display: 'none'
+        }
+      }
     });
 
     var onBlur = _this2.props.onBlur;
@@ -723,11 +747,16 @@ var _initialiseProps = function _initialiseProps() {
 
   this.updateSelection = function () {
     var left = void 0;
-    var sideControlTop = void 0;
+    var sideToolbarTop = void 0;
 
     var selectionRange = getSelectionRange();
 
     var editorEle = _this2.editor;
+
+    var styles = {
+      sideToolbar: (0, _extends3.default)({}, _this2.state.styles.sideToolbar),
+      inlineToolbar: (0, _extends3.default)({}, _this2.state.styles.inlineToolbar)
+    };
 
     if (!selectionRange) return;
 
@@ -738,8 +767,7 @@ var _initialiseProps = function _initialiseProps() {
     var assetRequestPosition = _this2.props.assetRequestPosition;
 
 
-    var inlineToolbarEle = _this2.inlineToolbar.toolbar;
-    var sideControlEle = _this2.sideControl.toolbar;
+    var sideToolbarEle = _this2.sideToolbar.toolbar;
     var rangeBounds = selectionRange.getBoundingClientRect();
 
     var selectedBlock = getSelectedBlockElement(selectionRange);
@@ -747,37 +775,38 @@ var _initialiseProps = function _initialiseProps() {
       var blockBounds = selectedBlock.getBoundingClientRect();
       var editorBounds = _this2.state.editorBounds;
       if (!editorBounds) return;
-      sideControlTop = rangeBounds.top || blockBounds.top;
-      sideControlEle.style.top = sideControlTop + 'px';
+      sideToolbarTop = rangeBounds.top || blockBounds.top;
+      styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
-      var controlWidth = sideControlEle.offsetWidth || 50;
+      var controlWidth = sideToolbarEle.offsetWidth || 50;
       left = assetRequestPosition ? (rangeBounds.right || editorBounds.left) + controlWidth : editorBounds.left - controlWidth;
-      sideControlEle.style.left = left + 'px';
-      sideControlEle.style.display = 'block';
+      styles.sideToolbar.left = left;
+      styles.sideToolbar.display = 'block';
 
       if (!selectionRange.collapsed) {
-        // The control needs to be visible so that we can get it's width
-        inlineToolbarEle.style.position = 'fixed';
-        inlineToolbarEle.style.display = 'block';
-
-        // popoverControlVisible = true;
-
-        // popoverControlLeft = 0;
+        styles.inlineToolbar.position = 'fixed';
+        styles.inlineToolbar.display = 'block';
         var startNode = selectionRange.startContainer;
         while (startNode.nodeType === 3) {
           startNode = startNode.parentNode;
         }
         var popTop = rangeBounds.top /* - editorBounds.top + displaceY */ - popoverSpacing;
         left = rangeBounds.left;
-        inlineToolbarEle.style.left = left + 'px';
-        inlineToolbarEle.style.top = popTop + 'px';
+        styles.inlineToolbar.left = left;
+        styles.inlineToolbar.top = popTop;
       } else {
-        inlineToolbarEle.style.display = 'none';
+        styles.inlineToolbar.display = 'none';
       }
     } else {
-      sideControlEle.style.display = 'none';
-      inlineToolbarEle.style.display = 'none';
+      styles.sideToolbar.display = 'none';
+      styles.inlineToolbar.display = 'none';
+    }
+
+    if ((0, _stringify2.default)(styles) !== (0, _stringify2.default)(_this2.state.styles)) {
+      _this2.setState({
+        styles: styles
+      });
     }
   };
 
@@ -837,7 +866,8 @@ var _initialiseProps = function _initialiseProps() {
         otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
     var _state3 = _this2.state,
         readOnly = _state3.readOnly,
-        stateEditorState = _state3.editorState;
+        stateEditorState = _state3.editorState,
+        styles = _state3.styles;
     var _handleKeyCommand = _this2._handleKeyCommand,
         _handleBeforeInput = _this2._handleBeforeInput,
         onChange = _this2.onChange,
@@ -856,8 +886,8 @@ var _initialiseProps = function _initialiseProps() {
     var bindEditorRef = function bindEditorRef(editor) {
       _this2.editor = editor;
     };
-    var bindSideToolbarRef = function bindSideToolbarRef(sideControl) {
-      _this2.sideControl = sideControl;
+    var bindSideToolbarRef = function bindSideToolbarRef(sideToolbar) {
+      _this2.sideToolbar = sideToolbar;
     };
 
     var bindInlineToolbar = function bindInlineToolbar(inlineToolbar) {
@@ -892,7 +922,8 @@ var _initialiseProps = function _initialiseProps() {
         ref: bindInlineToolbar,
         editorState: realEditorState,
         updateEditorState: onChange,
-        iconMap: iconMap
+        iconMap: iconMap,
+        style: styles.inlineToolbar
       }),
       _react2.default.createElement(_SideToolbar2.default, {
         ref: bindSideToolbarRef,
@@ -902,6 +933,8 @@ var _initialiseProps = function _initialiseProps() {
           block: allowBlockAsset
         },
         allowNotesInsertion: allowNotesInsertion,
+
+        style: styles.sideToolbar,
 
         onAssetRequest: onAssetRequest,
         onAssetRequestCancel: onAssetRequestCancel,

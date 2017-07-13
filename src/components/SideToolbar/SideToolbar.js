@@ -16,6 +16,8 @@ export default class SideToolbar extends Component {
     iconMap: PropTypes.object,
     assetRequestPosition: PropTypes.object,
 
+    style: PropTypes.object,
+
     messages: PropTypes.object,
 
     allowNotesInsertion: PropTypes.bool,
@@ -35,7 +37,8 @@ export default class SideToolbar extends Component {
   shouldComponentUpdate = (nextProps, nextState) => (
       this.props.editorState !== nextProps.editorState ||
       this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
-      this.props.allowNotesInsertion !== nextProps.allowNotesInsertion
+      this.props.allowNotesInsertion !== nextProps.allowNotesInsertion ||
+      this.props.style !== nextProps.style
     )
 
   render = () => {
@@ -58,7 +61,8 @@ export default class SideToolbar extends Component {
 
       AssetChoiceComponent,
 
-      allowNotesInsertion = false
+      allowNotesInsertion = false,
+      style,
             
     } = this.props;
 
@@ -77,10 +81,12 @@ export default class SideToolbar extends Component {
     };
     const stopEventPropagation = event => event.stopPropagation();
     const assetSelectorActive = assetRequestPosition !== undefined;
+
     return (
       <div
         className="scholar-draft-SideToolbar"
         ref={bindToolbar}
+        style={style}
       >
         {allowNotesInsertion && !assetRequestPosition &&
         <NoteButton 

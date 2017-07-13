@@ -16,6 +16,11 @@ export default class InlineToolbar extends Component {
     editorState: PropTypes.object,
 
     /**
+     * The current style
+     */
+    style: PropTypes.object,
+
+    /**
      * Can call this to update the editor state
      */
     updateEditorState: PropTypes.func,
@@ -28,7 +33,8 @@ export default class InlineToolbar extends Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => (
-      this.props.editorState !== nextProps.editorState
+      this.props.editorState !== nextProps.editorState ||
+      this.props.style !== nextProps.style
     )
 
   render = () => {
@@ -38,6 +44,7 @@ export default class InlineToolbar extends Component {
       editorState, 
       iconMap, 
       buttons, 
+      style,
     } = this.props;
     const bindRef = (toolbar) => {
       this.toolbar = toolbar;
@@ -46,6 +53,7 @@ export default class InlineToolbar extends Component {
     return (<div
       className="scholar-draft-InlineToolbar"
       ref={bindRef}
+      style={style}
     >
       {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
           // Pass down some useful props to each button

@@ -52,13 +52,14 @@ var InlineToolbar = function (_Component) {
     }
 
     return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = InlineToolbar.__proto__ || (0, _getPrototypeOf2.default)(InlineToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
-      return _this.props.editorState !== nextProps.editorState;
+      return _this.props.editorState !== nextProps.editorState || _this.props.style !== nextProps.style;
     }, _this.render = function () {
       var _this$props = _this.props,
           updateEditorState = _this$props.updateEditorState,
           editorState = _this$props.editorState,
           iconMap = _this$props.iconMap,
-          buttons = _this$props.buttons;
+          buttons = _this$props.buttons,
+          style = _this$props.style;
 
       var bindRef = function bindRef(toolbar) {
         _this.toolbar = toolbar;
@@ -68,7 +69,8 @@ var InlineToolbar = function (_Component) {
         'div',
         {
           className: 'scholar-draft-InlineToolbar',
-          ref: bindRef
+          ref: bindRef,
+          style: style
         },
         (buttons || _defaultButtons2.default).map(function (button, key) {
           return _react2.default.cloneElement(button, {
@@ -93,6 +95,11 @@ InlineToolbar.propTypes = {
    * The current editorState
    */
   editorState: _propTypes2.default.object,
+
+  /**
+   * The current style
+   */
+  style: _propTypes2.default.object,
 
   /**
    * Can call this to update the editor state

@@ -60,7 +60,7 @@ var SideToolbar = function (_Component) {
     }
 
     return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideToolbar.__proto__ || (0, _getPrototypeOf2.default)(SideToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
-      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion;
+      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion || _this.props.style !== nextProps.style;
     }, _this.render = function () {
       var _this$props = _this.props,
           editorState = _this$props.editorState,
@@ -81,7 +81,8 @@ var SideToolbar = function (_Component) {
           assetRequestPosition = _this$props.assetRequestPosition,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
           _this$props$allowNote = _this$props.allowNotesInsertion,
-          allowNotesInsertion = _this$props$allowNote === undefined ? false : _this$props$allowNote;
+          allowNotesInsertion = _this$props$allowNote === undefined ? false : _this$props$allowNote,
+          style = _this$props.style;
 
 
       var onAssetButtonClick = function onAssetButtonClick(event) {
@@ -101,11 +102,13 @@ var SideToolbar = function (_Component) {
         return event.stopPropagation();
       };
       var assetSelectorActive = assetRequestPosition !== undefined;
+
       return _react2.default.createElement(
         'div',
         {
           className: 'scholar-draft-SideToolbar',
-          ref: bindToolbar
+          ref: bindToolbar,
+          style: style
         },
         allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(_NoteButton2.default, {
           onClick: onNoteAdd,
@@ -144,6 +147,8 @@ SideToolbar.propTypes = {
 
   iconMap: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
+
+  style: _propTypes2.default.object,
 
   messages: _propTypes2.default.object,
 

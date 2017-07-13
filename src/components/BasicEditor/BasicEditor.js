@@ -20,17 +20,8 @@ import handleBlockType from '../../modifiers/handleBlockType';
 import handleInlineStyle from '../../modifiers/handleInlineStyle';
 import handleNewCodeBlock from '../../modifiers/handleNewCodeBlock';
 import insertEmptyBlock from '../../modifiers/insertEmptyBlock';
-// import handleLink from '../../modifiers/handleLink';
-// import handleImage from '../../modifiers/handleImage';
 import leaveList from '../../modifiers/leaveList';
 import insertText from '../../modifiers/insertText';
-// import createLinkDecorator from './decorators/link';
-// import createImageDecorator from './decorators/image';
-// import { 
-//   // addText, 
-//   addEmptyBlock 
-// } from '../../utils';
-
 
 import {
   INLINE_ASSET,
@@ -202,18 +193,29 @@ export default class BasicEditor extends Component {
   state = {
     editorState: EditorState.createEmpty(),
     undoStack: [],
-    redoStack: []
+    redoStack: [],
+    styles: {
+      inlineToolbar: {
+
+      },
+      sideToolbar: {
+
+      }
+    }
   };
 
   componentWillReceiveProps = (nextProps) => {
-    // console.log('receiving asset request position', nextProps.assetRequestPosition);
-    // console.log('readonlies', this.props.readOnly, nextProps.readOnly);
     if (!this.props.readOnly && nextProps.readOnly) {
-      this.inlineToolbar.toolbar.style.display = 'none';
-      if (!nextProps.assetRequestPosition) {
-        this.sideControl.toolbar.style.display = 'none';
-      }
-      // console.log('hide side control', this.sideControl.toolbar.style.display);
+      this.setState({
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none',
+          }
+        }
+      });
     }
     if (this.state.readOnly !== nextProps.readOnly) {
       this.setState({
@@ -289,15 +291,16 @@ export default class BasicEditor extends Component {
   }
 
   onBlur = (event) => {
-    if (this.inlineToolbar) {
-      this.inlineToolbar.toolbar.display = 'none';
-    }
-    if (this.sideControl) {
-      this.sideControl.toolbar.display = 'none';
-    }
-
     this.setState({
-      readOnly: true
+      readOnly: true,
+      styles: {
+        inlineToolbar: {
+          display: 'none'
+        },
+        sideToolbar: {
+          display: 'none'
+        }
+      }
     });
 
     const { onBlur } = this.props;
@@ -553,7 +556,9 @@ export default class BasicEditor extends Component {
     }
     return false;
   }
-
+  /**
+   * Draft.js strategy for finding inline assets and loading them with relevant props
+   */
   findInlineAsset = (contentBlock, callback, inputContentState) => {
     let contentState = inputContentState;
     if (!this.props.editorState) {
@@ -604,7 +609,9 @@ export default class BasicEditor extends Component {
       }
     );
   }
-
+  /**
+   * Draft.js strategy for finding inline note pointers and loading them with relevant props
+   */
   findNotePointers = (contentBlock, callback, inputContentState) => {
     let contentState = inputContentState;
     if (contentState === undefined) {
@@ -649,12 +656,19 @@ export default class BasicEditor extends Component {
       }
     );
   }
-
+  /**
+   * Draft.js strategy for finding quotes statements
+   */
+   // todo: improve with all lang./typography 
+   // quotes configurations (french quotes, english quotes, ...)
   findQuotes = (contentBlock, callback, contentState) => {
     const QUOTE_REGEX = /("[^"]+")/gi;
     this.findWithRegex(QUOTE_REGEX, contentBlock, callback);
   }
 
+  /**
+   * Util for Draft.js strategies building
+   */
   findWithRegex = (regex, contentBlock, callback) => {
     const text = contentBlock.getText();
     let matchArr;
@@ -677,14 +691,26 @@ export default class BasicEditor extends Component {
     ]);
   }
 
-  // todo: clean this function from all unnecessary things
+  /**
+   * updates the positions of toolbars relatively to current draft selection
+   */
   updateSelection = () => {
     let left;
-    let sideControlTop;
+    let sideToolbarTop;
 
     const selectionRange = getSelectionRange();
     
     const editorEle = this.editor;
+
+
+    const styles = {
+      sideToolbar: {
+        ...this.state.styles.sideToolbar
+      },
+      inlineToolbar: {
+        ...this.state.styles.inlineToolbar
+      },
+    };
 
     if (!selectionRange) return;
 
@@ -699,8 +725,7 @@ export default class BasicEditor extends Component {
       assetRequestPosition
     } = this.props;
 
-    const inlineToolbarEle = this.inlineToolbar.toolbar;
-    const sideControlEle = this.sideControl.toolbar;
+    const sideToolbarEle = this.sideToolbar.toolbar;
     const rangeBounds = selectionRange.getBoundingClientRect();
 
     const selectedBlock = getSelectedBlockElement(selectionRange);
@@ -708,39 +733,40 @@ export default class BasicEditor extends Component {
       const blockBounds = selectedBlock.getBoundingClientRect();
       const editorBounds = this.state.editorBounds;
       if (!editorBounds) return;
-      sideControlTop = rangeBounds.top || blockBounds.top;
-      sideControlEle.style.top = `${sideControlTop}px`;
+      sideToolbarTop = rangeBounds.top || blockBounds.top;
+      styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
-      const controlWidth = sideControlEle.offsetWidth || 50;
+      const controlWidth = sideToolbarEle.offsetWidth || 50;
       left = assetRequestPosition ? 
         (rangeBounds.right || editorBounds.left) + controlWidth 
         : editorBounds.left - controlWidth;
-      sideControlEle.style.left = `${left}px`;
-      sideControlEle.style.display = 'block';
+      styles.sideToolbar.left = left;
+      styles.sideToolbar.display = 'block';
 
       if (!selectionRange.collapsed) {
-        // The control needs to be visible so that we can get it's width
-        inlineToolbarEle.style.position = 'fixed';
-        inlineToolbarEle.style.display = 'block';
-
-        // popoverControlVisible = true;
-
-        // popoverControlLeft = 0;
+        styles.inlineToolbar.position = 'fixed';
+        styles.inlineToolbar.display = 'block';
         let startNode = selectionRange.startContainer;
         while (startNode.nodeType === 3) {
           startNode = startNode.parentNode;
         }
         const popTop = rangeBounds.top /* - editorBounds.top + displaceY */ - popoverSpacing;
         left = rangeBounds.left;
-        inlineToolbarEle.style.left = `${left}px`;
-        inlineToolbarEle.style.top = `${popTop}px`;
+        styles.inlineToolbar.left = left;
+        styles.inlineToolbar.top = popTop;
       } else {
-        inlineToolbarEle.style.display = 'none';
+        styles.inlineToolbar.display = 'none';
       }
     } else {
-      sideControlEle.style.display = 'none';
-      inlineToolbarEle.style.display = 'none';
+      styles.sideToolbar.display = 'none';
+      styles.inlineToolbar.display = 'none';
+    }
+
+    if (JSON.stringify(styles) !== JSON.stringify(this.state.styles)) {
+      this.setState({
+        styles
+      });
     }
   }
 
@@ -807,7 +833,8 @@ export default class BasicEditor extends Component {
 
     const {
       readOnly,
-      editorState: stateEditorState
+      editorState: stateEditorState,
+      styles,
     } = this.state;
 
     const {
@@ -829,8 +856,8 @@ export default class BasicEditor extends Component {
     const bindEditorRef = (editor) => {
       this.editor = editor;
     };
-    const bindSideToolbarRef = (sideControl) => {
-      this.sideControl = sideControl;
+    const bindSideToolbarRef = (sideToolbar) => {
+      this.sideToolbar = sideToolbar;
     };
 
     const bindInlineToolbar = (inlineToolbar) => {
@@ -866,6 +893,7 @@ export default class BasicEditor extends Component {
           editorState={realEditorState}
           updateEditorState={onChange}
           iconMap={iconMap}
+          style={styles.inlineToolbar}
         />
         <SideToolbar
           ref={bindSideToolbarRef}
@@ -875,6 +903,8 @@ export default class BasicEditor extends Component {
             block: allowBlockAsset
           }}
           allowNotesInsertion={allowNotesInsertion}
+
+          style={styles.sideToolbar}
 
           onAssetRequest={onAssetRequest}
           onAssetRequestCancel={onAssetRequestCancel}
