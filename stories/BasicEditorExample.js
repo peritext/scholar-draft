@@ -349,6 +349,7 @@ export default class BasicEditorExample extends Component {
       contextualizerId: Object.keys(contextualizers)[0],
     }
     const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id});
+    // console.log('set readonly to true in insertContextualization')
     this.setState({
       contextualizationRequest: false,
       contextualizationRequestSelection: undefined,
@@ -360,6 +361,7 @@ export default class BasicEditorExample extends Component {
       readOnly: true
     });
     setTimeout(() => {
+    // console.log('set readonly to false in insertContextualization after settimeout')
       const assets = this.buildAssets();
       this.setState({
         readOnly: false,
@@ -506,6 +508,8 @@ export default class BasicEditorExample extends Component {
     }
 
     const startDrag = (e) => {
+    // console.log('set readonly to false in startDrag')
+
        e.dataTransfer.dropEffect = 'copy';
        e.dataTransfer.setData('text', 'TEST');
        this.setState({
@@ -518,6 +522,7 @@ export default class BasicEditorExample extends Component {
    };
 
    const onBlur = (e, editorState) => {
+    // console.log('set readonly to true in onBlur')
     this.setState({
       readOnly: true
     });
@@ -525,6 +530,7 @@ export default class BasicEditorExample extends Component {
 
    const onClick = (e) => {
     if (this.state.readOnly) {
+    // console.log('set readonly to false in onClick')
       this.setState({
         readOnly: false
       });
@@ -548,7 +554,7 @@ export default class BasicEditorExample extends Component {
       }
     };
     const assetRequestPosition = contextualizationRequest ? editorState.getSelection() : undefined;
-
+    console.log('is readonly', readOnly);
     return (
       <div
         style={{
@@ -639,6 +645,8 @@ export default class BasicEditorExample extends Component {
             assets={assets}
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}
+
+            isActive={true}
 
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}

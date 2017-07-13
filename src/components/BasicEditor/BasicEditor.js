@@ -136,6 +136,7 @@ export default class BasicEditor extends Component {
     assetRequestPosition: PropTypes.object,
     contentId: PropTypes.string,
     messages: PropTypes.object,
+    isActive: PropTypes.bool,
     /*
      * Method props
      */
@@ -201,11 +202,20 @@ export default class BasicEditor extends Component {
       sideToolbar: {
 
       }
-    }
+    },
+    readOnly: true
   };
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        readOnly: false
+      });
+    });
+  }
+
   componentWillReceiveProps = (nextProps) => {
-    if (!this.props.readOnly && nextProps.readOnly) {
+    if (this.props.isActive && !nextProps.isActive) {
       this.setState({
         styles: {
           sideToolbar: {
@@ -214,14 +224,13 @@ export default class BasicEditor extends Component {
           inlineToolbar: {
             display: 'none',
           }
-        }
+        },
       });
-    }
-    if (this.state.readOnly !== nextProps.readOnly) {
-      this.setState({
-        readOnly: nextProps.readOnly
-      });
-      setTimeout(() => this.updateSelection());
+      if (!nextProps.assetRequestPosition) {
+        this.setState({
+          readOnly: true
+        });
+      }
     }
     if (this.state.editorState !== nextProps.editorState) {
       this.setState({
@@ -259,7 +268,8 @@ export default class BasicEditor extends Component {
 
     if (
       this.props.editorState !== prevProps.editorState && 
-      this.editor
+      this.editor &&
+      !this.state.readOnly && this.props.isActive
     ) {
       this.editor.focus();
     }
@@ -695,6 +705,9 @@ export default class BasicEditor extends Component {
    * updates the positions of toolbars relatively to current draft selection
    */
   updateSelection = () => {
+    if (!this.props.isActive) {
+      return;
+    }
     let left;
     let sideToolbarTop;
 
@@ -726,6 +739,10 @@ export default class BasicEditor extends Component {
     } = this.props;
 
     const sideToolbarEle = this.sideToolbar.toolbar;
+
+    if (!sideToolbarEle) {
+      return;
+    }
     const rangeBounds = selectionRange.getBoundingClientRect();
 
     const selectedBlock = getSelectedBlockElement(selectionRange);
@@ -767,16 +784,16 @@ export default class BasicEditor extends Component {
       this.setState({
         styles
       });
-    }
+    }    
   }
 
   focus = (event) => {
-    if (this.props.readOnly) return;
+    // if (this.props.readOnly) return;
 
     const stateMods = {};
-    if (!this.props.readOnly && this.state.readOnly) {
-      stateMods.readOnly = true;
-    }
+    // if (!this.props.readOnly && this.state.readOnly) {
+    //   stateMods.readOnly = true;
+    // }
 
     const editorNode = this.editor && this.editor.refs.editor;
     stateMods.editorBounds = editorNode.getBoundingClientRect();
@@ -790,6 +807,7 @@ export default class BasicEditor extends Component {
         editorNode.focus();
       }
     }, 1);
+
   };
 
   render = () => {
@@ -827,6 +845,8 @@ export default class BasicEditor extends Component {
 
       AssetChoiceComponent,
       assetChoiceProps,
+
+      isActive,
 
       ...otherProps
     } = this.props;
@@ -868,6 +888,9 @@ export default class BasicEditor extends Component {
     const onAssetRequest = (selection) => {
       if (typeof onAssetRequestUpstream === 'function') {
         onAssetRequestUpstream(selection);
+        this.setState({
+          readOnly: true
+        });
       }
     };
 
@@ -875,11 +898,35 @@ export default class BasicEditor extends Component {
       if (typeof onClick === 'function') {
         onClick(event);
       }
+      this.setState({
+        readOnly: false
+      });
       this.focus(event);
+    };
+
+    const onAssetChoiceFocus = () => {
+      this.setState({
+        readOnly: true
+      });
+    };
+
+    const onOnAssetRequestCancel = () => {
+      onAssetRequestCancel();
+      this.setState({
+        readOnly: false
+      });
+    };
+
+    const onOnAssetChoice = (asset) => {
+      onAssetChoice(asset);
+      this.setState({
+        readOnly: false
+      });
     };
 
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : defaultKeyBindingFn;
     const iconMap = this.props.iconMap ? this.props.iconMap : defaultIconMap;
+    // console.log(this.props.contentId, isActive ? readOnly : true);
     return (
       <div 
         className={editorClass + (readOnly ? '' : ' active')}
@@ -907,10 +954,11 @@ export default class BasicEditor extends Component {
           style={styles.sideToolbar}
 
           onAssetRequest={onAssetRequest}
-          onAssetRequestCancel={onAssetRequestCancel}
-          onAssetChoice={onAssetChoice}
+          onAssetRequestCancel={onOnAssetRequestCancel}
+          onAssetChoice={onOnAssetChoice}
           assetRequestPosition={assetRequestPosition}
           assetChoiceProps={assetChoiceProps}
+          onAssetChoiceFocus={onAssetChoiceFocus}
 
           AssetChoiceComponent={AssetChoiceComponent}
           iconMap={iconMap}
@@ -924,7 +972,7 @@ export default class BasicEditor extends Component {
         <Editor
           blockRendererFn={_blockRenderer}
           spellCheck
-          readOnly={readOnly}
+          readOnly={isActive ? readOnly : true}
           placeholder={placeholder}
 
           keyBindingFn={keyBindingFn}

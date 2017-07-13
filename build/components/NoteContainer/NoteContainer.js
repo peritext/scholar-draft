@@ -60,6 +60,7 @@ var NoteContainer = function (_Component) {
           assetRequestPosition = _this$props.assetRequestPosition,
           addTextAtCurrentSelection = _this$props.addTextAtCurrentSelection,
           contentId = _this$props.contentId,
+          isActive = _this$props.isActive,
           onEditorChange = _this$props.onEditorChange,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -134,6 +135,8 @@ var NoteContainer = function (_Component) {
             addTextAtCurrentSelection: addTextAtCurrentSelection,
             clipboard: clipboard,
 
+            isActive: isActive,
+
             assetRequestPosition: assetRequestPosition,
             onAssetRequestCancel: onAssetRequestCancel,
             AssetChoiceComponent: AssetChoiceComponent,
@@ -168,6 +171,7 @@ NoteContainer.propTypes = {
   notes: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
+  isActive: _propTypes2.default.bool,
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,

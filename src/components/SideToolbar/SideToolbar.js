@@ -20,6 +20,8 @@ export default class SideToolbar extends Component {
 
     messages: PropTypes.object,
 
+    onAssetChoiceFocus: PropTypes.bool,
+
     allowNotesInsertion: PropTypes.bool,
     allowAssets: PropTypes.shape({
       inline: PropTypes.bool,
@@ -49,6 +51,7 @@ export default class SideToolbar extends Component {
       onAssetRequest,
       onAssetRequestCancel,
       onAssetChoice,
+      onAssetChoiceFocus,
       assetChoiceProps = {},
       onNoteAdd,
       allowAssets = {
@@ -117,6 +120,8 @@ export default class SideToolbar extends Component {
               contentId={contentId}
               onAssetChoice={onAssetChoice}
               onAssetRequestCancel={onAssetRequestCancel}
+              onAssetChoiceFocus={onAssetChoiceFocus}
+
             />
           </span>
         }

@@ -165,7 +165,7 @@ var Editor = function (_Component) {
           assetRequestPosition: assetRequestPosition,
           assetChoiceProps: assetChoiceProps,
 
-          readOnly: noteId !== focusedEditorId,
+          isActive: noteId === focusedEditorId,
 
           onEditorClick: onNoteEditorClick,
           onBlur: onNoteBlur,
@@ -241,7 +241,7 @@ var Editor = function (_Component) {
             assetRequestPosition: assetRequestPosition,
             assetChoiceProps: assetChoiceProps,
 
-            readOnly: focusedEditorId !== 'main',
+            isActive: focusedEditorId === 'main',
 
             onClick: onMainEditorClick,
             onBlur: onMainBlur,

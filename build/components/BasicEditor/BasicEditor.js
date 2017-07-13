@@ -217,6 +217,17 @@ var BasicEditor = function (_Component) {
   }
 
   (0, _createClass3.default)(BasicEditor, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      setTimeout(function () {
+        _this2.setState({
+          readOnly: false
+        });
+      });
+    }
+  }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
       if (
@@ -237,7 +248,7 @@ var BasicEditor = function (_Component) {
         forceRender(this.props);
       }
 
-      if (this.props.editorState !== prevProps.editorState && this.editor) {
+      if (this.props.editorState !== prevProps.editorState && this.editor && !this.state.readOnly && this.props.isActive) {
         this.editor.focus();
       }
     }
@@ -283,6 +294,7 @@ BasicEditor.propTypes = {
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
   messages: _propTypes2.default.object,
+  isActive: _propTypes2.default.bool,
   /*
    * Method props
    */
@@ -326,7 +338,7 @@ BasicEditor.defaultProps = {
 };
 
 var _initialiseProps = function _initialiseProps() {
-  var _this2 = this;
+  var _this3 = this;
 
   this.state = {
     editorState: _draftJs.EditorState.createEmpty(),
@@ -335,12 +347,13 @@ var _initialiseProps = function _initialiseProps() {
     styles: {
       inlineToolbar: {},
       sideToolbar: {}
-    }
+    },
+    readOnly: true
   };
 
   this.componentWillReceiveProps = function (nextProps) {
-    if (!_this2.props.readOnly && nextProps.readOnly) {
-      _this2.setState({
+    if (_this3.props.isActive && !nextProps.isActive) {
+      _this3.setState({
         styles: {
           sideToolbar: {
             display: 'none'
@@ -350,49 +363,46 @@ var _initialiseProps = function _initialiseProps() {
           }
         }
       });
+      if (!nextProps.assetRequestPosition) {
+        _this3.setState({
+          readOnly: true
+        });
+      }
     }
-    if (_this2.state.readOnly !== nextProps.readOnly) {
-      _this2.setState({
-        readOnly: nextProps.readOnly
-      });
-      setTimeout(function () {
-        return _this2.updateSelection();
-      });
-    }
-    if (_this2.state.editorState !== nextProps.editorState) {
-      _this2.setState({
-        editorState: nextProps.editorState || _draftJs.EditorState.createEmpty(_this2.createDecorator())
+    if (_this3.state.editorState !== nextProps.editorState) {
+      _this3.setState({
+        editorState: nextProps.editorState || _draftJs.EditorState.createEmpty(_this3.createDecorator())
       });
     }
   };
 
   this.onNoteAdd = function () {
-    if (typeof _this2.props.onNoteAdd === 'function') {
-      _this2.props.onNoteAdd();
+    if (typeof _this3.props.onNoteAdd === 'function') {
+      _this3.props.onNoteAdd();
     }
-    if (typeof _this2.props.onEditorChange === 'function') {
+    if (typeof _this3.props.onEditorChange === 'function') {
       setTimeout(function () {
-        _this2.props.onEditorChange(_this2.props.editorState);
+        _this3.props.onEditorChange(_this3.props.editorState);
       }, 1);
     }
   };
 
   this.onAssetFocus = function (event) {
     event.stopPropagation();
-    _this2.setState({
+    _this3.setState({
       readOnly: true
     });
   };
 
   this.onInputBlur = function (event) {
     event.stopPropagation();
-    _this2.setState({
+    _this3.setState({
       readOnly: false
     });
   };
 
   this.onBlur = function (event) {
-    _this2.setState({
+    _this3.setState({
       readOnly: true,
       styles: {
         inlineToolbar: {
@@ -404,7 +414,7 @@ var _initialiseProps = function _initialiseProps() {
       }
     });
 
-    var onBlur = _this2.props.onBlur;
+    var onBlur = _this3.props.onBlur;
 
     if (onBlur) {
       onBlur(event);
@@ -412,65 +422,65 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.onChange = function (editorState) {
-    if (typeof _this2.props.onEditorChange === 'function' && !_this2.props.readOnly) {
-      _this2.props.onEditorChange(editorState);
+    if (typeof _this3.props.onEditorChange === 'function' && !_this3.props.readOnly) {
+      _this3.props.onEditorChange(editorState);
     }
   };
 
   this.feedUndoStack = function (editorState) {
-    var undoStack = _this2.state.undoStack;
+    var undoStack = _this3.state.undoStack;
     // max length for undo stack
 
     var newUndoStack = undoStack.length > 50 ? undoStack.slice(undoStack.length - 50) : undoStack;
-    _this2.setState({
+    _this3.setState({
       undoStack: [].concat((0, _toConsumableArray3.default)(newUndoStack), [editorState])
     });
   };
 
   this.undo = function () {
-    var _state = _this2.state,
+    var _state = _this3.state,
         undoStack = _state.undoStack,
         redoStack = _state.redoStack;
 
     var newUndoStack = [].concat((0, _toConsumableArray3.default)(undoStack));
     if (undoStack.length > 1) {
       var last = newUndoStack.pop();
-      _this2.setState({
+      _this3.setState({
         redoStack: [].concat((0, _toConsumableArray3.default)(redoStack), [last]),
         undoStack: newUndoStack
       });
-      _this2.onChange(newUndoStack[newUndoStack.length - 1]);
+      _this3.onChange(newUndoStack[newUndoStack.length - 1]);
     }
   };
 
   this.redo = function () {
-    var _state2 = _this2.state,
+    var _state2 = _this3.state,
         undoStack = _state2.undoStack,
         redoStack = _state2.redoStack;
 
     var newRedoStack = [].concat((0, _toConsumableArray3.default)(redoStack));
     if (redoStack.length) {
       var last = newRedoStack.pop();
-      _this2.setState({
+      _this3.setState({
         undoStack: [].concat((0, _toConsumableArray3.default)(undoStack), [last]),
         redoStack: newRedoStack
       });
-      _this2.onChange(last);
+      _this3.onChange(last);
     }
   };
 
   this.forceRender = function (props) {
-    var editorState = props.editorState || _this2.generateEmptyEditor();
+    var editorState = props.editorState || _this3.generateEmptyEditor();
     var content = editorState.getCurrentContent();
 
-    var newEditorState = _draftJs.EditorState.createWithContent(content, _this2.createDecorator());
+    var newEditorState = _draftJs.EditorState.createWithContent(content, _this3.createDecorator());
 
-    var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
+    var inlineStyle = _this3.state.editorState.getCurrentInlineStyle();
     var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
-    _this2.feedUndoStack(_this2.state.editorState);
-    _this2.setState({
+    _this3.feedUndoStack(_this3.state.editorState);
+    _this3.setState({
       editorState: selectedEditorState
     });
   };
@@ -480,7 +490,7 @@ var _initialiseProps = function _initialiseProps() {
 
     if (type === 'atomic') {
       var entityKey = contentBlock.getEntityAt(0);
-      var contentState = _this2.state.editorState.getCurrentContent();
+      var contentState = _this3.state.editorState.getCurrentContent();
       var data = void 0;
       try {
         data = contentState.getEntity(entityKey).toJS();
@@ -488,20 +498,20 @@ var _initialiseProps = function _initialiseProps() {
         return undefined;
       }
       var id = data.data.asset.id;
-      var asset = _this2.props.assets[id];
+      var asset = _this3.props.assets[id];
       if (!asset) {
         return;
       }
-      var blockAssetComponents = _this2.props.blockAssetComponents;
+      var blockAssetComponents = _this3.props.blockAssetComponents;
 
       var AssetComponent = blockAssetComponents[asset.type] || _react2.default.createElement('div', null);
-      var _props = _this2.props,
+      var _props = _this3.props,
           onChange = _props.onAssetChange,
           onMouseOver = _props.onAssetMouseOver,
           onMouseOut = _props.onAssetMouseOut,
           iconMap = _props.iconMap;
-      var onFocus = _this2.onAssetFocus,
-          onBlur = _this2.onInputBlur;
+      var onFocus = _this3.onAssetFocus,
+          onBlur = _this3.onInputBlur;
 
       if (asset) {
         return { /* eslint consistent-return:0 */
@@ -544,19 +554,19 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._handleKeyCommand = function (command) {
-    if (command === 'add-note' && _this2.props.allowNotesInsertion && typeof _this2.props.onNoteAdd === 'function') {
-      _this2.onNoteAdd();
+    if (command === 'add-note' && _this3.props.allowNotesInsertion && typeof _this3.props.onNoteAdd === 'function') {
+      _this3.onNoteAdd();
       return 'handled';
     } else if (command === 'editor-undo') {
-      _this2.undo();
+      _this3.undo();
     } else if (command === 'editor-redo') {
-      _this2.redo();
+      _this3.redo();
     }
-    var editorState = _this2.props.editorState;
+    var editorState = _this3.props.editorState;
 
     var newState = _draftJs.RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
-      _this2.onChange(newState);
+      _this3.onChange(newState);
       return 'handled';
     }
     return 'not-handled';
@@ -565,36 +575,36 @@ var _initialiseProps = function _initialiseProps() {
   this._handleBeforeInput = function (character, props) {
     // todo : make that feature more subtle
     if (character === '@') {
-      _this2.props.onAssetRequest();
+      _this3.props.onAssetRequest();
       return 'handled';
     }
     if (character !== ' ') {
       return 'not-handled';
     }
-    var editorState = _this2.props.editorState;
+    var editorState = _this3.props.editorState;
     var newEditorState = checkCharacterForState(editorState, character);
     if (editorState !== newEditorState) {
-      _this2.onChange(newEditorState);
+      _this3.onChange(newEditorState);
       return 'handled';
     }
     return 'not-handled';
   };
 
   this._onTab = function (ev) {
-    var editorState = _this2.props.editorState;
+    var editorState = _this3.props.editorState;
     var newEditorState = (0, _adjustBlockDepth2.default)(editorState, ev);
     if (newEditorState !== editorState) {
-      _this2.onChange(newEditorState);
+      _this3.onChange(newEditorState);
       return 'handled';
     }
     return 'not-handled';
   };
 
   this._handleReturn = function (ev) {
-    var editorState = _this2.props.editorState;
+    var editorState = _this3.props.editorState;
     var newEditorState = checkReturnForState(editorState, ev);
     if (editorState !== newEditorState) {
-      _this2.onChange(newEditorState);
+      _this3.onChange(newEditorState);
       return 'handled';
     }
     return 'not-handled';
@@ -604,17 +614,17 @@ var _initialiseProps = function _initialiseProps() {
     var payload = dataTransfer.data.getData('text');
     // Set timeout to allow cursor/selection to move to drop location
     setTimeout(function () {
-      var selection = _this2.props.editorState.getSelection();
+      var selection = _this3.props.editorState.getSelection();
       var anchorOffset = selection.getEndOffset() - payload.length;
       anchorOffset = anchorOffset < 0 ? 0 : anchorOffset;
       var payloadSel = selection.merge({
         anchorOffset: anchorOffset
       });
 
-      var newContentState = _draftJs.Modifier.replaceText(_this2.props.editorState.getCurrentContent(), payloadSel, ' ');
-      _this2.onChange(_draftJs.EditorState.createWithContent(newContentState));
-      if (typeof _this2.props.onDrop === 'function') {
-        _this2.props.onDrop(payload, selection);
+      var newContentState = _draftJs.Modifier.replaceText(_this3.props.editorState.getCurrentContent(), payloadSel, ' ');
+      _this3.onChange(_draftJs.EditorState.createWithContent(newContentState));
+      if (typeof _this3.props.onDrop === 'function') {
+        _this3.props.onDrop(payload, selection);
       }
     }, 1);
     return false;
@@ -622,8 +632,8 @@ var _initialiseProps = function _initialiseProps() {
 
   this._handleDragOver = function (event) {
     event.preventDefault();
-    if (typeof _this2.props.onDragOver === 'function') {
-      _this2.props.onDragOver(event);
+    if (typeof _this3.props.onDragOver === 'function') {
+      _this3.props.onDragOver(event);
     }
     return false;
   };
@@ -631,11 +641,11 @@ var _initialiseProps = function _initialiseProps() {
   this._handlePastedText = function (text, html) {
 
     setTimeout(function () {
-      _this2.feedUndoStack(_this2.state.editorState);
+      _this3.feedUndoStack(_this3.state.editorState);
     }, 1);
 
-    if (_this2.props.clipboard) {
-      _this2.editor.setClipboard(null);
+    if (_this3.props.clipboard) {
+      _this3.editor.setClipboard(null);
       return true;
     }
     return false;
@@ -643,27 +653,27 @@ var _initialiseProps = function _initialiseProps() {
 
   this.findInlineAsset = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
-    if (!_this2.props.editorState) {
+    if (!_this3.props.editorState) {
       callback(null);
     }
     if (contentState === undefined) {
-      contentState = _this2.props.editorState.getCurrentContent();
+      contentState = _this3.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(function (character) {
       var entityKey = character.getEntity();
       return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.INLINE_ASSET;
     }, function (start, end) {
-      var _props2 = _this2.props,
+      var _props2 = _this3.props,
           assets = _props2.assets,
           onMouseOver = _props2.onAssetMouseOver,
           onMouseOut = _props2.onAssetMouseOut,
           onAssetChange = _props2.onAssetChange,
           components = _props2.inlineAssetComponents;
-      var onFocus = _this2.onAssetFocus,
-          onBlur = _this2.onInputBlur;
+      var onFocus = _this3.onAssetFocus,
+          onBlur = _this3.onInputBlur;
 
       var entityKey = contentBlock.getEntityAt(start);
-      var data = _this2.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+      var data = _this3.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
       var id = data.data.asset.id;
       var asset = assets[id];
       var props = {};
@@ -686,31 +696,31 @@ var _initialiseProps = function _initialiseProps() {
   this.findNotePointers = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
     if (contentState === undefined) {
-      contentState = _this2.props.editorState.getCurrentContent();
+      contentState = _this3.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(function (character) {
       var entityKey = character.getEntity();
       return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.NOTE_POINTER;
     }, function (start, end) {
       var entityKey = contentBlock.getEntityAt(start);
-      var data = _this2.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+      var data = _this3.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
       var noteId = data.data.noteId;
       var onMouseOver = function onMouseOver(event) {
-        if (typeof _this2.props.onNotePointerMouseOver === 'function') {
-          _this2.props.onNotePointerMouseOver(noteId, event);
+        if (typeof _this3.props.onNotePointerMouseOver === 'function') {
+          _this3.props.onNotePointerMouseOver(noteId, event);
         }
       };
       var onMouseOut = function onMouseOut(event) {
-        if (typeof _this2.props.onNotePointerMouseOut === 'function') {
-          _this2.props.onNotePointerMouseOut(noteId, event);
+        if (typeof _this3.props.onNotePointerMouseOut === 'function') {
+          _this3.props.onNotePointerMouseOut(noteId, event);
         }
       };
       var onMouseClick = function onMouseClick(event) {
-        if (typeof _this2.props.onNotePointerMouseClick === 'function') {
-          _this2.props.onNotePointerMouseClick(noteId, event);
+        if (typeof _this3.props.onNotePointerMouseClick === 'function') {
+          _this3.props.onNotePointerMouseClick(noteId, event);
         }
       };
-      var note = _this2.props.notes && _this2.props.notes[noteId];
+      var note = _this3.props.notes && _this3.props.notes[noteId];
       var props = (0, _extends3.default)({}, data.data, {
         note: note,
         onMouseOver: onMouseOver,
@@ -723,7 +733,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this.findQuotes = function (contentBlock, callback, contentState) {
     var QUOTE_REGEX = /("[^"]+")/gi;
-    _this2.findWithRegex(QUOTE_REGEX, contentBlock, callback);
+    _this3.findWithRegex(QUOTE_REGEX, contentBlock, callback);
   };
 
   this.findWithRegex = function (regex, contentBlock, callback) {
@@ -737,25 +747,28 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.generateEmptyEditor = function () {
-    return _draftJs.EditorState.createEmpty(_this2.createDecorator());
+    return _draftJs.EditorState.createEmpty(_this3.createDecorator());
   };
 
   this.createDecorator = function () {
-    var ActiveNotePointer = _this2.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this2.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this2.findNotePointers, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this2.findQuotes, _QuoteContainer2.default)]);
+    var ActiveNotePointer = _this3.props.NotePointerComponent || _NotePointer2.default;
+    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this3.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this3.findNotePointers, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this3.findQuotes, _QuoteContainer2.default)]);
   };
 
   this.updateSelection = function () {
+    if (!_this3.props.isActive) {
+      return;
+    }
     var left = void 0;
     var sideToolbarTop = void 0;
 
     var selectionRange = getSelectionRange();
 
-    var editorEle = _this2.editor;
+    var editorEle = _this3.editor;
 
     var styles = {
-      sideToolbar: (0, _extends3.default)({}, _this2.state.styles.sideToolbar),
-      inlineToolbar: (0, _extends3.default)({}, _this2.state.styles.inlineToolbar)
+      sideToolbar: (0, _extends3.default)({}, _this3.state.styles.sideToolbar),
+      inlineToolbar: (0, _extends3.default)({}, _this3.state.styles.inlineToolbar)
     };
 
     if (!selectionRange) return;
@@ -764,16 +777,20 @@ var _initialiseProps = function _initialiseProps() {
       return;
     }
 
-    var assetRequestPosition = _this2.props.assetRequestPosition;
+    var assetRequestPosition = _this3.props.assetRequestPosition;
 
 
-    var sideToolbarEle = _this2.sideToolbar.toolbar;
+    var sideToolbarEle = _this3.sideToolbar.toolbar;
+
+    if (!sideToolbarEle) {
+      return;
+    }
     var rangeBounds = selectionRange.getBoundingClientRect();
 
     var selectedBlock = getSelectedBlockElement(selectionRange);
     if (selectedBlock) {
       var blockBounds = selectedBlock.getBoundingClientRect();
-      var editorBounds = _this2.state.editorBounds;
+      var editorBounds = _this3.state.editorBounds;
       if (!editorBounds) return;
       sideToolbarTop = rangeBounds.top || blockBounds.top;
       styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
@@ -803,39 +820,39 @@ var _initialiseProps = function _initialiseProps() {
       styles.inlineToolbar.display = 'none';
     }
 
-    if ((0, _stringify2.default)(styles) !== (0, _stringify2.default)(_this2.state.styles)) {
-      _this2.setState({
+    if ((0, _stringify2.default)(styles) !== (0, _stringify2.default)(_this3.state.styles)) {
+      _this3.setState({
         styles: styles
       });
     }
   };
 
   this.focus = function (event) {
-    if (_this2.props.readOnly) return;
+    // if (this.props.readOnly) return;
 
     var stateMods = {};
-    if (!_this2.props.readOnly && _this2.state.readOnly) {
-      stateMods.readOnly = true;
-    }
+    // if (!this.props.readOnly && this.state.readOnly) {
+    //   stateMods.readOnly = true;
+    // }
 
-    var editorNode = _this2.editor && _this2.editor.refs.editor;
+    var editorNode = _this3.editor && _this3.editor.refs.editor;
     stateMods.editorBounds = editorNode.getBoundingClientRect();
 
     if ((0, _keys2.default)(stateMods).length) {
-      _this2.setState(stateMods);
+      _this3.setState(stateMods);
     }
 
     setTimeout(function () {
-      if (!_this2.state.readOnly) {
+      if (!_this3.state.readOnly) {
         editorNode.focus();
       }
     }, 1);
   };
 
   this.render = function () {
-    var _props3 = _this2.props,
+    var _props3 = _this3.props,
         _props3$editorState = _props3.editorState,
-        editorState = _props3$editorState === undefined ? _draftJs.EditorState.createEmpty(_this2.createDecorator()) : _props3$editorState,
+        editorState = _props3$editorState === undefined ? _draftJs.EditorState.createEmpty(_this3.createDecorator()) : _props3$editorState,
         _props3$editorClass = _props3.editorClass,
         editorClass = _props3$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props3$editorClass,
         contentId = _props3.contentId,
@@ -863,40 +880,44 @@ var _initialiseProps = function _initialiseProps() {
         onClick = _props3.onClick,
         AssetChoiceComponent = _props3.AssetChoiceComponent,
         assetChoiceProps = _props3.assetChoiceProps,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
-    var _state3 = _this2.state,
+        isActive = _props3.isActive,
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'isActive']);
+    var _state3 = _this3.state,
         readOnly = _state3.readOnly,
         stateEditorState = _state3.editorState,
         styles = _state3.styles;
-    var _handleKeyCommand = _this2._handleKeyCommand,
-        _handleBeforeInput = _this2._handleBeforeInput,
-        onChange = _this2.onChange,
-        _blockRenderer = _this2._blockRenderer,
-        _handleReturn = _this2._handleReturn,
-        _onTab = _this2._onTab,
-        _handleDrop = _this2._handleDrop,
-        _handleDragOver = _this2._handleDragOver,
-        _handlePastedText = _this2._handlePastedText,
-        onNoteAdd = _this2.onNoteAdd,
-        defaultKeyBindingFn = _this2.defaultKeyBindingFn;
+    var _handleKeyCommand = _this3._handleKeyCommand,
+        _handleBeforeInput = _this3._handleBeforeInput,
+        onChange = _this3.onChange,
+        _blockRenderer = _this3._blockRenderer,
+        _handleReturn = _this3._handleReturn,
+        _onTab = _this3._onTab,
+        _handleDrop = _this3._handleDrop,
+        _handleDragOver = _this3._handleDragOver,
+        _handlePastedText = _this3._handlePastedText,
+        onNoteAdd = _this3.onNoteAdd,
+        defaultKeyBindingFn = _this3.defaultKeyBindingFn;
 
 
-    var realEditorState = editorState || _this2.generateEmptyEditor();
+    var realEditorState = editorState || _this3.generateEmptyEditor();
 
     var bindEditorRef = function bindEditorRef(editor) {
-      _this2.editor = editor;
+      _this3.editor = editor;
     };
     var bindSideToolbarRef = function bindSideToolbarRef(sideToolbar) {
-      _this2.sideToolbar = sideToolbar;
+      _this3.sideToolbar = sideToolbar;
     };
 
     var bindInlineToolbar = function bindInlineToolbar(inlineToolbar) {
-      _this2.inlineToolbar = inlineToolbar;
+      _this3.inlineToolbar = inlineToolbar;
     };
 
     var onAssetRequest = function onAssetRequest(selection) {
       if (typeof onAssetRequestUpstream === 'function') {
         onAssetRequestUpstream(selection);
+        _this3.setState({
+          readOnly: true
+        });
       }
     };
 
@@ -904,11 +925,35 @@ var _initialiseProps = function _initialiseProps() {
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      _this2.focus(event);
+      _this3.setState({
+        readOnly: false
+      });
+      _this3.focus(event);
     };
 
-    var keyBindingFn = typeof _this2.props.keyBindingFn === 'function' ? _this2.props.keyBindingFn : defaultKeyBindingFn;
-    var iconMap = _this2.props.iconMap ? _this2.props.iconMap : _defaultIconMap2.default;
+    var onAssetChoiceFocus = function onAssetChoiceFocus() {
+      _this3.setState({
+        readOnly: true
+      });
+    };
+
+    var onOnAssetRequestCancel = function onOnAssetRequestCancel() {
+      onAssetRequestCancel();
+      _this3.setState({
+        readOnly: false
+      });
+    };
+
+    var onOnAssetChoice = function onOnAssetChoice(asset) {
+      onAssetChoice(asset);
+      _this3.setState({
+        readOnly: false
+      });
+    };
+
+    var keyBindingFn = typeof _this3.props.keyBindingFn === 'function' ? _this3.props.keyBindingFn : defaultKeyBindingFn;
+    var iconMap = _this3.props.iconMap ? _this3.props.iconMap : _defaultIconMap2.default;
+    // console.log(this.props.contentId, isActive ? readOnly : true);
     return _react2.default.createElement(
       'div',
       {
@@ -937,10 +982,11 @@ var _initialiseProps = function _initialiseProps() {
         style: styles.sideToolbar,
 
         onAssetRequest: onAssetRequest,
-        onAssetRequestCancel: onAssetRequestCancel,
-        onAssetChoice: onAssetChoice,
+        onAssetRequestCancel: onOnAssetRequestCancel,
+        onAssetChoice: onOnAssetChoice,
         assetRequestPosition: assetRequestPosition,
         assetChoiceProps: assetChoiceProps,
+        onAssetChoiceFocus: onAssetChoiceFocus,
 
         AssetChoiceComponent: AssetChoiceComponent,
         iconMap: iconMap,
@@ -954,7 +1000,7 @@ var _initialiseProps = function _initialiseProps() {
       _react2.default.createElement(_draftJs.Editor, (0, _extends3.default)({
         blockRendererFn: _blockRenderer,
         spellCheck: true,
-        readOnly: readOnly,
+        readOnly: isActive ? readOnly : true,
         placeholder: placeholder,
 
         keyBindingFn: keyBindingFn,
@@ -971,7 +1017,7 @@ var _initialiseProps = function _initialiseProps() {
 
         onChange: onChange,
         ref: bindEditorRef,
-        onBlur: _this2.onBlur
+        onBlur: _this3.onBlur
 
       }, otherProps))
     );

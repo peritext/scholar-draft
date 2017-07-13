@@ -164,7 +164,7 @@ export default class Editor extends Component {
           assetRequestPosition={assetRequestPosition}
           assetChoiceProps={assetChoiceProps}
 
-          readOnly={noteId !== focusedEditorId}
+          isActive={noteId === focusedEditorId}
 
           onEditorClick={onNoteEditorClick}
           onBlur={onNoteBlur}
@@ -236,7 +236,7 @@ export default class Editor extends Component {
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}
 
-            readOnly={focusedEditorId !== 'main'}
+            isActive={focusedEditorId === 'main'}
 
             onClick={onMainEditorClick}
             onBlur={onMainBlur}

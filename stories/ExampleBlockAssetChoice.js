@@ -7,6 +7,7 @@ class BlockAssetChoice extends Component {
   }
 
   componentDidMount() {
+    this.props.onAssetChoiceFocus();  
     if (this.input){
       setTimeout(() => {
         this.input.focus();
@@ -47,7 +48,9 @@ class BlockAssetChoice extends Component {
   onInputClick = e => {
     e.stopPropagation();
     if (this.input) {
-      this.input.focus();        
+      this.input.focus();   
+      this.props.onAssetChoiceFocus();  
+      setTimeout(() => this.input.focus())   
     }
   }
 

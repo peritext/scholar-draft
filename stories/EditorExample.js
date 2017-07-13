@@ -588,16 +588,16 @@ export default class EditorExample extends Component {
 
   onAssetRequest = (contentId, selection) => {
 
-    this.setState({
-      focusedEditorId: undefined //  contentId
-    });
+    // this.setState({
+    //   focusedEditorId: undefined //  contentId
+    // });
 
     setTimeout(() => {
       this.setState({
         assetRequest: true,
         assetRequestSelection: selection,
         assetRequestContentId: contentId,
-        focusedEditorId: undefined,
+        // focusedEditorId: undefined,
       });
       // this.editor.focus(contentId);
     }, 1);
@@ -721,6 +721,7 @@ export default class EditorExample extends Component {
   }
 
   onDataChange = (dataProp, id, newObject) => {
+    console.log('on data change', dataProp, id, newObject);
     this.setState({
       [dataProp]: {
         ...this.state[dataProp],
@@ -944,9 +945,9 @@ export default class EditorExample extends Component {
     }
 
     const onBlur = (event, contentId = 'main') => {
-      this.setState({
-        focusedEditorId: undefined
-      });
+      // this.setState({
+      //   focusedEditorId: undefined
+      // });
     };
 
     const assets = Object.keys(contextualizations)

@@ -42,26 +42,19 @@ class InlineCitation extends Component {
   } = asset;
 
   const onResourceTitleChange = (e) => {
+    e.stopPropagation();
     console.log('change title');
     this.setState({
       title: e.target.value
     });
-    // const title = e.target.value;
-    // onChange('resources', resourceId, {
-    //   ...resource,
-    //   title
-    // });
   };
 
   const onContextualizerPageChange = (e) => {
+    e.stopPropagation();
+    console.log('change pages', e.target.value);
     this.setState({
-      page: e.target.value
+      pages: e.target.value
     });
-    // const pages = e.target.value;
-    // onChange('contextualizers', contextualizerId, {
-    //   ...contextualizer,
-    //   pages
-    // });
   };
   const bindTitle = title => {
     this.title = title;
@@ -70,12 +63,15 @@ class InlineCitation extends Component {
     this.page = page;
   }
   const onTitleClick = e => {
+    e.stopPropagation();
+    console.log('on title focus');
     onFocus(e);
     setTimeout(() => {
       this.title.focus();
     }, 1);
   };
   const onPageClick = e => {
+    e.stopPropagation();
     onFocus(e);
     setTimeout(() => {
       this.page.focus();
@@ -84,6 +80,7 @@ class InlineCitation extends Component {
 
   const onPagesBlur = e => {
     const pages = this.state.pages;
+    console.log('save pages', pages, onChange, onBlur)
     onChange('contextualizers', contextualizerId, {
       ...contextualizer,
       pages
@@ -97,7 +94,7 @@ class InlineCitation extends Component {
       title
     });
     onBlur(e);
-  }
+  };
   return (
     <span
     >
