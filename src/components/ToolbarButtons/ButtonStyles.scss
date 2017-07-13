@@ -18,6 +18,15 @@
     transition: all .1s ease;
 
     }
+
+    background: inherit;
+
+    &:hover{
+      background: #CCC;
+    }
+    &.active{
+      background: #999;
+    }
 }
 
 .scholar-draft-AssetButton
