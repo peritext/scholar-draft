@@ -16,6 +16,8 @@ export default class SideControl extends Component {
     iconMap: PropTypes.object,
     assetRequestPosition: PropTypes.object,
 
+    messages: PropTypes.object,
+
     allowNotesInsertion: PropTypes.bool,
     allowAssets: PropTypes.shape({
       inline: PropTypes.bool,
@@ -50,6 +52,7 @@ export default class SideControl extends Component {
         // inline: true,
         // block: true
       },
+      messages,
       iconMap,
       assetRequestPosition,
 
@@ -73,6 +76,7 @@ export default class SideControl extends Component {
       this.toolbar = toolbar;
     };
     const stopEventPropagation = event => event.stopPropagation();
+    const assetSelectorActive = assetRequestPosition !== undefined;
     return (
       <div
         className="scholar-draft-SideControl"
@@ -82,13 +86,20 @@ export default class SideControl extends Component {
         <NoteButton 
           onClick={onNoteAdd} 
           iconMap={iconMap}
+          message={messages && messages.tooltips && messages.tooltips.addNote}
         />
         }
         {(allowAssets.inline || allowAssets.block) && 
         <AssetButton 
           onClick={onAssetButtonClick} 
-          active={assetRequestPosition !== undefined}
+          active={assetSelectorActive}
           iconMap={iconMap}
+          message={
+            messages && messages.tooltips && 
+            assetSelectorActive ? 
+              messages.tooltips.cancel : 
+              messages.tooltips.addAsset
+          }
         />}
         {assetRequestPosition &&
           <span

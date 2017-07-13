@@ -1,10 +1,12 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 
 const NoteButton = ({ 
   onClick, 
   iconMap,
+  message,
   ...otherProps 
 }) => {
 
@@ -14,15 +16,20 @@ const NoteButton = ({
     className="scholar-draft-NoteButton"
     onClick={onClick}
     onMouseDown={onMouseDown}
+    data-tip={message}
     {...otherProps}
   >
     {iconMap.note}
+    <ReactTooltip 
+      place="right"
+    />
   </div>);
 };
 
 NoteButton.propTypes = {
   onClick: PropTypes.func,
-  iconMap: PropTypes.object 
+  iconMap: PropTypes.object,
+  message: PropTypes.string,
 };
 
 export default NoteButton;

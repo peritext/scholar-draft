@@ -2,22 +2,29 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 
 const AssetButton = ({ 
   onClick, 
   active,
   iconMap,
+  message,
   ...otherProps 
 }) => {
   const onMouseDown = event => event.preventDefault();
+  console.log('active', active);
   return (
     <div
       className={`scholar-draft-AssetButton${active ? ' active' : ''}`}
       onMouseDown={onMouseDown}
       onClick={onClick}
+      data-tip={message}
       {...otherProps}
     >
       {iconMap.asset}
+      <ReactTooltip 
+        place={active ? 'left' : 'right'}
+      />
     </div>);
 };
 
@@ -27,7 +34,9 @@ AssetButton.propTypes = {
 
   iconMap: PropTypes.object,
 
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+
+  message: PropTypes.string,
 };
 
 export default AssetButton;

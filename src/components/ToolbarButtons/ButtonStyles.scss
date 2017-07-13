@@ -5,20 +5,28 @@
 .scholar-draft-NoteButton,
 .scholar-draft-AssetButton
 {
-  display: inline-block;
-  height: 24px;
-  width: 24px;
-  transition: all .1s ease;
+    display: inline-block;
 
-  &.active{
-    fill: red;
-  }
+    width: 24px;
+    height: 24px;
+
+    transition: all .1s ease;
+
+    cursor: pointer;
+
+    img{
+    transition: all .1s ease;
+
+    }
 }
 
 .scholar-draft-AssetButton
 {
-  &.active{
-    transform: rotate(45deg);
-    color: red;
-  }
+    &.active
+    {
+        img
+        {
+            transform: rotate(45deg);
+        }
+    }
 }

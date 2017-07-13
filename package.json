@@ -165,6 +165,7 @@
     "react": "^15.5.4",
     "react-custom-scrollbars": "^4.1.0",
     "react-dom": "^15.5.4",
+    "react-tooltip": "^3.3.0",
     "uuid": "^3.0.1"
   }
 }
