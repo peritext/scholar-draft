@@ -16,13 +16,8 @@
 
     img{
     transition: all .1s ease;
-
     }
-}
 
-.scholar-draft-InlineButton,
-.scholar-draft-BlockButton
-{
     background: inherit;
 
     &:hover{
@@ -31,6 +26,12 @@
     &.active{
       background: #999;
     }
+}
+
+
+.scholar-draft-NoteButton,
+.scholar-draft-AssetButton{
+    border-radius: 50%;
 }
 
 .scholar-draft-AssetButton
