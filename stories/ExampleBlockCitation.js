@@ -10,27 +10,10 @@ class BlockCitation extends Component {
     }
   }
 
-  // static contextTypes = {
-  //   emitter: PropTypes.object
-  // }
-
-  // componentDidMount() {
-  //   this.unsubscribe = this.context.emitter.subscribe(assets => {
-  //     const asset = assets[this.props.assetId];
-  //     this.setState({
-  //       asset
-  //     })
-  //   });
-  // }
-
-  // componentWillUnmount() {
-  //   this.unsubscribe();
-  // }
-
   render = () => {
     const {
       children,
-      asset,
+      // asset,
       onMouseOver,
       onMouseOut,
       onChange,
@@ -38,9 +21,9 @@ class BlockCitation extends Component {
       onBlur
     } = this.props;
 
-    // const {
-    //   asset
-    // } = this.state;
+    const {
+      asset
+    } = this.state;
     if (!asset) {
       return null;
     }
@@ -88,6 +71,7 @@ class BlockCitation extends Component {
         this.page.focus();
       }, 1);
     };
+
     return (
       <div className="citation-block">
         <span><i>

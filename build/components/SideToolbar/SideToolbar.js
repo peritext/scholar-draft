@@ -155,7 +155,7 @@ SideToolbar.propTypes = {
 
   messages: _propTypes2.default.object,
 
-  onAssetChoiceFocus: _propTypes2.default.bool,
+  onAssetChoiceFocus: _propTypes2.default.func,
 
   allowNotesInsertion: _propTypes2.default.bool,
   allowAssets: _propTypes2.default.shape({

@@ -20,7 +20,7 @@ export default class SideToolbar extends Component {
 
     messages: PropTypes.object,
 
-    onAssetChoiceFocus: PropTypes.bool,
+    onAssetChoiceFocus: PropTypes.func,
 
     allowNotesInsertion: PropTypes.bool,
     allowAssets: PropTypes.shape({
