@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-
+import PropTypes from 'prop-types';
 
 class BlockAssetChoice extends Component {
   state = {
@@ -57,11 +57,23 @@ class BlockAssetChoice extends Component {
   render () {
     const {
       onAssetChoice,
-      options = []
+      // options = []
     } = this.props;
 
+    const {
+      assetChoiceProps = {}
+    } = this.context;
+
+    const {
+      // onAssetChoice,
+      options = []
+    } = assetChoiceProps;
+
     const onOptionClick = option => {
-      onAssetChoice(option);
+        // console.log('on asset choice', option, this.context.assetChoiceProps);
+      if (typeof onAssetChoice === 'function') {
+        onAssetChoice(option);
+      }
     }
     const bindRef = input => {
       this.input = input;
@@ -99,6 +111,11 @@ class BlockAssetChoice extends Component {
     )
   }
 }
+
+BlockAssetChoice.contextTypes = {
+  assetChoiceProps: PropTypes.object,
+  emitter: PropTypes.object
+};
 
 
 export default BlockAssetChoice;
