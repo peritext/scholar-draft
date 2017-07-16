@@ -117,7 +117,7 @@ var InlineAssetContainer = function (_Component) {
       this.setState({
         asset: this.context.assets[this.props.assetId]
       });
-      this.unsubscribe = this.context.emitter.subscribe(function (assets) {
+      this.unsubscribe = this.context.emitter.subscribeToAssets(function (assets) {
         var asset = assets[_this2.props.assetId];
         _this2.setState({
           asset: asset

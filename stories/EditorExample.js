@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import FileSaver from 'file-saver';
+
 import {debounce} from 'lodash';
 
 import {mapSeries} from 'async';
@@ -29,6 +31,10 @@ import Editor, {
   utils,
   constants
 } from '../src';
+
+import example300000 from './mocks/scholar-draft-example-state-with-notes-300000.json';
+import example500000 from './mocks/scholar-draft-example-state-with-notes-500000-30entities.json'
+
 const {
   NOTE_POINTER,
   INLINE_ASSET
@@ -66,7 +72,7 @@ export default class EditorExample extends Component {
     assetRequest: false,
     assetRequestType: undefined,
     // all these should be handled by upstream logic in real applications
-    mainEditorState: EditorState.createEmpty(),
+    mainEditorState: undefined,
     notes: {},
     inlineAssetComponents,
     blockAssetComponents,
@@ -95,7 +101,7 @@ export default class EditorExample extends Component {
 
   constructor(props) {
     super(props);
-    this.debouncedCleanStuffFromEditorInspection = debounce(this.cleanStuffFromEditorInspection, 1000);
+    this.debouncedCleanStuffFromEditorInspection = debounce(this.cleanStuffFromEditorInspection, 400);
   }
 
   componentDidMount = () => {
@@ -110,22 +116,28 @@ export default class EditorExample extends Component {
     document.removeEventListener('paste', this.onPaste);
   }
 
-  updateNotesFromEditor = () => {
-    const notes = updateNotesFromEditor(this.state.mainEditorState, this.state.notes);
+  updateNotesFromEditor = (state) => {
+    const notes = updateNotesFromEditor(state.mainEditorState, state.notes);
     this.setState({
       notes
     });
   }
 
-  cleanStuffFromEditorInspection = () => {
-    // this.clearContextualizations();
-    this.updateNotesFromEditor();
+  cleanStuffFromEditorInspection = (state) => {
+    // this.clearContextualizations(state);
+    this.updateNotesFromEditor(state);
+  }
+
+  componentWillUpdate() {
+    console.time('editor update time');
   }
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.state.mainEditorState !== prevState.mainEditorState) {
-      this.debouncedCleanStuffFromEditorInspection();
+      // this.cleanStuffFromEditorInspection(this.state);
+      this.debouncedCleanStuffFromEditorInspection(this.state);
     }
+    console.timeEnd('editor update time');
   }
 
   /**
@@ -139,14 +151,11 @@ export default class EditorExample extends Component {
     const copiedContextualizers = [];
     const copiedContextualizations = [];
 
-
-
     let clipboard = null;
     let currentContent;
     let editorState;
     let activeId;
     const stateDiff = {};
-
 
     const {
       focusedEditorId
@@ -257,8 +266,6 @@ export default class EditorExample extends Component {
 
     console.log('copied data', copiedData);
 
-    // console.log('clipboard text', e.clipboardData.getData('text/plain'), 'clipboard', clipboard);
-
     // this hack allows to check if data comes from out of the editor
     if (!clipboard || e.clipboardData.getData('text/plain') !== '$$$scholar-draft-clipboard') {
       this.setState({
@@ -294,12 +301,6 @@ export default class EditorExample extends Component {
       resources: {...this.state.resources}
     };
     let newEditorState = editorState;
-    // console.log('state notes', this.state.notes);
-    // let firstBlock = newEditorState.getCurrentContent().toJS().blockMap[Object.keys(newEditorState.getCurrentContent().toJS().blockMap)[0]];
-    // let firstEntityId = firstBlock.characterList[0].entity;
-    // console.log('first entity key', firstEntityId);
-    // console.log('first entity', newEditorState.getCurrentContent().getEntity(firstEntityId).toJS().data.noteId);
-    
 
     // case: some non-textual data has been saved to the clipboard
     if (typeof copiedData === 'object') {
@@ -558,9 +559,7 @@ export default class EditorExample extends Component {
       ...notesEditorStates,
     };
     editorStates = Object.keys(editorStates).map(id => editorStates[id]).filter(e => e);
-    console.log('editor states', editorStates);
     const contextualizations = updateAssetsFromEditors(editorStates, {...this.state.contextualizations});
-    console.log('contextualizations', contextualizations);
     this.setState({
       contextualizations
     });
@@ -657,6 +656,8 @@ export default class EditorExample extends Component {
       contextualizations
     } = this.state;
 
+    console.info('inserting contextualization');
+
     const assetRequestContentId = contentId || this.state.assetRequestContentId;
     const id = generateId();
     const contextualization = {
@@ -679,7 +680,7 @@ export default class EditorExample extends Component {
         [id]: contextualization
       },
       notes: this.state.notes,
-      focusedEditorId: 'main'
+      focusedEditorId: assetRequestContentId
       // editorState: newEditorState,
     };
     if (assetRequestContentId === 'main') {
@@ -689,6 +690,7 @@ export default class EditorExample extends Component {
     }
     this.setState(newState);
     setTimeout(() => {
+      console.info('focusing on editor id : ', assetRequestContentId);
       this.setState({
         focusedEditorId: assetRequestContentId,
       });
@@ -721,7 +723,6 @@ export default class EditorExample extends Component {
   }
 
   onDataChange = (dataProp, id, newObject) => {
-    console.log('on data change', dataProp, id, newObject);
     this.setState({
       [dataProp]: {
         ...this.state[dataProp],
@@ -790,13 +791,14 @@ export default class EditorExample extends Component {
   addNote = () => {
     const id = generateId();
     // add related entity in main editor
-    const mainEditorState = insertNoteInEditor(this.state.mainEditorState, id);
+    const mainEditorState =  insertNoteInEditor(this.state.mainEditorState, id);
     // add note
     let notes = {
       ...this.state.notes,
       [id]: {
         id,
-        editorState: EditorState.createEmpty()
+        // generate decorated editor
+        editorState: this.editor.generateEmptyEditor()
       }
     };
     notes = updateNotesFromEditor(mainEditorState, notes);
@@ -806,9 +808,12 @@ export default class EditorExample extends Component {
       focusedEditorId: id
     });
 
-    setTimeout(() => {
-      this.editor.focus(id);
-    }, 100);
+    // setTimeout(() => {
+    //   this.setState({
+    //     focusedEditorId: id
+    //   });
+      setTimeout(() => this.editor.focus(id), 100);
+    // });
   }
 
   deleteNote = id => {
@@ -934,13 +939,12 @@ export default class EditorExample extends Component {
 
     const onClick = (event, contentId = 'main') => {
       if (this.state.focusedEditorId !== contentId) {
-        // console.log('set readonly to false for', contentId);
+        const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
+        const selection = editorState.getSelection();
         this.setState({
           focusedEditorId: contentId
         });
-        setTimeout(() => {
-          this.editor.focus(contentId);
-        }, 1);
+        this.editor.focus(contentId, selection);
       }
     }
 
@@ -999,6 +1003,58 @@ export default class EditorExample extends Component {
         });
       }
     }
+
+    // utils
+    const downloadState = () => {
+      const state = {
+        content: convertToRaw(this.state.mainEditorState.getCurrentContent()),
+        resources,
+        contextualizers,
+        contextualizations,
+        notes: Object.keys(this.state.notes).reduce((result, noteId) => ({
+          ...result,
+          [noteId] : {
+            ...this.state.notes[noteId],
+            editorState: convertToRaw(this.state.notes[noteId].editorState.getCurrentContent())
+          }
+        }), {})
+      };
+      const blob = new Blob([JSON.stringify(state)], {type: 'text/plain;charset=utf-8'});
+      FileSaver.saveAs(blob, 'scholar-draft-example-state-with-notes.json');
+     }
+
+    const loadExampleState = (mock) => {
+      const {
+        content,
+        resources,
+        contextualizations,
+        contextualizers,
+        notes,
+      } = mock;
+
+      this.setState({
+        mainEditorState: EditorState.createWithContent(convertFromRaw(content)),
+        resources,
+        contextualizers,
+        contextualizations,
+        notes: Object.keys(notes).reduce((result, noteId) => ({
+          ...result,
+          [noteId] : {
+            ...notes[noteId],
+            editorState: EditorState.createWithContent(convertFromRaw(notes[noteId].editorState))
+          }
+        }), {})
+      });
+     }
+
+    const load300000ExampleState = () => {
+      loadExampleState(example300000);
+    }
+
+    const load500000ExampleState = () => {
+      loadExampleState(example500000);
+    }
+
     return (
       <div
         style={{
@@ -1022,6 +1078,10 @@ export default class EditorExample extends Component {
             overflow: 'auto'
           }}
         >
+          <button onClick={downloadState}>Download current state</button>
+          <button onClick={load300000ExampleState}>Load example state (300 000 characters without entities)</button>
+          <button onClick={load500000ExampleState}>Load example state (500 000 characters (~170 pages doc) with 30 entities)</button>
+
           {assetRequest && <div>
           <button onClick={() => insertContextualization()}>Insert contextualization</button>
             </div>}

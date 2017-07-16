@@ -117,6 +117,7 @@ function checkCharacterForState(editorState, character) {
   return newEditorState;
 }
 
+// todo : this function is a perf bottleneck
 /**
  * Resolves return key hit
  * @param {ImmutableRecord} editorState - the input editor state
@@ -150,20 +151,33 @@ function checkReturnForState(editorState, ev) {
 
 /**
  * This class allows to produce event emitters
- * that will be used to dispatch assets change through context
+ * that will be used to dispatch assets changes 
+ * and notes changes through context
  */
 export class Emitter {
-  listeners = new Map()
+  assetsListeners = new Map()
+  notesListeners = new Map()
 
-  subscribe = (listener) => {
+  subscribeToAssets = (listener) => {
     const id = generateId();
-    this.listeners.set(id, listener);
-    return () => this.listeners.delete(id);
+    this.assetsListeners.set(id, listener);
+    return () => this.assetsListeners.delete(id);
   }
 
-  dispatch = (assets) => {
-    this.listeners.forEach((listener) => {
+  subscribeToNotes = (listener) => {
+    const id = generateId();
+    this.notesListeners.set(id, listener);
+    return () => this.notesListeners.delete(id);
+  }
+
+  dispatchAssets = (assets) => {
+    this.assetsListeners.forEach((listener) => {
       listener(assets);
+    });
+  }
+  dispatchNotes= (notes) => {
+    this.notesListeners.forEach((listener) => {
+      listener(notes);
     });
   }
 }
@@ -205,9 +219,9 @@ export default class BasicEditor extends Component {
     onAssetChoice: PropTypes.func,
     onAssetChange: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
-    onNotePointerMouseClick: PropTypes.func,
-    onNotePointerMouseOver: PropTypes.func,
-    onNotePointerMouseOut: PropTypes.func,
+    onNoteMouseOver: PropTypes.func,
+    onNoteMouseOut: PropTypes.func,
+    onNoteClick: PropTypes.func,
     /*
      * Parametrization props
      */
@@ -240,12 +254,18 @@ export default class BasicEditor extends Component {
   static childContextTypes = {
     emitter: PropTypes.object,
     assets: PropTypes.object,
+    notes: PropTypes.object,
     assetChoiceProps: PropTypes.object,
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
     onAssetChange: PropTypes.func,
     onAssetFocus: PropTypes.func,
     onAssetBlur: PropTypes.func,
+
+    onNoteMouseOver: PropTypes.func,
+    onNoteMouseOut: PropTypes.func,
+    onNoteClick: PropTypes.func,
+
     iconMap: PropTypes.object
   }
 
@@ -298,6 +318,11 @@ export default class BasicEditor extends Component {
     onAssetChange: this.props.onAssetChange,
     onAssetFocus: this.onAssetFocus,
     onAssetBlur: this.onAssetBlur,
+
+    onNoteMouseOver: this.props.onNoteMouseOver,
+    onNoteMouseOut: this.props.onNoteMouseOut,
+    onNoteClick: this.props.onNoteClick,
+    notes: this.props.notes,
   })
 
   /**
@@ -343,7 +368,7 @@ export default class BasicEditor extends Component {
     // trigger changes when assets are changed
     if (this.props.assets !== nextProps.assets) {
       // dispatch new assets through context's emitter
-      this.emitter.dispatch(nextProps.assets);
+      this.emitter.dispatchAssets(nextProps.assets);
       // update state-stored assets
       this.setState({ assets: nextProps.assets });
       // if the number of assets is changed it means
@@ -358,7 +383,30 @@ export default class BasicEditor extends Component {
         // re-rendering after a timeout.
         // not doing that causes the draft editor not to update
         // before a new modification is applied to it
+        // this is weird but it works
         setTimeout(() => this.forceRender(nextProps));
+        setTimeout(() => this.forceRender(nextProps), 500);
+      }
+    }
+    // trigger changes when notes are changed
+    if (this.props.notes !== nextProps.notes) {
+      // dispatch new notes through context's emitter
+      this.emitter.dispatchNotes(nextProps.notes);
+      // update state-stored assets
+      this.setState({ notes: nextProps.notes });
+      // if the number of notes is changed it means
+      // new entities might be present in the editor.
+      // As, for optimizations reasons, draft-js editor does not update
+      // its entity map in this case (did not exactly understand why)
+      // it has to be forced to re-render itself
+      if (
+        !this.props.notes || !nextProps.notes ||
+        Object.keys(this.props.notes).length !== Object.keys(nextProps.notes).length
+      ) {
+        // re-rendering after a timeout.
+        // not doing that causes the draft editor not to update
+        // before a new modification is applied to it
+        this.forceRender(nextProps);
       }
     }
   }
@@ -375,10 +423,6 @@ export default class BasicEditor extends Component {
     // return false;
   }
 
-  // componentWillUpdate() {
-  //   // console.time('editor update time');
-  // }
-
   componentDidUpdate(prevProps) {
     this.debouncedUpdateSelection();
     if (
@@ -388,7 +432,6 @@ export default class BasicEditor extends Component {
     ) {
       this.editor.focus();
     }
-    // console.timeEnd('editor update time');
   }
 
   /**
@@ -533,16 +576,15 @@ export default class BasicEditor extends Component {
    * @params {object} props - the component's props to manipulate
    */
   forceRender = (props) => {
+    console.log('force render');
     const editorState = props.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
-
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
-
-    const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     let selectedEditorState = EditorState.acceptSelection(
       newEditorState, 
       editorState.getSelection()
     );
+    const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
     this.feedUndoStack(this.state.editorState);
@@ -550,7 +592,6 @@ export default class BasicEditor extends Component {
       editorState: selectedEditorState,
     });
   }
-
 
   /**
    * Custom draft-js renderer handling atomic blocks with library's BlockAssetContainer component
@@ -800,7 +841,7 @@ export default class BasicEditor extends Component {
    * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
    * @param {ImmutableRecord} inputContentState - the content state to parse
    */
-  findNotePointers = (contentBlock, callback, inputContentState) => {
+  findNotePointer = (contentBlock, callback, inputContentState) => {
     let contentState = inputContentState;
     if (!this.props.editorState) {
       return callback(null);
@@ -819,29 +860,9 @@ export default class BasicEditor extends Component {
       (start, end) => {
         const entityKey = contentBlock.getEntityAt(start);
         const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
-        const noteId = data.data.noteId;
-        const onMouseOver = (event) => {
-          if (typeof this.props.onNotePointerMouseOver === 'function') {
-            this.props.onNotePointerMouseOver(noteId, event);
-          }
-        };
-        const onMouseOut = (event) => {
-          if (typeof this.props.onNotePointerMouseOut === 'function') {
-            this.props.onNotePointerMouseOut(noteId, event);
-          }
-        };
-        const onMouseClick = (event) => {
-          if (typeof this.props.onNotePointerMouseClick === 'function') {
-            this.props.onNotePointerMouseClick(noteId, event);
-          }
-        };
-        const note = this.props.notes && this.props.notes[noteId];
+
         const props = {
           ...data.data,
-          note,
-          onMouseOver,
-          onMouseOut,
-          onMouseClick
         };
         callback(start, end, props);
       }
@@ -880,7 +901,7 @@ export default class BasicEditor extends Component {
     const ActiveNotePointer = this.props.NotePointerComponent || NotePointer;
     return new MultiDecorator([
       new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
-      new SimpleDecorator(this.findNotePointers, ActiveNotePointer),
+      new SimpleDecorator(this.findNotePointer, ActiveNotePointer),
       new SimpleDecorator(this.findQuotes, QuoteContainer),
     ]);
   }

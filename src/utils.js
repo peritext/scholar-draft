@@ -10,8 +10,6 @@ import {
   SelectionState
 } from 'draft-js';
 
-import { OrderedMap } from 'immutable';
-
 import {
   NOTE_POINTER,
   INLINE_ASSET,
@@ -277,15 +275,13 @@ export function insertNoteInEditor(
     noteId, 
     selection
   ) {
-  let newContentState = editorState.getCurrentContent().createEntity(
-      NOTE_POINTER,
-      'IMMUTABLE',
-    {
-      noteId
-    }
-    );
-  const newEntityKey = newContentState.getLastCreatedEntityKey();
   const currentContent = editorState.getCurrentContent();
+  let newContentState = currentContent.createEntity(
+    NOTE_POINTER,
+    'IMMUTABLE',
+    { noteId }
+  );
+  const newEntityKey = newContentState.getLastCreatedEntityKey();
   const activeSelection = editorState.getSelection();
   // // retaining only the end of selection
   const thatSelection = activeSelection.merge({
@@ -298,6 +294,7 @@ export function insertNoteInEditor(
     EditorState.createWithContent(newContentState), 
     thatSelection
   );
+
   const selectedText = ' ';
 
   newContentState = Modifier.replaceText(
@@ -307,9 +304,11 @@ export function insertNoteInEditor(
       null,
       newEntityKey
     );
-  const endSelection = thatSelection.merge({
-    anchorOffset: thatSelection.getEndOffset() + selectedText.length,
-    focusOffset: thatSelection.getEndOffset() + selectedText.length,
+  const anchorOffset = thatSelection.getEndOffset() + selectedText.length;
+  const focusOffset = thatSelection.getEndOffset() + selectedText.length;
+  let endSelection = thatSelection.merge({
+    anchorOffset,
+    focusOffset,
   });
   newContentState = Modifier.replaceText(
       newContentState,
@@ -318,9 +317,12 @@ export function insertNoteInEditor(
       null,
       null
     );
+  endSelection = thatSelection.merge({
+    anchorOffset: anchorOffset + 1,
+    focusOffset: focusOffset + 1,
+  });
   newContentState = Modifier.applyEntity(newContentState, endSelection, newEntityKey);
-
-  updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
+  updatedEditor = EditorState.push(editorState, newContentState, 'edit-entity');
   updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;
 }
@@ -438,17 +440,17 @@ export function deleteNoteFromEditor(
 /**
  * Updates notes number and delete notes which are not any more pointed in the given editor state
  * @param {ImmutableRecord} editorState - the editor state before change
- * @param {object} notes - a map of the notes with shape {noteId: string, order: number, editorState: ImmutableRecord}
+ * @param {object} notes - a map of the notes 
+ * with shape {noteId: string, order: number, editorState: ImmutableRecord}
  * @return {obj} newNotes - a map of the updated notes
  */
 export const updateNotesFromEditor = (editorState, inputNotes) => {
   const notes = { ...inputNotes };
-
   const contentState = editorState.getCurrentContent();
 
   // list all entities
   // should be replaced by contentState.getEntityMap() with draft@0.11.0
-  let entities = [];
+  const entities = [];
   contentState.getBlockMap().forEach((block) => {
     block.findEntityRanges((character) => {
       const entityKey = character.getEntity();
@@ -457,9 +459,9 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
       }
     });
   });
-  // filter to note poiner eneities
+  // filter to note pointer entities
   const noteEntities = entities
-    .filter(thatEntity => thatEntity.getType() === NOTE_POINTER)
+    .filter(thatEntity => thatEntity.getType() === NOTE_POINTER);
 
   // attribute orders to notes
   let order = 0;
@@ -470,7 +472,6 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
       notes[noteId].order = order;
     }
   });
-  return inputNotes;
   // filter unused notes
   return Object.keys(notes)
   .filter((noteId) => {
@@ -491,18 +492,21 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
 
 /**
  * Delete assets which are not linked to an entity in any of a collection of editorStates
- * @param {array<ImmutableRecord>} editorStates - the array of editor states to parse (e.g. main editor state + notes editor states)
- * @param {object} notes - a map of the notes with shape {noteId: string, order: number, editorState: ImmutableRecord}
+ * @param {array<ImmutableRecord>} editorStates - 
+ * the array of editor states to parse (e.g. main editor state 
+ * + notes editor states)
+ * @param {object} notes - a map of the notes with shape 
+ * {noteId: string, order: number, editorState: ImmutableRecord}
  * @return {obj} newAssets - a map of the assets actually in use
  */
 export const updateAssetsFromEditors = (editorStates, inputAssets) => {
   const assets = { ...inputAssets };
   // list all entities
   // todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
-  let entities = [];
-  editorStates.forEach(editorState => {
-   const contentState = editorState.getCurrentContent();
-   contentState.getBlockMap().forEach((block) => {
+  const entities = [];
+  editorStates.forEach((editorState) => {
+    const contentState = editorState.getCurrentContent();
+    contentState.getBlockMap().forEach((block) => {
       block.findEntityRanges((character) => {
         const entityKey = character.getEntity();
         if (entityKey) {

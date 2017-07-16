@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import {
+  EditorState
+} from 'draft-js';
+
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 
@@ -58,12 +62,35 @@ export default class Editor extends Component {
     this.notes = {};
   }
 
-  focus = (contentId) => {
+  focus = (contentId, selection) => {
     if (contentId === 'main' && this.mainEditor) {
-      this.mainEditor.focus();
+      if (selection) {
+        this.mainEditor.setState({
+          editorState: EditorState.acceptSelection(
+            this.mainEditor.state.editorState,
+            selection
+          )
+        });
+      }
+      setTimeout(() => this.mainEditor.focus());
     } else if (this.notes[contentId]) {
-      this.notes[contentId].editor.focus();
+      setTimeout(() => this.notes[contentId].editor.focus());
+      if (selection) {
+        this.notes[contentId].editor.setState({
+          editorState: EditorState.acceptSelection(
+            this.notes[contentId].editor.state.editorState,
+            selection
+          )
+        });
+      }
     }
+  }
+
+  generateEmptyEditor = () => {
+    if (this.mainEditor) {
+      return this.mainEditor.generateEmptyEditor();
+    }
+    return null;
   }
 
   render() {
@@ -150,11 +177,11 @@ export default class Editor extends Component {
       };
 
       const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
-
       return (
         <NoteContainer
           key={noteId}
           note={note}
+          notes={notes}
           assets={assets}
 
           ref={bindNote}
@@ -227,9 +254,10 @@ export default class Editor extends Component {
         <section className="main-container-editor">
           <BasicEditor 
             editorState={mainEditorState}
-            notes={notes}
             assets={assets}
             ref={bindMainEditor}
+
+            notes={notes}
 
             contentId="main"
 

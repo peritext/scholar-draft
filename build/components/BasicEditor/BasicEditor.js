@@ -214,6 +214,7 @@ function checkCharacterForState(editorState, character) {
   return newEditorState;
 }
 
+// todo : this function is a perf bottleneck
 /**
  * Resolves return key hit
  * @param {ImmutableRecord} editorState - the input editor state
@@ -246,26 +247,42 @@ function checkReturnForState(editorState, ev) {
 
 /**
  * This class allows to produce event emitters
- * that will be used to dispatch assets change through context
+ * that will be used to dispatch assets changes 
+ * and notes changes through context
  */
 
 var Emitter = exports.Emitter = function Emitter() {
   var _this = this;
 
   (0, _classCallCheck3.default)(this, Emitter);
-  this.listeners = new _map2.default();
+  this.assetsListeners = new _map2.default();
+  this.notesListeners = new _map2.default();
 
-  this.subscribe = function (listener) {
+  this.subscribeToAssets = function (listener) {
     var id = (0, _uuid.v4)();
-    _this.listeners.set(id, listener);
+    _this.assetsListeners.set(id, listener);
     return function () {
-      return _this.listeners.delete(id);
+      return _this.assetsListeners.delete(id);
     };
   };
 
-  this.dispatch = function (assets) {
-    _this.listeners.forEach(function (listener) {
+  this.subscribeToNotes = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.notesListeners.set(id, listener);
+    return function () {
+      return _this.notesListeners.delete(id);
+    };
+  };
+
+  this.dispatchAssets = function (assets) {
+    _this.assetsListeners.forEach(function (listener) {
       listener(assets);
+    });
+  };
+
+  this.dispatchNotes = function (notes) {
+    _this.notesListeners.forEach(function (listener) {
+      listener(notes);
     });
   };
 };
@@ -360,11 +377,6 @@ var BasicEditor = function (_Component) {
       // }
       // return false;
     }
-
-    // componentWillUpdate() {
-    //   // console.time('editor update time');
-    // }
-
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
@@ -372,7 +384,6 @@ var BasicEditor = function (_Component) {
       if (this.props.editorState !== prevProps.editorState && this.editor && !this.state.readOnly && this.props.isActive) {
         this.editor.focus();
       }
-      // console.timeEnd('editor update time');
     }
 
     /**
@@ -571,9 +582,9 @@ BasicEditor.propTypes = {
   onAssetChoice: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
   onAssetRequestCancel: _propTypes2.default.func,
-  onNotePointerMouseClick: _propTypes2.default.func,
-  onNotePointerMouseOver: _propTypes2.default.func,
-  onNotePointerMouseOut: _propTypes2.default.func,
+  onNoteMouseOver: _propTypes2.default.func,
+  onNoteMouseOut: _propTypes2.default.func,
+  onNoteClick: _propTypes2.default.func,
   /*
    * Parametrization props
    */
@@ -597,12 +608,18 @@ BasicEditor.defaultProps = {
 BasicEditor.childContextTypes = {
   emitter: _propTypes2.default.object,
   assets: _propTypes2.default.object,
+  notes: _propTypes2.default.object,
   assetChoiceProps: _propTypes2.default.object,
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
   onAssetFocus: _propTypes2.default.func,
   onAssetBlur: _propTypes2.default.func,
+
+  onNoteMouseOver: _propTypes2.default.func,
+  onNoteMouseOut: _propTypes2.default.func,
+  onNoteClick: _propTypes2.default.func,
+
   iconMap: _propTypes2.default.object };
 
 var _initialiseProps = function _initialiseProps() {
@@ -619,7 +636,12 @@ var _initialiseProps = function _initialiseProps() {
       onAssetMouseOut: _this4.props.onAssetMouseOut,
       onAssetChange: _this4.props.onAssetChange,
       onAssetFocus: _this4.onAssetFocus,
-      onAssetBlur: _this4.onAssetBlur
+      onAssetBlur: _this4.onAssetBlur,
+
+      onNoteMouseOver: _this4.props.onNoteMouseOver,
+      onNoteMouseOut: _this4.props.onNoteMouseOut,
+      onNoteClick: _this4.props.onNoteClick,
+      notes: _this4.props.notes
     };
   };
 
@@ -654,7 +676,7 @@ var _initialiseProps = function _initialiseProps() {
     // trigger changes when assets are changed
     if (_this4.props.assets !== nextProps.assets) {
       // dispatch new assets through context's emitter
-      _this4.emitter.dispatch(nextProps.assets);
+      _this4.emitter.dispatchAssets(nextProps.assets);
       // update state-stored assets
       _this4.setState({ assets: nextProps.assets });
       // if the number of assets is changed it means
@@ -666,9 +688,31 @@ var _initialiseProps = function _initialiseProps() {
         // re-rendering after a timeout.
         // not doing that causes the draft editor not to update
         // before a new modification is applied to it
+        // this is weird but it works
         setTimeout(function () {
           return _this4.forceRender(nextProps);
         });
+        setTimeout(function () {
+          return _this4.forceRender(nextProps);
+        }, 500);
+      }
+    }
+    // trigger changes when notes are changed
+    if (_this4.props.notes !== nextProps.notes) {
+      // dispatch new notes through context's emitter
+      _this4.emitter.dispatchNotes(nextProps.notes);
+      // update state-stored assets
+      _this4.setState({ notes: nextProps.notes });
+      // if the number of notes is changed it means
+      // new entities might be present in the editor.
+      // As, for optimizations reasons, draft-js editor does not update
+      // its entity map in this case (did not exactly understand why)
+      // it has to be forced to re-render itself
+      if (!_this4.props.notes || !nextProps.notes || (0, _keys2.default)(_this4.props.notes).length !== (0, _keys2.default)(nextProps.notes).length) {
+        // re-rendering after a timeout.
+        // not doing that causes the draft editor not to update
+        // before a new modification is applied to it
+        _this4.forceRender(nextProps);
       }
     }
   };
@@ -769,13 +813,12 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.forceRender = function (props) {
+    console.log('force render');
     var editorState = props.editorState || _this4.generateEmptyEditor();
     var content = editorState.getCurrentContent();
-
     var newEditorState = _draftJs.EditorState.createWithContent(content, _this4.createDecorator());
-
-    var inlineStyle = _this4.state.editorState.getCurrentInlineStyle();
     var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    var inlineStyle = _this4.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
     _this4.feedUndoStack(_this4.state.editorState);
@@ -971,7 +1014,7 @@ var _initialiseProps = function _initialiseProps() {
     });
   };
 
-  this.findNotePointers = function (contentBlock, callback, inputContentState) {
+  this.findNotePointer = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
     if (!_this4.props.editorState) {
       return callback(null);
@@ -985,29 +1028,8 @@ var _initialiseProps = function _initialiseProps() {
     }, function (start, end) {
       var entityKey = contentBlock.getEntityAt(start);
       var data = _this4.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
-      var noteId = data.data.noteId;
-      var onMouseOver = function onMouseOver(event) {
-        if (typeof _this4.props.onNotePointerMouseOver === 'function') {
-          _this4.props.onNotePointerMouseOver(noteId, event);
-        }
-      };
-      var onMouseOut = function onMouseOut(event) {
-        if (typeof _this4.props.onNotePointerMouseOut === 'function') {
-          _this4.props.onNotePointerMouseOut(noteId, event);
-        }
-      };
-      var onMouseClick = function onMouseClick(event) {
-        if (typeof _this4.props.onNotePointerMouseClick === 'function') {
-          _this4.props.onNotePointerMouseClick(noteId, event);
-        }
-      };
-      var note = _this4.props.notes && _this4.props.notes[noteId];
-      var props = (0, _extends3.default)({}, data.data, {
-        note: note,
-        onMouseOver: onMouseOver,
-        onMouseOut: onMouseOut,
-        onMouseClick: onMouseClick
-      });
+
+      var props = (0, _extends3.default)({}, data.data);
       callback(start, end, props);
     });
   };
@@ -1033,7 +1055,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this.createDecorator = function () {
     var ActiveNotePointer = _this4.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointers, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)]);
+    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)]);
   };
 
   this.updateSelection = function () {

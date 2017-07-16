@@ -37,6 +37,8 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _draftJs = require('draft-js');
+
 var _BasicEditor = require('../BasicEditor/BasicEditor');
 
 var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
@@ -57,12 +59,33 @@ var Editor = function (_Component) {
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
 
-    _this.focus = function (contentId) {
+    _this.focus = function (contentId, selection) {
       if (contentId === 'main' && _this.mainEditor) {
-        _this.mainEditor.focus();
+        if (selection) {
+          _this.mainEditor.setState({
+            editorState: _draftJs.EditorState.acceptSelection(_this.mainEditor.state.editorState, selection)
+          });
+        }
+        setTimeout(function () {
+          return _this.mainEditor.focus();
+        });
       } else if (_this.notes[contentId]) {
-        _this.notes[contentId].editor.focus();
+        setTimeout(function () {
+          return _this.notes[contentId].editor.focus();
+        });
+        if (selection) {
+          _this.notes[contentId].editor.setState({
+            editorState: _draftJs.EditorState.acceptSelection(_this.notes[contentId].editor.state.editorState, selection)
+          });
+        }
       }
+    };
+
+    _this.generateEmptyEditor = function () {
+      if (_this.mainEditor) {
+        return _this.mainEditor.generateEmptyEditor();
+      }
+      return null;
     };
 
     _this.notes = {};
@@ -152,10 +175,10 @@ var Editor = function (_Component) {
         };
 
         var NoteContainer = NoteContainerComponent || _NoteContainer2.default;
-
         return _react2.default.createElement(NoteContainer, {
           key: noteId,
           note: note,
+          notes: notes,
           assets: assets,
 
           ref: bindNote,
@@ -232,9 +255,10 @@ var Editor = function (_Component) {
           { className: 'main-container-editor' },
           _react2.default.createElement(_BasicEditor2.default, {
             editorState: mainEditorState,
-            notes: notes,
             assets: assets,
             ref: bindMainEditor,
+
+            notes: notes,
 
             contentId: 'main',
 

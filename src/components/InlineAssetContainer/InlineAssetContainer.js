@@ -29,7 +29,7 @@ class InlineAssetContainer extends Component {
     this.setState({
       asset: this.context.assets[this.props.assetId]
     });
-    this.unsubscribe = this.context.emitter.subscribe((assets) => {
+    this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.assetId];
       this.setState({
         asset

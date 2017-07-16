@@ -29,7 +29,7 @@ class BlockAssetContainer extends Component {
     this.setState({
       asset: this.context.assets[this.props.blockProps.assetId]
     });
-    this.unsubscribe = this.context.emitter.subscribe((assets) => {
+    this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.blockProps.assetId];
       this.setState({
         asset
