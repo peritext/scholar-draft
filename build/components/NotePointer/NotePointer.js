@@ -47,30 +47,30 @@ var NotePointer = function (_Component) {
     _this.render = function () {
       var note = _this.state.note;
       var _this$context = _this.context,
-          onNoteMouseOver = _this$context.onNoteMouseOver,
-          onNoteMouseOut = _this$context.onNoteMouseOut,
-          onNoteClick = _this$context.onNoteClick;
+          onNotePointerMouseOver = _this$context.onNotePointerMouseOver,
+          onNotePointerMouseOut = _this$context.onNotePointerMouseOut,
+          onNotePointerMouseClick = _this$context.onNotePointerMouseClick;
       var children = _this.props.children;
 
 
       var onMouseOver = function onMouseOver(event) {
         event.stopPropagation();
-        if (typeof onNoteMouseOver === 'function') {
-          onNoteMouseOver(note.id, note, event);
+        if (typeof onNotePointerMouseOver === 'function') {
+          onNotePointerMouseOver(note.id, note, event);
         }
       };
 
       var onMouseOut = function onMouseOut(event) {
         event.stopPropagation();
-        if (typeof onNoteMouseOut === 'function') {
-          onNoteMouseOut(note.id, note, event);
+        if (typeof onNotePointerMouseOut === 'function') {
+          onNotePointerMouseOut(note.id, note, event);
         }
       };
 
       var onMouseClick = function onMouseClick(event) {
         event.stopPropagation();
-        if (typeof onNoteClick === 'function') {
-          onNoteClick(note.id, note, event);
+        if (typeof onNotePointerMouseClick === 'function') {
+          onNotePointerMouseClick(note.id, note, event);
         }
       };
 
@@ -124,9 +124,9 @@ NotePointer.contextTypes = {
   emitter: _propTypes2.default.object,
   notes: _propTypes2.default.object,
 
-  onNoteMouseOver: _propTypes2.default.func,
-  onNoteMouseOut: _propTypes2.default.func,
-  onNoteClick: _propTypes2.default.func
+  onNotePointerMouseOver: _propTypes2.default.func,
+  onNotePointerMouseOut: _propTypes2.default.func,
+  onNotePointerMouseClick: _propTypes2.default.func
 };
 
 

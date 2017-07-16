@@ -582,9 +582,9 @@ BasicEditor.propTypes = {
   onAssetChoice: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
   onAssetRequestCancel: _propTypes2.default.func,
-  onNoteMouseOver: _propTypes2.default.func,
-  onNoteMouseOut: _propTypes2.default.func,
-  onNoteClick: _propTypes2.default.func,
+  onNotePointerMouseOver: _propTypes2.default.func,
+  onNotePointerMouseOut: _propTypes2.default.func,
+  onNotePointerMouseClick: _propTypes2.default.func,
   /*
    * Parametrization props
    */
@@ -616,9 +616,9 @@ BasicEditor.childContextTypes = {
   onAssetFocus: _propTypes2.default.func,
   onAssetBlur: _propTypes2.default.func,
 
-  onNoteMouseOver: _propTypes2.default.func,
-  onNoteMouseOut: _propTypes2.default.func,
-  onNoteClick: _propTypes2.default.func,
+  onNotePointerMouseOver: _propTypes2.default.func,
+  onNotePointerMouseOut: _propTypes2.default.func,
+  onNotePointerMouseClick: _propTypes2.default.func,
 
   iconMap: _propTypes2.default.object };
 
@@ -638,9 +638,9 @@ var _initialiseProps = function _initialiseProps() {
       onAssetFocus: _this4.onAssetFocus,
       onAssetBlur: _this4.onAssetBlur,
 
-      onNoteMouseOver: _this4.props.onNoteMouseOver,
-      onNoteMouseOut: _this4.props.onNoteMouseOut,
-      onNoteClick: _this4.props.onNoteClick,
+      onNotePointerMouseOver: _this4.props.onNotePointerMouseOver,
+      onNotePointerMouseOut: _this4.props.onNotePointerMouseOut,
+      onNotePointerMouseClick: _this4.props.onNotePointerMouseClick,
       notes: _this4.props.notes
     };
   };

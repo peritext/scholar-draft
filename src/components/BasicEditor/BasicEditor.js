@@ -219,9 +219,9 @@ export default class BasicEditor extends Component {
     onAssetChoice: PropTypes.func,
     onAssetChange: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
-    onNoteMouseOver: PropTypes.func,
-    onNoteMouseOut: PropTypes.func,
-    onNoteClick: PropTypes.func,
+    onNotePointerMouseOver: PropTypes.func,
+    onNotePointerMouseOut: PropTypes.func,
+    onNotePointerMouseClick: PropTypes.func,
     /*
      * Parametrization props
      */
@@ -262,9 +262,9 @@ export default class BasicEditor extends Component {
     onAssetFocus: PropTypes.func,
     onAssetBlur: PropTypes.func,
 
-    onNoteMouseOver: PropTypes.func,
-    onNoteMouseOut: PropTypes.func,
-    onNoteClick: PropTypes.func,
+    onNotePointerMouseOver: PropTypes.func,
+    onNotePointerMouseOut: PropTypes.func,
+    onNotePointerMouseClick: PropTypes.func,
 
     iconMap: PropTypes.object
   }
@@ -319,9 +319,9 @@ export default class BasicEditor extends Component {
     onAssetFocus: this.onAssetFocus,
     onAssetBlur: this.onAssetBlur,
 
-    onNoteMouseOver: this.props.onNoteMouseOver,
-    onNoteMouseOut: this.props.onNoteMouseOut,
-    onNoteClick: this.props.onNoteClick,
+    onNotePointerMouseOver: this.props.onNotePointerMouseOver,
+    onNotePointerMouseOut: this.props.onNotePointerMouseOut,
+    onNotePointerMouseClick: this.props.onNotePointerMouseClick,
     notes: this.props.notes,
   })
 

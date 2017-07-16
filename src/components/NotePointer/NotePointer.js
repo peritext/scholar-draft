@@ -10,9 +10,9 @@ class NotePointer extends Component {
     emitter: PropTypes.object,
     notes: PropTypes.object,
 
-    onNoteMouseOver: PropTypes.func,
-    onNoteMouseOut: PropTypes.func,
-    onNoteClick: PropTypes.func,
+    onNotePointerMouseOver: PropTypes.func,
+    onNotePointerMouseOut: PropTypes.func,
+    onNotePointerMouseClick: PropTypes.func,
   }
 
   constructor(props) {
@@ -42,9 +42,9 @@ class NotePointer extends Component {
     } = this.state;
 
     const {
-      onNoteMouseOver,
-      onNoteMouseOut,
-      onNoteClick,
+      onNotePointerMouseOver,
+      onNotePointerMouseOut,
+      onNotePointerMouseClick,
     } = this.context;
 
     const {
@@ -53,22 +53,22 @@ class NotePointer extends Component {
 
     const onMouseOver = (event) => {
       event.stopPropagation();
-      if (typeof onNoteMouseOver === 'function') {
-        onNoteMouseOver(note.id, note, event);
+      if (typeof onNotePointerMouseOver === 'function') {
+        onNotePointerMouseOver(note.id, note, event);
       }
     };
 
     const onMouseOut = (event) => {
       event.stopPropagation();
-      if (typeof onNoteMouseOut === 'function') {
-        onNoteMouseOut(note.id, note, event);
+      if (typeof onNotePointerMouseOut === 'function') {
+        onNotePointerMouseOut(note.id, note, event);
       }
     };
 
     const onMouseClick = (event) => {
       event.stopPropagation();
-      if (typeof onNoteClick === 'function') {
-        onNoteClick(note.id, note, event);
+      if (typeof onNotePointerMouseClick === 'function') {
+        onNotePointerMouseClick(note.id, note, event);
       }
     };
 
