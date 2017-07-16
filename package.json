@@ -1,6 +1,6 @@
 {
   "name": "scholar-draft",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "draft editor handling footnotes editing and inline/block assets connected to upstream logic",
   "main": "build/index.js",
   "scripts": {
