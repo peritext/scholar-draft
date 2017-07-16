@@ -547,7 +547,7 @@ export default class BasicEditor extends Component {
       this.onChange(newUndoStack[newUndoStack.length - 1], false);
       // draft-js won't notice the change of editorState
       // so we have to force it to re-render after having received
-      // the new editorState
+      // the new editorStaten
       setTimeout(() => this.forceRender(this.props));
     }
   }

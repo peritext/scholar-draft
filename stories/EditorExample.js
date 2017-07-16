@@ -160,8 +160,9 @@ export default class EditorExample extends Component {
     const {
       focusedEditorId
     } = this.state;
+    console.log('focused editor id', focusedEditorId);
     // case: data is copied from the main editor
-    if (focusedEditorId !== 'main') {
+    if (focusedEditorId === 'main') {
       clipboard = this.editor.mainEditor.editor.getClipboard();
       editorState = this.state.mainEditorState;
     // case: data is copied from a note
@@ -248,6 +249,8 @@ export default class EditorExample extends Component {
       copiedContextualizers,
       copiedNotes
     };
+
+    console.info('scholar-draft: copied data: ', copiedData);
 
     e.clipboardData.setData('text/plain', '$$$scholar-draft-clipboard');
 
