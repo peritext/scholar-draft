@@ -282,7 +282,7 @@ export default class Editor extends Component {
       clipboard,
       focusedEditorId,
 
-      keyBindingFn,
+      // keyBindingFn,
     } = this.props;
 
     /**

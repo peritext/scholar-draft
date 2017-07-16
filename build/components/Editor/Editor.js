@@ -278,8 +278,7 @@ var Editor = function (_Component) {
           iconMap = _props.iconMap,
           editorStyles = _props.editorStyles,
           clipboard = _props.clipboard,
-          focusedEditorId = _props.focusedEditorId,
-          keyBindingFn = _props.keyBindingFn;
+          focusedEditorId = _props.focusedEditorId;
 
       /**
        * bindings
