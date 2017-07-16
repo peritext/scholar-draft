@@ -498,7 +498,10 @@ export default class BasicEditor extends Component {
    * Fires onEditorChange callback if provided 
    * @param {ImmutableRecord} editorState - the new editor state
    */
-  onChange = (editorState) => {
+  onChange = (editorState, feedUndoStack = true) => {
+    if (feedUndoStack === true) {
+      this.feedUndoStack(editorState);
+    }
     if (typeof this.props.onEditorChange === 'function'/* && !this.props.readOnly*/) {
       this.props.onEditorChange(editorState);
     }
@@ -541,7 +544,11 @@ export default class BasicEditor extends Component {
         ],
         undoStack: newUndoStack
       });
-      this.onChange(newUndoStack[newUndoStack.length - 1]);
+      this.onChange(newUndoStack[newUndoStack.length - 1], false);
+      // draft-js won't notice the change of editorState
+      // so we have to force it to re-render after having received
+      // the new editorState
+      setTimeout(() => this.forceRender(this.props));
     }
   }
 
@@ -576,7 +583,6 @@ export default class BasicEditor extends Component {
    * @params {object} props - the component's props to manipulate
    */
   forceRender = (props) => {
-    console.log('force render');
     const editorState = props.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
@@ -587,7 +593,6 @@ export default class BasicEditor extends Component {
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
-    this.feedUndoStack(this.state.editorState);
     this.setState({ 
       editorState: selectedEditorState,
     });

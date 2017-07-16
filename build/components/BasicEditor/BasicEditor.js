@@ -764,6 +764,11 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.onChange = function (editorState) {
+    var feedUndoStack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+    if (feedUndoStack === true) {
+      _this4.feedUndoStack(editorState);
+    }
     if (typeof _this4.props.onEditorChange === 'function' /* && !this.props.readOnly*/) {
         _this4.props.onEditorChange(editorState);
       }
@@ -792,7 +797,13 @@ var _initialiseProps = function _initialiseProps() {
         redoStack: [].concat((0, _toConsumableArray3.default)(redoStack), [last]),
         undoStack: newUndoStack
       });
-      _this4.onChange(newUndoStack[newUndoStack.length - 1]);
+      _this4.onChange(newUndoStack[newUndoStack.length - 1], false);
+      // draft-js won't notice the change of editorState
+      // so we have to force it to re-render after having received
+      // the new editorStaten
+      setTimeout(function () {
+        return _this4.forceRender(_this4.props);
+      });
     }
   };
 
@@ -813,7 +824,6 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.forceRender = function (props) {
-    console.log('force render');
     var editorState = props.editorState || _this4.generateEmptyEditor();
     var content = editorState.getCurrentContent();
     var newEditorState = _draftJs.EditorState.createWithContent(content, _this4.createDecorator());
@@ -821,7 +831,6 @@ var _initialiseProps = function _initialiseProps() {
     var inlineStyle = _this4.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
-    _this4.feedUndoStack(_this4.state.editorState);
     _this4.setState({
       editorState: selectedEditorState
     });
