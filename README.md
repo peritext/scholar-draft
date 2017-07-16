@@ -7,13 +7,14 @@ Initially inspired by https://github.com/AlastairTaft/draft-js-editor
 
 `scholar-draft` aims at providing customizable and easy-to-use components for  building academy-oriented editing apps with `react-js` and [`draft-js`](https://draftjs.org) libraries.
 
-# Goals and *raison d'être* of `scholar-draft`
+# Goals of `scholar-draft`
 
-This module provides two react editor components that pursue three main goals :
+This module provides two react editor components that pursue the following main goals :
 
 * easily connect draft's editor [entities](https://draftjs.org/docs/advanced-topics-entities.html#content) to upstream applicationnal logic's assets data in a "one-way binding" manner : **in scholar-draft, entities state and components are entirely handled upstream separately from the editor state**. An entity's data is called an `asset` in the module's vocabulary
 * provide callbacks for adding, removing, & editing upstream assets from within the editor's interface
 * **allow to insert, move and edit footnotes** within a draft-js editor, while supporting assets as well
+* provide three ways to add an asset to the draft : two-step selection, drag-and-drop, inline selection thanks to an input component
 
 To do so, the module provides two components :
 
@@ -22,7 +23,7 @@ To do so, the module provides two components :
 
 These components are as "pure" as possible, that is they do not contain their content's state but rather receive it in their props and trigger callbacks when subjected to user's change.
 
-For that reason the module also provides a set of `utils` functions for manipulating editor's state upstream of the editor (CRUD notes, CRUD assets, ...). Take a look at the `stories` folder for implementation examples.
+For that reason the module also provides a set of `utils` functions for manipulating editor's state upstream of the editor (Create/Update/Delete operations on contents' notes, Create/Update/Delete operations on contents'  assets, ...). Take a look at the `stories` folder for implementation examples.
 
 # Features
 

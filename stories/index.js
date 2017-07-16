@@ -4,7 +4,7 @@ import { storiesOf, action, linkTo } from '@kadira/storybook';
 import BasicEditorExample from './BasicEditorExample'
 import EditorExample from './EditorExample'
 
-storiesOf('Scholarly editor', module)
+storiesOf('Peritext Scholarly editor', module)
   .add('Basic editor (without footnotes support)', () => (
     <BasicEditorExample />
   ))

@@ -1,120 +1,68 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-class BlockCitation extends Component {
+const BlockCitation = ({
+  assetId,
+  asset,
+  onAssetChange,
+  onAssetFocus,
+  onAssetBlur,
+  iconMap,
+}) => {
+  const {
+    resource,
+    resourceId,
+    contextualizerId,
+    contextualizer,
+    contextualization,
+  } = asset;
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      
-    }
+  const onResourceTitleChange = e => {
+    const title = e.target.value;
+    onAssetChange('resources', resourceId, {
+      ...resource,
+      title
+    })
+  };
+
+  const onContextualizerPageChange = e => {
+    const pages = e.target.value;
+    onAssetChange('contextualizers', contextualizerId, {
+      ...contextualizer,
+      pages
+    })
   }
 
-  // static contextTypes = {
-  //   emitter: PropTypes.object
-  // }
-
-  // componentDidMount() {
-  //   this.unsubscribe = this.context.emitter.subscribe(assets => {
-  //     const asset = assets[this.props.assetId];
-  //     this.setState({
-  //       asset
-  //     })
-  //   });
-  // }
-
-  // componentWillUnmount() {
-  //   this.unsubscribe();
-  // }
-
-  render = () => {
-    const {
-      children,
-      asset,
-      onMouseOver,
-      onMouseOut,
-      onChange,
-      onFocus,
-      onBlur
-    } = this.props;
-
-    // const {
-    //   asset
-    // } = this.state;
-    if (!asset) {
-      return null;
-    }
-
-    const {
-      resource,
-      resourceId,
-      contextualizerId,
-      contextualizer,
-      contextualization,
-    } = asset;
-
-
-    const onResourceTitleChange = e => {
-      const title = e.target.value;
-      onChange('resources', resourceId, {
-        ...resource,
-        title
-      })
-    };
-
-    const onContextualizerPageChange = e => {
-      const pages = e.target.value;
-      onChange('contextualizers', contextualizerId, {
-        ...contextualizer,
-        pages
-      })
-    }
-
-    const bindTitle = title => {
-      this.title = title;
-    };
-    const bindPage = page => {
-      this.page = page;
-    }
-    const onTitleClick = e => {
-      onFocus(e);
-      setTimeout(() => {
-        this.title.focus();
-      }, 1);
-    };
-    const onPageClick = e => {
-      onFocus(e);
-      setTimeout(() => {
-        this.page.focus();
-      }, 1);
-    };
-    return (
-      <div className="citation-block">
-        <span><i>
-              <input
-                value={resource.title}
-                onChange={onResourceTitleChange}
-                ref={bindTitle}
-                onClick={onTitleClick}
-                onFocus={onFocus}
-                onBlur={onBlur}
-              />
-            </i>. <i>pp. <input
-                value={contextualizer.pages}
-                onChange={onContextualizerPageChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                ref={bindPage}
-                onClick={onPageClick}
-              /></i>. 
-            {
-              resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
-            }
-        </span>
-      </div>
-    );
-  }
-};
+  const onTitleClick = e => {
+    onAssetFocus(e);
+  };
+  const onPageClick = e => {
+    onAssetFocus(e);
+  };
+  return (
+    <div className="citation-block">
+      <span><i>
+            <input
+              value={resource.title}
+              onChange={onResourceTitleChange}
+              onClick={onTitleClick}
+              onFocus={onAssetFocus}
+              onBlur={onAssetBlur}
+            />
+          </i>. <i>pp. <input
+              value={contextualizer.pages}
+              onChange={onContextualizerPageChange}
+              onFocus={onAssetFocus}
+              onBlur={onAssetBlur}
+              onClick={onPageClick}
+            /></i>. 
+          {
+            resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
+          }
+      </span>
+    </div>
+  );
+}
 
 export default BlockCitation;
 

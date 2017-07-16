@@ -68,6 +68,7 @@ var SideToolbar = function (_Component) {
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
           onAssetChoice = _this$props.onAssetChoice,
+          onAssetChoiceFocus = _this$props.onAssetChoiceFocus,
           _this$props$assetChoi = _this$props.assetChoiceProps,
           assetChoiceProps = _this$props$assetChoi === undefined ? {} : _this$props$assetChoi,
           onNoteAdd = _this$props.onNoteAdd,
@@ -130,7 +131,9 @@ var SideToolbar = function (_Component) {
           _react2.default.createElement(AssetChoiceComponent, (0, _extends3.default)({}, assetChoiceProps, {
             contentId: contentId,
             onAssetChoice: onAssetChoice,
-            onAssetRequestCancel: onAssetRequestCancel
+            onAssetRequestCancel: onAssetRequestCancel,
+            onAssetChoiceFocus: onAssetChoiceFocus
+
           }))
         )
       );
@@ -151,6 +154,8 @@ SideToolbar.propTypes = {
   style: _propTypes2.default.object,
 
   messages: _propTypes2.default.object,
+
+  onAssetChoiceFocus: _propTypes2.default.func,
 
   allowNotesInsertion: _propTypes2.default.bool,
   allowAssets: _propTypes2.default.shape({

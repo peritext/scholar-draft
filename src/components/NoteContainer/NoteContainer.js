@@ -13,6 +13,7 @@ class NoteContainer extends Component {
     notes: PropTypes.object,
     assetRequestPosition: PropTypes.object,
     contentId: PropTypes.string,
+    isActive: PropTypes.bool,
 
 
     addTextAtCurrentSelection: PropTypes.func,
@@ -55,6 +56,7 @@ class NoteContainer extends Component {
       assetRequestPosition,
       addTextAtCurrentSelection,
       contentId,
+      isActive,
       
       onEditorChange,
       onAssetRequest,
@@ -119,6 +121,8 @@ class NoteContainer extends Component {
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
+
+            isActive={isActive}
 
             assetRequestPosition={assetRequestPosition}
             onAssetRequestCancel={onAssetRequestCancel}

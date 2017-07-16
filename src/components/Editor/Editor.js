@@ -1,5 +1,16 @@
+/**
+ * This module exports a component representing an editor with main editor and footnotes,
+ * with related interface and decorators.
+ * Asset components must be provided through props
+ * @module scholar-draft/Editor
+ */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+
+import {
+  EditorState
+} from 'draft-js';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
@@ -52,20 +63,185 @@ export default class Editor extends Component {
     NoteContainerComponent: PropTypes.func,
   }
 
+  /**
+   * component contructor
+   * @param {object} props - initializing props
+   */
   constructor(props) {
     super(props);
-
+    // this is used as a map of refs 
+    // to interact with note components
     this.notes = {};
   }
 
-  focus = (contentId) => {
+  /**
+   * manages imperative focus on one of the editors
+   * @param {string} contentId - 'main' or note uuid
+   * @param {ImmutableRecord} selection - the selection to focus on
+   */
+  focus = (contentId, selection) => {
     if (contentId === 'main' && this.mainEditor) {
-      this.mainEditor.focus();
+      if (selection) {
+        this.mainEditor.setState({
+          editorState: EditorState.acceptSelection(
+            this.mainEditor.state.editorState,
+            selection
+          )
+        });
+      }
+      setTimeout(() => this.mainEditor.focus());
     } else if (this.notes[contentId]) {
-      this.notes[contentId].editor.focus();
+      setTimeout(() => this.notes[contentId].editor.focus());
+      if (selection) {
+        this.notes[contentId].editor.setState({
+          editorState: EditorState.acceptSelection(
+            this.notes[contentId].editor.state.editorState,
+            selection
+          )
+        });
+      }
     }
   }
 
+  /**
+   * Provides upstream-usable empty editor factory method with proper decorator
+   * @return {ImmutableRecord} editorState - output editor state
+   */
+  generateEmptyEditor = () => {
+    if (this.mainEditor) {
+      return this.mainEditor.generateEmptyEditor();
+    }
+    return null;
+  }
+
+  /**
+   * Renders a note editor component for a specific note
+   * @param {string} noteId - uuid of the note to render
+   * @param {number} order - order to attribute to it
+   * @return {ReactMarkup} noteComponent - the note component
+   */
+  renderNoteEditor = (noteId, order) => {
+
+    const {
+      notes,
+      assets,
+      
+      onEditorChange,
+
+      onAssetChange,
+      onAssetRequest,
+      onAssetRequestCancel,
+      onAssetChoice,
+      onAssetClick,
+      onAssetMouseOver,
+      onAssetMouseOut,
+
+      onNoteDelete,
+      onDrop,
+      onDragOver,
+      onClick,
+      onBlur,
+
+      assetRequestPosition,
+      assetChoiceProps,
+      
+      inlineAssetComponents,
+      blockAssetComponents,
+      AssetChoiceComponent,
+      iconMap,
+
+      keyBindingFn,
+
+      editorStyles,
+      clipboard,
+      focusedEditorId,
+      NoteContainerComponent,
+    } = this.props;
+    const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
+    const onNoteAssetRequest = (selection) => {
+      onAssetRequest(noteId, selection);
+    };
+    const onClickDelete = () => {
+      if (typeof onNoteDelete === 'function') {
+        this.props.onNoteDelete(noteId);
+      }
+    };
+    const onNoteDrop = (payload, selection) => {
+      if (typeof onDrop === 'function') {
+        onDrop(noteId, payload, selection);
+      }
+    };
+    const onNoteDragOver = (event) => {
+      if (typeof onDragOver === 'function') {
+        onDragOver(noteId, event);
+      }
+    };
+    const note = notes[noteId];
+
+    const onNoteEditorClick = (event) => {
+      if (typeof onClick === 'function') {
+        onClick(event, noteId);
+      }
+    };
+    const bindNote = (thatNote) => {
+      this.notes[noteId] = thatNote;
+    };
+    const onNoteBlur = (event) => {
+      onBlur(event, noteId);
+    };
+
+    const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
+    return (
+      <NoteContainer
+        key={noteId}
+        note={note}
+        notes={notes}
+        assets={assets}
+
+        ref={bindNote}
+
+        contentId={noteId}
+
+        assetRequestPosition={assetRequestPosition}
+        assetChoiceProps={assetChoiceProps}
+
+        isActive={noteId === focusedEditorId}
+
+        onEditorClick={onNoteEditorClick}
+        onBlur={onNoteBlur}
+
+        onEditorChange={onThisNoteEditorChange}
+
+        onAssetRequest={onNoteAssetRequest}
+        onAssetRequestCancel={onAssetRequestCancel}
+        onAssetChange={onAssetChange}
+        onAssetChoice={onAssetChoice}
+
+        clipboard={clipboard}
+
+        onDrop={onNoteDrop}
+        onDragOver={onNoteDragOver}
+        onClickDelete={onClickDelete}
+
+        onAssetClick={onAssetClick}
+        onAssetMouseOver={onAssetMouseOver}
+        onAssetMouseOut={onAssetMouseOut}
+
+        inlineAssetComponents={inlineAssetComponents}
+        blockAssetComponents={blockAssetComponents}
+        AssetChoiceComponent={AssetChoiceComponent}
+        iconMap={iconMap}
+        keyBindingFn={keyBindingFn}
+
+        editorStyle={editorStyles && editorStyles.noteEditor}
+      />
+    );
+  }
+
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - the output component
+   */
   render() {
     const {
       mainEditorState,
@@ -88,7 +264,6 @@ export default class Editor extends Component {
       onNotePointerMouseOver,
       onNotePointerMouseOut,
       onNotePointerMouseClick,
-      onNoteDelete,
       onDrop,
       onDragOver,
       onClick,
@@ -103,105 +278,28 @@ export default class Editor extends Component {
       NotePointerComponent,
       iconMap,
 
-      keyBindingFn,
-
       editorStyles,
       clipboard,
       focusedEditorId,
-      NoteContainerComponent,
+
+      // keyBindingFn,
     } = this.props;
+
+    /**
+     * bindings
+     */
 
     const bindMainEditor = (editor) => {
       this.mainEditor = editor;
     };
 
-    const renderNoteEditor = (noteId, order) => {
-      const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
-      const onNoteAssetRequest = (selection) => {
-        onAssetRequest(noteId, selection);
-      };
-      const onClickDelete = () => {
-        if (typeof onNoteDelete === 'function') {
-          this.props.onNoteDelete(noteId);
-        }
-      };
-      const onNoteDrop = (payload, selection) => {
-        if (typeof onDrop === 'function') {
-          onDrop(noteId, payload, selection);
-        }
-      };
-      const onNoteDragOver = (event) => {
-        if (typeof onDragOver === 'function') {
-          onDragOver(noteId, event);
-        }
-      };
-      const note = notes[noteId];
-
-      const onNoteEditorClick = (event) => {
-        if (typeof onClick === 'function') {
-          onClick(event, noteId);
-        }
-      };
-      const bindNote = (thatNote) => {
-        this.notes[noteId] = thatNote;
-      };
-      const onNoteBlur = (event) => {
-        onBlur(event, noteId);
-      };
-
-      const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
-
-      return (
-        <NoteContainer
-          key={noteId}
-          note={note}
-          assets={assets}
-
-          ref={bindNote}
-
-          contentId={noteId}
-
-          assetRequestPosition={assetRequestPosition}
-          assetChoiceProps={assetChoiceProps}
-
-          readOnly={noteId !== focusedEditorId}
-
-          onEditorClick={onNoteEditorClick}
-          onBlur={onNoteBlur}
-
-          onEditorChange={onThisNoteEditorChange}
-
-          onAssetRequest={onNoteAssetRequest}
-          onAssetRequestCancel={onAssetRequestCancel}
-          onAssetChange={onAssetChange}
-          onAssetChoice={onAssetChoice}
-
-          clipboard={clipboard}
-
-          onDrop={onNoteDrop}
-          onDragOver={onNoteDragOver}
-          onClickDelete={onClickDelete}
-
-          onAssetClick={onAssetClick}
-          onAssetMouseOver={onAssetMouseOver}
-          onAssetMouseOut={onAssetMouseOut}
-
-          inlineAssetComponents={inlineAssetComponents}
-          blockAssetComponents={blockAssetComponents}
-          AssetChoiceComponent={AssetChoiceComponent}
-          iconMap={iconMap}
-          keyBindingFn={keyBindingFn}
-
-          editorStyle={editorStyles && editorStyles.noteEditor}
-        />
-      );
-    };
-
+    /**
+     * callbacks
+     */
     const onMainEditorChange = editor => onEditorChange('main', editor);
     const onMainAssetRequest = (selection) => {
       onAssetRequest('main', selection);
     };
-
     const onMainEditorDrop = (payload, selection) => {
       if (typeof onDrop === 'function') {
         onDrop('main', payload, selection);
@@ -227,16 +325,17 @@ export default class Editor extends Component {
         <section className="main-container-editor">
           <BasicEditor 
             editorState={mainEditorState}
-            notes={notes}
             assets={assets}
             ref={bindMainEditor}
+
+            notes={notes}
 
             contentId="main"
 
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}
 
-            readOnly={focusedEditorId !== 'main'}
+            isActive={focusedEditorId === 'main'}
 
             onClick={onMainEditorClick}
             onBlur={onMainBlur}
@@ -279,7 +378,7 @@ export default class Editor extends Component {
                 return 1;
               } return -1;
             })
-            .map(renderNoteEditor)
+            .map(this.renderNoteEditor)
           }
         </aside>
       </div>

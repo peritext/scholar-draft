@@ -3,15 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = undefined;
+exports.default = exports.Emitter = undefined;
 
 var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
 var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
-
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
 
 var _stringify = require('babel-runtime/core-js/json/stringify');
 
@@ -25,13 +21,13 @@ var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 var _createClass2 = require('babel-runtime/helpers/createClass');
 
@@ -45,6 +41,14 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
+var _map = require('babel-runtime/core-js/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -52,6 +56,8 @@ var _react2 = _interopRequireDefault(_react);
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _uuid = require('uuid');
 
 var _lodash = require('lodash');
 
@@ -127,8 +133,32 @@ require('./BasicEditor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// default icon map (exposes a map of img components - overriden by props-provided icon map)
+
+
+// subcomponents
+
+
+// modifiers helping to modify editorState
 var hasCommandModifier = _draftJs.KeyBindingUtil.hasCommandModifier;
 
+/**
+ * Gets the block element corresponding to a given range of selection
+ * @param {object} range - the input range to look in
+ * @return {object} node
+ */
+
+
+// constant entities type names
+
+
+// draft-js EditorState decorators utils
+/**
+ * This module exports a component representing a single draft editor
+ * with related interface and decorators.
+ * Asset components must be provided through props
+ * @module scholar-draft/BasicEditor
+ */
 
 var getSelectedBlockElement = function getSelectedBlockElement(range) {
   var node = range.startContainer;
@@ -141,12 +171,22 @@ var getSelectedBlockElement = function getSelectedBlockElement(range) {
   return null;
 };
 
+/**
+ * Gets the current window's selection range (start and end)
+ * @return {object} selection range
+ */
 var getSelectionRange = function getSelectionRange() {
   var selection = window.getSelection();
   if (selection.rangeCount === 0) return null;
   return selection.getRangeAt(0);
 };
 
+/**
+ * Checks if a DOM element is parent of another one
+ * @param {inputEle} DOMEl - the presumed child
+ * @param {inputEle} DOMEl - the presumed parent
+ * @return {boolean} isParent - whether yes or no
+ */
 var isParentOf = function isParentOf(inputEle, maybeParent) {
   var ele = inputEle;
   while (ele.parentNode != null && ele.parentNode != document.body) {
@@ -157,23 +197,30 @@ var isParentOf = function isParentOf(inputEle, maybeParent) {
   return false;
 };
 
+// todo : store that somewhere else
 var popoverSpacing = 50;
 
+/**
+ * Handles a character's style
+ * @param {ImmutableRecord} editorState - the input editor state
+ * @param {ImmutableRecord} character - the character to check
+ * @return {ImmutableRecord} newEditorState - the new editor state
+ */
 function checkCharacterForState(editorState, character) {
   var newEditorState = (0, _handleBlockType2.default)(editorState, character);
-  // this is commented because links and images should be handled upstream as resources
-  // if (editorState === newEditorState) {
-  //   newEditorState = handleImage(editorState, character);
-  // }
-  // if (editorState === newEditorState) {
-  //   newEditorState = handleLink(editorState, character);
-  // }
   if (editorState === newEditorState) {
     newEditorState = (0, _handleInlineStyle2.default)(editorState, character);
   }
   return newEditorState;
 }
 
+// todo : this function is a perf bottleneck
+/**
+ * Resolves return key hit
+ * @param {ImmutableRecord} editorState - the input editor state
+ * @param {object} ev - the original key event
+ * @return {ImmutableRecord} newEditorState - the new editor state
+ */
 function checkReturnForState(editorState, ev) {
   var newEditorState = editorState;
   var contentState = editorState.getCurrentContent();
@@ -198,59 +245,281 @@ function checkReturnForState(editorState, ev) {
   return newEditorState;
 }
 
+/**
+ * This class allows to produce event emitters
+ * that will be used to dispatch assets changes 
+ * and notes changes through context
+ */
+
+var Emitter = exports.Emitter = function Emitter() {
+  var _this = this;
+
+  (0, _classCallCheck3.default)(this, Emitter);
+  this.assetsListeners = new _map2.default();
+  this.notesListeners = new _map2.default();
+
+  this.subscribeToAssets = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.assetsListeners.set(id, listener);
+    return function () {
+      return _this.assetsListeners.delete(id);
+    };
+  };
+
+  this.subscribeToNotes = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.notesListeners.set(id, listener);
+    return function () {
+      return _this.notesListeners.delete(id);
+    };
+  };
+
+  this.dispatchAssets = function (assets) {
+    _this.assetsListeners.forEach(function (listener) {
+      listener(assets);
+    });
+  };
+
+  this.dispatchNotes = function (notes) {
+    _this.notesListeners.forEach(function (listener) {
+      listener(notes);
+    });
+  };
+};
+
 var BasicEditor = function (_Component) {
   (0, _inherits3.default)(BasicEditor, _Component);
 
+  /**
+   * Component class's constructor
+   * @param {object} props - props received at initialization
+   */
+
+
+  /**
+   * Component class's default properties
+   */
   function BasicEditor(props) {
     (0, _classCallCheck3.default)(this, BasicEditor);
 
-    // this.onChange = debounce(this.onChange, 200);
-    var _this = (0, _possibleConstructorReturn3.default)(this, (BasicEditor.__proto__ || (0, _getPrototypeOf2.default)(BasicEditor)).call(this, props));
+    // selection positionning is debounced to improve performance
+    var _this2 = (0, _possibleConstructorReturn3.default)(this, (BasicEditor.__proto__ || (0, _getPrototypeOf2.default)(BasicEditor)).call(this, props));
 
-    _initialiseProps.call(_this);
+    _initialiseProps.call(_this2);
 
-    _this.debouncedUpdateSelection = (0, _lodash.debounce)(_this.updateSelection, 100);
-    _this.forceRenderDebounced = (0, _lodash.debounce)(_this.forceRender, 200);
+    _this2.debouncedUpdateSelection = (0, _lodash.debounce)(_this2.updateSelection, 100);
+    // undo stack is debounced to improve performance
+    _this2.feedUndoStack = (0, _lodash.debounce)(_this2.feedUndoStack, 1000);
+    // it is needed to bind this function right away for being able
+    // to initialize the state
+    _this2.generateEmptyEditor = _this2.generateEmptyEditor.bind(_this2);
 
-    _this.feedUndoStack = (0, _lodash.debounce)(_this.feedUndoStack, 1000);
-    return _this;
+    _this2.state = {
+      // editor state is initialized with a decorated editorState (notes + assets + ...)
+      editorState: _this2.generateEmptyEditor(),
+      // editor states undo and redo stacks
+      undoStack: [],
+      redoStack: [],
+      // toolbars styles are represented as css-in-js
+      styles: {
+        inlineToolbar: {},
+        sideToolbar: {}
+      },
+      readOnly: true
+    };
+    // the emitter allows to let custom components know when assets are changed
+    _this2.emitter = new Emitter();
+    return _this2;
   }
 
+  /**
+   * Binds component's data to its context
+   */
+
+
+  /**
+   * Component class's context properties types
+   */
+
+
+  /**
+   * Component class's properties accepted types
+   */
+
+
   (0, _createClass3.default)(BasicEditor, [{
+    key: 'componentDidMount',
+
+
+    /**
+     * Component livecycle hooks
+     */
+
+    value: function componentDidMount() {
+      var _this3 = this;
+
+      setTimeout(function () {
+        _this3.setState({
+          readOnly: false
+        });
+      });
+    }
+  }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
-      if (
-      // !nextProps.readOnly ||
-      this.state.editorState !== nextProps.editorState || this.state.assets !== nextProps.assets) {
-        return true;
-      }
+      return true;
+      // if (
+      //   this.state.readOnly !== nextState.readOnly ||
+      //   this.state.editorState !== nextProps.editorState ||
+      //   this.state.assets !== nextProps.assets
+      // ) {
+      //   return true;
+      // }
+      // return false;
     }
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
       this.debouncedUpdateSelection();
-      // force render of inline and atomic block elements
-      var forceRender = this.forceRender;
-
-
-      if (this.props.editorState !== prevProps.editorState || prevProps.assets !== this.props.assets || prevProps.readOnly !== this.props.readOnly || prevProps.notes !== this.props.notes) {
-        forceRender(this.props);
-      }
-
-      if (this.props.editorState !== prevProps.editorState && this.editor) {
+      if (this.props.editorState !== prevProps.editorState && this.editor && !this.state.readOnly && this.props.isActive) {
         this.editor.focus();
       }
     }
+
+    /**
+     * Handles note addition in a secured and appropriate way
+     */
+
+
+    /**
+     * Locks draft js editor when an asset is focused
+     * @param {object} event - the input event
+     */
+
+
+    /**
+     * Unlocks draft js editor when an asset is unfocused
+     * @param {object} event - the input event
+     */
+
+
+    /**
+     * Locks draft js editor and hides the toolbars when editor is blured
+     * @param {object} event - the input event
+     */
+
+
+    /**
+     * Fires onEditorChange callback if provided 
+     * @param {ImmutableRecord} editorState - the new editor state
+     */
+
+
+    /**
+     * Stores previous editor states in an undo stack
+     * @param {ImmutableRecord} editorState - the input editor state
+     */
+
+
+    /**
+     * Manages relevant state changes and callbacks when undo is called
+     */
+
+
+    /**
+     * Manages relevant state changes and callbacks when redo is called
+     */
+
+
+    /**
+     * tricks draftJs editor component by forcing it to re-render
+     * without changing anything to its state.
+     * To do so editor state is recreated with a different selection's reference, which makes
+     * a new editorState object and related js reference, therefore forcing the component
+     * to render in the render() method
+     * @params {object} props - the component's props to manipulate
+     */
+
+
+    /**
+     * Custom draft-js renderer handling atomic blocks with library's BlockAssetContainer component
+     * and user-provided assets components
+     * @param {ImmutableRecord} contentBlock - the content block to render
+     */
+
+
+    /**
+     * Binds custom key commands to editorState commands
+     * @param {object} event - the key event
+     * @return {string} operation - the command to perform
+     */
+
+
+    /**
+     * Handles component's custom command
+     * @param {string} command - the command input to change the editor state
+     * @param {string} handled - whether the command has been handled or not
+     */
+
+
+    /**
+     * Draft-js event hook triggered before every key event
+     * @param {string} character - the character input through the key event
+     */
+
+
+    /**
+     * Handles tab hit
+     * @param {obj} ev - the key event
+     * @param {string} handled - whether the command has been handled or not
+     */
+
+    /**
+     * Handles return hit
+     * @param {obj} ev - the key event
+     * @param {string} handled - whether the command has been handled or not
+     */
+
+    /**
+     * Handles drop on component
+     * @param {ImmutableRecord} sel - the selection on which the drop is set
+     * @param {object} dataTransfer - the js dataTransfer object storing data about the drop
+     * @param {boolean} isInternal - whether the drop is draft-to-draft or exterior-to-draft
+     */
+
+
+    /**
+     * Handles when a dragged object is dragged over the component
+     * @param {obj} ev - the key event
+     * @param {bool} handled - whether is handled
+     */
+
+
+    /**
+     * Handles paste command
+     * @param {string} text - the text representation of pasted content
+     * @param {string} html - the html representation of pasted content
+     */
+
     /**
      * Draft.js strategy for finding inline assets and loading them with relevant props
+     * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+     * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+     * @param {ImmutableRecord} inputContentState - the content state to parse
      */
 
     /**
      * Draft.js strategy for finding inline note pointers and loading them with relevant props
+     * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+     * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+     * @param {ImmutableRecord} inputContentState - the content state to parse
      */
 
     /**
      * Draft.js strategy for finding quotes statements
+     * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+     * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+     * @param {ImmutableRecord} inputContentState - the content state to parse
      */
     // todo: improve with all lang./typography 
     // quotes configurations (french quotes, english quotes, ...)
@@ -263,6 +532,18 @@ var BasicEditor = function (_Component) {
 
     /**
      * updates the positions of toolbars relatively to current draft selection
+     */
+
+
+    /*
+     * Triggers component focus
+     * @param {event} object - the input event
+     */
+
+
+    /**
+     * Renders the component
+     * @return {ReactMarkup} component - the component as react markup
      */
 
   }]);
@@ -283,6 +564,7 @@ BasicEditor.propTypes = {
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
   messages: _propTypes2.default.object,
+  isActive: _propTypes2.default.bool,
   /*
    * Method props
    */
@@ -300,9 +582,9 @@ BasicEditor.propTypes = {
   onAssetChoice: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
   onAssetRequestCancel: _propTypes2.default.func,
-  onNotePointerMouseClick: _propTypes2.default.func,
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,
+  onNotePointerMouseClick: _propTypes2.default.func,
   /*
    * Parametrization props
    */
@@ -319,28 +601,54 @@ BasicEditor.propTypes = {
 
   placeholder: _propTypes2.default.string,
 
-  iconMap: _propTypes2.default.object
-};
+  iconMap: _propTypes2.default.object };
 BasicEditor.defaultProps = {
   blockAssetComponents: {}
 };
+BasicEditor.childContextTypes = {
+  emitter: _propTypes2.default.object,
+  assets: _propTypes2.default.object,
+  notes: _propTypes2.default.object,
+  assetChoiceProps: _propTypes2.default.object,
+  onAssetMouseOver: _propTypes2.default.func,
+  onAssetMouseOut: _propTypes2.default.func,
+  onAssetChange: _propTypes2.default.func,
+  onAssetFocus: _propTypes2.default.func,
+  onAssetBlur: _propTypes2.default.func,
+
+  onNotePointerMouseOver: _propTypes2.default.func,
+  onNotePointerMouseOut: _propTypes2.default.func,
+  onNotePointerMouseClick: _propTypes2.default.func,
+
+  iconMap: _propTypes2.default.object };
 
 var _initialiseProps = function _initialiseProps() {
-  var _this2 = this;
+  var _this4 = this;
 
-  this.state = {
-    editorState: _draftJs.EditorState.createEmpty(),
-    undoStack: [],
-    redoStack: [],
-    styles: {
-      inlineToolbar: {},
-      sideToolbar: {}
-    }
+  this.getChildContext = function () {
+    return {
+      emitter: _this4.emitter,
+      assets: _this4.props.assets,
+      assetChoiceProps: _this4.props.assetChoiceProps,
+      iconMap: _this4.props.iconMap,
+
+      onAssetMouseOver: _this4.props.onAssetMouseOver,
+      onAssetMouseOut: _this4.props.onAssetMouseOut,
+      onAssetChange: _this4.props.onAssetChange,
+      onAssetFocus: _this4.onAssetFocus,
+      onAssetBlur: _this4.onAssetBlur,
+
+      onNotePointerMouseOver: _this4.props.onNotePointerMouseOver,
+      onNotePointerMouseOut: _this4.props.onNotePointerMouseOut,
+      onNotePointerMouseClick: _this4.props.onNotePointerMouseClick,
+      notes: _this4.props.notes
+    };
   };
 
   this.componentWillReceiveProps = function (nextProps) {
-    if (!_this2.props.readOnly && nextProps.readOnly) {
-      _this2.setState({
+    // hiding the toolbars when editor is set to inactive
+    if (_this4.props.isActive && !nextProps.isActive) {
+      _this4.setState({
         styles: {
           sideToolbar: {
             display: 'none'
@@ -350,49 +658,92 @@ var _initialiseProps = function _initialiseProps() {
           }
         }
       });
+      // locking the draft-editor if asset choice component is not open
+      if (!nextProps.assetRequestPosition) {
+        _this4.setState({
+          readOnly: true
+        });
+      }
     }
-    if (_this2.state.readOnly !== nextProps.readOnly) {
-      _this2.setState({
-        readOnly: nextProps.readOnly
-      });
-      setTimeout(function () {
-        return _this2.updateSelection();
+    // updating locally stored editorState when the one given by props
+    // has changed
+    if (_this4.state.editorState !== nextProps.editorState) {
+      _this4.setState({
+        editorState: nextProps.editorState || _this4.generateEmptyEditor()
       });
     }
-    if (_this2.state.editorState !== nextProps.editorState) {
-      _this2.setState({
-        editorState: nextProps.editorState || _draftJs.EditorState.createEmpty(_this2.createDecorator())
-      });
+
+    // trigger changes when assets are changed
+    if (_this4.props.assets !== nextProps.assets) {
+      // dispatch new assets through context's emitter
+      _this4.emitter.dispatchAssets(nextProps.assets);
+      // update state-stored assets
+      _this4.setState({ assets: nextProps.assets });
+      // if the number of assets is changed it means
+      // new entities might be present in the editor.
+      // As, for optimizations reasons, draft-js editor does not update
+      // its entity map in this case (did not exactly understand why)
+      // it has to be forced to re-render itself
+      if (!_this4.props.assets || !nextProps.assets || (0, _keys2.default)(_this4.props.assets).length !== (0, _keys2.default)(nextProps.assets).length) {
+        // re-rendering after a timeout.
+        // not doing that causes the draft editor not to update
+        // before a new modification is applied to it
+        // this is weird but it works
+        setTimeout(function () {
+          return _this4.forceRender(nextProps);
+        });
+        setTimeout(function () {
+          return _this4.forceRender(nextProps);
+        }, 500);
+      }
+    }
+    // trigger changes when notes are changed
+    if (_this4.props.notes !== nextProps.notes) {
+      // dispatch new notes through context's emitter
+      _this4.emitter.dispatchNotes(nextProps.notes);
+      // update state-stored assets
+      _this4.setState({ notes: nextProps.notes });
+      // if the number of notes is changed it means
+      // new entities might be present in the editor.
+      // As, for optimizations reasons, draft-js editor does not update
+      // its entity map in this case (did not exactly understand why)
+      // it has to be forced to re-render itself
+      if (!_this4.props.notes || !nextProps.notes || (0, _keys2.default)(_this4.props.notes).length !== (0, _keys2.default)(nextProps.notes).length) {
+        // re-rendering after a timeout.
+        // not doing that causes the draft editor not to update
+        // before a new modification is applied to it
+        _this4.forceRender(nextProps);
+      }
     }
   };
 
   this.onNoteAdd = function () {
-    if (typeof _this2.props.onNoteAdd === 'function') {
-      _this2.props.onNoteAdd();
+    if (typeof _this4.props.onNoteAdd === 'function') {
+      _this4.props.onNoteAdd();
     }
-    if (typeof _this2.props.onEditorChange === 'function') {
+    if (typeof _this4.props.onEditorChange === 'function') {
       setTimeout(function () {
-        _this2.props.onEditorChange(_this2.props.editorState);
+        _this4.props.onEditorChange(_this4.props.editorState);
       }, 1);
     }
   };
 
   this.onAssetFocus = function (event) {
     event.stopPropagation();
-    _this2.setState({
+    _this4.setState({
       readOnly: true
     });
   };
 
-  this.onInputBlur = function (event) {
+  this.onAssetBlur = function (event) {
     event.stopPropagation();
-    _this2.setState({
+    _this4.setState({
       readOnly: false
     });
   };
 
   this.onBlur = function (event) {
-    _this2.setState({
+    _this4.setState({
       readOnly: true,
       styles: {
         inlineToolbar: {
@@ -404,73 +755,83 @@ var _initialiseProps = function _initialiseProps() {
       }
     });
 
-    var onBlur = _this2.props.onBlur;
+    // calls onBlur callbacks if provided
+    var onBlur = _this4.props.onBlur;
 
-    if (onBlur) {
+    if (typeof onBlur === 'function') {
       onBlur(event);
     }
   };
 
   this.onChange = function (editorState) {
-    if (typeof _this2.props.onEditorChange === 'function' && !_this2.props.readOnly) {
-      _this2.props.onEditorChange(editorState);
+    var feedUndoStack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+    if (feedUndoStack === true) {
+      _this4.feedUndoStack(editorState);
     }
+    if (typeof _this4.props.onEditorChange === 'function' /* && !this.props.readOnly*/) {
+        _this4.props.onEditorChange(editorState);
+      }
   };
 
   this.feedUndoStack = function (editorState) {
-    var undoStack = _this2.state.undoStack;
+    var undoStack = _this4.state.undoStack;
     // max length for undo stack
+    // todo: store that in props or in a variable
 
     var newUndoStack = undoStack.length > 50 ? undoStack.slice(undoStack.length - 50) : undoStack;
-    _this2.setState({
+    _this4.setState({
       undoStack: [].concat((0, _toConsumableArray3.default)(newUndoStack), [editorState])
     });
   };
 
   this.undo = function () {
-    var _state = _this2.state,
+    var _state = _this4.state,
         undoStack = _state.undoStack,
         redoStack = _state.redoStack;
 
     var newUndoStack = [].concat((0, _toConsumableArray3.default)(undoStack));
     if (undoStack.length > 1) {
       var last = newUndoStack.pop();
-      _this2.setState({
+      _this4.setState({
         redoStack: [].concat((0, _toConsumableArray3.default)(redoStack), [last]),
         undoStack: newUndoStack
       });
-      _this2.onChange(newUndoStack[newUndoStack.length - 1]);
+      _this4.onChange(newUndoStack[newUndoStack.length - 1], false);
+      // draft-js won't notice the change of editorState
+      // so we have to force it to re-render after having received
+      // the new editorStaten
+      setTimeout(function () {
+        return _this4.forceRender(_this4.props);
+      });
     }
   };
 
   this.redo = function () {
-    var _state2 = _this2.state,
+    var _state2 = _this4.state,
         undoStack = _state2.undoStack,
         redoStack = _state2.redoStack;
 
     var newRedoStack = [].concat((0, _toConsumableArray3.default)(redoStack));
     if (redoStack.length) {
       var last = newRedoStack.pop();
-      _this2.setState({
+      _this4.setState({
         undoStack: [].concat((0, _toConsumableArray3.default)(undoStack), [last]),
         redoStack: newRedoStack
       });
-      _this2.onChange(last);
+      _this4.onChange(last);
     }
   };
 
   this.forceRender = function (props) {
-    var editorState = props.editorState || _this2.generateEmptyEditor();
+    var editorState = props.editorState || _this4.generateEmptyEditor();
     var content = editorState.getCurrentContent();
-
-    var newEditorState = _draftJs.EditorState.createWithContent(content, _this2.createDecorator());
-
-    var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
+    var newEditorState = _draftJs.EditorState.createWithContent(content, _this4.createDecorator());
     var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    var inlineStyle = _this4.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
 
-    _this2.feedUndoStack(_this2.state.editorState);
-    _this2.setState({
+    _this4.setState({
       editorState: selectedEditorState
     });
   };
@@ -480,7 +841,7 @@ var _initialiseProps = function _initialiseProps() {
 
     if (type === 'atomic') {
       var entityKey = contentBlock.getEntityAt(0);
-      var contentState = _this2.state.editorState.getCurrentContent();
+      var contentState = _this4.state.editorState.getCurrentContent();
       var data = void 0;
       try {
         data = contentState.getEntity(entityKey).toJS();
@@ -488,20 +849,13 @@ var _initialiseProps = function _initialiseProps() {
         return undefined;
       }
       var id = data.data.asset.id;
-      var asset = _this2.props.assets[id];
+      var asset = _this4.props.assets[id];
       if (!asset) {
         return;
       }
-      var blockAssetComponents = _this2.props.blockAssetComponents;
+      var blockAssetComponents = _this4.props.blockAssetComponents;
 
       var AssetComponent = blockAssetComponents[asset.type] || _react2.default.createElement('div', null);
-      var _props = _this2.props,
-          onChange = _props.onAssetChange,
-          onMouseOver = _props.onAssetMouseOver,
-          onMouseOut = _props.onAssetMouseOut,
-          iconMap = _props.iconMap;
-      var onFocus = _this2.onAssetFocus,
-          onBlur = _this2.onInputBlur;
 
       if (asset) {
         return { /* eslint consistent-return:0 */
@@ -509,25 +863,19 @@ var _initialiseProps = function _initialiseProps() {
           editable: false,
           props: {
             assetId: id,
-            asset: asset,
-            onFocus: onFocus,
-            onBlur: onBlur,
-            onChange: onChange,
-            onMouseOver: onMouseOver,
-            onMouseOut: onMouseOut,
-            AssetComponent: AssetComponent,
-            iconMap: iconMap
+            AssetComponent: AssetComponent
           }
         };
       }
     }
   };
 
-  this.defaultKeyBindingFn = function (event) {
+  this._defaultKeyBindingFn = function (event) {
     if (event && hasCommandModifier(event)) {
       switch (event.keyCode) {
         // `^`
         case 229:
+          console.log('add a note buddy');
           return 'add-note';
         // `z`
         case 90:
@@ -544,57 +892,57 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._handleKeyCommand = function (command) {
-    if (command === 'add-note' && _this2.props.allowNotesInsertion && typeof _this2.props.onNoteAdd === 'function') {
-      _this2.onNoteAdd();
+    if (command === 'add-note' && _this4.props.allowNotesInsertion && typeof _this4.props.onNoteAdd === 'function') {
+      _this4.onNoteAdd();
       return 'handled';
     } else if (command === 'editor-undo') {
-      _this2.undo();
+      _this4.undo();
     } else if (command === 'editor-redo') {
-      _this2.redo();
+      _this4.redo();
     }
-    var editorState = _this2.props.editorState;
+    var editorState = _this4.props.editorState;
 
     var newState = _draftJs.RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
-      _this2.onChange(newState);
+      _this4.onChange(newState);
       return 'handled';
     }
     return 'not-handled';
   };
 
-  this._handleBeforeInput = function (character, props) {
-    // todo : make that feature more subtle
+  this._handleBeforeInput = function (character) {
+    // todo : make that feature more subtle and customizable through props
     if (character === '@') {
-      _this2.props.onAssetRequest();
+      _this4.props.onAssetRequest();
       return 'handled';
     }
     if (character !== ' ') {
       return 'not-handled';
     }
-    var editorState = _this2.props.editorState;
+    var editorState = _this4.props.editorState;
     var newEditorState = checkCharacterForState(editorState, character);
     if (editorState !== newEditorState) {
-      _this2.onChange(newEditorState);
+      _this4.onChange(newEditorState);
       return 'handled';
     }
     return 'not-handled';
   };
 
   this._onTab = function (ev) {
-    var editorState = _this2.props.editorState;
+    var editorState = _this4.props.editorState;
     var newEditorState = (0, _adjustBlockDepth2.default)(editorState, ev);
     if (newEditorState !== editorState) {
-      _this2.onChange(newEditorState);
+      _this4.onChange(newEditorState);
       return 'handled';
     }
     return 'not-handled';
   };
 
   this._handleReturn = function (ev) {
-    var editorState = _this2.props.editorState;
+    var editorState = _this4.props.editorState;
     var newEditorState = checkReturnForState(editorState, ev);
     if (editorState !== newEditorState) {
-      _this2.onChange(newEditorState);
+      _this4.onChange(newEditorState);
       return 'handled';
     }
     return 'not-handled';
@@ -602,19 +950,19 @@ var _initialiseProps = function _initialiseProps() {
 
   this._handleDrop = function (sel, dataTransfer, isInternal) {
     var payload = dataTransfer.data.getData('text');
-    // Set timeout to allow cursor/selection to move to drop location
+    // Set timeout to allow cursor/selection to move to drop location before calling back onDrop
     setTimeout(function () {
-      var selection = _this2.props.editorState.getSelection();
+      var selection = _this4.props.editorState.getSelection();
       var anchorOffset = selection.getEndOffset() - payload.length;
       anchorOffset = anchorOffset < 0 ? 0 : anchorOffset;
       var payloadSel = selection.merge({
         anchorOffset: anchorOffset
       });
 
-      var newContentState = _draftJs.Modifier.replaceText(_this2.props.editorState.getCurrentContent(), payloadSel, ' ');
-      _this2.onChange(_draftJs.EditorState.createWithContent(newContentState));
-      if (typeof _this2.props.onDrop === 'function') {
-        _this2.props.onDrop(payload, selection);
+      var newContentState = _draftJs.Modifier.replaceText(_this4.props.editorState.getCurrentContent(), payloadSel, ' ');
+      _this4.onChange(_draftJs.EditorState.createWithContent(newContentState));
+      if (typeof _this4.props.onDrop === 'function') {
+        _this4.props.onDrop(payload, selection);
       }
     }, 1);
     return false;
@@ -622,20 +970,19 @@ var _initialiseProps = function _initialiseProps() {
 
   this._handleDragOver = function (event) {
     event.preventDefault();
-    if (typeof _this2.props.onDragOver === 'function') {
-      _this2.props.onDragOver(event);
+    if (typeof _this4.props.onDragOver === 'function') {
+      _this4.props.onDragOver(event);
     }
     return false;
   };
 
   this._handlePastedText = function (text, html) {
-
     setTimeout(function () {
-      _this2.feedUndoStack(_this2.state.editorState);
+      _this4.feedUndoStack(_this4.state.editorState);
     }, 1);
 
-    if (_this2.props.clipboard) {
-      _this2.editor.setClipboard(null);
+    if (_this4.props.clipboard) {
+      _this4.editor.setClipboard(null);
       return true;
     }
     return false;
@@ -643,87 +990,63 @@ var _initialiseProps = function _initialiseProps() {
 
   this.findInlineAsset = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
-    if (!_this2.props.editorState) {
-      callback(null);
+    if (!_this4.props.editorState) {
+      return callback(null);
     }
     if (contentState === undefined) {
-      contentState = _this2.props.editorState.getCurrentContent();
+      contentState = _this4.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(function (character) {
       var entityKey = character.getEntity();
       return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.INLINE_ASSET;
     }, function (start, end) {
-      var _props2 = _this2.props,
-          assets = _props2.assets,
-          onMouseOver = _props2.onAssetMouseOver,
-          onMouseOut = _props2.onAssetMouseOut,
-          onAssetChange = _props2.onAssetChange,
-          components = _props2.inlineAssetComponents;
-      var onFocus = _this2.onAssetFocus,
-          onBlur = _this2.onInputBlur;
+      var _props = _this4.props,
+          assets = _props.assets,
+          components = _props.inlineAssetComponents;
+
 
       var entityKey = contentBlock.getEntityAt(start);
-      var data = _this2.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+      var data = _this4.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
       var id = data.data.asset.id;
       var asset = assets[id];
+      var AssetComponent = asset && components[asset.type] ? components[asset.type] : function () {
+        return _react2.default.createElement('div', null);
+      };
+
       var props = {};
-      if (asset) {
+      if (id) {
         props = {
           assetId: id,
-          asset: asset,
-          onMouseOver: onMouseOver,
-          onMouseOut: onMouseOut,
-          components: components,
-          onChange: onAssetChange,
-          onFocus: onFocus,
-          onBlur: onBlur
+          AssetComponent: AssetComponent
         };
       }
       callback(start, end, props);
     });
   };
 
-  this.findNotePointers = function (contentBlock, callback, inputContentState) {
+  this.findNotePointer = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
+    if (!_this4.props.editorState) {
+      return callback(null);
+    }
     if (contentState === undefined) {
-      contentState = _this2.props.editorState.getCurrentContent();
+      contentState = _this4.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(function (character) {
       var entityKey = character.getEntity();
       return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.NOTE_POINTER;
     }, function (start, end) {
       var entityKey = contentBlock.getEntityAt(start);
-      var data = _this2.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
-      var noteId = data.data.noteId;
-      var onMouseOver = function onMouseOver(event) {
-        if (typeof _this2.props.onNotePointerMouseOver === 'function') {
-          _this2.props.onNotePointerMouseOver(noteId, event);
-        }
-      };
-      var onMouseOut = function onMouseOut(event) {
-        if (typeof _this2.props.onNotePointerMouseOut === 'function') {
-          _this2.props.onNotePointerMouseOut(noteId, event);
-        }
-      };
-      var onMouseClick = function onMouseClick(event) {
-        if (typeof _this2.props.onNotePointerMouseClick === 'function') {
-          _this2.props.onNotePointerMouseClick(noteId, event);
-        }
-      };
-      var note = _this2.props.notes && _this2.props.notes[noteId];
-      var props = (0, _extends3.default)({}, data.data, {
-        note: note,
-        onMouseOver: onMouseOver,
-        onMouseOut: onMouseOut,
-        onMouseClick: onMouseClick
-      });
+      var data = _this4.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+
+      var props = (0, _extends3.default)({}, data.data);
       callback(start, end, props);
     });
   };
 
   this.findQuotes = function (contentBlock, callback, contentState) {
     var QUOTE_REGEX = /("[^"]+")/gi;
-    _this2.findWithRegex(QUOTE_REGEX, contentBlock, callback);
+    _this4.findWithRegex(QUOTE_REGEX, contentBlock, callback);
   };
 
   this.findWithRegex = function (regex, contentBlock, callback) {
@@ -737,25 +1060,28 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.generateEmptyEditor = function () {
-    return _draftJs.EditorState.createEmpty(_this2.createDecorator());
+    return _draftJs.EditorState.createEmpty(_this4.createDecorator());
   };
 
   this.createDecorator = function () {
-    var ActiveNotePointer = _this2.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this2.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this2.findNotePointers, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this2.findQuotes, _QuoteContainer2.default)]);
+    var ActiveNotePointer = _this4.props.NotePointerComponent || _NotePointer2.default;
+    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)]);
   };
 
   this.updateSelection = function () {
+    if (!_this4.props.isActive) {
+      return;
+    }
     var left = void 0;
     var sideToolbarTop = void 0;
 
     var selectionRange = getSelectionRange();
 
-    var editorEle = _this2.editor;
+    var editorEle = _this4.editor;
 
     var styles = {
-      sideToolbar: (0, _extends3.default)({}, _this2.state.styles.sideToolbar),
-      inlineToolbar: (0, _extends3.default)({}, _this2.state.styles.inlineToolbar)
+      sideToolbar: (0, _extends3.default)({}, _this4.state.styles.sideToolbar),
+      inlineToolbar: (0, _extends3.default)({}, _this4.state.styles.inlineToolbar)
     };
 
     if (!selectionRange) return;
@@ -764,16 +1090,20 @@ var _initialiseProps = function _initialiseProps() {
       return;
     }
 
-    var assetRequestPosition = _this2.props.assetRequestPosition;
+    var assetRequestPosition = _this4.props.assetRequestPosition;
 
 
-    var sideToolbarEle = _this2.sideToolbar.toolbar;
+    var sideToolbarEle = _this4.sideToolbar.toolbar;
+
+    if (!sideToolbarEle) {
+      return;
+    }
     var rangeBounds = selectionRange.getBoundingClientRect();
 
     var selectedBlock = getSelectedBlockElement(selectionRange);
     if (selectedBlock) {
       var blockBounds = selectedBlock.getBoundingClientRect();
-      var editorBounds = _this2.state.editorBounds;
+      var editorBounds = _this4.state.editorBounds;
       if (!editorBounds) return;
       sideToolbarTop = rangeBounds.top || blockBounds.top;
       styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
@@ -791,7 +1121,7 @@ var _initialiseProps = function _initialiseProps() {
         while (startNode.nodeType === 3) {
           startNode = startNode.parentNode;
         }
-        var popTop = rangeBounds.top /* - editorBounds.top + displaceY */ - popoverSpacing;
+        var popTop = rangeBounds.top - popoverSpacing;
         left = rangeBounds.left;
         styles.inlineToolbar.left = left;
         styles.inlineToolbar.top = popTop;
@@ -803,112 +1133,161 @@ var _initialiseProps = function _initialiseProps() {
       styles.inlineToolbar.display = 'none';
     }
 
-    if ((0, _stringify2.default)(styles) !== (0, _stringify2.default)(_this2.state.styles)) {
-      _this2.setState({
+    if ((0, _stringify2.default)(styles) !== (0, _stringify2.default)(_this4.state.styles)) {
+      _this4.setState({
         styles: styles
       });
     }
   };
 
   this.focus = function (event) {
-    if (_this2.props.readOnly) return;
 
     var stateMods = {};
-    if (!_this2.props.readOnly && _this2.state.readOnly) {
-      stateMods.readOnly = true;
-    }
 
-    var editorNode = _this2.editor && _this2.editor.refs.editor;
+    var editorNode = _this4.editor && _this4.editor.refs.editor;
     stateMods.editorBounds = editorNode.getBoundingClientRect();
 
     if ((0, _keys2.default)(stateMods).length) {
-      _this2.setState(stateMods);
+      _this4.setState(stateMods);
     }
 
     setTimeout(function () {
-      if (!_this2.state.readOnly) {
+      if (!_this4.state.readOnly) {
         editorNode.focus();
       }
     }, 1);
   };
 
   this.render = function () {
-    var _props3 = _this2.props,
-        _props3$editorState = _props3.editorState,
-        editorState = _props3$editorState === undefined ? _draftJs.EditorState.createEmpty(_this2.createDecorator()) : _props3$editorState,
-        _props3$editorClass = _props3.editorClass,
-        editorClass = _props3$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props3$editorClass,
-        contentId = _props3.contentId,
-        _props3$placeholder = _props3.placeholder,
-        placeholder = _props3$placeholder === undefined ? 'write your text' : _props3$placeholder,
-        _props3$allowNotesIns = _props3.allowNotesInsertion,
-        allowNotesInsertion = _props3$allowNotesIns === undefined ? false : _props3$allowNotesIns,
-        _props3$allowInlineAs = _props3.allowInlineAsset,
-        allowInlineAsset = _props3$allowInlineAs === undefined ? true : _props3$allowInlineAs,
-        _props3$allowBlockAss = _props3.allowBlockAsset,
-        allowBlockAsset = _props3$allowBlockAss === undefined ? true : _props3$allowBlockAss,
-        _props3$messages = _props3.messages,
-        messages = _props3$messages === undefined ? {
+    // props
+    var _props2 = _this4.props,
+        _props2$editorState = _props2.editorState,
+        editorState = _props2$editorState === undefined ? _this4.generateEmptyEditor() : _props2$editorState,
+        _props2$editorClass = _props2.editorClass,
+        editorClass = _props2$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props2$editorClass,
+        contentId = _props2.contentId,
+        _props2$placeholder = _props2.placeholder,
+        placeholder = _props2$placeholder === undefined ? 'write your text' : _props2$placeholder,
+        _props2$allowNotesIns = _props2.allowNotesInsertion,
+        allowNotesInsertion = _props2$allowNotesIns === undefined ? false : _props2$allowNotesIns,
+        _props2$allowInlineAs = _props2.allowInlineAsset,
+        allowInlineAsset = _props2$allowInlineAs === undefined ? true : _props2$allowInlineAs,
+        _props2$allowBlockAss = _props2.allowBlockAsset,
+        allowBlockAsset = _props2$allowBlockAss === undefined ? true : _props2$allowBlockAss,
+        _props2$messages = _props2.messages,
+        messages = _props2$messages === undefined ? {
       tooltips: {
         addNote: 'add a note (shortcut: "cmd + ^")',
         addAsset: 'add an asset (shortcut: "@")',
         cancel: 'cancel'
       }
-    } : _props3$messages,
-        onAssetRequestUpstream = _props3.onAssetRequest,
-        assetRequestPosition = _props3.assetRequestPosition,
-        onAssetRequestCancel = _props3.onAssetRequestCancel,
-        onAssetChoice = _props3.onAssetChoice,
-        editorStyle = _props3.editorStyle,
-        onClick = _props3.onClick,
-        AssetChoiceComponent = _props3.AssetChoiceComponent,
-        assetChoiceProps = _props3.assetChoiceProps,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps']);
-    var _state3 = _this2.state,
+    } : _props2$messages,
+        onAssetRequestUpstream = _props2.onAssetRequest,
+        assetRequestPosition = _props2.assetRequestPosition,
+        onAssetRequestCancel = _props2.onAssetRequestCancel,
+        onAssetChoice = _props2.onAssetChoice,
+        editorStyle = _props2.editorStyle,
+        onClick = _props2.onClick,
+        AssetChoiceComponent = _props2.AssetChoiceComponent,
+        assetChoiceProps = _props2.assetChoiceProps,
+        isActive = _props2.isActive,
+        otherProps = (0, _objectWithoutProperties3.default)(_props2, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'isActive']);
+
+    // internal state
+
+    var _state3 = _this4.state,
         readOnly = _state3.readOnly,
         stateEditorState = _state3.editorState,
         styles = _state3.styles;
-    var _handleKeyCommand = _this2._handleKeyCommand,
-        _handleBeforeInput = _this2._handleBeforeInput,
-        onChange = _this2.onChange,
-        _blockRenderer = _this2._blockRenderer,
-        _handleReturn = _this2._handleReturn,
-        _onTab = _this2._onTab,
-        _handleDrop = _this2._handleDrop,
-        _handleDragOver = _this2._handleDragOver,
-        _handlePastedText = _this2._handlePastedText,
-        onNoteAdd = _this2.onNoteAdd,
-        defaultKeyBindingFn = _this2.defaultKeyBindingFn;
 
+    // class functions
 
-    var realEditorState = editorState || _this2.generateEmptyEditor();
+    var _handleKeyCommand = _this4._handleKeyCommand,
+        _handleBeforeInput = _this4._handleBeforeInput,
+        _blockRenderer = _this4._blockRenderer,
+        _handleReturn = _this4._handleReturn,
+        _onTab = _this4._onTab,
+        _handleDrop = _this4._handleDrop,
+        _handleDragOver = _this4._handleDragOver,
+        _handlePastedText = _this4._handlePastedText,
+        onChange = _this4.onChange,
+        onNoteAdd = _this4.onNoteAdd,
+        _defaultKeyBindingFn = _this4._defaultKeyBindingFn;
 
-    var bindEditorRef = function bindEditorRef(editor) {
-      _this2.editor = editor;
-    };
-    var bindSideToolbarRef = function bindSideToolbarRef(sideToolbar) {
-      _this2.sideToolbar = sideToolbar;
-    };
+    /**
+     * Functions handling draft editor locking/unlocking
+     * and callbacks related to inline asset choices with asset choice component
+     */
 
-    var bindInlineToolbar = function bindInlineToolbar(inlineToolbar) {
-      _this2.inlineToolbar = inlineToolbar;
-    };
+    // locking draft-js editor when asset choice component is summoned
 
     var onAssetRequest = function onAssetRequest(selection) {
       if (typeof onAssetRequestUpstream === 'function') {
         onAssetRequestUpstream(selection);
+        _this4.setState({
+          readOnly: true
+        });
       }
     };
 
+    // unlocking draft-js editor when clicked
     var onMainClick = function onMainClick(event) {
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      _this2.focus(event);
+      if (_this4.state.readOnly) {
+        _this4.setState({
+          readOnly: false
+        });
+      }
+      _this4.focus(event);
     };
 
-    var keyBindingFn = typeof _this2.props.keyBindingFn === 'function' ? _this2.props.keyBindingFn : defaultKeyBindingFn;
-    var iconMap = _this2.props.iconMap ? _this2.props.iconMap : _defaultIconMap2.default;
+    // locking draft-js editor when user interacts with asset-choice component
+    var onAssetChoiceFocus = function onAssetChoiceFocus() {
+      _this4.setState({
+        readOnly: true
+      });
+    };
+
+    // unlocking draft-js editor when asset choice is abandonned
+    var onOnAssetRequestCancel = function onOnAssetRequestCancel() {
+      onAssetRequestCancel();
+      _this4.setState({
+        readOnly: false
+      });
+    };
+
+    // unlocking draft-js editor when asset is choosen
+    var onOnAssetChoice = function onOnAssetChoice(asset) {
+      onAssetChoice(asset);
+      _this4.setState({
+        readOnly: false
+      });
+    };
+
+    /**
+     * component bindings and final props definitions
+     */
+
+    var realEditorState = editorState || _this4.generateEmptyEditor();
+
+    var bindEditorRef = function bindEditorRef(editor) {
+      _this4.editor = editor;
+    };
+    var bindSideToolbarRef = function bindSideToolbarRef(sideToolbar) {
+      _this4.sideToolbar = sideToolbar;
+    };
+
+    var bindInlineToolbar = function bindInlineToolbar(inlineToolbar) {
+      _this4.inlineToolbar = inlineToolbar;
+    };
+
+    // key binding can be provided through props
+    var keyBindingFn = typeof _this4.props.keyBindingFn === 'function' ? _this4.props.keyBindingFn : _defaultKeyBindingFn;
+    // props-provided iconMap can be merged with defaultIconMap for displaying custom icons
+    var iconMap = _this4.props.iconMap ? (0, _extends3.default)({}, _defaultIconMap2.default, _this4.props.iconMap) : _defaultIconMap2.default;
+
     return _react2.default.createElement(
       'div',
       {
@@ -937,10 +1316,11 @@ var _initialiseProps = function _initialiseProps() {
         style: styles.sideToolbar,
 
         onAssetRequest: onAssetRequest,
-        onAssetRequestCancel: onAssetRequestCancel,
-        onAssetChoice: onAssetChoice,
+        onAssetRequestCancel: onOnAssetRequestCancel,
+        onAssetChoice: onOnAssetChoice,
         assetRequestPosition: assetRequestPosition,
         assetChoiceProps: assetChoiceProps,
+        onAssetChoiceFocus: onAssetChoiceFocus,
 
         AssetChoiceComponent: AssetChoiceComponent,
         iconMap: iconMap,
@@ -954,7 +1334,7 @@ var _initialiseProps = function _initialiseProps() {
       _react2.default.createElement(_draftJs.Editor, (0, _extends3.default)({
         blockRendererFn: _blockRenderer,
         spellCheck: true,
-        readOnly: readOnly,
+        readOnly: isActive ? readOnly : true,
         placeholder: placeholder,
 
         keyBindingFn: keyBindingFn,
@@ -971,7 +1351,7 @@ var _initialiseProps = function _initialiseProps() {
 
         onChange: onChange,
         ref: bindEditorRef,
-        onBlur: _this2.onBlur
+        onBlur: _this4.onBlur
 
       }, otherProps))
     );
@@ -979,4 +1359,3 @@ var _initialiseProps = function _initialiseProps() {
 };
 
 exports.default = BasicEditor;
-module.exports = exports['default'];

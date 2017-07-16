@@ -3,13 +3,22 @@ import PropTypes from 'prop-types';
 
 import { OrderedMap } from 'immutable';
 
+import FileSaver from 'file-saver';
+
+import plainMock from './mocks/scholar-draft-example-state-plain.json';
+import entities5Mock from './mocks/scholar-draft-example-state-5e.json';
+import entities20Mock from './mocks/scholar-draft-example-state-20e.json';
+
+
 import {
   EditorState,
   ContentState,
   ContentBlock,
   Modifier,
   Entity,
-  AtomicBlockUtils
+  AtomicBlockUtils,
+  convertFromRaw,
+  convertToRaw
 } from 'draft-js';
 
 import {
@@ -51,31 +60,14 @@ const blockAssetComponents = {
   citation: ExampleBlockCitation
 };
 
-export class Emitter {
-  listeners = new Map()
-
-  subscribe = listener => {
-    const id = generateId();
-    this.listeners.set(id, listener);
-    return () => this.listeners.delete(id);
-  }
-
-  dispatch = assets => {
-    console.log('dispatcher dispatches');
-    this.listeners.forEach(listener => {
-      listener(assets);
-    });
-  }
-}
-
-export default class BasicEditorExample extends Component {
+export default class ConnectedEditorExample extends Component {
   
   state = {
     // mock related
     contextualizationRequest: false,
     contextualizationRequestType: undefined,
     // all these should be handled by upstream logic in real applications
-    editorState: EditorState.createEmpty(),
+    // editorState: EditorState.createEmpty(),
     inlineAssetComponents,
     blockAssetComponents,
     contextualizations: {
@@ -112,18 +104,6 @@ export default class BasicEditorExample extends Component {
 
   constructor(props) {
     super(props);
-    this.emitter = new Emitter();
-    // this.setState({
-    //   assets: this.buildAssets()
-    // });
-  }
-
-  getChildContext = () => ({
-    emitter: this.emitter
-  })
-
-  static childContextTypes = {
-    emitter: PropTypes.object
   }
 
 
@@ -134,10 +114,10 @@ export default class BasicEditorExample extends Component {
   }
 
   componentDidMount() {
-    const assets = this.buildAssets();
-    this.setState({
-      assets
-    });
+    this.buildAssets();
+    // this.setState({
+    //   assets
+    // });
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -146,12 +126,12 @@ export default class BasicEditorExample extends Component {
       this.state.contextualizers !== nextState.contextualizers ||
       this.state.contextualizations !== nextState.contextualizations
     ) {
-      const assets = this.buildAssets();
-    console.log('dispatch');
-      this.emitter.dispatch(assets);
-      this.setState({
-        assets
-      });
+      this.buildAssets();
+    // console.log('dispatch');
+      // this.emitter.dispatch(assets);
+      // this.setState({
+      //   assets
+      // });
     }
   }
 
@@ -349,6 +329,7 @@ export default class BasicEditorExample extends Component {
       contextualizerId: Object.keys(contextualizers)[0],
     }
     const newEditorState = insertAssetInEditor(editorState, {id: contextualization.id});
+    // console.log('set readonly to true in insertContextualization', newEditorState.getCurrentContent().toJS())
     this.setState({
       contextualizationRequest: false,
       contextualizationRequestSelection: undefined,
@@ -360,13 +341,12 @@ export default class BasicEditorExample extends Component {
       readOnly: true
     });
     setTimeout(() => {
-      const assets = this.buildAssets();
+    // console.log('set readonly to false in insertContextualization after settimeout')
+      this.buildAssets();
       this.setState({
         readOnly: false,
-        assets
+        // assets
       });
-      this.emitter.dispatch(assets);
-
       this.editor.focus();
     });
   }
@@ -380,7 +360,8 @@ export default class BasicEditorExample extends Component {
           title 
         }
       }
-    })
+    });
+    setTimeout(() => this.buildAssets());
   }
 
   updateContextualizerPages = pages => {
@@ -393,6 +374,7 @@ export default class BasicEditorExample extends Component {
         }
       }
     })
+    setTimeout(() => this.buildAssets());
   }
 
   onDataChange = (dataProp, id, newObject) => {
@@ -402,6 +384,7 @@ export default class BasicEditorExample extends Component {
         [id]: newObject
       }
     });
+    setTimeout(() => this.buildAssets());
   }
 
   deleteContextualizations = ids => {
@@ -439,11 +422,11 @@ export default class BasicEditorExample extends Component {
 
   buildAssets = () => {
     const {
-      contextualizations,
-      resources,
-      contextualizers
+      contextualizations = {},
+      resources = {},
+      contextualizers = {}
     } = this.state;
-    return Object.keys(contextualizations)
+    const assets = Object.keys(contextualizations)
     .reduce((ass, id) => {
       const contextualization = contextualizations[id];
       return {
@@ -456,6 +439,8 @@ export default class BasicEditorExample extends Component {
         }
       }
     }, {});
+    this.setState({assets});
+    return assets;
   }
 
   render = () => {
@@ -487,7 +472,7 @@ export default class BasicEditorExample extends Component {
       readOnly,
       contextualizationRequest,
       clipboard,
-      // assets
+      assets
     } = state;
 
     const bindEditorRef = (editor) => {
@@ -506,6 +491,8 @@ export default class BasicEditorExample extends Component {
     }
 
     const startDrag = (e) => {
+    // console.log('set readonly to false in startDrag')
+
        e.dataTransfer.dropEffect = 'copy';
        e.dataTransfer.setData('text', 'TEST');
        this.setState({
@@ -518,6 +505,7 @@ export default class BasicEditorExample extends Component {
    };
 
    const onBlur = (e, editorState) => {
+    // console.log('set readonly to true in onBlur')
     this.setState({
       readOnly: true
     });
@@ -525,6 +513,7 @@ export default class BasicEditorExample extends Component {
 
    const onClick = (e) => {
     if (this.state.readOnly) {
+    // console.log('set readonly to false in onClick')
       this.setState({
         readOnly: false
       });
@@ -538,7 +527,44 @@ export default class BasicEditorExample extends Component {
     }
    }
 
-   const assets = this.buildAssets();
+   const downloadState = () => {
+    const state = {
+      content: convertToRaw(this.state.editorState.getCurrentContent()),
+      resources,
+      contextualizers,
+      contextualizations
+    };
+    const blob = new Blob([JSON.stringify(state)], {type: 'text/plain;charset=utf-8'});
+    FileSaver.saveAs(blob, 'scholar-draft-example-state.json');
+   }
+
+   const loadExampleState = (mock) => {
+    const {
+      content,
+      resources,
+      contextualizations,
+      contextualizers,
+    } = mock;
+
+    this.setState({
+      editorState: EditorState.createWithContent(convertFromRaw(content)),
+      resources,
+      contextualizers,
+      contextualizations
+    });
+    setTimeout(() => this.buildAssets());
+   }
+
+   const loadPlainExampleState = () => {
+    loadExampleState(plainMock);
+   }
+
+   const load5ExampleState = () => {
+    loadExampleState(entities5Mock);
+   }
+   const load20ExampleState = () => {
+    loadExampleState(entities20Mock);
+   }
 
     const assetChoiceProps = {
       options: ['asset 1', 'asset 2', 'asset 3'],
@@ -548,7 +574,6 @@ export default class BasicEditorExample extends Component {
       }
     };
     const assetRequestPosition = contextualizationRequest ? editorState.getSelection() : undefined;
-
     return (
       <div
         style={{
@@ -601,6 +626,11 @@ export default class BasicEditorExample extends Component {
             })
           }
           <div>
+          <button onClick={downloadState}>Download current state</button>
+          <button onClick={loadPlainExampleState}>Load example state (plain)</button>
+          <button onClick={load5ExampleState}>Load example state (5 entities)</button>
+          <button onClick={load20ExampleState}>Load example state (20 entities)</button>
+
           {Object.keys(contextualizations).length > 0 && <div>
             <button onClick={refreshUpstreamContextualizationsList}>Refresh upstream contextualizations list</button>
           </div>}
@@ -639,6 +669,8 @@ export default class BasicEditorExample extends Component {
             assets={assets}
             assetRequestPosition={assetRequestPosition}
             assetChoiceProps={assetChoiceProps}
+
+            isActive={true}
 
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}
