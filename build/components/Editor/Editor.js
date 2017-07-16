@@ -367,8 +367,6 @@ var Editor = function (_Component) {
 
             clipboard: clipboard,
 
-            keyBindingFn: keyBindingFn,
-
             allowNotesInsertion: true,
             editorStyle: editorStyles && editorStyles.mainEditor
           })

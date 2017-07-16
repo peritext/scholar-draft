@@ -646,6 +646,7 @@ export default class BasicEditor extends Component {
       switch (event.keyCode) {
         // `^`
       case 229:
+        console.log('add a note buddy');
         return 'add-note';
         // `z`
       case 90:

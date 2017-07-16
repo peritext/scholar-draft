@@ -366,8 +366,6 @@ export default class Editor extends Component {
 
             clipboard={clipboard}
 
-            keyBindingFn={keyBindingFn}
-
             allowNotesInsertion
             editorStyle={editorStyles && editorStyles.mainEditor}
           />
