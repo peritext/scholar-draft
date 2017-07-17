@@ -445,7 +445,7 @@ export function deleteNoteFromEditor(
  * @return {obj} newNotes - a map of the updated notes
  */
 export const updateNotesFromEditor = (editorState, inputNotes) => {
-  const notes = { ...inputNotes };
+  const notes = inputNotes; // { ...inputNotes };
   const contentState = editorState.getCurrentContent();
 
   // list all entities
@@ -472,22 +472,37 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
       notes[noteId].order = order;
     }
   });
-  // filter unused notes
-  return Object.keys(notes)
+  const notesToDelete = Object.keys(notes)
   .filter((noteId) => {
     const entity = noteEntities.find(
       (noteEntity, index) => 
         noteEntity.getData().noteId === noteId
     );
     return entity !== undefined;
-  })
-  .reduce((finalNotes, noteId) => {
-    const note = notes[noteId];
-    return {
-      ...finalNotes,
-      [noteId]: note
-    };
-  }, {});
+  });
+
+  notesToDelete.forEach((noteId) => {
+    delete notes[noteId];
+  });
+
+  return notes;
+
+  // filter unused notes
+  // return Object.keys(notes)
+  // .filter((noteId) => {
+  //   const entity = noteEntities.find(
+  //     (noteEntity, index) => 
+  //       noteEntity.getData().noteId === noteId
+  //   );
+  //   return entity !== undefined;
+  // })
+  // .reduce((finalNotes, noteId) => {
+  //   const note = notes[noteId];
+  //   return {
+  //     ...finalNotes,
+  //     [noteId]: note
+  //   };
+  // }, {});
 };
 
 /**
@@ -566,29 +581,6 @@ const getAssetEntity = (editorState, id) => {
     }
     return false;
   });
-
-  // const contentState = editorState.getCurrentContent();
-  // const blockMap = contentState.getBlockMap().toJS();
-  // const entity = Object.keys(blockMap)
-  // // iterate through blocks
-  // .find(blockMapId => blockMap[blockMapId]
-  //     .characterList
-  //     // find characters attached to an entity
-  //     .filter(chara => chara.entity !== null)
-  //     // keep entities only
-  //     .map(chara => chara.entity)
-  //     // add info about entity and its location
-  //     .map(entityKey => ({
-  //       entityKey, 
-  //       entity: contentState.getEntity(entityKey),
-  //       blockMapId
-  //     }))
-  //     // find relevant entity (corresponding to the asset to delete)
-  //     .find((thatEntity) => {
-  //       const data = thatEntity.entity.getData();
-  //       return data.asset && data.asset.id === id;
-  //     }));
-  // return entity;
   return assetEntity;
 };
 

@@ -9,9 +9,9 @@ var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _extends4 = require('babel-runtime/helpers/extends');
+var _extends3 = require('babel-runtime/helpers/extends');
 
-var _extends5 = _interopRequireDefault(_extends4);
+var _extends4 = _interopRequireDefault(_extends3);
 
 var _keys = require('babel-runtime/core-js/object/keys');
 
@@ -377,7 +377,7 @@ function deleteNoteFromEditor(editorState, id, callback) {
  * @return {obj} newNotes - a map of the updated notes
  */
 var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotesFromEditor(editorState, inputNotes) {
-  var notes = (0, _extends5.default)({}, inputNotes);
+  var notes = inputNotes; // { ...inputNotes };
   var contentState = editorState.getCurrentContent();
 
   // list all entities
@@ -405,16 +405,35 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
       notes[noteId].order = order;
     }
   });
-  // filter unused notes
-  return (0, _keys2.default)(notes).filter(function (noteId) {
+  var notesToDelete = (0, _keys2.default)(notes).filter(function (noteId) {
     var entity = noteEntities.find(function (noteEntity, index) {
       return noteEntity.getData().noteId === noteId;
     });
     return entity !== undefined;
-  }).reduce(function (finalNotes, noteId) {
-    var note = notes[noteId];
-    return (0, _extends5.default)({}, finalNotes, (0, _defineProperty3.default)({}, noteId, note));
-  }, {});
+  });
+
+  notesToDelete.forEach(function (noteId) {
+    delete notes[noteId];
+  });
+
+  return notes;
+
+  // filter unused notes
+  // return Object.keys(notes)
+  // .filter((noteId) => {
+  //   const entity = noteEntities.find(
+  //     (noteEntity, index) => 
+  //       noteEntity.getData().noteId === noteId
+  //   );
+  //   return entity !== undefined;
+  // })
+  // .reduce((finalNotes, noteId) => {
+  //   const note = notes[noteId];
+  //   return {
+  //     ...finalNotes,
+  //     [noteId]: note
+  //   };
+  // }, {});
 };
 
 /**
@@ -427,7 +446,7 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
  * @return {obj} newAssets - a map of the assets actually in use
  */
 var updateAssetsFromEditors = exports.updateAssetsFromEditors = function updateAssetsFromEditors(editorStates, inputAssets) {
-  var assets = (0, _extends5.default)({}, inputAssets);
+  var assets = (0, _extends4.default)({}, inputAssets);
   // list all entities
   // todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
   var entities = [];
@@ -454,7 +473,7 @@ var updateAssetsFromEditors = exports.updateAssetsFromEditors = function updateA
     return entity !== undefined;
   }).reduce(function (finalAssets, assetId) {
     var asset = assets[assetId];
-    return (0, _extends5.default)({}, finalAssets, (0, _defineProperty3.default)({}, assetId, asset));
+    return (0, _extends4.default)({}, finalAssets, (0, _defineProperty3.default)({}, assetId, asset));
   }, {});
 };
 
@@ -485,29 +504,6 @@ var getAssetEntity = function getAssetEntity(editorState, id) {
     }
     return false;
   });
-
-  // const contentState = editorState.getCurrentContent();
-  // const blockMap = contentState.getBlockMap().toJS();
-  // const entity = Object.keys(blockMap)
-  // // iterate through blocks
-  // .find(blockMapId => blockMap[blockMapId]
-  //     .characterList
-  //     // find characters attached to an entity
-  //     .filter(chara => chara.entity !== null)
-  //     // keep entities only
-  //     .map(chara => chara.entity)
-  //     // add info about entity and its location
-  //     .map(entityKey => ({
-  //       entityKey, 
-  //       entity: contentState.getEntity(entityKey),
-  //       blockMapId
-  //     }))
-  //     // find relevant entity (corresponding to the asset to delete)
-  //     .find((thatEntity) => {
-  //       const data = thatEntity.entity.getData();
-  //       return data.asset && data.asset.id === id;
-  //     }));
-  // return entity;
   return assetEntity;
 };
 
