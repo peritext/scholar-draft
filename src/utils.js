@@ -478,7 +478,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
       (noteEntity, index) => 
         noteEntity.getData().noteId === noteId
     );
-    return entity !== undefined;
+    return entity === undefined;
   });
 
   notesToDelete.forEach((noteId) => {

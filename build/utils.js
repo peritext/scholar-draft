@@ -409,7 +409,7 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
     var entity = noteEntities.find(function (noteEntity, index) {
       return noteEntity.getData().noteId === noteId;
     });
-    return entity !== undefined;
+    return entity === undefined;
   });
 
   notesToDelete.forEach(function (noteId) {
