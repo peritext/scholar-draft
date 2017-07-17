@@ -546,28 +546,50 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
  * @return {ImmutableRecord} entity - the related draft-js entity
  */
 const getAssetEntity = (editorState, id) => {
+  let entity;
+  let data;
+  let assetEntity;
   const contentState = editorState.getCurrentContent();
-  const blockMap = contentState.getBlockMap().toJS();
-  const entity = Object.keys(blockMap)
-  // iterate through blocks
-  .find(blockMapId => blockMap[blockMapId]
-      .characterList
-      // find characters attached to an entity
-      .filter(chara => chara.entity !== null)
-      // keep entities only
-      .map(chara => chara.entity)
-      // add info about entity and its location
-      .map(entityKey => ({
-        entityKey, 
-        entity: contentState.getEntity(entityKey),
-        blockMapId
-      }))
-      // find relevant entity (corresponding to the asset to delete)
-      .find((thatEntity) => {
-        const data = thatEntity.entity.getData();
-        return data.asset && data.asset.id === id;
-      }));
-  return entity;
+  contentState.getBlockMap().some((block) => {
+    block.findEntityRanges((character) => {
+      const entityKey = character.getEntity();
+      if (entityKey) {
+        entity = contentState.getEntity(entityKey);
+        data = entity.getData();
+        if (data.asset && data.asset.id === id) {
+          assetEntity = entity;
+        }
+      }
+    });
+    if (assetEntity) {
+      return true;
+    }
+    return false;
+  });
+
+  // const contentState = editorState.getCurrentContent();
+  // const blockMap = contentState.getBlockMap().toJS();
+  // const entity = Object.keys(blockMap)
+  // // iterate through blocks
+  // .find(blockMapId => blockMap[blockMapId]
+  //     .characterList
+  //     // find characters attached to an entity
+  //     .filter(chara => chara.entity !== null)
+  //     // keep entities only
+  //     .map(chara => chara.entity)
+  //     // add info about entity and its location
+  //     .map(entityKey => ({
+  //       entityKey, 
+  //       entity: contentState.getEntity(entityKey),
+  //       blockMapId
+  //     }))
+  //     // find relevant entity (corresponding to the asset to delete)
+  //     .find((thatEntity) => {
+  //       const data = thatEntity.entity.getData();
+  //       return data.asset && data.asset.id === id;
+  //     }));
+  // return entity;
+  return assetEntity;
 };
 
 /**
