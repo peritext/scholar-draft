@@ -438,7 +438,7 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
 
 /**
  * Delete assets which are not linked to an entity in any of a collection of editorStates
- * @param {array<ImmutableRecord>} editorStates - 
+ * @param {array<ImmutableRecord>} editorStates - the editor states to look into
  * the array of editor states to parse (e.g. main editor state 
  * + notes editor states)
  * @param {object} notes - a map of the notes with shape 

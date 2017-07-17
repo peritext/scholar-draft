@@ -1003,7 +1003,7 @@ var _initialiseProps = function _initialiseProps() {
 
 
       var entityKey = contentBlock.getEntityAt(start);
-      var data = _this4.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+      var data = contentState.getEntity(entityKey).toJS();
       var id = data.data.asset.id;
       var asset = assets[id];
       var AssetComponent = asset && components[asset.type] ? components[asset.type] : function () {
@@ -1034,7 +1034,7 @@ var _initialiseProps = function _initialiseProps() {
       return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.NOTE_POINTER;
     }, function (start, end) {
       var entityKey = contentBlock.getEntityAt(start);
-      var data = _this4.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+      var data = contentState.getEntity(entityKey).toJS();
 
       var props = (0, _extends3.default)({}, data.data);
       callback(start, end, props);

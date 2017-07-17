@@ -822,7 +822,7 @@ export default class BasicEditor extends Component {
         } = this.props;
 
         const entityKey = contentBlock.getEntityAt(start);
-        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+        const data = contentState.getEntity(entityKey).toJS();
         const id = data.data.asset.id;
         const asset = assets[id];
         const AssetComponent = asset && components[asset.type] ? 
@@ -864,7 +864,7 @@ export default class BasicEditor extends Component {
       },
       (start, end) => {
         const entityKey = contentBlock.getEntityAt(start);
-        const data = this.state.editorState.getCurrentContent().getEntity(entityKey).toJS();
+        const data = contentState.getEntity(entityKey).toJS();
 
         const props = {
           ...data.data,
