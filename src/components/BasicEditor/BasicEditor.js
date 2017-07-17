@@ -801,10 +801,10 @@ export default class BasicEditor extends Component {
    */
   findInlineAsset = (contentBlock, callback, inputContentState) => {
     let contentState = inputContentState;
-    if (!this.props.editorState) {
-      return callback(null);
-    }
     if (contentState === undefined) {
+      if (!this.props.editorState) {
+        return callback(null);
+      }
       contentState = this.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(
@@ -848,10 +848,10 @@ export default class BasicEditor extends Component {
    */
   findNotePointer = (contentBlock, callback, inputContentState) => {
     let contentState = inputContentState;
-    if (!this.props.editorState) {
-      return callback(null);
-    }
     if (contentState === undefined) {
+      if (!this.props.editorState) {
+        return callback(null);
+      }
       contentState = this.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(

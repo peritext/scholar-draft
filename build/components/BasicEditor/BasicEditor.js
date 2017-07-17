@@ -989,10 +989,10 @@ var _initialiseProps = function _initialiseProps() {
 
   this.findInlineAsset = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
-    if (!_this4.props.editorState) {
-      return callback(null);
-    }
     if (contentState === undefined) {
+      if (!_this4.props.editorState) {
+        return callback(null);
+      }
       contentState = _this4.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(function (character) {
@@ -1025,10 +1025,10 @@ var _initialiseProps = function _initialiseProps() {
 
   this.findNotePointer = function (contentBlock, callback, inputContentState) {
     var contentState = inputContentState;
-    if (!_this4.props.editorState) {
-      return callback(null);
-    }
     if (contentState === undefined) {
+      if (!_this4.props.editorState) {
+        return callback(null);
+      }
       contentState = _this4.props.editorState.getCurrentContent();
     }
     contentBlock.findEntityRanges(function (character) {
