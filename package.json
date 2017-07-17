@@ -154,7 +154,7 @@
     "chai-enzyme": "^0.7.1",
     "draft-js": "^0.10.1",
     "draft-js-checkable-list-item": "^2.0.5",
-    "draft-js-multidecorators": "^1.0.0",
+    "draft-js-multidecorators": "git+https://github.com/echenley/draft-js-multidecorators.git",
     "draft-js-simpledecorator": "^1.0.2",
     "draftjs-utils": "^0.7.5",
     "fbjs": "^0.8.12",
