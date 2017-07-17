@@ -692,9 +692,7 @@ var _initialiseProps = function _initialiseProps() {
         setTimeout(function () {
           return _this4.forceRender(nextProps);
         });
-        setTimeout(function () {
-          return _this4.forceRender(nextProps);
-        }, 500);
+        // setTimeout(() => this.forceRender(nextProps), 500);
       }
     }
     // trigger changes when notes are changed

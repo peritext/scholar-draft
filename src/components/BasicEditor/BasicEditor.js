@@ -385,7 +385,7 @@ export default class BasicEditor extends Component {
         // before a new modification is applied to it
         // this is weird but it works
         setTimeout(() => this.forceRender(nextProps));
-        setTimeout(() => this.forceRender(nextProps), 500);
+        // setTimeout(() => this.forceRender(nextProps), 500);
       }
     }
     // trigger changes when notes are changed
