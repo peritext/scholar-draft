@@ -47,10 +47,6 @@ class NotePointer extends Component {
       onNotePointerMouseClick,
     } = this.context;
 
-    const {
-      children
-    } = this.props;
-
     const onMouseOver = (event) => {
       event.stopPropagation();
       if (typeof onNotePointerMouseOver === 'function') {
@@ -80,14 +76,12 @@ class NotePointer extends Component {
         onClick={onMouseClick}
       >
         <span>{(note && note.order) || '*'}</span>
-        {children}
       </sup>
     );
   }
 }
 
 NotePointer.propTypes = {
-  children: PropTypes.array,
   noteId: PropTypes.string,
 };
 

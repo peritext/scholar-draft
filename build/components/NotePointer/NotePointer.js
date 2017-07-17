@@ -50,7 +50,6 @@ var NotePointer = function (_Component) {
           onNotePointerMouseOver = _this$context.onNotePointerMouseOver,
           onNotePointerMouseOut = _this$context.onNotePointerMouseOut,
           onNotePointerMouseClick = _this$context.onNotePointerMouseClick;
-      var children = _this.props.children;
 
 
       var onMouseOver = function onMouseOver(event) {
@@ -86,8 +85,7 @@ var NotePointer = function (_Component) {
           'span',
           null,
           note && note.order || '*'
-        ),
-        children
+        )
       );
     };
 
@@ -131,7 +129,6 @@ NotePointer.contextTypes = {
 
 
 NotePointer.propTypes = {
-  children: _propTypes2.default.array,
   noteId: _propTypes2.default.string
 };
 
