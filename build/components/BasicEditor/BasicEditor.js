@@ -946,6 +946,7 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._handleDrop = function (sel, dataTransfer, isInternal) {
+    console.log('handle drop', _this4.props.readOnly);
     var payload = dataTransfer.data.getData('text');
     // Set timeout to allow cursor/selection to move to drop location before calling back onDrop
     setTimeout(function () {
@@ -966,6 +967,11 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._handleDragOver = function (event) {
+    if (_this4.state.readOnly) {
+      _this4.setState({
+        readOnly: false
+      });
+    }
     event.preventDefault();
     if (typeof _this4.props.onDragOver === 'function') {
       _this4.props.onDragOver(event);

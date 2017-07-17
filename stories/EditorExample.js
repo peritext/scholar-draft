@@ -952,6 +952,15 @@ export default class EditorExample extends Component {
     }
 
     const onBlur = (event, contentId = 'main') => {
+
+      setTimeout(() => {
+        if (this.state.focusedEditorId === contentId && !this.state.assetRequestPosition) {
+          console.log('onBlur: set editor focus to undefined');
+          this.setState({
+            focusedEditorId: undefined
+          });
+        }
+      });
       // this.setState({
       //   focusedEditorId: undefined
       // });
