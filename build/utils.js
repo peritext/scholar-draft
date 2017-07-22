@@ -128,6 +128,13 @@ function insertAssetInEditor(editorState, asset, selection) {
   return updatedEditor;
 }
 
+/**
+ * Inserts an inline asset within a draft-js editorState
+ * @param {ImmutableRecord} editorState - the editor state before change
+ * @param {object} asset - the asset data to embed withing draft-js new entity
+ * @param {object} selection - the selection to use for targetting asset insertion
+ * @return {ImmutableRecord} updatedEditorState - the new editor state
+ */
 function insertInlineAssetInEditor(editorState, asset, selection) {
   var currentContent = editorState.getCurrentContent();
   var activeSelection = editorState.getSelection();
@@ -417,23 +424,6 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
   });
 
   return notes;
-
-  // filter unused notes
-  // return Object.keys(notes)
-  // .filter((noteId) => {
-  //   const entity = noteEntities.find(
-  //     (noteEntity, index) => 
-  //       noteEntity.getData().noteId === noteId
-  //   );
-  //   return entity !== undefined;
-  // })
-  // .reduce((finalNotes, noteId) => {
-  //   const note = notes[noteId];
-  //   return {
-  //     ...finalNotes,
-  //     [noteId]: note
-  //   };
-  // }, {});
 };
 
 /**

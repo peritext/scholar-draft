@@ -76,6 +76,7 @@ var Editor = function (_Component) {
       if (contentId === 'main' && _this.mainEditor) {
         if (selection) {
           _this.mainEditor.setState({
+            readOnly: false,
             editorState: _draftJs.EditorState.acceptSelection(_this.mainEditor.state.editorState, selection)
           });
         }
@@ -88,6 +89,7 @@ var Editor = function (_Component) {
         });
         if (selection) {
           _this.notes[contentId].editor.setState({
+            readOnly: false,
             editorState: _draftJs.EditorState.acceptSelection(_this.notes[contentId].editor.state.editorState, selection)
           });
         }

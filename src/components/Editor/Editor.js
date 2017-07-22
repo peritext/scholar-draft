@@ -83,6 +83,7 @@ export default class Editor extends Component {
     if (contentId === 'main' && this.mainEditor) {
       if (selection) {
         this.mainEditor.setState({
+          readOnly: false,
           editorState: EditorState.acceptSelection(
             this.mainEditor.state.editorState,
             selection
@@ -94,6 +95,7 @@ export default class Editor extends Component {
       setTimeout(() => this.notes[contentId].editor.focus());
       if (selection) {
         this.notes[contentId].editor.setState({
+          readOnly: false,
           editorState: EditorState.acceptSelection(
             this.notes[contentId].editor.state.editorState,
             selection

@@ -25,8 +25,27 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * Editor without footnotes support
+ */
+/**
+ * Scholar-draft
+ * entry point of the module
+ * @module scholar-draft
+ */
+
 var BasicEditor = exports.BasicEditor = _BasicEditor2.default;
-var Editor = _Editor2.default;
+/**
+ * Draft-js state manipulation and assets management utils
+ */
 var utils = exports.utils = Utils;
+/**
+ * Constant draft-js entity names used by the module
+ */
 var constants = exports.constants = Constants;
+
+var Editor = _Editor2.default;
+/**
+ * Editor with footnotes support
+ */
 exports.default = Editor;
