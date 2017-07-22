@@ -742,7 +742,6 @@ export default class BasicEditor extends Component {
    * @param {boolean} isInternal - whether the drop is draft-to-draft or exterior-to-draft
    */
   _handleDrop = (sel, dataTransfer, isInternal) => {
-    console.log('handle drop', this.props.readOnly);
     const payload = dataTransfer.data.getData('text');
     // Set timeout to allow cursor/selection to move to drop location before calling back onDrop
     setTimeout(() => {
