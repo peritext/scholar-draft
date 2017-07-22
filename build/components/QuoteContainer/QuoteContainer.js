@@ -14,6 +14,11 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This module exports a react component for wrapping quotes 
+ * (and possibly styling them in a specific way)
+ * @module scholar-draft/Quote
+ */
 var Quote = function Quote(props) {
   return _react2.default.createElement(
     'q',

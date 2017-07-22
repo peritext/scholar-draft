@@ -37,6 +37,11 @@ require('./InlineToolbar.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This module exports a react component for editors' pop-up toolbar 
+ * allowing to style selected text
+ * @module scholar-draft/InlineToolbar
+ */
 var InlineToolbar = function (_Component) {
   (0, _inherits3.default)(InlineToolbar, _Component);
 

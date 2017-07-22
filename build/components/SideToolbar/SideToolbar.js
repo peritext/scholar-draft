@@ -141,7 +141,11 @@ var SideToolbar = function (_Component) {
   }
 
   return SideToolbar;
-}(_react.Component);
+}(_react.Component); /**
+                      * This module exports a react component for editors' side tool bar
+                      * @module scholar-draft/SideToolbar
+                      */
+
 
 SideToolbar.propTypes = {
   editorState: _propTypes2.default.object,

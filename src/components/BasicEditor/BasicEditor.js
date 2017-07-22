@@ -334,6 +334,7 @@ export default class BasicEditor extends Component {
       this.setState({
         readOnly: false
       });
+      this.forceRender(this.props);
     });
   }
 

@@ -36,6 +36,10 @@ var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This module exports a react component wrapping a editable note representation
+ * @module scholar-draft/NoteContainer
+ */
 var NoteContainer = function (_Component) {
   (0, _inherits3.default)(NoteContainer, _Component);
 

@@ -362,6 +362,7 @@ var BasicEditor = function (_Component) {
         _this3.setState({
           readOnly: false
         });
+        _this3.forceRender(_this3.props);
       });
     }
   }, {

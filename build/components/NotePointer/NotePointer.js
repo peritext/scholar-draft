@@ -116,6 +116,10 @@ var NotePointer = function (_Component) {
   }]);
   return NotePointer;
 }(_react.Component); /* eslint react/no-did-mount-set-state : 0 */
+/**
+ * This module exports a react component for note pointers in editors
+ * @module scholar-draft/NotePointer
+ */
 
 
 NotePointer.contextTypes = {

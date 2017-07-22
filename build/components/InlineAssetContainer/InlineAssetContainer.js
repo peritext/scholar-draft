@@ -132,6 +132,13 @@ var InlineAssetContainer = function (_Component) {
   }]);
   return InlineAssetContainer;
 }(_react.Component); /* eslint react/no-did-mount-set-state : 0 */
+/**
+ * This module exports a wrapper for block assets.
+ * It handles context-related interactions with upstream environment
+ * and provides a simple prop-based api to the asset components passed
+ * at editor's implementation
+ * @module scholar-draft/BlockAssetContainer
+ */
 
 
 InlineAssetContainer.contextTypes = {
