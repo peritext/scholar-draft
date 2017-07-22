@@ -668,7 +668,7 @@ var _initialiseProps = function _initialiseProps() {
     }
     // updating locally stored editorState when the one given by props
     // has changed
-    if (_this4.state.editorState !== nextProps.editorState) {
+    if (_this4.props.editorState !== nextProps.editorState) {
       _this4.setState({
         editorState: nextProps.editorState || _this4.generateEmptyEditor()
       });
@@ -959,9 +959,13 @@ var _initialiseProps = function _initialiseProps() {
       });
 
       var newContentState = _draftJs.Modifier.replaceText(_this4.props.editorState.getCurrentContent(), payloadSel, ' ');
-      _this4.onChange(_draftJs.EditorState.createWithContent(newContentState));
+      var newEditorState = _draftJs.EditorState.createWithContent(newContentState, _this4.createDecorator());
+      _this4.onChange(newEditorState);
       if (typeof _this4.props.onDrop === 'function') {
         _this4.props.onDrop(payload, selection);
+        setTimeout(function () {
+          _this4.forceRender(_this4.props);
+        });
       }
     }, 1);
     return false;

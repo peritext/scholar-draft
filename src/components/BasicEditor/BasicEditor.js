@@ -360,7 +360,7 @@ export default class BasicEditor extends Component {
     }
     // updating locally stored editorState when the one given by props
     // has changed
-    if (this.state.editorState !== nextProps.editorState) {
+    if (this.props.editorState !== nextProps.editorState) {
       this.setState({
         editorState: nextProps.editorState || this.generateEmptyEditor()
       });
@@ -758,9 +758,13 @@ export default class BasicEditor extends Component {
         payloadSel,
         ' '
       );
-      this.onChange(EditorState.createWithContent(newContentState));
+      const newEditorState = EditorState.createWithContent(newContentState, this.createDecorator());
+      this.onChange(newEditorState);
       if (typeof this.props.onDrop === 'function') {
         this.props.onDrop(payload, selection);
+        setTimeout(() => {
+          this.forceRender(this.props);
+        });
       }
     }, 1);
     return false;
