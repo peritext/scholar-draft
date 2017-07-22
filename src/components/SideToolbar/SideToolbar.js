@@ -1,3 +1,7 @@
+/**
+ * This module exports a react component for editors' side tool bar
+ * @module scholar-draft/SideToolbar
+ */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 

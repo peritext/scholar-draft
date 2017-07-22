@@ -1,4 +1,8 @@
 /* eslint react/no-did-mount-set-state : 0 */
+/**
+ * This module exports a react component for note pointers in editors
+ * @module scholar-draft/NotePointer
+ */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 

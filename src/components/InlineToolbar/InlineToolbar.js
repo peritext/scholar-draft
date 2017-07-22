@@ -1,3 +1,8 @@
+/**
+ * This module exports a react component for editors' pop-up toolbar 
+ * allowing to style selected text
+ * @module scholar-draft/InlineToolbar
+ */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 

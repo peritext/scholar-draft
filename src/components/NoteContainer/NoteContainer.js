@@ -1,3 +1,7 @@
+/**
+ * This module exports a react component wrapping a editable note representation
+ * @module scholar-draft/NoteContainer
+ */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
