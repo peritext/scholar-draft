@@ -35,7 +35,8 @@ import insertText from '../../modifiers/insertText';
 // constant entities type names
 import {
   INLINE_ASSET,
-  NOTE_POINTER
+  NOTE_POINTER,
+  SCHOLAR_DRAFT_CLIPBOARD_CODE
 } from '../../constants';
 
 // subcomponents
@@ -797,7 +798,7 @@ export default class BasicEditor extends Component {
       this.feedUndoStack(this.state.editorState);
     }, 1);
 
-    if (this.props.clipboard) {
+    if (this.props.clipboard || text === SCHOLAR_DRAFT_CLIPBOARD_CODE) {
       this.editor.setClipboard(null);
       return true;
     }

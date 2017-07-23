@@ -988,7 +988,7 @@ var _initialiseProps = function _initialiseProps() {
       _this4.feedUndoStack(_this4.state.editorState);
     }, 1);
 
-    if (_this4.props.clipboard) {
+    if (_this4.props.clipboard || text === _constants.SCHOLAR_DRAFT_CLIPBOARD_CODE) {
       _this4.editor.setClipboard(null);
       return true;
     }

@@ -37,7 +37,8 @@ import example500000 from './mocks/scholar-draft-example-state-with-notes-500000
 
 const {
   NOTE_POINTER,
-  INLINE_ASSET
+  INLINE_ASSET,
+  SCHOLAR_DRAFT_CLIPBOARD_CODE
 } = constants;
 
 const {
@@ -252,7 +253,7 @@ export default class EditorExample extends Component {
 
     console.info('scholar-draft: copied data: ', copiedData);
 
-    e.clipboardData.setData('text/plain', '$$$scholar-draft-clipboard');
+    e.clipboardData.setData('text/plain', SCHOLAR_DRAFT_CLIPBOARD_CODE);
 
     stateDiff.copiedData = copiedData;
     this.setState(stateDiff);
@@ -270,7 +271,7 @@ export default class EditorExample extends Component {
     console.log('copied data', copiedData);
 
     // this hack allows to check if data comes from out of the editor
-    if (!clipboard || e.clipboardData.getData('text/plain') !== '$$$scholar-draft-clipboard') {
+    if (!clipboard || e.clipboardData.getData('text/plain') !== SCHOLAR_DRAFT_CLIPBOARD_CODE) {
       this.setState({
         clipboard: null,
         copiedData: null
