@@ -90,7 +90,7 @@ class BlockAssetContainer extends Component {
 
     const renderEmptyComponent = () => <div />;
 
-    const RealAssetComponent = typeof AssetComponent === 'function' ? AssetComponent : renderEmptyComponent;
+    const RealAssetComponent = typeof AssetComponent === 'function' ? AssetComponent : renderEmptyComponent;
 
     return (
       <div
