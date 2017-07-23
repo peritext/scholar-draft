@@ -79,6 +79,12 @@ var BlockAssetContainer = function (_Component) {
         }
       };
 
+      var renderEmptyComponent = function renderEmptyComponent() {
+        return _react2.default.createElement('div', null);
+      };
+
+      var RealAssetComponent = typeof AssetComponent === 'function' ? AssetComponent : renderEmptyComponent;
+
       return _react2.default.createElement(
         'div',
         {
@@ -86,7 +92,7 @@ var BlockAssetContainer = function (_Component) {
           onMouseOver: onMOver,
           onMouseOut: onMOut
         },
-        _react2.default.createElement(AssetComponent, {
+        _react2.default.createElement(RealAssetComponent, {
           assetId: assetId,
           asset: asset,
           onAssetChange: onAssetChange,

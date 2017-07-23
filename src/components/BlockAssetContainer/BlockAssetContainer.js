@@ -88,13 +88,17 @@ class BlockAssetContainer extends Component {
       }
     };
 
+    const renderEmptyComponent = () => <div />;
+
+    const RealAssetComponent = typeof AssetComponent === 'function' ? AssetComponent : renderEmptyComponent;
+
     return (
       <div
         className="scholar-draft-BlockAssetContainer"
         onMouseOver={onMOver}
         onMouseOut={onMOut}
       >
-        <AssetComponent
+        <RealAssetComponent
           assetId={assetId}
           asset={asset}
           onAssetChange={onAssetChange}
