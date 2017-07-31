@@ -118,9 +118,10 @@ export default class EditorExample extends Component {
   }
 
   updateNotesFromEditor = (state) => {
-    const notes = updateNotesFromEditor(state.mainEditorState, state.notes);
+    const {newNotes, notesOrder} = updateNotesFromEditor(state.mainEditorState, state.notes);
     this.setState({
-      notes
+      notes: newNotes,
+      notesOrder
     });
   }
 
@@ -508,19 +509,11 @@ export default class EditorExample extends Component {
         }
     }
 
-    // firstBlock = newEditorState.getCurrentContent().toJS().blockMap[Object.keys(newEditorState.getCurrentContent().toJS().blockMap)[0]];
-    // firstEntityId = firstBlock.characterList[0].entity;
-    // console.log('first entity key', firstEntityId);
-    // console.log('first entity', newEditorState.getCurrentContent().getEntity(firstEntityId).toJS().data.noteId);
-     
-
-
     if (activeId === 'main') {
       stateMods.mainEditorState = insertFragment(stateMods.mainEditorState, newClipboard);
-      // console.log('before cleaning notes', stateMods.notes);
-      // console.log('state before cleaning notes', newEditorState.getCurrentContent().toJS().blockMap);
-      stateMods.notes = updateNotesFromEditor(stateMods.mainEditorState, stateMods.notes);
-      // console.log('state after cleaning notes', stateMods.notes);
+      const {newNotes, notesOrder} = updateNotesFromEditor(stateMods.mainEditorState, stateMods.notes);
+      stateMods.notes = newNotes;
+      stateMods.notesOrder = stateMods.notesOrder;
     } else {
       stateMods.notes = {
         ...this.state.notes,
@@ -627,27 +620,27 @@ export default class EditorExample extends Component {
    */
 
   onAssetMouseClick = (contextualizationId, contextualizationData, event) => {
-    // console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
+    console.info('on contextualization mouse click', contextualizationId, contextualizationData, event);
   }
 
   onAssetMouseOver = (contextualizationId, contextualizationData, event) => {
-    // console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
+    console.info('on contextualization mouse over', contextualizationId, contextualizationData, event);
   }
 
   onAssetMouseOut = (contextualizationId, contextualizationData, event) => {
-    // console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
+    console.info('on contextualization mouse out', contextualizationId, contextualizationData, event);
   }
 
   onNotePointerMouseOver = (noteId, event) => {
-    // console.info('on note pointer mouse over', noteId, event);
+    console.info('on note pointer mouse over', noteId, event);
   }
 
   onNotePointerMouseOut = (noteId, event) => {
-    // console.info('on note pointer mouse out', noteId, event);
+    console.info('on note pointer mouse out', noteId, event);
   }
 
   onNotePointerMouseClick = (noteId, event) => {
-    // console.info('on note pointer mouse click', noteId, event);
+    console.info('on note pointer mouse click', noteId, event);
   }
 
   insertContextualization = (contentId, inputEditorState) => {
@@ -805,9 +798,10 @@ export default class EditorExample extends Component {
         editorState: this.editor.generateEmptyEditor()
       }
     };
-    notes = updateNotesFromEditor(mainEditorState, notes);
+    const {newNotes, notesOrder} = updateNotesFromEditor(mainEditorState, notes);
     this.setState({
-      notes,
+      notes: newNotes,
+      notesOrder,
       mainEditorState,
       focusedEditorId: id
     });

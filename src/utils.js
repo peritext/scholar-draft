@@ -449,7 +449,8 @@ export function deleteNoteFromEditor(
  * @param {ImmutableRecord} editorState - the editor state before change
  * @param {object} notes - a map of the notes 
  * with shape {noteId: string, order: number, editorState: ImmutableRecord}
- * @return {obj} newNotes - a map of the updated notes
+ * @return {obj} {newNotes, notesOrder} - a map of the 
+ * updated notes and the notes order infered from the editor
  */
 export const updateNotesFromEditor = (editorState, inputNotes) => {
   const notes = inputNotes; // { ...inputNotes };
@@ -470,10 +471,13 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   const noteEntities = entities
     .filter(thatEntity => thatEntity.getType() === NOTE_POINTER);
 
+  const notesOrder = [];
+
   // attribute orders to notes
   let order = 0;
   noteEntities.forEach((entity) => {
     const noteId = entity.getData().noteId;
+    notesOrder.push(noteId);
     order++;
     if (notes[noteId]) {
       notes[noteId].order = order;
@@ -492,7 +496,10 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     delete notes[noteId];
   });
 
-  return notes;
+  return {
+    newNotes: notes, 
+    notesOrder
+  };
 };
 
 /**
