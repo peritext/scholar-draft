@@ -8,12 +8,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import {Scrollbars} from 'react-custom-scrollbars';
+
 import {
   EditorState
 } from 'draft-js';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
+
 
 import './Editor.scss';
 
@@ -73,6 +76,22 @@ export default class Editor extends Component {
     // to interact with note components
     this.notes = {};
   }
+
+  /**
+   * Programmatically modifies the scroll state of the component
+   * so that it transitions to a specific point in the page
+   * @param {number} top - the position to scroll to in pixels
+   */
+  scrollTop(top) {
+    this.globalScrollbar.scrollTop(top);
+      // const scrollbars = this.globalScrollbar;
+      // const scrollTop = scrollbars.getScrollTop();
+      // const scrollHeight = scrollbars.getScrollHeight();
+      // const val = MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
+      // this.spring.setCurrentValue(scrollTop).setAtRest();
+      // this.spring.setEndValue(val);
+  }
+
 
   /**
    * manages imperative focus on one of the editors
@@ -192,6 +211,14 @@ export default class Editor extends Component {
       onBlur(event, noteId);
     };
 
+    const onClickScrollToNotePointer = noteId => {
+      const notePointer = document.getElementById('note-pointer-' + noteId);
+      const scrollTo = notePointer && notePointer.offsetTop;
+      if (scrollTo) {
+        this.scrollTop(scrollTo);
+      }
+    }
+
     const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
     return (
       <NoteContainer
@@ -213,6 +240,8 @@ export default class Editor extends Component {
         onBlur={onNoteBlur}
 
         onEditorChange={onThisNoteEditorChange}
+
+        onClickScrollToNotePointer={onClickScrollToNotePointer}
 
         onAssetRequest={onNoteAssetRequest}
         onAssetRequestCancel={onAssetRequestCancel}
@@ -250,7 +279,7 @@ export default class Editor extends Component {
       notes,
       assets,
 
-      editorClass = 'scholar-draft-SectionEditor',
+      editorClass = 'scholar-draft-Editor',
       
       onEditorChange,
       onNoteAdd,
@@ -322,8 +351,28 @@ export default class Editor extends Component {
     const onMainBlur = (event) => {
       onBlur(event, 'main');
     };
+
+    const onNotePointerMouseClickHandler = (event) => {
+      const noteContainer = document.getElementById('note-container-' + event);
+      if (noteContainer) {
+        const offsetTop = noteContainer.offsetTop;
+        this.scrollTop(offsetTop);
+      }
+      if (typeof onNotePointerMouseClick === 'function') {
+        onNotePointerMouseClick(event, 'main');
+      }
+    }
+
+    const bindGlobalScrollbarRef = scrollbar => {
+      this.globalScrollbar = scrollbar;
+    };
     return (
       <div className={editorClass}>
+        <Scrollbars
+            ref={bindGlobalScrollbarRef}
+            autoHide
+            onUpdate={this.onScrollUpdate}
+            universal>
         <section className="main-container-editor">
           <BasicEditor 
             editorState={mainEditorState}
@@ -358,7 +407,7 @@ export default class Editor extends Component {
 
             onNotePointerMouseOver={onNotePointerMouseOver}
             onNotePointerMouseOut={onNotePointerMouseOut}
-            onNotePointerMouseClick={onNotePointerMouseClick}
+            onNotePointerMouseClick={onNotePointerMouseClickHandler}
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
@@ -383,6 +432,7 @@ export default class Editor extends Component {
             .map(this.renderNoteEditor)
           }
         </aside>
+        </Scrollbars>
       </div>
     );
   }

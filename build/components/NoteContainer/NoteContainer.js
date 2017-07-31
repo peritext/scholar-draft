@@ -76,6 +76,7 @@ var NoteContainer = function (_Component) {
           onBlur = _this$props.onBlur,
           onEditorClick = _this$props.onEditorClick,
           onAssetClick = _this$props.onAssetClick,
+          onClickScrollToNotePointer = _this$props.onClickScrollToNotePointer,
           onAssetMouseOver = _this$props.onAssetMouseOver,
           onAssetMouseOut = _this$props.onAssetMouseOut,
           inlineAssetComponents = _this$props.inlineAssetComponents,
@@ -102,10 +103,16 @@ var NoteContainer = function (_Component) {
         onEditorClick(event);
       };
 
-      return _react2.default.createElement(
+      var onClickScrollToNotePointerHandler = function onClickScrollToNotePointerHandler(event) {
+        event.stopPropagation();
+        onClickScrollToNotePointer(note.id);
+      };
+
+      return note ? _react2.default.createElement(
         'section',
         {
-          className: 'scholar-draft-NoteContainer'
+          className: 'scholar-draft-NoteContainer',
+          id: "note-container-" + note.id
         },
         _react2.default.createElement(
           'div',
@@ -120,6 +127,11 @@ var NoteContainer = function (_Component) {
             null,
             'Note ',
             note.order
+          ),
+          _react2.default.createElement(
+            'button',
+            { onClick: onClickScrollToNotePointerHandler },
+            '\u2191'
           )
         ),
         _react2.default.createElement(
@@ -162,7 +174,7 @@ var NoteContainer = function (_Component) {
             editorStyle: editorStyle
           })
         )
-      );
+      ) : null;
     }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
@@ -179,6 +191,7 @@ NoteContainer.propTypes = {
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,
+  onClickScrollToNotePointer: _propTypes2.default.func,
   onAssetRequest: _propTypes2.default.func,
   onAssetRequestCancel: _propTypes2.default.func,
   onAssetChoice: _propTypes2.default.func,

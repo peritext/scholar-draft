@@ -28,6 +28,9 @@ class BlockButton extends Component {
   };
 
   isSelected = (editorState, blockType) => {
+    if (!editorState || !editorState.getSelection) {
+      return;
+    }
     const selection = editorState.getSelection();
     const selectedBlock = editorState
       .getCurrentContent()

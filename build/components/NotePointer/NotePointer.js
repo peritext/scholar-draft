@@ -77,6 +77,7 @@ var NotePointer = function (_Component) {
         'sup',
         {
           className: 'scholar-draft-NotePointer',
+          id: "note-pointer-" + (note && note.id),
           onMouseOver: onMouseOver,
           onMouseOut: onMouseOut,
           onClick: onMouseClick

@@ -75,6 +75,7 @@ class NotePointer extends Component {
     return (
       <sup
         className="scholar-draft-NotePointer"
+        id={"note-pointer-" + (note && note.id)}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
         onClick={onMouseClick}

@@ -22,6 +22,7 @@ class NoteContainer extends Component {
 
     addTextAtCurrentSelection: PropTypes.func,
     onEditorChange: PropTypes.func,
+    onClickScrollToNotePointer: PropTypes.func,
     onAssetRequest: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
     onAssetChoice: PropTypes.func,
@@ -74,6 +75,7 @@ class NoteContainer extends Component {
       onEditorClick,
 
       onAssetClick,
+      onClickScrollToNotePointer,
       onAssetMouseOver,
       onAssetMouseOut,
       inlineAssetComponents,
@@ -103,13 +105,20 @@ class NoteContainer extends Component {
       onEditorClick(event);
     };
 
-    return (
+    const onClickScrollToNotePointerHandler = (event) => {
+      event.stopPropagation();
+      onClickScrollToNotePointer(note.id);
+    }
+
+    return note ? (
       <section 
         className="scholar-draft-NoteContainer"
+        id={"note-container-"+ note.id}
       >
         <div className="note-header" onClick={onHeaderClick}>
           <button onClick={onClickDelete}>x</button>
           <h3>Note {note.order}</h3>
+          <button onClick={onClickScrollToNotePointerHandler}>↑</button>
         </div>
         <div className="note-body">
           <BasicEditor 
@@ -151,7 +160,7 @@ class NoteContainer extends Component {
           />
         </div>
       </section>
-    );
+    ) : null;
   }
 }
 

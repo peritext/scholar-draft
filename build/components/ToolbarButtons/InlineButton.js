@@ -57,6 +57,9 @@ var InlineButton = function (_Component) {
     }
 
     return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = InlineButton.__proto__ || (0, _getPrototypeOf2.default)(InlineButton)).call.apply(_ref, [this].concat(args))), _this), _this.isSelected = function (editorState, inlineStyleType) {
+      if (!editorState || !editorState.getSelection) {
+        return;
+      }
       // Check the editor is focused
       var selection = editorState.getSelection();
 

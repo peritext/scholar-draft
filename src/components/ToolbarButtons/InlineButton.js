@@ -41,6 +41,9 @@ class InlineButton extends Component {
    * @return {boolean} isSelected - 
    */
   isSelected = (editorState, inlineStyleType) => {
+    if (!editorState || !editorState.getSelection) {
+      return;
+    }
     // Check the editor is focused
     const selection = editorState.getSelection();
 

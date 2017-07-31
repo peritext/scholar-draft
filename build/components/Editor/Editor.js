@@ -37,6 +37,8 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _reactCustomScrollbars = require('react-custom-scrollbars');
+
 var _draftJs = require('draft-js');
 
 var _BasicEditor = require('../BasicEditor/BasicEditor');
@@ -50,13 +52,6 @@ var _NoteContainer2 = _interopRequireDefault(_NoteContainer);
 require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * This module exports a component representing an editor with main editor and footnotes,
- * with related interface and decorators.
- * Asset components must be provided through props
- * @module scholar-draft/Editor
- */
 
 var Editor = function (_Component) {
   (0, _inherits3.default)(Editor, _Component);
@@ -167,6 +162,14 @@ var Editor = function (_Component) {
         onBlur(event, noteId);
       };
 
+      var onClickScrollToNotePointer = function onClickScrollToNotePointer(noteId) {
+        var notePointer = document.getElementById('note-pointer-' + noteId);
+        var scrollTo = notePointer && notePointer.offsetTop;
+        if (scrollTo) {
+          _this.scrollTop(scrollTo);
+        }
+      };
+
       var NoteContainer = NoteContainerComponent || _NoteContainer2.default;
       return _react2.default.createElement(NoteContainer, {
         key: noteId,
@@ -187,6 +190,8 @@ var Editor = function (_Component) {
         onBlur: onNoteBlur,
 
         onEditorChange: onThisNoteEditorChange,
+
+        onClickScrollToNotePointer: onClickScrollToNotePointer,
 
         onAssetRequest: onNoteAssetRequest,
         onAssetRequestCancel: onAssetRequestCancel,
@@ -218,27 +223,45 @@ var Editor = function (_Component) {
   }
 
   /**
-   * manages imperative focus on one of the editors
-   * @param {string} contentId - 'main' or note uuid
-   * @param {ImmutableRecord} selection - the selection to focus on
-   */
-
-
-  /**
-   * Provides upstream-usable empty editor factory method with proper decorator
-   * @return {ImmutableRecord} editorState - output editor state
-   */
-
-
-  /**
-   * Renders a note editor component for a specific note
-   * @param {string} noteId - uuid of the note to render
-   * @param {number} order - order to attribute to it
-   * @return {ReactMarkup} noteComponent - the note component
+   * Programmatically modifies the scroll state of the component
+   * so that it transitions to a specific point in the page
+   * @param {number} top - the position to scroll to in pixels
    */
 
 
   (0, _createClass3.default)(Editor, [{
+    key: 'scrollTop',
+    value: function scrollTop(top) {
+      this.globalScrollbar.scrollTop(top);
+      // const scrollbars = this.globalScrollbar;
+      // const scrollTop = scrollbars.getScrollTop();
+      // const scrollHeight = scrollbars.getScrollHeight();
+      // const val = MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
+      // this.spring.setCurrentValue(scrollTop).setAtRest();
+      // this.spring.setEndValue(val);
+    }
+
+    /**
+     * manages imperative focus on one of the editors
+     * @param {string} contentId - 'main' or note uuid
+     * @param {ImmutableRecord} selection - the selection to focus on
+     */
+
+
+    /**
+     * Provides upstream-usable empty editor factory method with proper decorator
+     * @return {ImmutableRecord} editorState - output editor state
+     */
+
+
+    /**
+     * Renders a note editor component for a specific note
+     * @param {string} noteId - uuid of the note to render
+     * @param {number} order - order to attribute to it
+     * @return {ReactMarkup} noteComponent - the note component
+     */
+
+  }, {
     key: 'render',
 
 
@@ -254,7 +277,7 @@ var Editor = function (_Component) {
           notes = _props.notes,
           assets = _props.assets,
           _props$editorClass = _props.editorClass,
-          editorClass = _props$editorClass === undefined ? 'scholar-draft-SectionEditor' : _props$editorClass,
+          editorClass = _props$editorClass === undefined ? 'scholar-draft-Editor' : _props$editorClass,
           onEditorChange = _props.onEditorChange,
           onNoteAdd = _props.onNoteAdd,
           onAssetChange = _props.onAssetChange,
@@ -319,73 +342,101 @@ var Editor = function (_Component) {
       var onMainBlur = function onMainBlur(event) {
         onBlur(event, 'main');
       };
+
+      var onNotePointerMouseClickHandler = function onNotePointerMouseClickHandler(event) {
+        var noteContainer = document.getElementById('note-container-' + event);
+        if (noteContainer) {
+          var offsetTop = noteContainer.offsetTop;
+          _this2.scrollTop(offsetTop);
+        }
+        if (typeof onNotePointerMouseClick === 'function') {
+          onNotePointerMouseClick(event, 'main');
+        }
+      };
+
+      var bindGlobalScrollbarRef = function bindGlobalScrollbarRef(scrollbar) {
+        _this2.globalScrollbar = scrollbar;
+      };
       return _react2.default.createElement(
         'div',
         { className: editorClass },
         _react2.default.createElement(
-          'section',
-          { className: 'main-container-editor' },
-          _react2.default.createElement(_BasicEditor2.default, {
-            editorState: mainEditorState,
-            assets: assets,
-            ref: bindMainEditor,
+          _reactCustomScrollbars.Scrollbars,
+          {
+            ref: bindGlobalScrollbarRef,
+            autoHide: true,
+            onUpdate: this.onScrollUpdate,
+            universal: true },
+          _react2.default.createElement(
+            'section',
+            { className: 'main-container-editor' },
+            _react2.default.createElement(_BasicEditor2.default, {
+              editorState: mainEditorState,
+              assets: assets,
+              ref: bindMainEditor,
 
-            notes: notes,
+              notes: notes,
 
-            contentId: 'main',
+              contentId: 'main',
 
-            assetRequestPosition: assetRequestPosition,
-            assetChoiceProps: assetChoiceProps,
+              assetRequestPosition: assetRequestPosition,
+              assetChoiceProps: assetChoiceProps,
 
-            isActive: focusedEditorId === 'main',
+              isActive: focusedEditorId === 'main',
 
-            onClick: onMainEditorClick,
-            onBlur: onMainBlur,
+              onClick: onMainEditorClick,
+              onBlur: onMainBlur,
 
-            onEditorChange: onMainEditorChange,
-            onDragOver: onMainDragOver,
-            onDrop: onMainEditorDrop,
-            onAssetRequest: onMainAssetRequest,
-            onAssetRequestCancel: onAssetRequestCancel,
-            onAssetChoice: onAssetChoice,
+              onEditorChange: onMainEditorChange,
+              onDragOver: onMainDragOver,
+              onDrop: onMainEditorDrop,
+              onAssetRequest: onMainAssetRequest,
+              onAssetRequestCancel: onAssetRequestCancel,
+              onAssetChoice: onAssetChoice,
 
-            onNoteAdd: onNoteAdd,
-            onAssetChange: onAssetChange,
+              onNoteAdd: onNoteAdd,
+              onAssetChange: onAssetChange,
 
-            onAssetClick: onAssetClick,
-            onAssetMouseOver: onAssetMouseOver,
-            onAssetMouseOut: onAssetMouseOut,
+              onAssetClick: onAssetClick,
+              onAssetMouseOver: onAssetMouseOver,
+              onAssetMouseOut: onAssetMouseOut,
 
-            onNotePointerMouseOver: onNotePointerMouseOver,
-            onNotePointerMouseOut: onNotePointerMouseOut,
-            onNotePointerMouseClick: onNotePointerMouseClick,
+              onNotePointerMouseOver: onNotePointerMouseOver,
+              onNotePointerMouseOut: onNotePointerMouseOut,
+              onNotePointerMouseClick: onNotePointerMouseClickHandler,
 
-            inlineAssetComponents: inlineAssetComponents,
-            blockAssetComponents: blockAssetComponents,
-            AssetChoiceComponent: AssetChoiceComponent,
-            NotePointerComponent: NotePointerComponent,
-            iconMap: iconMap,
+              inlineAssetComponents: inlineAssetComponents,
+              blockAssetComponents: blockAssetComponents,
+              AssetChoiceComponent: AssetChoiceComponent,
+              NotePointerComponent: NotePointerComponent,
+              iconMap: iconMap,
 
-            clipboard: clipboard,
+              clipboard: clipboard,
 
-            allowNotesInsertion: true,
-            editorStyle: editorStyles && editorStyles.mainEditor
-          })
-        ),
-        _react2.default.createElement(
-          'aside',
-          { className: 'notes-container' },
-          (0, _keys2.default)(notes || {}).sort(function (first, second) {
-            if (notes[first].order > notes[second].order) {
-              return 1;
-            }return -1;
-          }).map(this.renderNoteEditor)
+              allowNotesInsertion: true,
+              editorStyle: editorStyles && editorStyles.mainEditor
+            })
+          ),
+          _react2.default.createElement(
+            'aside',
+            { className: 'notes-container' },
+            (0, _keys2.default)(notes || {}).sort(function (first, second) {
+              if (notes[first].order > notes[second].order) {
+                return 1;
+              }return -1;
+            }).map(this.renderNoteEditor)
+          )
         )
       );
     }
   }]);
   return Editor;
-}(_react.Component);
+}(_react.Component); /**
+                      * This module exports a component representing an editor with main editor and footnotes,
+                      * with related interface and decorators.
+                      * Asset components must be provided through props
+                      * @module scholar-draft/Editor
+                      */
 
 Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
