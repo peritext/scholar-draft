@@ -1069,6 +1069,8 @@ export default class BasicEditor extends Component {
       AssetChoiceComponent,
       assetChoiceProps,
 
+      BibliographyComponent,
+
       isActive,
 
       ...otherProps
@@ -1243,6 +1245,7 @@ export default class BasicEditor extends Component {
 
           {...otherProps}
         />
+        {BibliographyComponent && <BibliographyComponent/>}
       </div>
     );
   }

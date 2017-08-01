@@ -109,6 +109,8 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 `NoteContainerComponent`
 
+`BibliographyComponent` (ReactComponent) -> the component to use to display a possible bibliography/footer component to the component
+
 # BasicEditor API [not updated]
 
 ## Props

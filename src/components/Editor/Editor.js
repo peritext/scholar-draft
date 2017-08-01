@@ -307,6 +307,7 @@ export default class Editor extends Component {
       blockAssetComponents,
       AssetChoiceComponent,
       NotePointerComponent,
+      BibliographyComponent,
       iconMap,
 
       editorStyles,
@@ -432,6 +433,7 @@ export default class Editor extends Component {
             .map(this.renderNoteEditor)
           }
         </aside>
+        {BibliographyComponent && <BibliographyComponent/>}
         </Scrollbars>
       </div>
     );

@@ -300,6 +300,7 @@ var Editor = function (_Component) {
           blockAssetComponents = _props.blockAssetComponents,
           AssetChoiceComponent = _props.AssetChoiceComponent,
           NotePointerComponent = _props.NotePointerComponent,
+          BibliographyComponent = _props.BibliographyComponent,
           iconMap = _props.iconMap,
           editorStyles = _props.editorStyles,
           clipboard = _props.clipboard,
@@ -425,7 +426,8 @@ var Editor = function (_Component) {
                 return 1;
               }return -1;
             }).map(this.renderNoteEditor)
-          )
+          ),
+          BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)
         )
       );
     }

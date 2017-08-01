@@ -1197,8 +1197,9 @@ var _initialiseProps = function _initialiseProps() {
         onClick = _props2.onClick,
         AssetChoiceComponent = _props2.AssetChoiceComponent,
         assetChoiceProps = _props2.assetChoiceProps,
+        BibliographyComponent = _props2.BibliographyComponent,
         isActive = _props2.isActive,
-        otherProps = (0, _objectWithoutProperties3.default)(_props2, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'isActive']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props2, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive']);
 
     // internal state
 
@@ -1360,7 +1361,8 @@ var _initialiseProps = function _initialiseProps() {
         ref: bindEditorRef,
         onBlur: _this4.onBlur
 
-      }, otherProps))
+      }, otherProps)),
+      BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)
     );
   };
 };
