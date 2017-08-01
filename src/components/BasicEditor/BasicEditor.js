@@ -235,7 +235,8 @@ export default class BasicEditor extends Component {
     assetChoiceProps: PropTypes.object,
     keyBindingFn: PropTypes.func,
     inlineButtons: PropTypes.object,
-    NotePointerComponent: PropTypes.object,
+    NotePointerComponent: PropTypes.func,
+    BibliographyComponent: PropTypes.func,
 
     placeholder: PropTypes.string,
 
@@ -1245,7 +1246,9 @@ export default class BasicEditor extends Component {
 
           {...otherProps}
         />
-        {BibliographyComponent && <BibliographyComponent/>}
+        { 
+          BibliographyComponent && <BibliographyComponent /> 
+        }
       </div>
     );
   }

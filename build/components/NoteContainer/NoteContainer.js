@@ -108,11 +108,13 @@ var NoteContainer = function (_Component) {
         onClickScrollToNotePointer(note.id);
       };
 
+      var id = note && note.id ? 'note-pointer-' + note.id : 'note-pointer-orphan';
+
       return note ? _react2.default.createElement(
         'section',
         {
           className: 'scholar-draft-NoteContainer',
-          id: "note-container-" + note.id
+          id: id
         },
         _react2.default.createElement(
           'div',

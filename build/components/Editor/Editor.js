@@ -162,8 +162,8 @@ var Editor = function (_Component) {
         onBlur(event, noteId);
       };
 
-      var onClickScrollToNotePointer = function onClickScrollToNotePointer(noteId) {
-        var notePointer = document.getElementById('note-pointer-' + noteId);
+      var onClickScrollToNotePointer = function onClickScrollToNotePointer(thatNoteId) {
+        var notePointer = document.getElementById('note-pointer' + thatNoteId);
         var scrollTo = notePointer && notePointer.offsetTop;
         if (scrollTo) {
           _this.scrollTop(scrollTo);
@@ -367,7 +367,8 @@ var Editor = function (_Component) {
             ref: bindGlobalScrollbarRef,
             autoHide: true,
             onUpdate: this.onScrollUpdate,
-            universal: true },
+            universal: true
+          },
           _react2.default.createElement(
             'section',
             { className: 'main-container-editor' },
@@ -474,6 +475,7 @@ Editor.propTypes = {
   blockAssetComponents: _propTypes2.default.object,
   AssetChoiceComponent: _propTypes2.default.func,
   NotePointerComponent: _propTypes2.default.func,
+  BibliographyComponent: _propTypes2.default.func,
   iconMap: _propTypes2.default.object,
 
   keyBindingFn: _propTypes2.default.func,

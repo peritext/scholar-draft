@@ -50,7 +50,9 @@ class InlineButton extends Component {
     const selectedBlock = editorState
       .getCurrentContent()
       .getBlockForKey(selection.getStartKey());
-    if (!selectedBlock) return false;
+    if (!selectedBlock) {
+      return false;
+    }
 
     const currentInlineStyle = editorState.getCurrentInlineStyle();
     return currentInlineStyle.has(inlineStyleType);

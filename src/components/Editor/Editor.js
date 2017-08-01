@@ -8,7 +8,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import {Scrollbars} from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import {
   EditorState
@@ -56,6 +56,7 @@ export default class Editor extends Component {
     blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
     NotePointerComponent: PropTypes.func,
+    BibliographyComponent: PropTypes.func,
     iconMap: PropTypes.object,
 
     keyBindingFn: PropTypes.func,
@@ -211,13 +212,13 @@ export default class Editor extends Component {
       onBlur(event, noteId);
     };
 
-    const onClickScrollToNotePointer = noteId => {
-      const notePointer = document.getElementById('note-pointer-' + noteId);
+    const onClickScrollToNotePointer = (thatNoteId) => {
+      const notePointer = document.getElementById(`note-pointer${thatNoteId}`);
       const scrollTo = notePointer && notePointer.offsetTop;
       if (scrollTo) {
         this.scrollTop(scrollTo);
       }
-    }
+    };
 
     const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
     return (
@@ -354,7 +355,7 @@ export default class Editor extends Component {
     };
 
     const onNotePointerMouseClickHandler = (event) => {
-      const noteContainer = document.getElementById('note-container-' + event);
+      const noteContainer = document.getElementById(`note-container-${event}`);
       if (noteContainer) {
         const offsetTop = noteContainer.offsetTop;
         this.scrollTop(offsetTop);
@@ -362,68 +363,69 @@ export default class Editor extends Component {
       if (typeof onNotePointerMouseClick === 'function') {
         onNotePointerMouseClick(event, 'main');
       }
-    }
+    };
 
-    const bindGlobalScrollbarRef = scrollbar => {
+    const bindGlobalScrollbarRef = (scrollbar) => {
       this.globalScrollbar = scrollbar;
     };
     return (
       <div className={editorClass}>
         <Scrollbars
-            ref={bindGlobalScrollbarRef}
-            autoHide
-            onUpdate={this.onScrollUpdate}
-            universal>
-        <section className="main-container-editor">
-          <BasicEditor 
-            editorState={mainEditorState}
-            assets={assets}
-            ref={bindMainEditor}
+          ref={bindGlobalScrollbarRef}
+          autoHide
+          onUpdate={this.onScrollUpdate}
+          universal
+        >
+          <section className="main-container-editor">
+            <BasicEditor 
+              editorState={mainEditorState}
+              assets={assets}
+              ref={bindMainEditor}
 
-            notes={notes}
+              notes={notes}
 
-            contentId="main"
+              contentId="main"
 
-            assetRequestPosition={assetRequestPosition}
-            assetChoiceProps={assetChoiceProps}
+              assetRequestPosition={assetRequestPosition}
+              assetChoiceProps={assetChoiceProps}
 
-            isActive={focusedEditorId === 'main'}
+              isActive={focusedEditorId === 'main'}
 
-            onClick={onMainEditorClick}
-            onBlur={onMainBlur}
+              onClick={onMainEditorClick}
+              onBlur={onMainBlur}
             
-            onEditorChange={onMainEditorChange}
-            onDragOver={onMainDragOver}
-            onDrop={onMainEditorDrop}
-            onAssetRequest={onMainAssetRequest}
-            onAssetRequestCancel={onAssetRequestCancel}
-            onAssetChoice={onAssetChoice}
+              onEditorChange={onMainEditorChange}
+              onDragOver={onMainDragOver}
+              onDrop={onMainEditorDrop}
+              onAssetRequest={onMainAssetRequest}
+              onAssetRequestCancel={onAssetRequestCancel}
+              onAssetChoice={onAssetChoice}
 
-            onNoteAdd={onNoteAdd}
-            onAssetChange={onAssetChange}
+              onNoteAdd={onNoteAdd}
+              onAssetChange={onAssetChange}
 
-            onAssetClick={onAssetClick}
-            onAssetMouseOver={onAssetMouseOver}
-            onAssetMouseOut={onAssetMouseOut}
+              onAssetClick={onAssetClick}
+              onAssetMouseOver={onAssetMouseOver}
+              onAssetMouseOut={onAssetMouseOut}
 
-            onNotePointerMouseOver={onNotePointerMouseOver}
-            onNotePointerMouseOut={onNotePointerMouseOut}
-            onNotePointerMouseClick={onNotePointerMouseClickHandler}
+              onNotePointerMouseOver={onNotePointerMouseOver}
+              onNotePointerMouseOut={onNotePointerMouseOut}
+              onNotePointerMouseClick={onNotePointerMouseClickHandler}
             
-            inlineAssetComponents={inlineAssetComponents}
-            blockAssetComponents={blockAssetComponents}
-            AssetChoiceComponent={AssetChoiceComponent}
-            NotePointerComponent={NotePointerComponent}
-            iconMap={iconMap}
+              inlineAssetComponents={inlineAssetComponents}
+              blockAssetComponents={blockAssetComponents}
+              AssetChoiceComponent={AssetChoiceComponent}
+              NotePointerComponent={NotePointerComponent}
+              iconMap={iconMap}
 
-            clipboard={clipboard}
+              clipboard={clipboard}
 
-            allowNotesInsertion
-            editorStyle={editorStyles && editorStyles.mainEditor}
-          />
-        </section>
-        <aside className="notes-container">
-          {
+              allowNotesInsertion
+              editorStyle={editorStyles && editorStyles.mainEditor}
+            />
+          </section>
+          <aside className="notes-container">
+            {
             Object.keys(notes || {})
             .sort((first, second) => {
               if (notes[first].order > notes[second].order) {
@@ -432,8 +434,10 @@ export default class Editor extends Component {
             })
             .map(this.renderNoteEditor)
           }
-        </aside>
-        {BibliographyComponent && <BibliographyComponent/>}
+          </aside>
+          {
+          BibliographyComponent && <BibliographyComponent />
+        }
         </Scrollbars>
       </div>
     );

@@ -72,10 +72,12 @@ class NotePointer extends Component {
       }
     };
 
+    const id = note && note.id ? `note-pointer-${note.id}` : 'note-pointer-orphan';
+
     return (
       <sup
         className="scholar-draft-NotePointer"
-        id={"note-pointer-" + (note && note.id)}
+        id={id}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
         onClick={onMouseClick}

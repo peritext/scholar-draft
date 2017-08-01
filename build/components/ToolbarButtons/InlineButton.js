@@ -64,7 +64,9 @@ var InlineButton = function (_Component) {
       var selection = editorState.getSelection();
 
       var selectedBlock = editorState.getCurrentContent().getBlockForKey(selection.getStartKey());
-      if (!selectedBlock) return false;
+      if (!selectedBlock) {
+        return false;
+      }
 
       var currentInlineStyle = editorState.getCurrentInlineStyle();
       return currentInlineStyle.has(inlineStyleType);

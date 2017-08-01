@@ -108,12 +108,15 @@ class NoteContainer extends Component {
     const onClickScrollToNotePointerHandler = (event) => {
       event.stopPropagation();
       onClickScrollToNotePointer(note.id);
-    }
+    };
 
+    const id = note && note.id ? `note-pointer-${note.id}` : 'note-pointer-orphan';
+
+    
     return note ? (
       <section 
         className="scholar-draft-NoteContainer"
-        id={"note-container-"+ note.id}
+        id={id}
       >
         <div className="note-header" onClick={onHeaderClick}>
           <button onClick={onClickDelete}>x</button>

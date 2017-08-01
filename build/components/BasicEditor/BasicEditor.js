@@ -598,7 +598,8 @@ BasicEditor.propTypes = {
   assetChoiceProps: _propTypes2.default.object,
   keyBindingFn: _propTypes2.default.func,
   inlineButtons: _propTypes2.default.object,
-  NotePointerComponent: _propTypes2.default.object,
+  NotePointerComponent: _propTypes2.default.func,
+  BibliographyComponent: _propTypes2.default.func,
 
   placeholder: _propTypes2.default.string,
 

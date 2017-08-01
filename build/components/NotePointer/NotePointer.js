@@ -73,11 +73,13 @@ var NotePointer = function (_Component) {
         }
       };
 
+      var id = note && note.id ? 'note-pointer-' + note.id : 'note-pointer-orphan';
+
       return _react2.default.createElement(
         'sup',
         {
           className: 'scholar-draft-NotePointer',
-          id: "note-pointer-" + (note && note.id),
+          id: id,
           onMouseOver: onMouseOver,
           onMouseOut: onMouseOut,
           onClick: onMouseClick
