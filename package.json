@@ -1,6 +1,6 @@
 {
   "name": "scholar-draft",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "draft editor handling footnotes editing and inline/block assets connected to upstream logic",
   "main": "build/index.js",
   "scripts": {
@@ -166,6 +166,7 @@
     "react-custom-scrollbars": "^4.1.0",
     "react-dom": "^15.6.1",
     "react-tooltip": "^3.3.0",
+    "rebound": "0.0.15",
     "uuid": "^3.0.1"
   }
 }

@@ -39,6 +39,8 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reactCustomScrollbars = require('react-custom-scrollbars');
 
+var _rebound = require('rebound');
+
 var _draftJs = require('draft-js');
 
 var _BasicEditor = require('../BasicEditor/BasicEditor');
@@ -53,6 +55,13 @@ require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This module exports a component representing an editor with main editor and footnotes,
+ * with related interface and decorators.
+ * Asset components must be provided through props
+ * @module scholar-draft/Editor
+ */
+
 var Editor = function (_Component) {
   (0, _inherits3.default)(Editor, _Component);
 
@@ -66,6 +75,24 @@ var Editor = function (_Component) {
     // this is used as a map of refs 
     // to interact with note components
     var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
+
+    _this.componentDidMount = function () {
+
+      // we use a spring system to handle automatic scrolls
+      // (e.g. note pointer clicked or click in the table of contents)
+      _this.springSystem = new _rebound.SpringSystem();
+      _this.spring = _this.springSystem.createSpring();
+      _this.spring.addListener({
+        onSpringUpdate: _this.handleSpringUpdate
+      });
+    };
+
+    _this.handleSpringUpdate = function (spring) {
+      var val = spring.getCurrentValue();
+      if (val !== undefined && _this.globalScrollbar) {
+        _this.globalScrollbar.scrollTop(val);
+      }
+    };
 
     _this.focus = function (contentId, selection) {
       if (contentId === 'main' && _this.mainEditor) {
@@ -163,7 +190,7 @@ var Editor = function (_Component) {
       };
 
       var onClickScrollToNotePointer = function onClickScrollToNotePointer(thatNoteId) {
-        var notePointer = document.getElementById('note-pointer' + thatNoteId);
+        var notePointer = document.getElementById('note-pointer-' + thatNoteId);
         var scrollTo = notePointer && notePointer.offsetTop;
         if (scrollTo) {
           _this.scrollTop(scrollTo);
@@ -223,22 +250,33 @@ var Editor = function (_Component) {
   }
 
   /**
-   * Programmatically modifies the scroll state of the component
-   * so that it transitions to a specific point in the page
-   * @param {number} top - the position to scroll to in pixels
+   * Executes code on instance after the component is mounted
+   */
+
+
+  /**
+   * Handles the scrolling process using the spring system
+   * @param {object} spring - the spring system instance
    */
 
 
   (0, _createClass3.default)(Editor, [{
     key: 'scrollTop',
+
+
+    /**
+     * Programmatically modifies the scroll state of the component
+     * so that it transitions to a specific point in the page
+     * @param {number} top - the position to scroll to in pixels
+     */
     value: function scrollTop(top) {
-      this.globalScrollbar.scrollTop(top);
-      // const scrollbars = this.globalScrollbar;
-      // const scrollTop = scrollbars.getScrollTop();
-      // const scrollHeight = scrollbars.getScrollHeight();
-      // const val = MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
-      // this.spring.setCurrentValue(scrollTop).setAtRest();
-      // this.spring.setEndValue(val);
+      // this.globalScrollbar.scrollTop(top);
+      var scrollbars = this.globalScrollbar;
+      var scrollTop = scrollbars.getScrollTop();
+      var scrollHeight = scrollbars.getScrollHeight();
+      var val = _rebound.MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
+      this.spring.setCurrentValue(scrollTop).setAtRest();
+      this.spring.setEndValue(val);
     }
 
     /**
@@ -434,12 +472,7 @@ var Editor = function (_Component) {
     }
   }]);
   return Editor;
-}(_react.Component); /**
-                      * This module exports a component representing an editor with main editor and footnotes,
-                      * with related interface and decorators.
-                      * Asset components must be provided through props
-                      * @module scholar-draft/Editor
-                      */
+}(_react.Component);
 
 Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
