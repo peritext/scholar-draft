@@ -848,7 +848,7 @@ var _initialiseProps = function _initialiseProps() {
       } catch (error) {
         return undefined;
       }
-      var id = data.data.asset.id;
+      var id = data && data.data && data.data.asset && data.data.asset.id;
       var asset = _this4.props.assets[id];
       if (!asset) {
         return;
@@ -1015,7 +1015,7 @@ var _initialiseProps = function _initialiseProps() {
 
       var entityKey = contentBlock.getEntityAt(start);
       var data = contentState.getEntity(entityKey).toJS();
-      var id = data.data.asset.id;
+      var id = data && data.data && data.data.asset && data.data.asset.id;
       var asset = assets[id];
       var AssetComponent = asset && components[asset.type] ? components[asset.type] : function () {
         return _react2.default.createElement('div', null);

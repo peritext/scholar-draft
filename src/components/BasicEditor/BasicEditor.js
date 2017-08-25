@@ -618,7 +618,7 @@ export default class BasicEditor extends Component {
       } catch (error) {
         return undefined;
       }
-      const id = data.data.asset.id;
+      const id = data && data.data && data.data.asset && data.data.asset.id;
       const asset = this.props.assets[id];
       if (!asset) {
         return;
@@ -835,7 +835,7 @@ export default class BasicEditor extends Component {
 
         const entityKey = contentBlock.getEntityAt(start);
         const data = contentState.getEntity(entityKey).toJS();
-        const id = data.data.asset.id;
+        const id = data && data.data && data.data.asset && data.data.asset.id;
         const asset = assets[id];
         const AssetComponent = asset && components[asset.type] ? 
           components[asset.type] 
