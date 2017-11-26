@@ -158,6 +158,7 @@ function checkReturnForState(editorState, ev) {
 export class Emitter {
   assetsListeners = new Map()
   notesListeners = new Map()
+  assetChoicePropsListeners = new Map()
 
   subscribeToAssets = (listener) => {
     const id = generateId();
@@ -171,6 +172,12 @@ export class Emitter {
     return () => this.notesListeners.delete(id);
   }
 
+  subscribeToAssetChoiceProps = (listener) => {
+    const id = generateId();
+    this.assetChoicePropsListeners.set(id, listener);
+    return () => this.assetChoicePropsListeners.delete(id);
+  }
+
   dispatchAssets = (assets) => {
     this.assetsListeners.forEach((listener) => {
       listener(assets);
@@ -179,6 +186,12 @@ export class Emitter {
   dispatchNotes= (notes) => {
     this.notesListeners.forEach((listener) => {
       listener(notes);
+    });
+  }
+
+  dispatchAssetChoiceProps= (props) => {
+    this.assetChoicePropsListeners.forEach((listener) => {
+      listener(props);
     });
   }
 }
@@ -302,7 +315,7 @@ export default class BasicEditor extends Component {
       },
       readOnly: true
     };
-    // the emitter allows to let custom components know when assets are changed
+    // the emitter allows to let custom components know when data is changed
     this.emitter = new Emitter();
   }
 
@@ -395,7 +408,7 @@ export default class BasicEditor extends Component {
     if (this.props.notes !== nextProps.notes) {
       // dispatch new notes through context's emitter
       this.emitter.dispatchNotes(nextProps.notes);
-      // update state-stored assets
+      // update state-stored notes
       this.setState({ notes: nextProps.notes });
       // if the number of notes is changed it means
       // new entities might be present in the editor.
@@ -412,6 +425,12 @@ export default class BasicEditor extends Component {
         this.forceRender(nextProps);
       }
     }
+    // trigger changes when notes are changed
+    if (this.props.assetChoiceProps !== nextProps.assetChoiceProps) {
+      // dispatch new notes through context's emitter
+      this.emitter.dispatchAssetChoiceProps(nextProps.assetChoiceProps);
+    }
+    
   }
 
   shouldComponentUpdate(nextProps, nextState) {

@@ -257,6 +257,7 @@ var Emitter = exports.Emitter = function Emitter() {
   (0, _classCallCheck3.default)(this, Emitter);
   this.assetsListeners = new _map2.default();
   this.notesListeners = new _map2.default();
+  this.assetChoicePropsListeners = new _map2.default();
 
   this.subscribeToAssets = function (listener) {
     var id = (0, _uuid.v4)();
@@ -274,6 +275,14 @@ var Emitter = exports.Emitter = function Emitter() {
     };
   };
 
+  this.subscribeToAssetChoiceProps = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.assetChoicePropsListeners.set(id, listener);
+    return function () {
+      return _this.assetChoicePropsListeners.delete(id);
+    };
+  };
+
   this.dispatchAssets = function (assets) {
     _this.assetsListeners.forEach(function (listener) {
       listener(assets);
@@ -283,6 +292,12 @@ var Emitter = exports.Emitter = function Emitter() {
   this.dispatchNotes = function (notes) {
     _this.notesListeners.forEach(function (listener) {
       listener(notes);
+    });
+  };
+
+  this.dispatchAssetChoiceProps = function (props) {
+    _this.assetChoicePropsListeners.forEach(function (listener) {
+      listener(props);
     });
   };
 };
@@ -327,7 +342,7 @@ var BasicEditor = function (_Component) {
       },
       readOnly: true
     };
-    // the emitter allows to let custom components know when assets are changed
+    // the emitter allows to let custom components know when data is changed
     _this2.emitter = new Emitter();
     return _this2;
   }
@@ -701,7 +716,7 @@ var _initialiseProps = function _initialiseProps() {
     if (_this4.props.notes !== nextProps.notes) {
       // dispatch new notes through context's emitter
       _this4.emitter.dispatchNotes(nextProps.notes);
-      // update state-stored assets
+      // update state-stored notes
       _this4.setState({ notes: nextProps.notes });
       // if the number of notes is changed it means
       // new entities might be present in the editor.
@@ -714,6 +729,11 @@ var _initialiseProps = function _initialiseProps() {
         // before a new modification is applied to it
         _this4.forceRender(nextProps);
       }
+    }
+    // trigger changes when notes are changed
+    if (_this4.props.assetChoiceProps !== nextProps.assetChoiceProps) {
+      // dispatch new notes through context's emitter
+      _this4.emitter.dispatchAssetChoiceProps(nextProps.assetChoiceProps);
     }
   };
 
