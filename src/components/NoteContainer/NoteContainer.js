@@ -40,6 +40,7 @@ class NoteContainer extends Component {
     blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
     editorStyle: PropTypes.object,
+    inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
     
     assetChoiceProps: PropTypes.object,
@@ -81,6 +82,7 @@ class NoteContainer extends Component {
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
+      inlineEntities = [],
       iconMap,
       
       assetChoiceProps,
@@ -154,6 +156,7 @@ class NoteContainer extends Component {
             
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
+            inlineEntities={inlineEntities}
             iconMap={iconMap}
             allowNotesInsertion={false}
             editorStyle={editorStyle}

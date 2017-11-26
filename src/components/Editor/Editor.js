@@ -61,6 +61,7 @@ export default class Editor extends Component {
     AssetChoiceComponent: PropTypes.func,
     NotePointerComponent: PropTypes.func,
     BibliographyComponent: PropTypes.func,
+    inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
 
     keyBindingFn: PropTypes.func,
@@ -200,6 +201,7 @@ export default class Editor extends Component {
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
+      inlineEntities,
       iconMap,
 
       keyBindingFn,
@@ -292,6 +294,7 @@ export default class Editor extends Component {
         inlineAssetComponents={inlineAssetComponents}
         blockAssetComponents={blockAssetComponents}
         AssetChoiceComponent={AssetChoiceComponent}
+        inlineEntities={inlineEntities}
         iconMap={iconMap}
         keyBindingFn={keyBindingFn}
 
@@ -339,6 +342,7 @@ export default class Editor extends Component {
       AssetChoiceComponent,
       NotePointerComponent,
       BibliographyComponent,
+      inlineEntities = [],
       iconMap,
 
       editorStyles,
@@ -446,6 +450,7 @@ export default class Editor extends Component {
               blockAssetComponents={blockAssetComponents}
               AssetChoiceComponent={AssetChoiceComponent}
               NotePointerComponent={NotePointerComponent}
+              inlineEntities={inlineEntities}
               iconMap={iconMap}
 
               clipboard={clipboard}

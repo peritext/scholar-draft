@@ -147,6 +147,7 @@ var Editor = function (_Component) {
           inlineAssetComponents = _this$props.inlineAssetComponents,
           blockAssetComponents = _this$props.blockAssetComponents,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
+          inlineEntities = _this$props.inlineEntities,
           iconMap = _this$props.iconMap,
           keyBindingFn = _this$props.keyBindingFn,
           editorStyles = _this$props.editorStyles,
@@ -238,6 +239,7 @@ var Editor = function (_Component) {
         inlineAssetComponents: inlineAssetComponents,
         blockAssetComponents: blockAssetComponents,
         AssetChoiceComponent: AssetChoiceComponent,
+        inlineEntities: inlineEntities,
         iconMap: iconMap,
         keyBindingFn: keyBindingFn,
 
@@ -339,6 +341,8 @@ var Editor = function (_Component) {
           AssetChoiceComponent = _props.AssetChoiceComponent,
           NotePointerComponent = _props.NotePointerComponent,
           BibliographyComponent = _props.BibliographyComponent,
+          _props$inlineEntities = _props.inlineEntities,
+          inlineEntities = _props$inlineEntities === undefined ? [] : _props$inlineEntities,
           iconMap = _props.iconMap,
           editorStyles = _props.editorStyles,
           clipboard = _props.clipboard,
@@ -449,6 +453,7 @@ var Editor = function (_Component) {
               blockAssetComponents: blockAssetComponents,
               AssetChoiceComponent: AssetChoiceComponent,
               NotePointerComponent: NotePointerComponent,
+              inlineEntities: inlineEntities,
               iconMap: iconMap,
 
               clipboard: clipboard,
@@ -509,6 +514,7 @@ Editor.propTypes = {
   AssetChoiceComponent: _propTypes2.default.func,
   NotePointerComponent: _propTypes2.default.func,
   BibliographyComponent: _propTypes2.default.func,
+  inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,
 
   keyBindingFn: _propTypes2.default.func,

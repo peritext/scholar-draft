@@ -250,6 +250,7 @@ export default class BasicEditor extends Component {
     inlineButtons: PropTypes.object,
     NotePointerComponent: PropTypes.func,
     BibliographyComponent: PropTypes.func,
+    inlineEntities: PropTypes.array,
 
     placeholder: PropTypes.string,
 
@@ -939,6 +940,9 @@ export default class BasicEditor extends Component {
       new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
       new SimpleDecorator(this.findNotePointer, ActiveNotePointer),
       new SimpleDecorator(this.findQuotes, QuoteContainer),
+      ...this.props.inlineEntities.map(entity =>
+        new SimpleDecorator(entity.strategy, entity.component)
+      )
     ]);
   }
 

@@ -615,6 +615,7 @@ BasicEditor.propTypes = {
   inlineButtons: _propTypes2.default.object,
   NotePointerComponent: _propTypes2.default.func,
   BibliographyComponent: _propTypes2.default.func,
+  inlineEntities: _propTypes2.default.array,
 
   placeholder: _propTypes2.default.string,
 
@@ -1093,7 +1094,9 @@ var _initialiseProps = function _initialiseProps() {
 
   this.createDecorator = function () {
     var ActiveNotePointer = _this4.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)]);
+    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)].concat((0, _toConsumableArray3.default)(_this4.props.inlineEntities.map(function (entity) {
+      return new _draftJsSimpledecorator2.default(entity.strategy, entity.component);
+    }))));
   };
 
   this.updateSelection = function () {

@@ -82,6 +82,8 @@ var NoteContainer = function (_Component) {
           inlineAssetComponents = _this$props.inlineAssetComponents,
           blockAssetComponents = _this$props.blockAssetComponents,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
+          _this$props$inlineEnt = _this$props.inlineEntities,
+          inlineEntities = _this$props$inlineEnt === undefined ? [] : _this$props$inlineEnt,
           iconMap = _this$props.iconMap,
           assetChoiceProps = _this$props.assetChoiceProps,
           clipboard = _this$props.clipboard,
@@ -169,6 +171,7 @@ var NoteContainer = function (_Component) {
 
             inlineAssetComponents: inlineAssetComponents,
             blockAssetComponents: blockAssetComponents,
+            inlineEntities: inlineEntities,
             iconMap: iconMap,
             allowNotesInsertion: false,
             editorStyle: editorStyle
@@ -209,6 +212,7 @@ NoteContainer.propTypes = {
   blockAssetComponents: _propTypes2.default.object,
   AssetChoiceComponent: _propTypes2.default.func,
   editorStyle: _propTypes2.default.object,
+  inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,
 
   assetChoiceProps: _propTypes2.default.object,
