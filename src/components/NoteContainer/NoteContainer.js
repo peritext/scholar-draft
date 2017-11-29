@@ -124,7 +124,7 @@ class NoteContainer extends Component {
         </div>
         <div className="note-body">
           <BasicEditor 
-            editorState={note.editorState}
+            editorState={note.editorState || note.contents}
             contentId={contentId}
             assets={assets}
             notes={notes}

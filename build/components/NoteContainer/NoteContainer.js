@@ -140,7 +140,7 @@ var NoteContainer = function (_Component) {
           'div',
           { className: 'note-body' },
           _react2.default.createElement(_BasicEditor2.default, {
-            editorState: note.editorState,
+            editorState: note.editorState || note.contents,
             contentId: contentId,
             assets: assets,
             notes: notes,
