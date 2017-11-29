@@ -161,6 +161,8 @@ For that reason the module also provides a set of `utils` functions for manipula
 
 `AssetChoiceComponent` (ReactComponent) -> the component to use for displaying asset choice in editor (example : an input with a list of possible assets insertion)
 
+`inlineEntities` (ArrayOf({strategy: function, component: ReactComponent})) -> additionnal draft entities to use in the editor - presented as an array of strategy/component pairs
+
 `editorClass` (string) -> the class name to use
 
 `editorStyle` (Object) -> a style object
