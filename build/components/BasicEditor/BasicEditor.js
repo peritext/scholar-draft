@@ -790,7 +790,7 @@ var _initialiseProps = function _initialiseProps() {
     if (feedUndoStack === true) {
       _this4.feedUndoStack(editorState);
     }
-    if (typeof _this4.props.onEditorChange === 'function' /* && !this.props.readOnly*/) {
+    if (typeof _this4.props.onEditorChange === 'function' /* && !this.props.readOnly */) {
         _this4.props.onEditorChange(editorState);
       }
   };
@@ -1094,7 +1094,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this.createDecorator = function () {
     var ActiveNotePointer = _this4.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)].concat((0, _toConsumableArray3.default)(_this4.props.inlineEntities.map(function (entity) {
+    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this4.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this4.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this4.findQuotes, _QuoteContainer2.default)].concat((0, _toConsumableArray3.default)((_this4.props.inlineEntities || []).map(function (entity) {
       return new _draftJsSimpledecorator2.default(entity.strategy, entity.component);
     }))));
   };

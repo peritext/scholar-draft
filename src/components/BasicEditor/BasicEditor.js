@@ -525,7 +525,7 @@ export default class BasicEditor extends Component {
     if (feedUndoStack === true) {
       this.feedUndoStack(editorState);
     }
-    if (typeof this.props.onEditorChange === 'function'/* && !this.props.readOnly*/) {
+    if (typeof this.props.onEditorChange === 'function'/* && !this.props.readOnly */) {
       this.props.onEditorChange(editorState);
     }
   }
@@ -940,7 +940,7 @@ export default class BasicEditor extends Component {
       new SimpleDecorator(this.findInlineAsset, InlineAssetContainer),
       new SimpleDecorator(this.findNotePointer, ActiveNotePointer),
       new SimpleDecorator(this.findQuotes, QuoteContainer),
-      ...this.props.inlineEntities.map(entity =>
+      ...(this.props.inlineEntities || []).map(entity =>
         new SimpleDecorator(entity.strategy, entity.component)
       )
     ]);
