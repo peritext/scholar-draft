@@ -523,7 +523,7 @@ Editor.propTypes = {
   inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,
 
-  renderingMode: _propTypes2.default.object,
+  renderingMode: _propTypes2.default.string,
 
   keyBindingFn: _propTypes2.default.func,
 

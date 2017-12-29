@@ -64,7 +64,7 @@ export default class Editor extends Component {
     inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
 
-    renderingMode: PropTypes.object,
+    renderingMode: PropTypes.string,
 
     keyBindingFn: PropTypes.func,
 
