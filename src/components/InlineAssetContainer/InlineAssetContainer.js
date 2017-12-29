@@ -18,6 +18,8 @@ class InlineAssetContainer extends Component {
     assets: PropTypes.object,
     iconMap: PropTypes.object,
 
+    renderingMode: PropTypes.string,
+
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
     onAssetChange: PropTypes.func,
@@ -34,7 +36,8 @@ class InlineAssetContainer extends Component {
 
   componentDidMount() {
     this.setState({
-      asset: this.context.assets[this.props.assetId]
+      asset: this.context.assets[this.props.assetId],
+      renderingMode: this.props.renderingMode
     });
     this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.assetId];
@@ -42,15 +45,24 @@ class InlineAssetContainer extends Component {
         asset
       });
     });
+
+    this.unsubscribeToRenderingMode = this.context.emitter
+      .subscribeToRenderingMode((renderingMode) => {
+        this.setState({
+          renderingMode
+        });
+      });
   }
 
   componentWillUnmount() {
     this.unsubscribe();
+    this.unsubscribeToRenderingMode();
   }
 
   render = () => {
     const {
-      asset
+      asset,
+      renderingMode
     } = this.state;
     if (!asset) {
       return null;
@@ -103,6 +115,7 @@ class InlineAssetContainer extends Component {
           onAssetFocus={onAssetFocus}
           onAssetBlur={onAssetBlur}
           iconMap={iconMap}
+          renderingMode={renderingMode}
         />
         <span>{children}</span>
       </span>
@@ -114,6 +127,8 @@ InlineAssetContainer.propTypes = {
   children: PropTypes.array,
   assetId: PropTypes.string,
   AssetComponent: PropTypes.func,
+
+  renderingMode: PropTypes.string,
 };
 
 export default InlineAssetContainer;

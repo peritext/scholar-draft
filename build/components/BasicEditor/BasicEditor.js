@@ -258,6 +258,7 @@ var Emitter = exports.Emitter = function Emitter() {
   this.assetsListeners = new _map2.default();
   this.notesListeners = new _map2.default();
   this.assetChoicePropsListeners = new _map2.default();
+  this.renderingModeListeners = new _map2.default();
 
   this.subscribeToAssets = function (listener) {
     var id = (0, _uuid.v4)();
@@ -283,6 +284,14 @@ var Emitter = exports.Emitter = function Emitter() {
     };
   };
 
+  this.subscribeToRenderingMode = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.renderingModeListeners.set(id, listener);
+    return function () {
+      return _this.renderingModeListeners.delete(id);
+    };
+  };
+
   this.dispatchAssets = function (assets) {
     _this.assetsListeners.forEach(function (listener) {
       listener(assets);
@@ -298,6 +307,12 @@ var Emitter = exports.Emitter = function Emitter() {
   this.dispatchAssetChoiceProps = function (props) {
     _this.assetChoicePropsListeners.forEach(function (listener) {
       listener(props);
+    });
+  };
+
+  this.dispatchRenderingMode = function (renderingMode) {
+    _this.renderingModeListeners.forEach(function (listener) {
+      listener(renderingMode);
     });
   };
 };
@@ -617,6 +632,8 @@ BasicEditor.propTypes = {
   BibliographyComponent: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
 
+  renderingMode: _propTypes2.default.string,
+
   placeholder: _propTypes2.default.string,
 
   iconMap: _propTypes2.default.object };
@@ -689,6 +706,11 @@ var _initialiseProps = function _initialiseProps() {
       _this4.setState({
         editorState: nextProps.editorState || _this4.generateEmptyEditor()
       });
+    }
+
+    // updating rendering mode
+    if (_this4.props.renderingMode !== nextProps.renderingMode) {
+      _this4.emitter.dispatchRenderingMode(nextProps.renderingMode);
     }
 
     // trigger changes when assets are changed
@@ -874,7 +896,9 @@ var _initialiseProps = function _initialiseProps() {
       if (!asset) {
         return;
       }
-      var blockAssetComponents = _this4.props.blockAssetComponents;
+      var _props = _this4.props,
+          blockAssetComponents = _props.blockAssetComponents,
+          renderingMode = _props.renderingMode;
 
       var AssetComponent = blockAssetComponents[asset.type] || _react2.default.createElement('div', null);
 
@@ -883,6 +907,7 @@ var _initialiseProps = function _initialiseProps() {
           component: _BlockAssetContainer2.default,
           editable: false,
           props: {
+            renderingMode: renderingMode,
             assetId: id,
             AssetComponent: AssetComponent
           }
@@ -1029,9 +1054,10 @@ var _initialiseProps = function _initialiseProps() {
       var entityKey = character.getEntity();
       return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.INLINE_ASSET;
     }, function (start, end) {
-      var _props = _this4.props,
-          assets = _props.assets,
-          components = _props.inlineAssetComponents;
+      var _props2 = _this4.props,
+          assets = _props2.assets,
+          renderingMode = _props2.renderingMode,
+          components = _props2.inlineAssetComponents;
 
 
       var entityKey = contentBlock.getEntityAt(start);
@@ -1046,6 +1072,7 @@ var _initialiseProps = function _initialiseProps() {
       if (id) {
         props = {
           assetId: id,
+          renderingMode: renderingMode,
           AssetComponent: AssetComponent
         };
       }
@@ -1191,39 +1218,39 @@ var _initialiseProps = function _initialiseProps() {
 
   this.render = function () {
     // props
-    var _props2 = _this4.props,
-        _props2$editorState = _props2.editorState,
-        editorState = _props2$editorState === undefined ? _this4.generateEmptyEditor() : _props2$editorState,
-        _props2$editorClass = _props2.editorClass,
-        editorClass = _props2$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props2$editorClass,
-        contentId = _props2.contentId,
-        _props2$placeholder = _props2.placeholder,
-        placeholder = _props2$placeholder === undefined ? 'write your text' : _props2$placeholder,
-        _props2$allowNotesIns = _props2.allowNotesInsertion,
-        allowNotesInsertion = _props2$allowNotesIns === undefined ? false : _props2$allowNotesIns,
-        _props2$allowInlineAs = _props2.allowInlineAsset,
-        allowInlineAsset = _props2$allowInlineAs === undefined ? true : _props2$allowInlineAs,
-        _props2$allowBlockAss = _props2.allowBlockAsset,
-        allowBlockAsset = _props2$allowBlockAss === undefined ? true : _props2$allowBlockAss,
-        _props2$messages = _props2.messages,
-        messages = _props2$messages === undefined ? {
+    var _props3 = _this4.props,
+        _props3$editorState = _props3.editorState,
+        editorState = _props3$editorState === undefined ? _this4.generateEmptyEditor() : _props3$editorState,
+        _props3$editorClass = _props3.editorClass,
+        editorClass = _props3$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props3$editorClass,
+        contentId = _props3.contentId,
+        _props3$placeholder = _props3.placeholder,
+        placeholder = _props3$placeholder === undefined ? 'write your text' : _props3$placeholder,
+        _props3$allowNotesIns = _props3.allowNotesInsertion,
+        allowNotesInsertion = _props3$allowNotesIns === undefined ? false : _props3$allowNotesIns,
+        _props3$allowInlineAs = _props3.allowInlineAsset,
+        allowInlineAsset = _props3$allowInlineAs === undefined ? true : _props3$allowInlineAs,
+        _props3$allowBlockAss = _props3.allowBlockAsset,
+        allowBlockAsset = _props3$allowBlockAss === undefined ? true : _props3$allowBlockAss,
+        _props3$messages = _props3.messages,
+        messages = _props3$messages === undefined ? {
       tooltips: {
         addNote: 'add a note (shortcut: "cmd + ^")',
         addAsset: 'add an asset (shortcut: "@")',
         cancel: 'cancel'
       }
-    } : _props2$messages,
-        onAssetRequestUpstream = _props2.onAssetRequest,
-        assetRequestPosition = _props2.assetRequestPosition,
-        onAssetRequestCancel = _props2.onAssetRequestCancel,
-        onAssetChoice = _props2.onAssetChoice,
-        editorStyle = _props2.editorStyle,
-        onClick = _props2.onClick,
-        AssetChoiceComponent = _props2.AssetChoiceComponent,
-        assetChoiceProps = _props2.assetChoiceProps,
-        BibliographyComponent = _props2.BibliographyComponent,
-        isActive = _props2.isActive,
-        otherProps = (0, _objectWithoutProperties3.default)(_props2, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive']);
+    } : _props3$messages,
+        onAssetRequestUpstream = _props3.onAssetRequest,
+        assetRequestPosition = _props3.assetRequestPosition,
+        onAssetRequestCancel = _props3.onAssetRequestCancel,
+        onAssetChoice = _props3.onAssetChoice,
+        editorStyle = _props3.editorStyle,
+        onClick = _props3.onClick,
+        AssetChoiceComponent = _props3.AssetChoiceComponent,
+        assetChoiceProps = _props3.assetChoiceProps,
+        BibliographyComponent = _props3.BibliographyComponent,
+        isActive = _props3.isActive,
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive']);
 
     // internal state
 

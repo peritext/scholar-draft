@@ -159,6 +159,7 @@ export class Emitter {
   assetsListeners = new Map()
   notesListeners = new Map()
   assetChoicePropsListeners = new Map()
+  renderingModeListeners = new Map()
 
   subscribeToAssets = (listener) => {
     const id = generateId();
@@ -178,6 +179,14 @@ export class Emitter {
     return () => this.assetChoicePropsListeners.delete(id);
   }
 
+
+  subscribeToRenderingMode = (listener) => {
+    const id = generateId();
+    this.renderingModeListeners.set(id, listener);
+    return () => this.renderingModeListeners.delete(id);
+  }
+
+
   dispatchAssets = (assets) => {
     this.assetsListeners.forEach((listener) => {
       listener(assets);
@@ -192,6 +201,12 @@ export class Emitter {
   dispatchAssetChoiceProps= (props) => {
     this.assetChoicePropsListeners.forEach((listener) => {
       listener(props);
+    });
+  }
+
+  dispatchRenderingMode = (renderingMode) => {
+    this.renderingModeListeners.forEach((listener) => {
+      listener(renderingMode);
     });
   }
 }
@@ -251,6 +266,9 @@ export default class BasicEditor extends Component {
     NotePointerComponent: PropTypes.func,
     BibliographyComponent: PropTypes.func,
     inlineEntities: PropTypes.array,
+
+    renderingMode: PropTypes.string,
+
 
     placeholder: PropTypes.string,
 
@@ -380,6 +398,12 @@ export default class BasicEditor extends Component {
       this.setState({
         editorState: nextProps.editorState || this.generateEmptyEditor()
       });
+    }
+
+
+    // updating rendering mode
+    if (this.props.renderingMode !== nextProps.renderingMode) {
+      this.emitter.dispatchRenderingMode(nextProps.renderingMode);
     }
 
     // trigger changes when assets are changed
@@ -643,7 +667,7 @@ export default class BasicEditor extends Component {
       if (!asset) {
         return;
       }
-      const { blockAssetComponents } = this.props;
+      const { blockAssetComponents, renderingMode } = this.props;
       const AssetComponent = blockAssetComponents[asset.type] || <div />;
 
       if (asset) {
@@ -651,6 +675,7 @@ export default class BasicEditor extends Component {
           component: BlockAssetContainer,
           editable: false,
           props: {
+            renderingMode,
             assetId: id,
             AssetComponent,
           },
@@ -850,6 +875,7 @@ export default class BasicEditor extends Component {
       (start, end) => {
         const {
           assets,
+          renderingMode,
           inlineAssetComponents: components
         } = this.props;
 
@@ -865,6 +891,7 @@ export default class BasicEditor extends Component {
         if (id) {
           props = {
             assetId: id,
+            renderingMode,
             AssetComponent,
           };
         }
@@ -1202,7 +1229,7 @@ export default class BasicEditor extends Component {
       ...defaultIconMap,
       ...this.props.iconMap
     } : defaultIconMap;
-    
+
     return (
       <div 
         className={editorClass + (readOnly ? '' : ' active')}

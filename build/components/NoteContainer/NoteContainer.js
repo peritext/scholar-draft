@@ -65,6 +65,7 @@ var NoteContainer = function (_Component) {
           addTextAtCurrentSelection = _this$props.addTextAtCurrentSelection,
           contentId = _this$props.contentId,
           isActive = _this$props.isActive,
+          renderingMode = _this$props.renderingMode,
           onEditorChange = _this$props.onEditorChange,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -153,6 +154,8 @@ var NoteContainer = function (_Component) {
             addTextAtCurrentSelection: addTextAtCurrentSelection,
             clipboard: clipboard,
 
+            renderingMode: renderingMode,
+
             isActive: isActive,
 
             assetRequestPosition: assetRequestPosition,
@@ -191,6 +194,8 @@ NoteContainer.propTypes = {
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
+
+  renderingMode: _propTypes2.default.string,
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,

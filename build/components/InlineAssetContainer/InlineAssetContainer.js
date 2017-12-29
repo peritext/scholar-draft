@@ -45,7 +45,9 @@ var InlineAssetContainer = function (_Component) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (InlineAssetContainer.__proto__ || (0, _getPrototypeOf2.default)(InlineAssetContainer)).call(this, props));
 
     _this.render = function () {
-      var asset = _this.state.asset;
+      var _this$state = _this.state,
+          asset = _this$state.asset,
+          renderingMode = _this$state.renderingMode;
 
       if (!asset) {
         return null;
@@ -95,7 +97,8 @@ var InlineAssetContainer = function (_Component) {
           onAssetChange: onAssetChange,
           onAssetFocus: onAssetFocus,
           onAssetBlur: onAssetBlur,
-          iconMap: iconMap
+          iconMap: iconMap,
+          renderingMode: renderingMode
         }),
         _react2.default.createElement(
           'span',
@@ -115,7 +118,8 @@ var InlineAssetContainer = function (_Component) {
       var _this2 = this;
 
       this.setState({
-        asset: this.context.assets[this.props.assetId]
+        asset: this.context.assets[this.props.assetId],
+        renderingMode: this.props.renderingMode
       });
       this.unsubscribe = this.context.emitter.subscribeToAssets(function (assets) {
         var asset = assets[_this2.props.assetId];
@@ -123,11 +127,18 @@ var InlineAssetContainer = function (_Component) {
           asset: asset
         });
       });
+
+      this.unsubscribeToRenderingMode = this.context.emitter.subscribeToRenderingMode(function (renderingMode) {
+        _this2.setState({
+          renderingMode: renderingMode
+        });
+      });
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       this.unsubscribe();
+      this.unsubscribeToRenderingMode();
     }
   }]);
   return InlineAssetContainer;
@@ -146,6 +157,8 @@ InlineAssetContainer.contextTypes = {
   assets: _propTypes2.default.object,
   iconMap: _propTypes2.default.object,
 
+  renderingMode: _propTypes2.default.string,
+
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
@@ -157,7 +170,9 @@ InlineAssetContainer.contextTypes = {
 InlineAssetContainer.propTypes = {
   children: _propTypes2.default.array,
   assetId: _propTypes2.default.string,
-  AssetComponent: _propTypes2.default.func
+  AssetComponent: _propTypes2.default.func,
+
+  renderingMode: _propTypes2.default.string
 };
 
 exports.default = InlineAssetContainer;

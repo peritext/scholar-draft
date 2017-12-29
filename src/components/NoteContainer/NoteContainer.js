@@ -19,6 +19,8 @@ class NoteContainer extends Component {
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
 
+    renderingMode: PropTypes.string,
+
 
     addTextAtCurrentSelection: PropTypes.func,
     onEditorChange: PropTypes.func,
@@ -63,6 +65,7 @@ class NoteContainer extends Component {
       addTextAtCurrentSelection,
       contentId,
       isActive,
+      renderingMode,
       
       onEditorChange,
       onAssetRequest,
@@ -136,6 +139,8 @@ class NoteContainer extends Component {
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
+
+            renderingMode={renderingMode}
 
             isActive={isActive}
 

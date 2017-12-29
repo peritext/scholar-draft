@@ -7,6 +7,7 @@ const InlineCitation = ({
   onAssetChange,
   onAssetFocus,
   onAssetBlur,
+  renderingMode,
   iconMap,
 }) => {
   const {
@@ -59,6 +60,7 @@ const InlineCitation = ({
           {
             resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
           }
+          - <i>{renderingMode} rendering mode</i>
       </span>
     </span>
   );

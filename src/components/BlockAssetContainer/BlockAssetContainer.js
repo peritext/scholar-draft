@@ -18,6 +18,9 @@ class BlockAssetContainer extends Component {
     assets: PropTypes.object,
     iconMap: PropTypes.object,
 
+    renderingMode: PropTypes.string,
+
+
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
     onAssetChange: PropTypes.func,
@@ -34,7 +37,8 @@ class BlockAssetContainer extends Component {
 
   componentDidMount() {
     this.setState({
-      asset: this.context.assets[this.props.blockProps.assetId]
+      asset: this.context.assets[this.props.blockProps.assetId],
+      renderingMode: this.props.blockProps.renderingMode,
     });
     this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.blockProps.assetId];
@@ -42,16 +46,25 @@ class BlockAssetContainer extends Component {
         asset
       });
     });
+
+    this.unsubscribeToRenderingMode = this.context.emitter
+        .subscribeToRenderingMode((renderingMode) => {
+          this.setState({
+            renderingMode
+          });
+        });
   }
 
   componentWillUnmount() {
     this.unsubscribe();
+    this.unsubscribeToRenderingMode();
   }
 
   render = () => {
 
     const {
-      asset
+      asset,
+      renderingMode
     } = this.state;
     if (!asset) {
       return null;
@@ -105,6 +118,7 @@ class BlockAssetContainer extends Component {
           onAssetFocus={onAssetFocus}
           onAssetBlur={onAssetBlur}
           iconMap={iconMap}
+          renderingMode={renderingMode}
         />
         <div>{children}</div>
       </div>
@@ -118,6 +132,7 @@ BlockAssetContainer.propTypes = {
   blockProps: PropTypes.shape({
     assetId: PropTypes.string,
     AssetComponent: PropTypes.func,
+    renderingMode: PropTypes.string,
   })
 };
 

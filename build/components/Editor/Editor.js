@@ -153,7 +153,8 @@ var Editor = function (_Component) {
           editorStyles = _this$props.editorStyles,
           clipboard = _this$props.clipboard,
           focusedEditorId = _this$props.focusedEditorId,
-          NoteContainerComponent = _this$props.NoteContainerComponent;
+          NoteContainerComponent = _this$props.NoteContainerComponent,
+          renderingMode = _this$props.renderingMode;
 
       var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
         return onEditorChange(noteId, editor);
@@ -216,6 +217,8 @@ var Editor = function (_Component) {
 
         onEditorClick: onNoteEditorClick,
         onBlur: onNoteBlur,
+
+        renderingMode: renderingMode,
 
         onEditorChange: onThisNoteEditorChange,
 
@@ -346,7 +349,8 @@ var Editor = function (_Component) {
           iconMap = _props.iconMap,
           editorStyles = _props.editorStyles,
           clipboard = _props.clipboard,
-          focusedEditorId = _props.focusedEditorId;
+          focusedEditorId = _props.focusedEditorId,
+          renderingMode = _props.renderingMode;
 
       /**
        * bindings
@@ -430,6 +434,8 @@ var Editor = function (_Component) {
 
               onClick: onMainEditorClick,
               onBlur: onMainBlur,
+
+              renderingMode: renderingMode,
 
               onEditorChange: onMainEditorChange,
               onDragOver: onMainDragOver,
@@ -516,6 +522,8 @@ Editor.propTypes = {
   BibliographyComponent: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,
+
+  renderingMode: _propTypes2.default.object,
 
   keyBindingFn: _propTypes2.default.func,
 

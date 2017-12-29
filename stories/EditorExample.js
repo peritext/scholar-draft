@@ -74,6 +74,7 @@ export default class EditorExample extends Component {
     assetRequestType: undefined,
     // all these should be handled by upstream logic in real applications
     mainEditorState: undefined,
+    renderingMode: 'web',
     notes: {},
     inlineAssetComponents,
     blockAssetComponents,
@@ -868,6 +869,7 @@ export default class EditorExample extends Component {
       onEditorChange,
       onAssetRequest,
 
+
       onAssetClick,
       onAssetMouseOver,
       onAssetMouseOut,
@@ -902,6 +904,7 @@ export default class EditorExample extends Component {
       assetRequestContentId,
       resources,
       focusedEditorId,
+      renderingMode,
     } = state;
 
     const onResourceTitleChange = e => {
@@ -1062,6 +1065,11 @@ export default class EditorExample extends Component {
       loadExampleState(example500000);
     }
 
+    const changeRenderingMode = () => {
+      const renderingMode = this.state.renderingMode === 'web' ? 'print': 'web';
+      this.setState({renderingMode});
+    }
+
     return (
       <div
         style={{
@@ -1085,6 +1093,7 @@ export default class EditorExample extends Component {
             overflow: 'auto'
           }}
         >
+          <button onClick={changeRenderingMode}>Change rendering mode (present : {renderingMode})</button>
           <button onClick={downloadState}>Download current state</button>
           <button onClick={load300000ExampleState}>Load example state (300 000 characters without entities)</button>
           <button onClick={load500000ExampleState}>Load example state (500 000 characters (~170 pages doc) with 30 entities)</button>
@@ -1160,6 +1169,8 @@ export default class EditorExample extends Component {
             focusedEditorId={focusedEditorId}
                         
             onEditorChange={onEditorChange}
+
+            renderingMode={renderingMode}
 
             onDrop={onDrop}
             onDragOver={onDragOver}

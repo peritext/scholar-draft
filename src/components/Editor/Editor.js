@@ -64,6 +64,8 @@ export default class Editor extends Component {
     inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
 
+    renderingMode: PropTypes.object,
+
     keyBindingFn: PropTypes.func,
 
     editorStyles: PropTypes.object,
@@ -210,6 +212,9 @@ export default class Editor extends Component {
       clipboard,
       focusedEditorId,
       NoteContainerComponent,
+
+      renderingMode,
+
     } = this.props;
     const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
     const onNoteAssetRequest = (selection) => {
@@ -271,6 +276,8 @@ export default class Editor extends Component {
 
         onEditorClick={onNoteEditorClick}
         onBlur={onNoteBlur}
+
+        renderingMode={renderingMode}
 
         onEditorChange={onThisNoteEditorChange}
 
@@ -348,6 +355,8 @@ export default class Editor extends Component {
       editorStyles,
       clipboard,
       focusedEditorId,
+
+      renderingMode,
 
       // keyBindingFn,
     } = this.props;
@@ -427,6 +436,8 @@ export default class Editor extends Component {
 
               onClick={onMainEditorClick}
               onBlur={onMainBlur}
+
+              renderingMode={renderingMode}
             
               onEditorChange={onMainEditorChange}
               onDragOver={onMainDragOver}

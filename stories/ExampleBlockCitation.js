@@ -8,6 +8,7 @@ const BlockCitation = ({
   onAssetFocus,
   onAssetBlur,
   iconMap,
+  renderingMode,
 }) => {
   const {
     resource,
@@ -59,6 +60,7 @@ const BlockCitation = ({
           {
             resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')
           }
+           - <i>{renderingMode} rendering mode</i>
       </span>
     </div>
   );
