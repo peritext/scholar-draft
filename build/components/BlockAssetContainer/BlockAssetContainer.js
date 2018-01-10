@@ -175,7 +175,7 @@ BlockAssetContainer.propTypes = {
   // assetId: PropTypes.string,
   blockProps: _propTypes2.default.shape({
     assetId: _propTypes2.default.string,
-    AssetComponent: _propTypes2.default.func,
+    AssetComponent: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.element]),
     renderingMode: _propTypes2.default.string
   })
 };

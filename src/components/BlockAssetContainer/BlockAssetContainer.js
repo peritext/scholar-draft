@@ -131,7 +131,10 @@ BlockAssetContainer.propTypes = {
   // assetId: PropTypes.string,
   blockProps: PropTypes.shape({
     assetId: PropTypes.string,
-    AssetComponent: PropTypes.func,
+    AssetComponent: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.element
+    ]),
     renderingMode: PropTypes.string,
   })
 };

@@ -170,7 +170,7 @@ InlineAssetContainer.contextTypes = {
 InlineAssetContainer.propTypes = {
   children: _propTypes2.default.array,
   assetId: _propTypes2.default.string,
-  AssetComponent: _propTypes2.default.func,
+  AssetComponent: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.element]),
 
   renderingMode: _propTypes2.default.string
 };
