@@ -106,9 +106,11 @@ var NotePointer = function (_Component) {
       });
       this.unsubscribe = this.context.emitter.subscribeToNotes(function (notes) {
         var note = notes[_this2.props.noteId];
-        _this2.setState({
-          note: note
-        });
+        if (!_this2.state.note || note && note.order !== _this2.state.note.order) {
+          _this2.setState({
+            note: note
+          });
+        }
       });
     }
   }, {

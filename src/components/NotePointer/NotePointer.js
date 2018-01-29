@@ -30,9 +30,11 @@ class NotePointer extends Component {
     });
     this.unsubscribe = this.context.emitter.subscribeToNotes((notes) => {
       const note = notes[this.props.noteId];
-      this.setState({
-        note
-      });
+      if (!this.state.note || (note && note.order !== this.state.note.order)) {
+        this.setState({
+          note
+        });
+      }
     });
   }
 
