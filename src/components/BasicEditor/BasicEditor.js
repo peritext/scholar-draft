@@ -692,7 +692,7 @@ export default class BasicEditor extends Component {
   _defaultKeyBindingFn = (event) => {
     if (event && hasCommandModifier(event)) {
       switch (event.keyCode) {
-        // `^`
+      // `^`
       case 229:
         return 'add-note';
         // `z`
@@ -938,8 +938,8 @@ export default class BasicEditor extends Component {
    * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
    * @param {ImmutableRecord} inputContentState - the content state to parse
    */
-   // todo: improve with all lang./typography 
-   // quotes configurations (french quotes, english quotes, ...)
+  // todo: improve with all lang./typography 
+  // quotes configurations (french quotes, english quotes, ...)
   findQuotes = (contentBlock, callback, contentState) => {
     const QUOTE_REGEX = /("[^"]+")/gi;
     this.findWithRegex(QUOTE_REGEX, contentBlock, callback);
@@ -968,8 +968,7 @@ export default class BasicEditor extends Component {
       new SimpleDecorator(this.findNotePointer, ActiveNotePointer),
       new SimpleDecorator(this.findQuotes, QuoteContainer),
       ...(this.props.inlineEntities || []).map(entity =>
-        new SimpleDecorator(entity.strategy, entity.component)
-      )
+        new SimpleDecorator(entity.strategy, entity.component))
     ]);
   }
 
@@ -987,7 +986,6 @@ export default class BasicEditor extends Component {
     
     const editorEle = this.editor;
 
-
     const styles = {
       sideToolbar: {
         ...this.state.styles.sideToolbar
@@ -1001,7 +999,7 @@ export default class BasicEditor extends Component {
 
     if (
       !editorEle 
-      || !isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)
+      || !isParentOf(selectionRange.commonAncestorContainer, editorEle.editor)
     ) { 
       return; 
     }
@@ -1011,6 +1009,7 @@ export default class BasicEditor extends Component {
     } = this.props;
 
     const sideToolbarEle = this.sideToolbar.toolbar;
+
 
     if (!sideToolbarEle) {
       return;
@@ -1067,7 +1066,7 @@ export default class BasicEditor extends Component {
 
     const stateMods = {};
 
-    const editorNode = this.editor && this.editor.refs.editor;
+    const editorNode = this.editor && this.editor.editor;
     stateMods.editorBounds = editorNode.getBoundingClientRect();
 
     if (Object.keys(stateMods).length) {
@@ -1225,10 +1224,11 @@ export default class BasicEditor extends Component {
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : _defaultKeyBindingFn;
     // props-provided iconMap can be merged with defaultIconMap for displaying custom icons
     const iconMap = this.props.iconMap ? 
-    {
-      ...defaultIconMap,
-      ...this.props.iconMap
-    } : defaultIconMap;
+      {
+        ...defaultIconMap,
+        ...this.props.iconMap
+      } : defaultIconMap;
+
 
     return (
       <div 

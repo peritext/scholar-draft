@@ -64,10 +64,12 @@ class BlockButton extends Component {
         onMouseDown={onMouseDown}
         className={className}
       >
-        {React.Children.map(children, 
-        child => React.cloneElement(child, { 
-          selected
-        }))}
+        {React.Children.map(
+          children, 
+          child => React.cloneElement(child, { 
+            selected
+          })
+        )}
       </div>
     );
   }

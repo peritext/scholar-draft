@@ -14,9 +14,7 @@ import {
   MathUtil
 } from 'rebound';
 
-import {
-  EditorState
-} from 'draft-js';
+import { EditorState } from 'draft-js';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
@@ -472,18 +470,18 @@ export default class Editor extends Component {
           </section>
           <aside className="notes-container">
             {
-            Object.keys(notes || {})
-            .sort((first, second) => {
-              if (notes[first].order > notes[second].order) {
-                return 1;
-              } return -1;
-            })
-            .map(this.renderNoteEditor)
-          }
+              Object.keys(notes || {})
+                .sort((first, second) => {
+                  if (notes[first].order > notes[second].order) {
+                    return 1;
+                  } return -1;
+                })
+                .map(this.renderNoteEditor)
+            }
           </aside>
           {
-          BibliographyComponent && <BibliographyComponent />
-        }
+            BibliographyComponent && <BibliographyComponent />
+          }
         </Scrollbars>
       </div>
     );

@@ -41,11 +41,11 @@ export default class SideToolbar extends Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => (
-      this.props.editorState !== nextProps.editorState ||
+    this.props.editorState !== nextProps.editorState ||
       this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
       this.props.allowNotesInsertion !== nextProps.allowNotesInsertion ||
       this.props.style !== nextProps.style
-    )
+  )
 
   render = () => {
 

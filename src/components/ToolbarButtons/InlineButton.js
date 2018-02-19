@@ -82,10 +82,12 @@ class InlineButton extends Component {
         className={className}
         {...otherProps}
       >
-        {React.Children.map(this.props.children, 
+        {React.Children.map(
+          this.props.children, 
           child => React.cloneElement(child, { 
             selected
-          }))}
+          })
+        )}
       </div>
     );
   };

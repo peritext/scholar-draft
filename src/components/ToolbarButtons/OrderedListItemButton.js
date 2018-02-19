@@ -3,6 +3,6 @@
 import React from 'react';
 import BlockButton from './BlockButton';
 
-export default props => <BlockButton {...props} blockType="ordered-list-item">
+export default props => (<BlockButton {...props} blockType="ordered-list-item">
   {props.iconMap.orderedlist}
-</BlockButton>;
+                         </BlockButton>);

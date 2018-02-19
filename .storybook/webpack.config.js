@@ -2,27 +2,44 @@ const path = require('path');
 
 module.exports = {
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: [
-            'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            'image-webpack?bypassOnDebug&optipng.optimizationLevel=7&gifsicle.interlaced=false'
-        ],
         include: path.resolve(__dirname, '../'),
+         use: [
+          {
+            loader: 'file-loader',
+            options: {
+              query: {
+                name:'assets/[name].[ext]'
+              }
+            }
+          },
+        {
+          loader: 'image-webpack-loader',
+          options: {
+            query: {
+              mozjpeg: {
+                progressive: true,
+              },
+              gifsicle: {
+                interlaced: true,
+              },
+              optipng: {
+                optimizationLevel: 7,
+              }
+            }
+          }
+        }]
       },
-      // {
-      //   test: /\.svg$/,
-      //   loader: 'raw-loader'
-      // },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css', 'sass'],
+        loaders: ['style-loader', 'css-loader', 'sass-loader'],
         include: path.resolve(__dirname, '../')
       },
       {
         test: /\.css$/,
-        loaders: ['style', 'css'],
+        loaders: ['style-loader', 'css-loader'],
         include: path.resolve(__dirname, '../')
       }
     ]

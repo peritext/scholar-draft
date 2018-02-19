@@ -48,11 +48,11 @@ class BlockAssetContainer extends Component {
     });
 
     this.unsubscribeToRenderingMode = this.context.emitter
-        .subscribeToRenderingMode((renderingMode) => {
-          this.setState({
-            renderingMode
-          });
+      .subscribeToRenderingMode((renderingMode) => {
+        this.setState({
+          renderingMode
         });
+      });
   }
 
   componentWillUnmount() {

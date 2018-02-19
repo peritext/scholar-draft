@@ -38,9 +38,9 @@ export default class InlineToolbar extends Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => (
-      this.props.editorState !== nextProps.editorState ||
+    this.props.editorState !== nextProps.editorState ||
       this.props.style !== nextProps.style
-    )
+  )
 
   render = () => {
 
@@ -61,13 +61,12 @@ export default class InlineToolbar extends Component {
       style={style}
     >
       {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
-          // Pass down some useful props to each button
+        // Pass down some useful props to each button
         updateEditorState,
         editorState,
         iconMap,
         key /* eslint react/no-array-index-key:0 */
-      })
-      )}
+      }))}
     </div>);
   }
 }

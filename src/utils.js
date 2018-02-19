@@ -24,10 +24,10 @@ import {
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertAssetInEditor(
-    editorState, 
-    asset, 
-    selection
-  ) {
+  editorState, 
+  asset, 
+  selection
+) {
   const currentContent = editorState.getCurrentContent();
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
@@ -38,20 +38,20 @@ export function insertAssetInEditor(
   // else --> inline insertion
   // (note : could be provided as a param, but then would require a more complex behavior)
   const isInEmptyBlock = currentContent
-                          .getBlockForKey(inputSelection.getStartKey())
-                          .getText()
-                          .trim().length === 0;
+    .getBlockForKey(inputSelection.getStartKey())
+    .getText()
+    .trim().length === 0;
   const insertionType = isInEmptyBlock ? BLOCK_ASSET : INLINE_ASSET;
 
   // create new entity within content state
   let newContentState = editorState.getCurrentContent().createEntity(
-      insertionType,
-      'IMMUTABLE',
+    insertionType,
+    'IMMUTABLE',
     {
       insertionType,
       asset
     }
-    );
+  );
   const newEntityKey = newContentState.getLastCreatedEntityKey();
 
   // define a new selection
@@ -70,10 +70,10 @@ export function insertAssetInEditor(
   if (insertionType === BLOCK_ASSET) {
     // create a new atomic block with asset's entity
     updatedEditor = AtomicBlockUtils.insertAtomicBlock(
-        updatedEditor,
-        newEntityKey,
-        ' '
-      );
+      updatedEditor,
+      newEntityKey,
+      ' '
+    );
     const newContent = updatedEditor.getCurrentContent();
     const blockMap = newContent.getBlockMap().toJS();
 
@@ -101,21 +101,21 @@ export function insertAssetInEditor(
     if (selectedText.length > 0) {
       // --> we apply the entity to that text
       newContentState = Modifier.applyEntity(
-          currentContent,
-          thatSelection,
-          newEntityKey
-        );
+        currentContent,
+        thatSelection,
+        newEntityKey
+      );
     // case 2 : asset targets an empty selection
     } else {
       // --> we apply the entity to a whitespace character
       selectedText = ' ';
       newContentState = Modifier.replaceText(
-          currentContent,
-          thatSelection,
-          selectedText,
-          null,
-          newEntityKey
-        );
+        currentContent,
+        thatSelection,
+        selectedText,
+        null,
+        newEntityKey
+      );
     }
     // now we add a whitespace character after the new entity
     const endSelection = thatSelection.merge({
@@ -123,12 +123,12 @@ export function insertAssetInEditor(
       focusOffset: thatSelection.getEndOffset() + selectedText.length,
     });
     newContentState = Modifier.replaceText(
-        newContentState,
-        endSelection,
-        ' ',
-        null,
-        null
-      );
+      newContentState,
+      endSelection,
+      ' ',
+      null,
+      null
+    );
     // finally, apply new content state ...
     updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
     // ... and put selection after newly created content
@@ -145,21 +145,21 @@ export function insertAssetInEditor(
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertInlineAssetInEditor(
-    editorState, 
-    asset, 
-    selection
-  ) {
+  editorState, 
+  asset, 
+  selection
+) {
   const currentContent = editorState.getCurrentContent();
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
   let newContentState = editorState.getCurrentContent().createEntity(
-      INLINE_ASSET,
-      'IMMUTABLE',
+    INLINE_ASSET,
+    'IMMUTABLE',
     {
       insertionType: INLINE_ASSET,
       asset
     }
-    );
+  );
 
   const newEntityKey = newContentState.getLastCreatedEntityKey();
   const thatSelection = activeSelection.merge({
@@ -179,33 +179,33 @@ export function insertInlineAssetInEditor(
   let selectedText = currentContentBlock.getText().slice(start, end);
   if (selectedText.length > 0) {
     newContentState = Modifier.applyEntity(
-        currentContent,
-        thatSelection,
-        newEntityKey
-      );
+      currentContent,
+      thatSelection,
+      newEntityKey
+    );
   } else {
     selectedText = ' ';
 
     newContentState = Modifier.replaceText(
-        currentContent,
-        thatSelection,
-        selectedText,
-        null,
-        // inlineStyle?: DraftInlineStyle,
-        newEntityKey
-      );
+      currentContent,
+      thatSelection,
+      selectedText,
+      null,
+      // inlineStyle?: DraftInlineStyle,
+      newEntityKey
+    );
   }
   const endSelection = thatSelection.merge({
     anchorOffset: thatSelection.getEndOffset() + selectedText.length,
     focusOffset: thatSelection.getEndOffset() + selectedText.length,
   });
   newContentState = Modifier.replaceText(
-      newContentState,
-      endSelection,
-      '  ',
-      null,
-      null
-    );
+    newContentState,
+    endSelection,
+    '  ',
+    null,
+    null
+  );
   updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
   updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;
@@ -219,21 +219,21 @@ export function insertInlineAssetInEditor(
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertBlockAssetInEditor(
-    editorState, 
-    asset, 
-    selection
-  ) {
+  editorState, 
+  asset, 
+  selection
+) {
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
 
   const newContentState = editorState.getCurrentContent().createEntity(
-      BLOCK_ASSET,
-      'IMMUTABLE',
+    BLOCK_ASSET,
+    'IMMUTABLE',
     {
       insertionType: BLOCK_ASSET,
       asset
     }
-    );
+  );
 
   const newEntityKey = newContentState.getLastCreatedEntityKey();
   const thatSelection = activeSelection.merge({
@@ -247,10 +247,10 @@ export function insertBlockAssetInEditor(
     thatSelection
   );
   updatedEditor = AtomicBlockUtils.insertAtomicBlock(
-      updatedEditor,
-      newEntityKey,
-      ' '
-    );
+    updatedEditor,
+    newEntityKey,
+    ' '
+  );
   /**
    * UPDATE SELECTION
    */
@@ -278,10 +278,10 @@ export function insertBlockAssetInEditor(
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertNoteInEditor(
-    editorState, 
-    noteId, 
-    selection
-  ) {
+  editorState, 
+  noteId, 
+  selection
+) {
   const currentContent = editorState.getCurrentContent();
   let newContentState = currentContent.createEntity(
     NOTE_POINTER,
@@ -305,12 +305,12 @@ export function insertNoteInEditor(
   const selectedText = ' ';
 
   newContentState = Modifier.replaceText(
-      currentContent,
-      thatSelection,
-      selectedText,
-      null,
-      newEntityKey
-    );
+    currentContent,
+    thatSelection,
+    selectedText,
+    null,
+    newEntityKey
+  );
   const anchorOffset = thatSelection.getEndOffset() + selectedText.length;
   const focusOffset = thatSelection.getEndOffset() + selectedText.length;
   let endSelection = thatSelection.merge({
@@ -318,12 +318,12 @@ export function insertNoteInEditor(
     focusOffset,
   });
   newContentState = Modifier.replaceText(
-      newContentState,
-      endSelection,
-      '  ',
-      null,
-      null
-    );
+    newContentState,
+    endSelection,
+    '  ',
+    null,
+    null
+  );
   endSelection = thatSelection.merge({
     anchorOffset: anchorOffset + 1,
     focusOffset: focusOffset + 1,
@@ -351,7 +351,7 @@ export function deleteAssetFromEditor(
   const entities = Object.keys(blockMap)
   // iterate through blocks
   // todo : use getEntitiesRange ?
-  .map(blockMapId => blockMap[blockMapId]
+    .map(blockMapId => blockMap[blockMapId]
       .characterList
       // find characters attached to an entity
       .filter(chara => chara.entity !== null)
@@ -383,7 +383,8 @@ export function deleteAssetFromEditor(
         );
         const newEditor = EditorState.push(editorState, newContentState, 'replace-text');
         return callback(newEditor);
-      });
+      }
+    );
 
   }
   return callback(editorState);
@@ -406,7 +407,7 @@ export function deleteNoteFromEditor(
   const blockMap = contentState.getBlockMap().toJS();
   const entities = Object.keys(blockMap)
   // iterate through blocks
-  .map(blockMapId => blockMap[blockMapId]
+    .map(blockMapId => blockMap[blockMapId]
       .characterList
       // find characters attached to an entity
       .filter(chara => chara.entity !== null)
@@ -438,7 +439,8 @@ export function deleteNoteFromEditor(
         );
         const newEditor = EditorState.push(editorState, newContentState, 'replace-text');
         return callback(newEditor);
-      });
+      }
+    );
 
   }
   return callback(editorState);
@@ -484,13 +486,11 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     }
   });
   const notesToDelete = Object.keys(notes)
-  .filter((noteId) => {
-    const entity = noteEntities.find(
-      (noteEntity, index) => 
-        noteEntity.getData().noteId === noteId
-    );
-    return entity === undefined;
-  });
+    .filter((noteId) => {
+      const entity = noteEntities.find((noteEntity, index) => 
+        noteEntity.getData().noteId === noteId);
+      return entity === undefined;
+    });
 
   notesToDelete.forEach((noteId) => {
     delete notes[noteId];
@@ -530,25 +530,22 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
   const assetsEntities = entities
     .filter(thatEntity => 
       thatEntity.getType() === INLINE_ASSET ||
-        thatEntity.getType() === BLOCK_ASSET
-      );
+        thatEntity.getType() === BLOCK_ASSET);
 
   // filter unused assets
   return Object.keys(assets)
-  .filter((assetId) => {
-    const entity = assetsEntities.find(
-      (assetEntity, index) => 
-        assetEntity.getData().asset.id === assetId
-    );
-    return entity !== undefined;
-  })
-  .reduce((finalAssets, assetId) => {
-    const asset = assets[assetId];
-    return {
-      ...finalAssets,
-      [assetId]: asset
-    };
-  }, {});
+    .filter((assetId) => {
+      const entity = assetsEntities.find((assetEntity, index) => 
+        assetEntity.getData().asset.id === assetId);
+      return entity !== undefined;
+    })
+    .reduce((finalAssets, assetId) => {
+      const asset = assets[assetId];
+      return {
+        ...finalAssets,
+        [assetId]: asset
+      };
+    }, {});
 };
 
 /**
@@ -589,8 +586,8 @@ const getAssetEntity = (editorState, id) => {
  */
 export function getUnusedAssets(editorState, assets) {
   return Object
-  .keys(assets)
-  .filter(id => getAssetEntity(editorState, id) === undefined);
+    .keys(assets)
+    .filter(id => getAssetEntity(editorState, id) === undefined);
 }
 
 /**
@@ -601,8 +598,8 @@ export function getUnusedAssets(editorState, assets) {
  */
 export function getUsedAssets(editorState, assets) {
   return Object
-  .keys(assets)
-  .filter(id => getAssetEntity(editorState, id) !== undefined);
+    .keys(assets)
+    .filter(id => getAssetEntity(editorState, id) !== undefined);
 }
 
 /**
