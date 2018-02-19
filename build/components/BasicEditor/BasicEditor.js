@@ -718,7 +718,7 @@ var _initialiseProps = function _initialiseProps() {
       // dispatch new assets through context's emitter
       _this4.emitter.dispatchAssets(nextProps.assets);
       // update state-stored assets
-      _this4.setState({ assets: nextProps.assets });
+      // this.setState({ assets: nextProps.assets });/* eslint react/no-unused-state : 0 */
       // if the number of assets is changed it means
       // new entities might be present in the editor.
       // As, for optimizations reasons, draft-js editor does not update
@@ -740,7 +740,7 @@ var _initialiseProps = function _initialiseProps() {
       // dispatch new notes through context's emitter
       _this4.emitter.dispatchNotes(nextProps.notes);
       // update state-stored notes
-      _this4.setState({ notes: nextProps.notes });
+      _this4.setState({ notes: nextProps.notes }); /* eslint react/no-unused-state : 0 */
       // if the number of notes is changed it means
       // new entities might be present in the editor.
       // As, for optimizations reasons, draft-js editor does not update
@@ -812,9 +812,9 @@ var _initialiseProps = function _initialiseProps() {
     if (feedUndoStack === true) {
       _this4.feedUndoStack(editorState);
     }
-    if (typeof _this4.props.onEditorChange === 'function' /* && !this.props.readOnly */) {
-        _this4.props.onEditorChange(editorState);
-      }
+    if (typeof _this4.props.onEditorChange === 'function' && !_this4.props.readOnly) {
+      _this4.props.onEditorChange(editorState);
+    }
   };
 
   this.feedUndoStack = function (editorState) {
@@ -965,6 +965,7 @@ var _initialiseProps = function _initialiseProps() {
       return 'not-handled';
     }
     var editorState = _this4.props.editorState;
+
     var newEditorState = checkCharacterForState(editorState, character);
     if (editorState !== newEditorState) {
       _this4.onChange(newEditorState);
@@ -975,6 +976,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this._onTab = function (ev) {
     var editorState = _this4.props.editorState;
+
     var newEditorState = (0, _adjustBlockDepth2.default)(editorState, ev);
     if (newEditorState !== editorState) {
       _this4.onChange(newEditorState);
@@ -985,6 +987,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this._handleReturn = function (ev) {
     var editorState = _this4.props.editorState;
+
     var newEditorState = checkReturnForState(editorState, ev);
     if (editorState !== newEditorState) {
       _this4.onChange(newEditorState);
@@ -1144,7 +1147,7 @@ var _initialiseProps = function _initialiseProps() {
 
     if (!selectionRange) return;
 
-    if (!editorEle || !isParentOf(selectionRange.commonAncestorContainer, editorEle.refs.editor)) {
+    if (!editorEle || !isParentOf(selectionRange.commonAncestorContainer, editorEle.editor)) {
       return;
     }
 
@@ -1162,6 +1165,7 @@ var _initialiseProps = function _initialiseProps() {
     if (selectedBlock) {
       var blockBounds = selectedBlock.getBoundingClientRect();
       var editorBounds = _this4.state.editorBounds;
+
       if (!editorBounds) return;
       sideToolbarTop = rangeBounds.top || blockBounds.top;
       styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
@@ -1180,7 +1184,7 @@ var _initialiseProps = function _initialiseProps() {
           startNode = startNode.parentNode;
         }
         var popTop = rangeBounds.top - popoverSpacing;
-        left = rangeBounds.left;
+        left = rangeBounds.left; /* eslint prefer-destructuring:0 */
         styles.inlineToolbar.left = left;
         styles.inlineToolbar.top = popTop;
       } else {
@@ -1202,7 +1206,7 @@ var _initialiseProps = function _initialiseProps() {
 
     var stateMods = {};
 
-    var editorNode = _this4.editor && _this4.editor.refs.editor;
+    var editorNode = _this4.editor && _this4.editor.editor;
     stateMods.editorBounds = editorNode.getBoundingClientRect();
 
     if ((0, _keys2.default)(stateMods).length) {
@@ -1391,6 +1395,9 @@ var _initialiseProps = function _initialiseProps() {
         onNoteAdd: onNoteAdd
       }),
       _react2.default.createElement(_draftJs.Editor, (0, _extends3.default)({
+        editorState: stateEditorState,
+        onChange: onChange,
+
         blockRendererFn: _blockRenderer,
         spellCheck: true,
         readOnly: isActive ? readOnly : true,
@@ -1402,15 +1409,12 @@ var _initialiseProps = function _initialiseProps() {
         handleKeyCommand: _handleKeyCommand,
         handleBeforeInput: _handleBeforeInput,
         handleReturn: _handleReturn,
+        onBlur: _this4.onBlur,
         onTab: _onTab,
-
-        editorState: stateEditorState,
 
         handleDrop: _handleDrop,
 
-        onChange: onChange,
-        ref: bindEditorRef,
-        onBlur: _this4.onBlur
+        ref: bindEditorRef
 
       }, otherProps)),
       BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)

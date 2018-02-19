@@ -364,7 +364,7 @@ var Editor = function (_Component) {
        * callbacks
        */
       var onMainEditorChange = function onMainEditorChange(editor) {
-        return onEditorChange('main', editor);
+        onEditorChange('main', editor);
       };
       var onMainAssetRequest = function onMainAssetRequest(selection) {
         onAssetRequest('main', selection);
@@ -394,6 +394,7 @@ var Editor = function (_Component) {
         var noteContainer = document.getElementById('note-container-' + event);
         if (noteContainer) {
           var offsetTop = noteContainer.offsetTop;
+
           _this2.scrollTop(offsetTop);
         }
         if (typeof onNotePointerMouseClick === 'function') {

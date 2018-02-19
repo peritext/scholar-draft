@@ -370,7 +370,9 @@ export default class Editor extends Component {
     /**
      * callbacks
      */
-    const onMainEditorChange = editor => onEditorChange('main', editor);
+    const onMainEditorChange = (editor) => {
+      onEditorChange('main', editor);
+    };
     const onMainAssetRequest = (selection) => {
       onAssetRequest('main', selection);
     };
@@ -398,7 +400,7 @@ export default class Editor extends Component {
     const onNotePointerMouseClickHandler = (event) => {
       const noteContainer = document.getElementById(`note-container-${event}`);
       if (noteContainer) {
-        const offsetTop = noteContainer.offsetTop;
+        const { offsetTop } = noteContainer;
         this.scrollTop(offsetTop);
       }
       if (typeof onNotePointerMouseClick === 'function') {

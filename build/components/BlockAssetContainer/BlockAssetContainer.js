@@ -92,7 +92,9 @@ var BlockAssetContainer = function (_Component) {
         {
           className: 'scholar-draft-BlockAssetContainer',
           onMouseOver: onMOver,
-          onMouseOut: onMOut
+          onFocus: onMOver,
+          onMouseOut: onMOut,
+          onBlur: onMOut
         },
         _react2.default.createElement(RealAssetComponent, {
           assetId: assetId,

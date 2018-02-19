@@ -12,18 +12,20 @@ const NoteButton = ({
 
   const onMouseDown = event => event.preventDefault();
 
-  return (<div
-    className="scholar-draft-NoteButton"
-    onClick={onClick}
-    onMouseDown={onMouseDown}
-    data-tip={message}
-    {...otherProps}
-  >
-    {iconMap.note}
-    <ReactTooltip 
-      place="right"
-    />
-  </div>);
+  return (
+    <div
+      className="scholar-draft-NoteButton"
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      data-tip={message}
+      {...otherProps}
+    >
+      {iconMap.note}
+      <ReactTooltip 
+        place="right"
+      />
+    </div>
+  );
 };
 
 NoteButton.propTypes = {

@@ -81,7 +81,9 @@ var NotePointer = function (_Component) {
           className: 'scholar-draft-NotePointer',
           id: id,
           onMouseOver: onMouseOver,
+          onFocus: onMouseOver,
           onMouseOut: onMouseOut,
+          onBlur: onMouseOut,
           onClick: onMouseClick
         },
         _react2.default.createElement(

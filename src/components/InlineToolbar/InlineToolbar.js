@@ -55,18 +55,20 @@ export default class InlineToolbar extends Component {
       this.toolbar = toolbar;
     };
 
-    return (<div
-      className="scholar-draft-InlineToolbar"
-      ref={bindRef}
-      style={style}
-    >
-      {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
-        // Pass down some useful props to each button
-        updateEditorState,
-        editorState,
-        iconMap,
-        key /* eslint react/no-array-index-key:0 */
-      }))}
-    </div>);
+    return (
+      <div
+        className="scholar-draft-InlineToolbar"
+        ref={bindRef}
+        style={style}
+      >
+        {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
+          // Pass down some useful props to each button
+          updateEditorState,
+          editorState,
+          iconMap,
+          key /* eslint react/no-array-index-key:0 */
+        }))}
+      </div>
+    );
   }
 }

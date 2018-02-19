@@ -30,10 +30,6 @@ class InlineButton extends Component {
     iconMap: PropTypes.object
   };
 
-  static defaultProps = {
-    selected: false,
-  };
-
   /**
    * Checks wether current styling button is selected
    * @param {Record} editorState - editorState to check for selection

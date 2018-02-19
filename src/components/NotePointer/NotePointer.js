@@ -81,7 +81,9 @@ class NotePointer extends Component {
         className="scholar-draft-NotePointer"
         id={id}
         onMouseOver={onMouseOver}
+        onFocus={onMouseOver}
         onMouseOut={onMouseOut}
+        onBlur={onMouseOut}
         onClick={onMouseClick}
       >
         <span>{(note && note.order) || '*'}</span>

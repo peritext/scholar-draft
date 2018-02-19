@@ -136,8 +136,5 @@ InlineButton.propTypes = {
 
   iconMap: _propTypes2.default.object
 };
-InlineButton.defaultProps = {
-  selected: false
-};
 exports.default = InlineButton;
 module.exports = exports['default'];

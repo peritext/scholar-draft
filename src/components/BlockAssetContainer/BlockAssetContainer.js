@@ -109,7 +109,9 @@ class BlockAssetContainer extends Component {
       <div
         className="scholar-draft-BlockAssetContainer"
         onMouseOver={onMOver}
+        onFocus={onMOver}
         onMouseOut={onMOut}
+        onBlur={onMOut}
       >
         <RealAssetComponent
           assetId={assetId}

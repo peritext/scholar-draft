@@ -411,7 +411,7 @@ export default class BasicEditor extends Component {
       // dispatch new assets through context's emitter
       this.emitter.dispatchAssets(nextProps.assets);
       // update state-stored assets
-      this.setState({ assets: nextProps.assets });
+      // this.setState({ assets: nextProps.assets });/* eslint react/no-unused-state : 0 */
       // if the number of assets is changed it means
       // new entities might be present in the editor.
       // As, for optimizations reasons, draft-js editor does not update
@@ -434,7 +434,7 @@ export default class BasicEditor extends Component {
       // dispatch new notes through context's emitter
       this.emitter.dispatchNotes(nextProps.notes);
       // update state-stored notes
-      this.setState({ notes: nextProps.notes });
+      this.setState({ notes: nextProps.notes });/* eslint react/no-unused-state : 0 */
       // if the number of notes is changed it means
       // new entities might be present in the editor.
       // As, for optimizations reasons, draft-js editor does not update
@@ -549,7 +549,7 @@ export default class BasicEditor extends Component {
     if (feedUndoStack === true) {
       this.feedUndoStack(editorState);
     }
-    if (typeof this.props.onEditorChange === 'function'/* && !this.props.readOnly */) {
+    if (typeof this.props.onEditorChange === 'function' && !this.props.readOnly) {
       this.props.onEditorChange(editorState);
     }
   }
@@ -745,7 +745,7 @@ export default class BasicEditor extends Component {
     if (character !== ' ') {
       return 'not-handled';
     }
-    const editorState = this.props.editorState;
+    const { editorState } = this.props;
     const newEditorState = checkCharacterForState(editorState, character);
     if (editorState !== newEditorState) {
       this.onChange(newEditorState);
@@ -760,7 +760,7 @@ export default class BasicEditor extends Component {
    * @param {string} handled - whether the command has been handled or not
    */
   _onTab = (ev) => {
-    const editorState = this.props.editorState;
+    const { editorState } = this.props;
     const newEditorState = adjustBlockDepth(editorState, ev);
     if (newEditorState !== editorState) {
       this.onChange(newEditorState);
@@ -774,7 +774,7 @@ export default class BasicEditor extends Component {
    * @param {string} handled - whether the command has been handled or not
    */
   _handleReturn = (ev) => {
-    const editorState = this.props.editorState;
+    const { editorState } = this.props;
     const newEditorState = checkReturnForState(editorState, ev);
     if (editorState !== newEditorState) {
       this.onChange(newEditorState);
@@ -1019,7 +1019,7 @@ export default class BasicEditor extends Component {
     const selectedBlock = getSelectedBlockElement(selectionRange);
     if (selectedBlock) {
       const blockBounds = selectedBlock.getBoundingClientRect();
-      const editorBounds = this.state.editorBounds;
+      const { editorBounds } = this.state;
       if (!editorBounds) return;
       sideToolbarTop = rangeBounds.top || blockBounds.top;
       styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
@@ -1040,7 +1040,7 @@ export default class BasicEditor extends Component {
           startNode = startNode.parentNode;
         }
         const popTop = rangeBounds.top - popoverSpacing;
-        left = rangeBounds.left;
+        left = rangeBounds.left;/* eslint prefer-destructuring:0 */
         styles.inlineToolbar.left = left;
         styles.inlineToolbar.top = popTop;
       } else {
@@ -1229,7 +1229,6 @@ export default class BasicEditor extends Component {
         ...this.props.iconMap
       } : defaultIconMap;
 
-
     return (
       <div 
         className={editorClass + (readOnly ? '' : ' active')}
@@ -1273,6 +1272,9 @@ export default class BasicEditor extends Component {
           onNoteAdd={onNoteAdd}
         />
         <Editor
+          editorState={stateEditorState}
+          onChange={onChange}
+
           blockRendererFn={_blockRenderer}
           spellCheck
           readOnly={isActive ? readOnly : true}
@@ -1284,15 +1286,13 @@ export default class BasicEditor extends Component {
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
           handleReturn={_handleReturn}
+          onBlur={this.onBlur}
           onTab={_onTab}
 
-          editorState={stateEditorState}
 
           handleDrop={_handleDrop}
 
-          onChange={onChange}
           ref={bindEditorRef}
-          onBlur={this.onBlur}
 
           {...otherProps}
         />

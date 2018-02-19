@@ -97,7 +97,9 @@ export default class EditorExample extends Component {
         pages: '12-13'
       }
     },
-    focusedEditorId: 'main'
+    focusedEditorId: 'main',
+
+    assets: {}
   }
 
 
@@ -110,6 +112,13 @@ export default class EditorExample extends Component {
     document.addEventListener('copy', this.onCopy);
     document.addEventListener('cut', this.onCopy);
     document.addEventListener('paste', this.onPaste);
+  }
+
+  componentDidUpdate = (prevState) => {
+    if (this.state.resources !== prevState.resources || this.state.contextualizers !== prevState.contextualizers || this.state.contextualizations !== prevState.contextualizations) {
+      console.log('compute assets');
+      this.computeAssets();
+    }
   }
 
   componentWillUnmount = () => {
@@ -864,10 +873,105 @@ export default class EditorExample extends Component {
     }
   }
 
+  downloadState = () => {
+    const {
+      resources,
+      contextualizers,
+      contextualizations,
+      mainEditorState,
+      notes
+    } = this.state;
+
+    const state = {
+      content: convertToRaw(mainEditorState.getCurrentContent()),
+      resources,
+      contextualizers,
+      contextualizations,
+      notes: Object.keys(notes).reduce((result, noteId) => ({
+        ...result,
+        [noteId] : {
+          ...this.state.notes[noteId],
+          editorState: convertToRaw(notes[noteId].editorState.getCurrentContent())
+        }
+      }), {})
+    };
+    const blob = new Blob([JSON.stringify(state)], {type: 'text/plain;charset=utf-8'});
+    FileSaver.saveAs(blob, 'scholar-draft-example-state-with-notes.json');
+  }
+
+  loadExampleState = (mock) => {
+      const {
+        content,
+        resources,
+        contextualizations,
+        contextualizers,
+        notes,
+      } = mock;
+
+      this.setState({
+        mainEditorState: EditorState.createWithContent(convertFromRaw(content)),
+        resources,
+        contextualizers,
+        contextualizations,
+        notes: Object.keys(notes).reduce((result, noteId) => ({
+          ...result,
+          [noteId] : {
+            ...notes[noteId],
+            editorState: EditorState.createWithContent(convertFromRaw(notes[noteId].editorState))
+          }
+        }), {})
+      });
+     }
+
+  load300000ExampleState = () => {
+    this.loadExampleState(example300000);
+  }
+
+  load500000ExampleState = () => {
+    this.loadExampleState(example500000);
+  }
+
+  changeRenderingMode = () => {
+    const renderingMode = this.state.renderingMode === 'web' ? 'print': 'web';
+    this.setState({renderingMode});
+  }
+
+  computeAssets = () => {
+    const {
+      contextualizations,
+      contextualizers,
+      resources
+    } = this.state;
+
+    const assets = Object.keys(contextualizations)
+    .reduce((ass, id) => {
+      const contextualization = contextualizations[id];
+      const contextualizer = contextualizers[contextualization.contextualizerId]
+      return {
+        ...ass,
+        [id]: {
+          ...contextualization,
+          resource: resources[contextualization.resourceId],
+          contextualizer: contextualizer,
+          type: contextualizer ? contextualizer.type : INLINE_ASSET
+        }
+      }
+    }, {});
+    return assets;
+  }
+
+
   render = () => {
     const {
       onEditorChange,
       onAssetRequest,
+
+      downloadState,
+      loadExampleState,
+      load300000ExampleState,
+      load500000ExampleState,
+      changeRenderingMode,
+
 
 
       onAssetClick,
@@ -905,6 +1009,7 @@ export default class EditorExample extends Component {
       resources,
       focusedEditorId,
       renderingMode,
+      assets,
     } = state;
 
     const onResourceTitleChange = e => {
@@ -964,21 +1069,6 @@ export default class EditorExample extends Component {
       // });
     };
 
-    const assets = Object.keys(contextualizations)
-    .reduce((ass, id) => {
-      const contextualization = contextualizations[id];
-      const contextualizer = contextualizers[contextualization.contextualizerId]
-      return {
-        ...ass,
-        [id]: {
-          ...contextualization,
-          resource: resources[contextualization.resourceId],
-          contextualizer: contextualizer,
-          type: contextualizer ? contextualizer.type : INLINE_ASSET
-        }
-      }
-    }, {});
-
     const assetChoiceProps = {
       options: ['asset 1', 'asset 2', 'asset 3'],
       addPlainText: (text) => {
@@ -1012,62 +1102,6 @@ export default class EditorExample extends Component {
           }
         });
       }
-    }
-
-    // utils
-    const downloadState = () => {
-      const state = {
-        content: convertToRaw(this.state.mainEditorState.getCurrentContent()),
-        resources,
-        contextualizers,
-        contextualizations,
-        notes: Object.keys(this.state.notes).reduce((result, noteId) => ({
-          ...result,
-          [noteId] : {
-            ...this.state.notes[noteId],
-            editorState: convertToRaw(this.state.notes[noteId].editorState.getCurrentContent())
-          }
-        }), {})
-      };
-      const blob = new Blob([JSON.stringify(state)], {type: 'text/plain;charset=utf-8'});
-      FileSaver.saveAs(blob, 'scholar-draft-example-state-with-notes.json');
-     }
-
-    const loadExampleState = (mock) => {
-      const {
-        content,
-        resources,
-        contextualizations,
-        contextualizers,
-        notes,
-      } = mock;
-
-      this.setState({
-        mainEditorState: EditorState.createWithContent(convertFromRaw(content)),
-        resources,
-        contextualizers,
-        contextualizations,
-        notes: Object.keys(notes).reduce((result, noteId) => ({
-          ...result,
-          [noteId] : {
-            ...notes[noteId],
-            editorState: EditorState.createWithContent(convertFromRaw(notes[noteId].editorState))
-          }
-        }), {})
-      });
-     }
-
-    const load300000ExampleState = () => {
-      loadExampleState(example300000);
-    }
-
-    const load500000ExampleState = () => {
-      loadExampleState(example500000);
-    }
-
-    const changeRenderingMode = () => {
-      const renderingMode = this.state.renderingMode === 'web' ? 'print': 'web';
-      this.setState({renderingMode});
     }
 
     return (

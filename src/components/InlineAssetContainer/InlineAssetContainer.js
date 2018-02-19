@@ -106,7 +106,9 @@ class InlineAssetContainer extends Component {
       <span
         className="scholar-draft-InlineAssetContainer"
         onMouseOver={onMOver}
+        onFocus={onMOver}
         onMouseOut={onMOut}
+        onBlur={onMOut}
       >
         <AssetComponent
           assetId={assetId}

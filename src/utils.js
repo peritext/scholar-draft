@@ -478,7 +478,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   // attribute orders to notes
   let order = 0;
   noteEntities.forEach((entity) => {
-    const noteId = entity.getData().noteId;
+    const { noteId } = entity.getData();
     notesOrder.push(noteId);
     order++;
     if (notes[noteId]) {

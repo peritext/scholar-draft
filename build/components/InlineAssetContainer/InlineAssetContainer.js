@@ -89,7 +89,9 @@ var InlineAssetContainer = function (_Component) {
         {
           className: 'scholar-draft-InlineAssetContainer',
           onMouseOver: onMOver,
-          onMouseOut: onMOut
+          onFocus: onMOver,
+          onMouseOut: onMOut,
+          onBlur: onMOut
         },
         _react2.default.createElement(AssetComponent, {
           assetId: assetId,

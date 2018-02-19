@@ -53,16 +53,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import SVGInline from 'react-svg-inline';
 
 exports.default = {
-  asset: _react2.default.createElement('img', { src: _asset2.default }),
-  bold: _react2.default.createElement('img', { src: _bold2.default }),
-  codeblock: _react2.default.createElement('img', { src: _codeblock2.default }),
-  h1: _react2.default.createElement('img', { src: _h2.default }),
-  h2: _react2.default.createElement('img', { src: _h4.default }),
-  italic: _react2.default.createElement('img', { src: _italic2.default }),
-  note: _react2.default.createElement('img', { src: _note2.default }),
-  orderedlist: _react2.default.createElement('img', { src: _orderedlist2.default }),
-  quoteblock: _react2.default.createElement('img', { src: _quoteblock2.default }),
-  unorderedlist: _react2.default.createElement('img', { src: _unorderedlist2.default })
+  asset: _react2.default.createElement('img', { alt: 'asset-icon', src: _asset2.default }),
+  bold: _react2.default.createElement('img', { alt: 'bold-icon', src: _bold2.default }),
+  codeblock: _react2.default.createElement('img', { alt: 'codeblock-icon', src: _codeblock2.default }),
+  h1: _react2.default.createElement('img', { alt: 'h1-icon', src: _h2.default }),
+  h2: _react2.default.createElement('img', { alt: 'h2-icon', src: _h4.default }),
+  italic: _react2.default.createElement('img', { alt: 'italic-icon', src: _italic2.default }),
+  note: _react2.default.createElement('img', { alt: 'note-icon', src: _note2.default }),
+  orderedlist: _react2.default.createElement('img', { alt: 'orderedlist-icon', src: _orderedlist2.default }),
+  quoteblock: _react2.default.createElement('img', { alt: 'quoteblock-icon', src: _quoteblock2.default }),
+  unorderedlist: _react2.default.createElement('img', { alt: 'unorderedlist-icon', src: _unorderedlist2.default })
 }; /* eslint jsx-a11y/img-has-alt: 0 */
 
 module.exports = exports['default'];

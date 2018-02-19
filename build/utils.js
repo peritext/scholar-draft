@@ -409,7 +409,9 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
   // attribute orders to notes
   var order = 0;
   noteEntities.forEach(function (entity) {
-    var noteId = entity.getData().noteId;
+    var _entity$getData = entity.getData(),
+        noteId = _entity$getData.noteId;
+
     notesOrder.push(noteId);
     order++;
     if (notes[noteId]) {
