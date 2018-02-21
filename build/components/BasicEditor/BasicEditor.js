@@ -704,7 +704,7 @@ var _initialiseProps = function _initialiseProps() {
 
       stateMods = (0, _extends3.default)({}, stateMods, {
         readOnly: false,
-        editorState: _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this4.createDecorator())
+        editorState: nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this4.createDecorator()) : _this4.generateEmptyEditor()
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       });
       _this4.focus();

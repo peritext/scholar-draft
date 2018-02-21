@@ -398,10 +398,10 @@ export default class BasicEditor extends Component {
       stateMods = {
         ...stateMods,
         readOnly: false,
-        editorState: EditorState.createWithContent(
-          nextProps.editorState.getCurrentContent(), 
+        editorState: nextProps.editorState ? EditorState.createWithContent(
+           nextProps.editorState.getCurrentContent(), 
           this.createDecorator()
-        ),
+        ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       };
       this.focus();
