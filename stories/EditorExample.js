@@ -73,7 +73,7 @@ export default class EditorExample extends Component {
     assetRequest: false,
     assetRequestType: undefined,
     // all these should be handled by upstream logic in real applications
-    mainEditorState: undefined,
+    mainEditorState: EditorState.createEmpty(),
     renderingMode: 'web',
     notes: {},
     inlineAssetComponents,
@@ -97,7 +97,7 @@ export default class EditorExample extends Component {
         pages: '12-13'
       }
     },
-    focusedEditorId: 'main',
+    focusedEditorId: undefined,
 
     assets: {}
   }
@@ -1038,12 +1038,13 @@ export default class EditorExample extends Component {
 
     const onClick = (event, contentId = 'main') => {
       if (this.state.focusedEditorId !== contentId) {
-        const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].contents;
-        const selection = editorState.getSelection();
-        this.setState({
-          focusedEditorId: contentId
-        });
-        this.editor.focus(contentId, selection);
+       const editorState = contentId === 'main' ? this.state.mainEditorState :
+       this.state.notes[contentId].contents;
+       const selection = editorState.getSelection();
+       this.setState({
+        focusedEditorId: contentId
+       });
+       this.editor.focus(contentId, selection);
       }
     }
 
