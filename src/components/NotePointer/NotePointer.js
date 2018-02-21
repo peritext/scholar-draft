@@ -55,21 +55,21 @@ class NotePointer extends Component {
 
     const onMouseOver = (event) => {
       event.stopPropagation();
-      if (typeof onNotePointerMouseOver === 'function') {
+      if (typeof onNotePointerMouseOver === 'function' && note) {
         onNotePointerMouseOver(note.id, note, event);
       }
     };
 
     const onMouseOut = (event) => {
       event.stopPropagation();
-      if (typeof onNotePointerMouseOut === 'function') {
+      if (typeof onNotePointerMouseOut === 'function' && note) {
         onNotePointerMouseOut(note.id, note, event);
       }
     };
 
     const onMouseClick = (event) => {
       event.stopPropagation();
-      if (typeof onNotePointerMouseClick === 'function') {
+      if (typeof onNotePointerMouseClick === 'function' && note) {
         onNotePointerMouseClick(note.id, note, event);
       }
     };
