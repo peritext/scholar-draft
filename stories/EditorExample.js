@@ -814,15 +814,7 @@ export default class EditorExample extends Component {
       notes: newNotes,
       notesOrder,
       mainEditorState,
-      focusedEditorId: id
     });
-
-    // setTimeout(() => {
-    //   this.setState({
-    //     focusedEditorId: id
-    //   });
-      setTimeout(() => this.editor.focus(id), 100);
-    // });
   }
 
   deleteNote = id => {
