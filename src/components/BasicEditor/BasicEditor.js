@@ -372,32 +372,51 @@ export default class BasicEditor extends Component {
     });
   }
 
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = (nextProps, nextState) => {
+    let stateMods = {};
     // hiding the toolbars when editor is set to inactive
     if (this.props.isActive && !nextProps.isActive) {
-      this.setState({
-        styles: {
-          sideToolbar: {
-            display: 'none'
-          },
-          inlineToolbar: {
-            display: 'none',
-          }
-        },
-      });
+
       // locking the draft-editor if asset choice component is not open
       if (!nextProps.assetRequestPosition) {
-        this.setState({
-          readOnly: true
-        });
+        stateMods = {
+          ...stateMods,
+          readOnly: true,
+          styles: {
+            sideToolbar: {
+              display: 'none'
+            },
+            inlineToolbar: {
+              display: 'none',
+            }
+          },
+        };
       }
-    }
+    } else if (!this.props.isActive && nextProps.isActive) {
+      const selection = this.state.editorState.getSelection();
+
+      stateMods = {
+        ...stateMods,
+        readOnly: false,
+        editorState: EditorState.createWithContent(
+          nextProps.editorState.getCurrentContent(), 
+          this.createDecorator()
+        ),
+        // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
+      };
+      this.focus();
+      setTimeout(() => {
+        this.setState({
+          editorState: EditorState.acceptSelection(this.state.editorState, selection),
+        });
+      });
     // updating locally stored editorState when the one given by props
     // has changed
-    if (this.props.editorState !== nextProps.editorState) {
-      this.setState({
+    } else if (this.props.editorState !== nextProps.editorState) {
+      stateMods = {
+        ...stateMods,
         editorState: nextProps.editorState || this.generateEmptyEditor()
-      });
+      };
     }
 
 
@@ -434,7 +453,10 @@ export default class BasicEditor extends Component {
       // dispatch new notes through context's emitter
       this.emitter.dispatchNotes(nextProps.notes);
       // update state-stored notes
-      this.setState({ notes: nextProps.notes });/* eslint react/no-unused-state : 0 */
+      stateMods = { 
+        ...stateMods,
+        notes: nextProps.notes
+      };/* eslint react/no-unused-state : 0 */
       // if the number of notes is changed it means
       // new entities might be present in the editor.
       // As, for optimizations reasons, draft-js editor does not update
@@ -455,7 +477,10 @@ export default class BasicEditor extends Component {
       // dispatch new notes through context's emitter
       this.emitter.dispatchAssetChoiceProps(nextProps.assetChoiceProps);
     }
-    
+    // apply state changes
+    if (Object.keys(stateMods).length > 0) {
+      this.setState(stateMods);
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -997,6 +1022,7 @@ export default class BasicEditor extends Component {
 
     if (!selectionRange) return;
 
+
     if (
       !editorEle 
       || !isParentOf(selectionRange.commonAncestorContainer, editorEle.editor)
@@ -1050,6 +1076,7 @@ export default class BasicEditor extends Component {
       styles.sideToolbar.display = 'none';
       styles.inlineToolbar.display = 'none';
     }
+
 
     if (JSON.stringify(styles) !== JSON.stringify(this.state.styles)) {
       this.setState({
@@ -1169,15 +1196,16 @@ export default class BasicEditor extends Component {
 
     // unlocking draft-js editor when clicked
     const onMainClick = (event) => {
+      event.stopPropagation();
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      if (this.state.readOnly) {
-        this.setState({
-          readOnly: false
-        });
-      }
-      this.focus(event);
+      // if (this.state.readOnly) {
+      //   this.setState({
+      //     readOnly: false
+      //   });
+      // }
+      // this.focus(event);
     };
 
     // locking draft-js editor when user interacts with asset-choice component
@@ -1190,17 +1218,17 @@ export default class BasicEditor extends Component {
     // unlocking draft-js editor when asset choice is abandonned
     const onOnAssetRequestCancel = () => {
       onAssetRequestCancel();
-      this.setState({
-        readOnly: false
-      });
+      // this.setState({
+      //   readOnly: false
+      // });
     };
 
     // unlocking draft-js editor when asset is choosen
     const onOnAssetChoice = (asset) => {
       onAssetChoice(asset);
-      this.setState({
-        readOnly: false
-      });
+      // this.setState({
+      //   readOnly: false
+      // });
     };
 
     /**
