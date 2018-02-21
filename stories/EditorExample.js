@@ -705,9 +705,9 @@ export default class EditorExample extends Component {
             console.info('focusing on editor id : ', assetRequestContentId);
             this.setState({
                 focusedEditorId: assetRequestContentId,
-            });
+            },);
             // this.editor.focus(assetRequestContentId);
-        });
+        }, 100);
     }
 
     updateResourceTitle = title => {
