@@ -13,10 +13,6 @@ var _stringify = require('babel-runtime/core-js/json/stringify');
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
-var _extends2 = require('babel-runtime/helpers/extends');
-
-var _extends3 = _interopRequireDefault(_extends2);
-
 var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
@@ -24,6 +20,10 @@ var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
@@ -680,30 +680,43 @@ var _initialiseProps = function _initialiseProps() {
     };
   };
 
-  this.componentWillReceiveProps = function (nextProps) {
+  this.componentWillReceiveProps = function (nextProps, nextState) {
+    var stateMods = {};
     // hiding the toolbars when editor is set to inactive
     if (_this4.props.isActive && !nextProps.isActive) {
-      _this4.setState({
-        styles: {
-          sideToolbar: {
-            display: 'none'
-          },
-          inlineToolbar: {
-            display: 'none'
-          }
-        }
-      });
+
       // locking the draft-editor if asset choice component is not open
       if (!nextProps.assetRequestPosition) {
-        _this4.setState({
-          readOnly: true
+        stateMods = (0, _extends3.default)({}, stateMods, {
+          readOnly: true,
+          styles: {
+            sideToolbar: {
+              display: 'none'
+            },
+            inlineToolbar: {
+              display: 'none'
+            }
+          }
         });
       }
-    }
-    // updating locally stored editorState when the one given by props
-    // has changed
-    if (_this4.props.editorState !== nextProps.editorState) {
-      _this4.setState({
+    } else if (!_this4.props.isActive && nextProps.isActive) {
+      var selection = _this4.state.editorState.getSelection();
+
+      stateMods = (0, _extends3.default)({}, stateMods, {
+        readOnly: false,
+        editorState: nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this4.createDecorator()) : _this4.generateEmptyEditor()
+        // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
+      });
+      _this4.focus();
+      setTimeout(function () {
+        _this4.setState({
+          editorState: _draftJs.EditorState.acceptSelection(_this4.state.editorState, selection)
+        });
+      });
+      // updating locally stored editorState when the one given by props
+      // has changed
+    } else if (_this4.props.editorState !== nextProps.editorState) {
+      stateMods = (0, _extends3.default)({}, stateMods, {
         editorState: nextProps.editorState || _this4.generateEmptyEditor()
       });
     }
@@ -740,7 +753,9 @@ var _initialiseProps = function _initialiseProps() {
       // dispatch new notes through context's emitter
       _this4.emitter.dispatchNotes(nextProps.notes);
       // update state-stored notes
-      _this4.setState({ notes: nextProps.notes }); /* eslint react/no-unused-state : 0 */
+      stateMods = (0, _extends3.default)({}, stateMods, {
+        notes: nextProps.notes
+      }); /* eslint react/no-unused-state : 0 */
       // if the number of notes is changed it means
       // new entities might be present in the editor.
       // As, for optimizations reasons, draft-js editor does not update
@@ -757,6 +772,10 @@ var _initialiseProps = function _initialiseProps() {
     if (_this4.props.assetChoiceProps !== nextProps.assetChoiceProps) {
       // dispatch new notes through context's emitter
       _this4.emitter.dispatchAssetChoiceProps(nextProps.assetChoiceProps);
+    }
+    // apply state changes
+    if ((0, _keys2.default)(stateMods).length > 0) {
+      _this4.setState(stateMods);
     }
   };
 
@@ -1295,15 +1314,16 @@ var _initialiseProps = function _initialiseProps() {
 
     // unlocking draft-js editor when clicked
     var onMainClick = function onMainClick(event) {
+      event.stopPropagation();
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      if (_this4.state.readOnly) {
-        _this4.setState({
-          readOnly: false
-        });
-      }
-      _this4.focus(event);
+      // if (this.state.readOnly) {
+      //   this.setState({
+      //     readOnly: false
+      //   });
+      // }
+      // this.focus(event);
     };
 
     // locking draft-js editor when user interacts with asset-choice component
@@ -1316,17 +1336,17 @@ var _initialiseProps = function _initialiseProps() {
     // unlocking draft-js editor when asset choice is abandonned
     var onOnAssetRequestCancel = function onOnAssetRequestCancel() {
       onAssetRequestCancel();
-      _this4.setState({
-        readOnly: false
-      });
+      // this.setState({
+      //   readOnly: false
+      // });
     };
 
     // unlocking draft-js editor when asset is choosen
     var onOnAssetChoice = function onOnAssetChoice(asset) {
       onAssetChoice(asset);
-      _this4.setState({
-        readOnly: false
-      });
+      // this.setState({
+      //   readOnly: false
+      // });
     };
 
     /**
