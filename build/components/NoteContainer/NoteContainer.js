@@ -144,7 +144,6 @@ var NoteContainer = function (_Component) {
             editorState: note.editorState || note.contents,
             contentId: contentId,
             assets: assets,
-            notes: notes,
             readOnly: readOnly,
             ref: bindRef,
             onClick: onClick,
