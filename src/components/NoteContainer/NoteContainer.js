@@ -14,7 +14,6 @@ class NoteContainer extends Component {
   static propTypes= {
     note: PropTypes.object,
     assets: PropTypes.object,
-    notes: PropTypes.object,
     assetRequestPosition: PropTypes.object,
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
@@ -60,7 +59,6 @@ class NoteContainer extends Component {
     const {
       note,
       assets,
-      notes,
       assetRequestPosition,
       addTextAtCurrentSelection,
       contentId,
@@ -114,7 +112,6 @@ class NoteContainer extends Component {
       event.stopPropagation();
       onClickScrollToNotePointer(note.id);
     };
-    
     return note ? (
       <section 
         className="scholar-draft-NoteContainer"

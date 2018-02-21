@@ -60,7 +60,6 @@ var NoteContainer = function (_Component) {
       var _this$props = _this.props,
           note = _this$props.note,
           assets = _this$props.assets,
-          notes = _this$props.notes,
           assetRequestPosition = _this$props.assetRequestPosition,
           addTextAtCurrentSelection = _this$props.addTextAtCurrentSelection,
           contentId = _this$props.contentId,
@@ -110,7 +109,6 @@ var NoteContainer = function (_Component) {
         event.stopPropagation();
         onClickScrollToNotePointer(note.id);
       };
-
       return note ? _react2.default.createElement(
         'section',
         {
@@ -189,7 +187,6 @@ var NoteContainer = function (_Component) {
 NoteContainer.propTypes = {
   note: _propTypes2.default.object,
   assets: _propTypes2.default.object,
-  notes: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
