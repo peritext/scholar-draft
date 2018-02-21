@@ -699,14 +699,15 @@ export default class EditorExample extends Component {
         } else {
             newState.notes[assetRequestContentId].contents = newEditorState;
         }
+        newState.focusedEditorId = undefined;
         this.setState(newState);
         setTimeout(() => {
             console.info('focusing on editor id : ', assetRequestContentId);
             this.setState({
                 focusedEditorId: assetRequestContentId,
             });
-            this.editor.focus(assetRequestContentId);
-        }, 1);
+            // this.editor.focus(assetRequestContentId);
+        });
     }
 
     updateResourceTitle = title => {
@@ -823,6 +824,9 @@ export default class EditorExample extends Component {
     }
 
     deleteNote = id => {
+      this.setState({
+        focusedEditorId: undefined
+      })
         // remove related entity in main editor
         deleteNoteFromEditor(this.state.mainEditorState, id, mainEditorState => {
             // remove note
@@ -834,7 +838,7 @@ export default class EditorExample extends Component {
                 focusedEditorId: 'main',
             });
         });
-        this.editor.focus('main');
+        // this.editor.focus('main');
     }
 
     addTextAtCurrentSelection = (text) => {
