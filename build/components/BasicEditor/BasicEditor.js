@@ -496,11 +496,10 @@ var _initialiseProps = function _initialiseProps() {
         editorState: nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor()
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       });
-      console.log('will focus after given focus');
-      _this2.focus();
+      _this2.focus(undefined);
       setTimeout(function () {
         _this2.setState({
-          editorState: _draftJs.EditorState.acceptSelection(_this2.state.editorState, selection)
+          editorState: _draftJs.EditorState.forceSelection(_this2.state.editorState, selection)
         });
       });
       // updating locally stored editorState when the one given by props
@@ -1031,12 +1030,11 @@ var _initialiseProps = function _initialiseProps() {
     if ((0, _keys2.default)(stateMods).length) {
       _this2.setState(stateMods);
     }
-
     setTimeout(function () {
       if (!_this2.state.readOnly) {
         editorNode.focus();
       }
-    }, 1);
+    });
   };
 
   this.render = function () {

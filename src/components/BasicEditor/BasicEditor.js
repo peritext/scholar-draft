@@ -252,11 +252,10 @@ export default class BasicEditor extends Component {
         ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       };
-      console.log('will focus after given focus');
-      this.focus();
+      this.focus(undefined);
       setTimeout(() => {
         this.setState({
-          editorState: EditorState.acceptSelection(this.state.editorState, selection),
+          editorState: EditorState.forceSelection(this.state.editorState, selection),
         });
       });
     // updating locally stored editorState when the one given by props
@@ -947,12 +946,11 @@ export default class BasicEditor extends Component {
     if (Object.keys(stateMods).length) {
       this.setState(stateMods);
     }
-
     setTimeout(() => {
       if (!this.state.readOnly) {
         editorNode.focus();
       }
-    }, 1);
+    });
 
   };
 
