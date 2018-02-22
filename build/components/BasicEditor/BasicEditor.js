@@ -389,10 +389,8 @@ var BasicEditor = function (_Component) {
       var _this3 = this;
 
       setTimeout(function () {
-        _this3.setState({
-          readOnly: false
-        });
         _this3.forceRender(_this3.props);
+        _this3.focus();
       });
     }
   }, {
@@ -708,11 +706,13 @@ var _initialiseProps = function _initialiseProps() {
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       });
       _this4.focus();
-      setTimeout(function () {
-        _this4.setState({
-          editorState: _draftJs.EditorState.acceptSelection(_this4.state.editorState, selection)
-        });
-      });
+      // setTimeout(() => {
+      //   this.setState({
+      //     readOnly: false,
+      //     editorState: EditorState.acceptSelection(this.state.editorState, selection),
+      //   });
+      //   // this.focus();
+      // });
       // updating locally stored editorState when the one given by props
       // has changed
     } else if (_this4.props.editorState !== nextProps.editorState) {
@@ -832,6 +832,7 @@ var _initialiseProps = function _initialiseProps() {
       _this4.feedUndoStack(editorState);
     }
     if (typeof _this4.props.onEditorChange === 'function' && !_this4.props.readOnly) {
+      console.log('updating', editorState.getSelection().getStartOffset());
       _this4.props.onEditorChange(editorState);
     }
   };

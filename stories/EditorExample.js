@@ -33,7 +33,7 @@ import Editor, {
 } from '../src';
 
 import example300000 from './mocks/scholar-draft-example-state-with-notes-300000.json';
-import example500000 from './mocks/scholar-draft-example-state-with-notes-500000-30entities.json'
+import example500000 from './mocks/scholar-draft-example-state-with-notes-500000-30entities.json';
 
 const {
     NOTE_POINTER,
@@ -138,8 +138,8 @@ export default class EditorExample extends Component {
         this.updateNotesFromEditor(state);
     }
 
-    componentWillUpdate() {
-        // console.time('editor update time');
+    componentWillUpdate = () => {
+        console.time('editor update time');
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -147,7 +147,7 @@ export default class EditorExample extends Component {
             // this.cleanStuffFromEditorInspection(this.state);
             this.debouncedCleanStuffFromEditorInspection(this.state);
         }
-        // console.timeEnd('editor update time');
+        console.timeEnd('editor update time');
     }
 
     /**
@@ -820,7 +820,8 @@ export default class EditorExample extends Component {
             mainEditorState,
         });
 
-        // setTimeout(() => this.setState({focusedEditorId: id}), 100);
+        this.setState({focusedEditorId: undefined})
+        setTimeout(() => this.setState({focusedEditorId: id}));
     }
 
     deleteNote = id => {
