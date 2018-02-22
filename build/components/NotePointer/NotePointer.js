@@ -51,6 +51,13 @@ var NotePointer = function (_Component) {
           onNotePointerMouseOut = _this$context.onNotePointerMouseOut,
           onNotePointerMouseClick = _this$context.onNotePointerMouseClick;
 
+      // note:  it was necessary to display component children
+      // to avoid weird selection bugs implying this component.
+      // this should be solved with draft-js@0.11
+      // see https://github.com/facebook/draft-js/issues/627
+
+      var children = _this.props.children;
+
 
       var onMouseOver = function onMouseOver(event) {
         event.stopPropagation();
@@ -89,7 +96,8 @@ var NotePointer = function (_Component) {
         _react2.default.createElement(
           'span',
           null,
-          note && note.order || '*'
+          note && note.order || '*',
+          children
         )
       );
     };

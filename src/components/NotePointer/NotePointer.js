@@ -53,6 +53,14 @@ class NotePointer extends Component {
       onNotePointerMouseClick,
     } = this.context;
 
+    // note:  it was necessary to display component children
+    // to avoid weird selection bugs implying this component.
+    // this should be solved with draft-js@0.11
+    // see https://github.com/facebook/draft-js/issues/627
+    const {
+      children/* eslint react/prop-types : 0 */
+    } = this.props;
+
     const onMouseOver = (event) => {
       event.stopPropagation();
       if (typeof onNotePointerMouseOver === 'function' && note) {
@@ -86,7 +94,7 @@ class NotePointer extends Component {
         onBlur={onMouseOut}
         onClick={onMouseClick}
       >
-        <span>{(note && note.order) || '*'}</span>
+        <span>{(note && note.order) || '*'}{children}</span>
       </sup>
     );
   }
