@@ -363,7 +363,7 @@ export default class BasicEditor extends Component {
    * Component livecycle hooks
    */
 
-  componentDidMount() {
+  componentDidMount = () => {
     setTimeout(() => {
       this.setState({
         readOnly: false
@@ -483,8 +483,8 @@ export default class BasicEditor extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return true;
+  shouldComponentUpdate = (nextProps, nextState) => 
+    true
     // if (
     //   this.state.readOnly !== nextState.readOnly ||
     //   this.state.editorState !== nextProps.editorState ||
@@ -493,9 +493,9 @@ export default class BasicEditor extends Component {
     //   return true;
     // }
     // return false;
-  }
+  
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate = (prevProps) => {
     this.debouncedUpdateSelection();
     if (
       this.props.editorState !== prevProps.editorState && 
@@ -664,7 +664,6 @@ export default class BasicEditor extends Component {
     );
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
-
     this.setState({ 
       editorState: selectedEditorState,
     });
@@ -910,7 +909,7 @@ export default class BasicEditor extends Component {
         const asset = assets[id];
         const AssetComponent = asset && components[asset.type] ? 
           components[asset.type] 
-          : () => (<div />);
+          : () => (<span />);
 
         let props = {};
         if (id) {
