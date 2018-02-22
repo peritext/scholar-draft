@@ -139,7 +139,7 @@ export default class EditorExample extends Component {
     }
 
     componentWillUpdate = () => {
-        console.time('editor update time');
+        // console.time('editor update time');
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -147,7 +147,7 @@ export default class EditorExample extends Component {
             // this.cleanStuffFromEditorInspection(this.state);
             this.debouncedCleanStuffFromEditorInspection(this.state);
         }
-        console.timeEnd('editor update time');
+        // console.timeEnd('editor update time');
     }
 
     /**
@@ -667,7 +667,6 @@ export default class EditorExample extends Component {
             contextualizations
         } = this.state;
 
-        console.info('inserting contextualization');
 
         const assetRequestContentId = contentId ||  this.state.assetRequestContentId;
         const id = generateId();
@@ -705,6 +704,7 @@ export default class EditorExample extends Component {
             console.info('focusing on editor id : ', assetRequestContentId);
             this.setState({
                 focusedEditorId: assetRequestContentId,
+                assets: this.computeAssets(this.state)
             },);
             // this.editor.focus(assetRequestContentId);
         }, 100);
