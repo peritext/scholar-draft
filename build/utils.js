@@ -3,7 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateAssetsFromEditors = exports.updateNotesFromEditor = undefined;
+exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = undefined;
+
+var _map = require('babel-runtime/core-js/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
@@ -26,10 +34,38 @@ exports.deleteNoteFromEditor = deleteNoteFromEditor;
 exports.getUnusedAssets = getUnusedAssets;
 exports.getUsedAssets = getUsedAssets;
 exports.insertFragment = insertFragment;
+exports.checkCharacterForState = checkCharacterForState;
+exports.checkReturnForState = checkReturnForState;
 
 var _draftJs = require('draft-js');
 
+var _uuid = require('uuid');
+
 var _constants = require('./constants');
+
+var _handleBlockType = require('./modifiers/handleBlockType');
+
+var _handleBlockType2 = _interopRequireDefault(_handleBlockType);
+
+var _handleInlineStyle = require('./modifiers/handleInlineStyle');
+
+var _handleInlineStyle2 = _interopRequireDefault(_handleInlineStyle);
+
+var _handleNewCodeBlock = require('./modifiers/handleNewCodeBlock');
+
+var _handleNewCodeBlock2 = _interopRequireDefault(_handleNewCodeBlock);
+
+var _insertEmptyBlock = require('./modifiers/insertEmptyBlock');
+
+var _insertEmptyBlock2 = _interopRequireDefault(_insertEmptyBlock);
+
+var _leaveList = require('./modifiers/leaveList');
+
+var _leaveList2 = _interopRequireDefault(_leaveList);
+
+var _insertText = require('./modifiers/insertText');
+
+var _insertText2 = _interopRequireDefault(_insertText);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40,11 +76,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {object} selection - the selection to use for targetting asset insertion
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
-/**
- * This module exports a series of draft-js utils
- * to manipulate scholar-draft state upstream to component's implementation
- * @module scholar-draft/utils
- */
+
+
+// modifiers helping to modify editorState
 function insertAssetInEditor(editorState, asset, selection) {
   var currentContent = editorState.getCurrentContent();
   var activeSelection = editorState.getSelection();
@@ -134,6 +168,11 @@ function insertAssetInEditor(editorState, asset, selection) {
  * @param {object} asset - the asset data to embed withing draft-js new entity
  * @param {object} selection - the selection to use for targetting asset insertion
  * @return {ImmutableRecord} updatedEditorState - the new editor state
+ */
+/**
+ * This module exports a series of draft-js utils
+ * to manipulate scholar-draft state upstream to component's implementation
+ * @module scholar-draft/utils
  */
 function insertInlineAssetInEditor(editorState, asset, selection) {
   var currentContent = editorState.getCurrentContent();
@@ -540,3 +579,162 @@ function insertFragment(editorState, fragment) {
   var newContent = _draftJs.Modifier.replaceWithFragment(editorState.getCurrentContent(), editorState.getSelection(), fragment);
   return _draftJs.EditorState.push(editorState, newContent, 'insert-fragment');
 }
+
+/**
+ * Gets the block element corresponding to a given range of selection
+ * @param {object} range - the input range to look in
+ * @return {object} node
+ */
+var getSelectedBlockElement = exports.getSelectedBlockElement = function getSelectedBlockElement(range) {
+  var node = range.startContainer;
+  do {
+    if (node.getAttribute && (node.getAttribute('data-block') == 'true' || node.getAttribute('data-contents') == 'true')) {
+      return node;
+    }
+    node = node.parentNode;
+  } while (node != null);
+  return null;
+};
+
+/**
+ * Gets the current window's selection range (start and end)
+ * @return {object} selection range
+ */
+var getSelectionRange = exports.getSelectionRange = function getSelectionRange() {
+  var selection = window.getSelection();
+  if (selection.rangeCount === 0) return null;
+  return selection.getRangeAt(0);
+};
+
+/**
+ * Checks if a DOM element is parent of another one
+ * @param {inputEle} DOMEl - the presumed child
+ * @param {inputEle} DOMEl - the presumed parent
+ * @return {boolean} isParent - whether yes or no
+ */
+var isParentOf = exports.isParentOf = function isParentOf(inputEle, maybeParent) {
+  var ele = inputEle;
+  while (ele.parentNode != null && ele.parentNode != document.body) {
+    /* eslint eqeqeq:0 */
+    if (ele.parentNode === maybeParent) return true;
+    ele = ele.parentNode;
+  }
+  return false;
+};
+
+/**
+ * Handles a character's style
+ * @param {ImmutableRecord} editorState - the input editor state
+ * @param {ImmutableRecord} character - the character to check
+ * @return {ImmutableRecord} newEditorState - the new editor state
+ */
+function checkCharacterForState(editorState, character) {
+  var newEditorState = (0, _handleBlockType2.default)(editorState, character);
+  if (editorState === newEditorState) {
+    newEditorState = (0, _handleInlineStyle2.default)(editorState, character);
+  }
+  return newEditorState;
+}
+
+// todo : this function is a perf bottleneck
+/**
+ * Resolves return key hit
+ * @param {ImmutableRecord} editorState - the input editor state
+ * @param {object} ev - the original key event
+ * @return {ImmutableRecord} newEditorState - the new editor state
+ */
+function checkReturnForState(editorState, ev) {
+  var newEditorState = editorState;
+  var contentState = editorState.getCurrentContent();
+  var selection = editorState.getSelection();
+  var key = selection.getStartKey();
+  var currentBlock = contentState.getBlockForKey(key);
+  var type = currentBlock.getType();
+  var text = currentBlock.getText();
+  if (/-list-item$/.test(type) && text === '') {
+    newEditorState = (0, _leaveList2.default)(editorState);
+  }
+  if (newEditorState === editorState && (ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.altKey || /^header-/.test(type))) {
+    newEditorState = (0, _insertEmptyBlock2.default)(editorState);
+  }
+  if (newEditorState === editorState && type === 'code-block') {
+    newEditorState = (0, _insertText2.default)(editorState, '\n');
+  }
+  if (newEditorState === editorState) {
+    newEditorState = (0, _handleNewCodeBlock2.default)(editorState);
+  }
+
+  return newEditorState;
+}
+
+/**
+ * This class allows to produce event emitters
+ * that will be used to dispatch assets changes 
+ * and notes changes through context
+ */
+
+var Emitter = exports.Emitter = function Emitter() {
+  var _this = this;
+
+  (0, _classCallCheck3.default)(this, Emitter);
+  this.assetsListeners = new _map2.default();
+  this.notesListeners = new _map2.default();
+  this.assetChoicePropsListeners = new _map2.default();
+  this.renderingModeListeners = new _map2.default();
+
+  this.subscribeToAssets = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.assetsListeners.set(id, listener);
+    return function () {
+      return _this.assetsListeners.delete(id);
+    };
+  };
+
+  this.subscribeToNotes = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.notesListeners.set(id, listener);
+    return function () {
+      return _this.notesListeners.delete(id);
+    };
+  };
+
+  this.subscribeToAssetChoiceProps = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.assetChoicePropsListeners.set(id, listener);
+    return function () {
+      return _this.assetChoicePropsListeners.delete(id);
+    };
+  };
+
+  this.subscribeToRenderingMode = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.renderingModeListeners.set(id, listener);
+    return function () {
+      return _this.renderingModeListeners.delete(id);
+    };
+  };
+
+  this.dispatchAssets = function (assets) {
+    _this.assetsListeners.forEach(function (listener) {
+      listener(assets);
+    });
+  };
+
+  this.dispatchNotes = function (notes) {
+    _this.notesListeners.forEach(function (listener) {
+      listener(notes);
+    });
+  };
+
+  this.dispatchAssetChoiceProps = function (props) {
+    _this.assetChoicePropsListeners.forEach(function (listener) {
+      listener(props);
+    });
+  };
+
+  this.dispatchRenderingMode = function (renderingMode) {
+    _this.renderingModeListeners.forEach(function (listener) {
+      listener(renderingMode);
+    });
+  };
+};

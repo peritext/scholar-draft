@@ -6,7 +6,6 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { v4 as generateId } from 'uuid';
 
 import { debounce } from 'lodash';
 
@@ -23,14 +22,8 @@ import {
   Editor
 } from 'draft-js';
 
-// modifiers helping to modify editorState
 import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
-import handleBlockType from '../../modifiers/handleBlockType';
-import handleInlineStyle from '../../modifiers/handleInlineStyle';
-import handleNewCodeBlock from '../../modifiers/handleNewCodeBlock';
-import insertEmptyBlock from '../../modifiers/insertEmptyBlock';
-import leaveList from '../../modifiers/leaveList';
-import insertText from '../../modifiers/insertText';
+
 
 // constant entities type names
 import {
@@ -38,6 +31,15 @@ import {
   NOTE_POINTER,
   SCHOLAR_DRAFT_CLIPBOARD_CODE
 } from '../../constants';
+
+import {
+  getSelectedBlockElement,
+  getSelectionRange,
+  isParentOf,
+  checkCharacterForState,
+  checkReturnForState,
+  Emitter
+} from '../../utils';
 
 // subcomponents
 import SideToolbar from '../SideToolbar/SideToolbar';
@@ -54,162 +56,8 @@ import './BasicEditor.scss';
 
 const { hasCommandModifier } = KeyBindingUtil;
 
-/**
- * Gets the block element corresponding to a given range of selection
- * @param {object} range - the input range to look in
- * @return {object} node
- */
-const getSelectedBlockElement = (range) => {
-  let node = range.startContainer;
-  do {
-    if (
-      node.getAttribute && 
-      (
-        node.getAttribute('data-block') == 'true' ||
-        node.getAttribute('data-contents') == 'true'
-      )
-    ) { 
-      return node; 
-    }
-    node = node.parentNode;
-  } while (node != null);
-  return null;
-};
-
-/**
- * Gets the current window's selection range (start and end)
- * @return {object} selection range
- */
-const getSelectionRange = () => {
-  const selection = window.getSelection();
-  if (selection.rangeCount === 0) return null;
-  return selection.getRangeAt(0);
-};
-
-/**
- * Checks if a DOM element is parent of another one
- * @param {inputEle} DOMEl - the presumed child
- * @param {inputEle} DOMEl - the presumed parent
- * @return {boolean} isParent - whether yes or no
- */
-const isParentOf = (inputEle, maybeParent) => {
-  let ele = inputEle;
-  while (ele.parentNode != null && ele.parentNode != document.body) { /* eslint eqeqeq:0 */
-    if (ele.parentNode === maybeParent) return true;
-    ele = ele.parentNode;
-  }
-  return false;
-};
-
 // todo : store that somewhere else
 const popoverSpacing = 50;
-
-/**
- * Handles a character's style
- * @param {ImmutableRecord} editorState - the input editor state
- * @param {ImmutableRecord} character - the character to check
- * @return {ImmutableRecord} newEditorState - the new editor state
- */
-function checkCharacterForState(editorState, character) {
-  let newEditorState = handleBlockType(editorState, character);
-  if (editorState === newEditorState) {
-    newEditorState = handleInlineStyle(editorState, character);
-  }
-  return newEditorState;
-}
-
-// todo : this function is a perf bottleneck
-/**
- * Resolves return key hit
- * @param {ImmutableRecord} editorState - the input editor state
- * @param {object} ev - the original key event
- * @return {ImmutableRecord} newEditorState - the new editor state
- */
-function checkReturnForState(editorState, ev) {
-  let newEditorState = editorState;
-  const contentState = editorState.getCurrentContent();
-  const selection = editorState.getSelection();
-  const key = selection.getStartKey();
-  const currentBlock = contentState.getBlockForKey(key);
-  const type = currentBlock.getType();
-  const text = currentBlock.getText();
-  if (/-list-item$/.test(type) && text === '') {
-    newEditorState = leaveList(editorState);
-  }
-  if (newEditorState === editorState &&
-    (ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.altKey || /^header-/.test(type))) {
-    newEditorState = insertEmptyBlock(editorState);
-  }
-  if (newEditorState === editorState && type === 'code-block') {
-    newEditorState = insertText(editorState, '\n');
-  }
-  if (newEditorState === editorState) {
-    newEditorState = handleNewCodeBlock(editorState);
-  }
-
-  return newEditorState;
-}
-
-/**
- * This class allows to produce event emitters
- * that will be used to dispatch assets changes 
- * and notes changes through context
- */
-export class Emitter {
-  assetsListeners = new Map()
-  notesListeners = new Map()
-  assetChoicePropsListeners = new Map()
-  renderingModeListeners = new Map()
-
-  subscribeToAssets = (listener) => {
-    const id = generateId();
-    this.assetsListeners.set(id, listener);
-    return () => this.assetsListeners.delete(id);
-  }
-
-  subscribeToNotes = (listener) => {
-    const id = generateId();
-    this.notesListeners.set(id, listener);
-    return () => this.notesListeners.delete(id);
-  }
-
-  subscribeToAssetChoiceProps = (listener) => {
-    const id = generateId();
-    this.assetChoicePropsListeners.set(id, listener);
-    return () => this.assetChoicePropsListeners.delete(id);
-  }
-
-
-  subscribeToRenderingMode = (listener) => {
-    const id = generateId();
-    this.renderingModeListeners.set(id, listener);
-    return () => this.renderingModeListeners.delete(id);
-  }
-
-
-  dispatchAssets = (assets) => {
-    this.assetsListeners.forEach((listener) => {
-      listener(assets);
-    });
-  }
-  dispatchNotes= (notes) => {
-    this.notesListeners.forEach((listener) => {
-      listener(notes);
-    });
-  }
-
-  dispatchAssetChoiceProps= (props) => {
-    this.assetChoicePropsListeners.forEach((listener) => {
-      listener(props);
-    });
-  }
-
-  dispatchRenderingMode = (renderingMode) => {
-    this.renderingModeListeners.forEach((listener) => {
-      listener(renderingMode);
-    });
-  }
-}
 
 export default class BasicEditor extends Component {
 
@@ -404,6 +252,7 @@ export default class BasicEditor extends Component {
         ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       };
+      console.log('will focus after given focus');
       this.focus();
       setTimeout(() => {
         this.setState({
