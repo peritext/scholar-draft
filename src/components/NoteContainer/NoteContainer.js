@@ -46,9 +46,6 @@ class NoteContainer extends Component {
     
     assetChoiceProps: PropTypes.object,
     clipboard: PropTypes.object,
-
-
-    readOnly: PropTypes.bool,
   }
 
   focus = () => {
@@ -90,7 +87,6 @@ class NoteContainer extends Component {
 
       clipboard,
 
-      readOnly,
       editorStyle
     } = this.props;
 
@@ -127,7 +123,6 @@ class NoteContainer extends Component {
             editorState={note.editorState || note.contents}
             contentId={contentId}
             assets={assets}
-            readOnly={readOnly}
             ref={bindRef}
             onClick={onClick}
             onDrop={onDrop}

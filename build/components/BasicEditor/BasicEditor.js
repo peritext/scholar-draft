@@ -187,16 +187,6 @@ var BasicEditor = function (_Component) {
    * Component livecycle hooks
    */
 
-  // if (
-  //   this.state.readOnly !== nextState.readOnly ||
-  //   this.state.editorState !== nextProps.editorState ||
-  //   this.state.assets !== nextProps.assets
-  // ) {
-  //   return true;
-  // }
-  // return false;
-
-
   /**
    * Handles note addition in a secured and appropriate way
    */
@@ -210,6 +200,12 @@ var BasicEditor = function (_Component) {
 
   /**
    * Unlocks draft js editor when an asset is unfocused
+   * @param {object} event - the input event
+   */
+
+
+  /**
+   * Locks draft js editor and hides the toolbars when editor is blured
    * @param {object} event - the input event
    */
 
@@ -390,6 +386,7 @@ BasicEditor.propTypes = {
   onDragOver: _propTypes2.default.func,
   onClick: _propTypes2.default.func,
   onBlur: _propTypes2.default.func,
+  onFocus: _propTypes2.default.func,
   onAssetChoice: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
   onAssetRequestCancel: _propTypes2.default.func,
@@ -416,7 +413,9 @@ BasicEditor.propTypes = {
 
   placeholder: _propTypes2.default.string,
 
-  iconMap: _propTypes2.default.object };
+  iconMap: _propTypes2.default.object,
+
+  styles: _propTypes2.default.object };
 BasicEditor.defaultProps = {
   blockAssetComponents: {}
 };
@@ -434,6 +433,8 @@ BasicEditor.childContextTypes = {
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,
   onNotePointerMouseClick: _propTypes2.default.func,
+
+  onFocus: _propTypes2.default.func,
 
   iconMap: _propTypes2.default.object };
 
@@ -465,7 +466,6 @@ var _initialiseProps = function _initialiseProps() {
       _this2.setState({
         readOnly: false
       });
-      _this2.forceRender(_this2.props);
     });
   };
 
@@ -567,13 +567,17 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.shouldComponentUpdate = function (nextProps, nextState) {
-    return true;
+    if (_this2.state.readOnly !== nextState.readOnly || _this2.props.isActive !== nextProps.isActive || _this2.props.styles !== nextProps.styles || _this2.state.editorState !== nextProps.editorState || _this2.props.editorState !== nextProps.editorState || _this2.props.assetRequestPosition !== nextProps.assetRequestPosition
+    // Object.keys(this.state.assets).length !== Object.keys(nextProps.assets).length
+    ) {
+        return true;
+      }
+    return false;
   };
 
-  this.componentDidUpdate = function (prevProps) {
-    _this2.debouncedUpdateSelection();
-    if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly && _this2.props.isActive) {
-      console.log('focus on editor');
+  this.componentDidUpdate = function (prevProps, prevState) {
+    _this2.updateSelection();
+    if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly && _this2.props.isActive || prevState.readOnly && !_this2.state.readOnly) {
       _this2.editor.focus();
     }
   };
@@ -624,13 +628,22 @@ var _initialiseProps = function _initialiseProps() {
     }
   };
 
+  this.onFocus = function (event) {
+    // calls onBlur callbacks if provided
+    var onFocus = _this2.props.onFocus;
+
+    if (typeof onFocus === 'function') {
+      onFocus(event);
+    }
+  };
+
   this.onChange = function (editorState) {
     var feedUndoStack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     if (feedUndoStack === true) {
       _this2.feedUndoStack(editorState);
     }
-    if (typeof _this2.props.onEditorChange === 'function' && !_this2.props.readOnly) {
+    if (typeof _this2.props.onEditorChange === 'function' && !_this2.state.readOnly) {
       _this2.props.onEditorChange(editorState);
     }
   };
@@ -976,6 +989,7 @@ var _initialiseProps = function _initialiseProps() {
     if (!sideToolbarEle) {
       return;
     }
+
     var rangeBounds = selectionRange.getBoundingClientRect();
 
     var selectedBlock = (0, _utils.getSelectedBlockElement)(selectionRange);
@@ -1115,11 +1129,11 @@ var _initialiseProps = function _initialiseProps() {
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      // if (this.state.readOnly) {
-      //   this.setState({
-      //     readOnly: false
-      //   });
-      // }
+      if (_this2.props.isActive && _this2.state.readOnly) {
+        _this2.setState({
+          readOnly: false
+        });
+      }
       // this.focus(event);
     };
 
@@ -1133,9 +1147,12 @@ var _initialiseProps = function _initialiseProps() {
     // unlocking draft-js editor when asset choice is abandonned
     var onOnAssetRequestCancel = function onOnAssetRequestCancel() {
       onAssetRequestCancel();
-      // this.setState({
-      //   readOnly: false
-      // });
+
+      _this2.forceRender(_this2.props);
+
+      _this2.setState({
+        readOnly: false
+      });
     };
 
     // unlocking draft-js editor when asset is choosen
@@ -1226,6 +1243,7 @@ var _initialiseProps = function _initialiseProps() {
         handleKeyCommand: _handleKeyCommand,
         handleBeforeInput: _handleBeforeInput,
         handleReturn: _handleReturn,
+        onFocus: _this2.onFocus,
         onBlur: _this2.onBlur,
         onTab: _onTab,
 

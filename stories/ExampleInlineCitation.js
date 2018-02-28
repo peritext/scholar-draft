@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import FieldInput from './FieldInput';
+
 const InlineCitation = ({
   assetId,
   asset,
@@ -45,14 +47,14 @@ const InlineCitation = ({
   return (
     <span className="citation-inline">
       <span><i>
-            <input
+            <FieldInput
               value={resource.title}
               onChange={onResourceTitleChange}
               onClick={onTitleClick}
               onFocus={onAssetFocus}
               onBlur={onAssetBlur}
             />
-          </i>. <i>pp. <input
+          </i>. <i>pp. <FieldInput
               value={contextualizer.pages}
               onChange={onContextualizerPageChange}
               onFocus={onAssetFocus}

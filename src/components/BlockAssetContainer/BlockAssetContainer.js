@@ -42,20 +42,20 @@ class BlockAssetContainer extends Component {
     });
     this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.blockProps.assetId];
-      if (asset !== this.state.asset) {
-        this.setState({
-          asset
-        });
-      }
+      // if (asset !== this.state.asset) {
+      this.setState({
+        asset
+      });
+      // }
     });
 
     this.unsubscribeToRenderingMode = this.context.emitter
       .subscribeToRenderingMode((renderingMode) => {
-        if (this.state.renderingMode !== renderingMode) {
-          this.setState({
-            renderingMode
-          });
-        }
+        // if (this.state.renderingMode !== renderingMode) {
+        this.setState({
+          renderingMode
+        });
+        // }
       });
   }
 

@@ -93,6 +93,7 @@ export default class BasicEditor extends Component {
     onDragOver: PropTypes.func,
     onClick: PropTypes.func,
     onBlur: PropTypes.func,
+    onFocus: PropTypes.func,
     onAssetChoice: PropTypes.func,
     onAssetChange: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
@@ -121,6 +122,8 @@ export default class BasicEditor extends Component {
     placeholder: PropTypes.string,
 
     iconMap: PropTypes.object,
+
+    styles: PropTypes.object,
   }
 
   /**
@@ -147,6 +150,9 @@ export default class BasicEditor extends Component {
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
     onNotePointerMouseClick: PropTypes.func,
+
+
+    onFocus: PropTypes.func,
 
     iconMap: PropTypes.object
   }
@@ -216,7 +222,6 @@ export default class BasicEditor extends Component {
       this.setState({
         readOnly: false
       });
-      this.forceRender(this.props);
     });
   }
 
@@ -329,26 +334,33 @@ export default class BasicEditor extends Component {
     }
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => 
-    true
-    // if (
-    //   this.state.readOnly !== nextState.readOnly ||
-    //   this.state.editorState !== nextProps.editorState ||
-    //   this.state.assets !== nextProps.assets
-    // ) {
-    //   return true;
-    // }
-    // return false;
-  
-
-  componentDidUpdate = (prevProps) => {
-    this.debouncedUpdateSelection();
+  shouldComponentUpdate = (nextProps, nextState) => {
     if (
-      this.props.editorState !== prevProps.editorState && 
-      this.editor &&
-      !this.state.readOnly && this.props.isActive
+      this.state.readOnly !== nextState.readOnly ||
+      this.props.isActive !== nextProps.isActive ||
+      this.props.styles !== nextProps.styles ||
+      this.state.editorState !== nextProps.editorState ||
+      this.props.editorState !== nextProps.editorState ||
+      this.props.assetRequestPosition !== nextProps.assetRequestPosition
+      // Object.keys(this.state.assets).length !== Object.keys(nextProps.assets).length
     ) {
-      console.log('focus on editor');
+      return true;
+    }
+    return false;
+  }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    this.updateSelection();
+    if (
+      (
+        this.props.editorState !== prevProps.editorState && 
+      this.editor &&
+      !this.state.readOnly && 
+      this.props.isActive
+      )
+      ||
+      (prevState.readOnly && !this.state.readOnly)
+    ) {
       this.editor.focus();
     }
   }
@@ -414,6 +426,18 @@ export default class BasicEditor extends Component {
   };
 
   /**
+   * Locks draft js editor and hides the toolbars when editor is blured
+   * @param {object} event - the input event
+   */
+  onFocus = (event) => {
+    // calls onBlur callbacks if provided
+    const { onFocus } = this.props;
+    if (typeof onFocus === 'function') {
+      onFocus(event);
+    }
+  };
+
+  /**
    * Fires onEditorChange callback if provided 
    * @param {ImmutableRecord} editorState - the new editor state
    */
@@ -421,7 +445,7 @@ export default class BasicEditor extends Component {
     if (feedUndoStack === true) {
       this.feedUndoStack(editorState);
     }
-    if (typeof this.props.onEditorChange === 'function' && !this.props.readOnly) {
+    if (typeof this.props.onEditorChange === 'function' && !this.state.readOnly) {
       this.props.onEditorChange(editorState);
     }
   }
@@ -868,13 +892,13 @@ export default class BasicEditor extends Component {
 
     if (!selectionRange) return;
 
-
     if (
       !editorEle 
       || !isParentOf(selectionRange.commonAncestorContainer, editorEle.editor)
     ) { 
       return; 
     }
+
 
     const {
       assetRequestPosition
@@ -886,6 +910,7 @@ export default class BasicEditor extends Component {
     if (!sideToolbarEle) {
       return;
     }
+
     const rangeBounds = selectionRange.getBoundingClientRect();
 
     const selectedBlock = getSelectedBlockElement(selectionRange);
@@ -922,7 +947,6 @@ export default class BasicEditor extends Component {
       styles.sideToolbar.display = 'none';
       styles.inlineToolbar.display = 'none';
     }
-
 
     if (JSON.stringify(styles) !== JSON.stringify(this.state.styles)) {
       this.setState({
@@ -1045,11 +1069,11 @@ export default class BasicEditor extends Component {
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      // if (this.state.readOnly) {
-      //   this.setState({
-      //     readOnly: false
-      //   });
-      // }
+      if (this.props.isActive && this.state.readOnly) {
+        this.setState({
+          readOnly: false
+        });
+      }
       // this.focus(event);
     };
 
@@ -1063,9 +1087,13 @@ export default class BasicEditor extends Component {
     // unlocking draft-js editor when asset choice is abandonned
     const onOnAssetRequestCancel = () => {
       onAssetRequestCancel();
-      // this.setState({
-      //   readOnly: false
-      // });
+
+
+      this.forceRender(this.props);
+
+      this.setState({
+        readOnly: false
+      });
     };
 
     // unlocking draft-js editor when asset is choosen
@@ -1159,6 +1187,7 @@ export default class BasicEditor extends Component {
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
           handleReturn={_handleReturn}
+          onFocus={this.onFocus}
           onBlur={this.onBlur}
           onTab={_onTab}
 

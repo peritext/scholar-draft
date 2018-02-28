@@ -87,7 +87,6 @@ var NoteContainer = function (_Component) {
           iconMap = _this$props.iconMap,
           assetChoiceProps = _this$props.assetChoiceProps,
           clipboard = _this$props.clipboard,
-          readOnly = _this$props.readOnly,
           editorStyle = _this$props.editorStyle;
 
 
@@ -142,7 +141,6 @@ var NoteContainer = function (_Component) {
             editorState: note.editorState || note.contents,
             contentId: contentId,
             assets: assets,
-            readOnly: readOnly,
             ref: bindRef,
             onClick: onClick,
             onDrop: onDrop,
@@ -217,9 +215,7 @@ NoteContainer.propTypes = {
   iconMap: _propTypes2.default.object,
 
   assetChoiceProps: _propTypes2.default.object,
-  clipboard: _propTypes2.default.object,
-
-  readOnly: _propTypes2.default.bool
+  clipboard: _propTypes2.default.object
 };
 exports.default = NoteContainer;
 module.exports = exports['default'];

@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+
+import FieldInput from './FieldInput';
+
 const BlockCitation = ({
   assetId,
   asset,
@@ -35,27 +38,35 @@ const BlockCitation = ({
   }
 
   const onTitleClick = e => {
+    console.log('title focus');
+    console.log('active', document.activeElement);
     onAssetFocus(e);
+    // this.title.focus();
   };
   const onPageClick = e => {
     onAssetFocus(e);
+    // this.pages.focus();
   };
+  const title = title => this.title = title;
+  const pages = pages => this.pages = pages;
   return (
     <div className="citation-block">
       <span><i>
-            <input
+            <FieldInput
               value={resource.title}
               onChange={onResourceTitleChange}
               onClick={onTitleClick}
               onFocus={onAssetFocus}
               onBlur={onAssetBlur}
+              ref={title}
             />
-          </i>. <i>pp. <input
+          </i>. <i>pp. <FieldInput
               value={contextualizer.pages}
               onChange={onContextualizerPageChange}
               onFocus={onAssetFocus}
               onBlur={onAssetBlur}
               onClick={onPageClick}
+              ref={pages}
             /></i>. 
           {
             resource.authors.map(author => author.firstName + ' ' + author.lastName).join(', ')

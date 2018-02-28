@@ -170,7 +170,6 @@ export default class EditorExample extends Component {
         const {
             focusedEditorId
         } = this.state;
-        console.log('focused editor id', focusedEditorId);
         // case: data is copied from the main editor
         if (focusedEditorId === 'main') {
             clipboard = this.editor.mainEditor.editor.getClipboard();
@@ -225,7 +224,7 @@ export default class EditorExample extends Component {
                                 entityKey = char.entity;
                                 entity = currentContent.getEntity(entityKey);
                                 eData = entity.toJS();
-                                console.log('pushing entity', eData, 'for content id', activeId, entityKey);
+                                // console.log('pushing entity', eData, 'for content id', activeId, entityKey);
                                 copiedEntities[noteId].push({
                                     key: entityKey,
                                     entity: eData
@@ -277,7 +276,6 @@ export default class EditorExample extends Component {
             copiedData // model-dependent set of data objects saved to clipboard
         } = this.state;
 
-        console.log('copied data', copiedData);
 
         // this hack allows to check if data comes from out of the editor
         if (!clipboard || e.clipboardData.getData('text/plain') !== SCHOLAR_DRAFT_CLIPBOARD_CODE) {
@@ -720,6 +718,7 @@ export default class EditorExample extends Component {
                 }
             }
         })
+        setTimeout(() => this.setState({assets: this.computeAssets(this.state)}))
     }
 
     updateContextualizerPages = pages => {
@@ -731,7 +730,8 @@ export default class EditorExample extends Component {
                     pages
                 }
             }
-        })
+        });
+        setTimeout(() => this.setState({assets: this.computeAssets(this.state)}))
     }
 
     onDataChange = (dataProp, id, newObject) => {
@@ -1040,6 +1040,7 @@ export default class EditorExample extends Component {
         };
 
         const onDrop = (contentId, payload, selection) => {
+            console.log('on drop');
             const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].contents;
             this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
         };
@@ -1090,8 +1091,8 @@ export default class EditorExample extends Component {
         // });
     };
 
-    const onAssetFocus = e => {
-        console.log('on asset focus', e);
+    const onAssetFocus = id => {
+        console.log('on asset focus', id);
     }
 
     const assetChoiceProps = {
@@ -1134,6 +1135,7 @@ export default class EditorExample extends Component {
     }
 
     // console.log('focused', focusedEditorId);
+    // console.log('active', document.activeElement);
 
     return ( 
         <div style = {
