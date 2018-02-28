@@ -102,7 +102,7 @@ export function insertAssetInEditor(
     const finalSelection = SelectionState.createEmpty(block.getKey());
     updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
   // insert inline asset instruction
-  } else {
+  } else if (insertionType === INLINE_ASSET) {
     // determine the range of the entity
     const anchorKey = thatSelection.getAnchorKey();
     const currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -131,7 +131,7 @@ export function insertAssetInEditor(
       );
     }
     // now we add a whitespace character after the new entity
-    const endSelection = thatSelection.merge({
+    let endSelection = thatSelection.merge({
       anchorOffset: thatSelection.getEndOffset() + selectedText.length,
       focusOffset: thatSelection.getEndOffset() + selectedText.length,
     });
@@ -142,11 +142,17 @@ export function insertAssetInEditor(
       null,
       null
     );
+    // then we put the selection at end
+    endSelection = endSelection.merge({
+      anchorOffset: endSelection.getEndOffset() + 1,
+      focusOffset: endSelection.getEndOffset() + 1,
+    });
     // finally, apply new content state ...
     updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
     // ... and put selection after newly created content
-    updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
+    updatedEditor = EditorState.forceSelection(updatedEditor, endSelection);
   }
+  console.log('create');
   return updatedEditor;
 }
 
@@ -215,7 +221,7 @@ export function insertInlineAssetInEditor(
   newContentState = Modifier.replaceText(
     newContentState,
     endSelection,
-    '  ',
+    ' ',
     null,
     null
   );
