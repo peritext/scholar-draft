@@ -330,6 +330,7 @@ var Editor = function (_Component) {
           onAssetClick = _props.onAssetClick,
           onAssetMouseOver = _props.onAssetMouseOver,
           onAssetMouseOut = _props.onAssetMouseOut,
+          onAssetBlur = _props.onAssetBlur,
           onNotePointerMouseOver = _props.onNotePointerMouseOver,
           onNotePointerMouseOut = _props.onNotePointerMouseOut,
           onNotePointerMouseClick = _props.onNotePointerMouseClick,
@@ -451,6 +452,7 @@ var Editor = function (_Component) {
               onAssetClick: onAssetClick,
               onAssetMouseOver: onAssetMouseOver,
               onAssetMouseOut: onAssetMouseOut,
+              onAssetBlur: onAssetBlur,
 
               onNotePointerMouseOver: onNotePointerMouseOver,
               onNotePointerMouseOut: onNotePointerMouseOut,
@@ -503,6 +505,7 @@ Editor.propTypes = {
   onAssetClick: _propTypes2.default.func,
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
+  onAssetBlur: _propTypes2.default.func,
 
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,

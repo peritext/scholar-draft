@@ -125,15 +125,19 @@ var InlineAssetContainer = function (_Component) {
       });
       this.unsubscribe = this.context.emitter.subscribeToAssets(function (assets) {
         var asset = assets[_this2.props.assetId];
-        _this2.setState({
-          asset: asset
-        });
+        if (asset !== _this2.state.asset) {
+          _this2.setState({
+            asset: asset
+          });
+        }
       });
 
       this.unsubscribeToRenderingMode = this.context.emitter.subscribeToRenderingMode(function (renderingMode) {
-        _this2.setState({
-          renderingMode: renderingMode
-        });
+        if (_this2.state.renderingMode !== renderingMode) {
+          _this2.setState({
+            renderingMode: renderingMode
+          });
+        }
       });
     }
   }, {

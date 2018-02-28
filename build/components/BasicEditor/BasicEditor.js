@@ -473,7 +473,6 @@ var _initialiseProps = function _initialiseProps() {
     var stateMods = {};
     // hiding the toolbars when editor is set to inactive
     if (_this2.props.isActive && !nextProps.isActive) {
-
       // locking the draft-editor if asset choice component is not open
       if (!nextProps.assetRequestPosition) {
         stateMods = (0, _extends3.default)({}, stateMods, {
@@ -534,7 +533,6 @@ var _initialiseProps = function _initialiseProps() {
         setTimeout(function () {
           return _this2.forceRender(nextProps);
         });
-        // setTimeout(() => this.forceRender(nextProps), 500);
       }
     }
     // trigger changes when notes are changed
@@ -575,6 +573,7 @@ var _initialiseProps = function _initialiseProps() {
   this.componentDidUpdate = function (prevProps) {
     _this2.debouncedUpdateSelection();
     if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly && _this2.props.isActive) {
+      console.log('focus on editor');
       _this2.editor.focus();
     }
   };
@@ -689,7 +688,7 @@ var _initialiseProps = function _initialiseProps() {
     var editorState = props.editorState || _this2.generateEmptyEditor();
     var content = editorState.getCurrentContent();
     var newEditorState = _draftJs.EditorState.createWithContent(content, _this2.createDecorator());
-    var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    var selectedEditorState = _draftJs.EditorState.forceSelection(newEditorState, editorState.getSelection());
     var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
     _this2.setState({

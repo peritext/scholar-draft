@@ -20,6 +20,7 @@ const InlineCitation = ({
 
   const onResourceTitleChange = e => {
     const title = e.target.value;
+    e.stopPropagation();
     onAssetChange('resources', resourceId, {
       ...resource,
       title
@@ -28,6 +29,7 @@ const InlineCitation = ({
 
   const onContextualizerPageChange = e => {
     const pages = e.target.value;
+    e.stopPropagation();
     onAssetChange('contextualizers', contextualizerId, {
       ...contextualizer,
       pages

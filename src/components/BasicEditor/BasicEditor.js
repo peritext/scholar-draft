@@ -224,7 +224,6 @@ export default class BasicEditor extends Component {
     let stateMods = {};
     // hiding the toolbars when editor is set to inactive
     if (this.props.isActive && !nextProps.isActive) {
-
       // locking the draft-editor if asset choice component is not open
       if (!nextProps.assetRequestPosition) {
         stateMods = {
@@ -293,7 +292,6 @@ export default class BasicEditor extends Component {
         // before a new modification is applied to it
         // this is weird but it works
         setTimeout(() => this.forceRender(nextProps));
-        // setTimeout(() => this.forceRender(nextProps), 500);
       }
     }
     // trigger changes when notes are changed
@@ -350,6 +348,7 @@ export default class BasicEditor extends Component {
       this.editor &&
       !this.state.readOnly && this.props.isActive
     ) {
+      console.log('focus on editor');
       this.editor.focus();
     }
   }
@@ -506,7 +505,7 @@ export default class BasicEditor extends Component {
     const editorState = props.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
-    let selectedEditorState = EditorState.acceptSelection(
+    let selectedEditorState = EditorState.forceSelection(
       newEditorState, 
       editorState.getSelection()
     );

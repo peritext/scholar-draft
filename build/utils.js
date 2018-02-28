@@ -130,7 +130,7 @@ function insertAssetInEditor(editorState, asset, selection) {
     var finalSelection = _draftJs.SelectionState.createEmpty(block.getKey());
     updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, finalSelection);
     // insert inline asset instruction
-  } else {
+  } else if (insertionType === _constants.INLINE_ASSET) {
     // determine the range of the entity
     var anchorKey = thatSelection.getAnchorKey();
     var currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -154,11 +154,17 @@ function insertAssetInEditor(editorState, asset, selection) {
       focusOffset: thatSelection.getEndOffset() + selectedText.length
     });
     newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null);
+    // then we put the selection at end
+    endSelection = endSelection.merge({
+      anchorOffset: endSelection.getEndOffset() + 1,
+      focusOffset: endSelection.getEndOffset() + 1
+    });
     // finally, apply new content state ...
     updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
     // ... and put selection after newly created content
-    updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
+    updatedEditor = _draftJs.EditorState.forceSelection(updatedEditor, endSelection);
   }
+  console.log('create');
   return updatedEditor;
 }
 
@@ -209,7 +215,7 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
     anchorOffset: thatSelection.getEndOffset() + selectedText.length,
     focusOffset: thatSelection.getEndOffset() + selectedText.length
   });
-  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '  ', null, null);
+  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null);
   updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
   updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;

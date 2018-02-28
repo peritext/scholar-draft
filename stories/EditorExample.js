@@ -741,6 +741,11 @@ export default class EditorExample extends Component {
                 [id]: newObject
             }
         });
+        setTimeout(() => {
+            this.setState({
+                assets: this.computeAssets(this.state)
+            })
+        })
     }
 
     deleteContextualizations = ids => {
@@ -1085,6 +1090,10 @@ export default class EditorExample extends Component {
         // });
     };
 
+    const onAssetFocus = e => {
+        console.log('on asset focus', e);
+    }
+
     const assetChoiceProps = {
         options: ['asset 1', 'asset 2', 'asset 3'],
         addPlainText: (text) => {
@@ -1120,8 +1129,14 @@ export default class EditorExample extends Component {
         }
     }
 
-    return ( <
-        div style = {
+    const onAssetBlur = e => {
+        console.log('on asset blur');
+    }
+
+    // console.log('focused', focusedEditorId);
+
+    return ( 
+        <div style = {
             {
                 position: 'absolute',
                 left: 0,
@@ -1130,9 +1145,8 @@ export default class EditorExample extends Component {
                 height: '100%',
                 overflow: 'hidden'
             }
-        } >
-        <
-        div style = {
+        }>
+        <div style = {
             {
                 position: 'fixed',
                 padding: '1rem',
@@ -1143,20 +1157,18 @@ export default class EditorExample extends Component {
                 zIndex: 3,
                 overflow: 'auto'
             }
-        } >
-        <
-        button onClick = { changeRenderingMode } > Change rendering mode(present: { renderingMode }) < /button> <
-        button onClick = { downloadState } > Download current state < /button> <
-        button onClick = { load300000ExampleState } > Load example state(300 000 characters without entities) < /button> <
-        button onClick = { load500000ExampleState } > Load example state(500 000 characters(~170 pages doc) with 30 entities) < /button>
+        }>
+        <button onClick = { changeRenderingMode } > Change rendering mode(present: { renderingMode }) < /button> 
+        <button onClick = { downloadState } > Download current state < /button> 
+        <button onClick = { load300000ExampleState } > Load example state(300 000 characters without entities) < /button> 
+        <button onClick = { load500000ExampleState } > Load example state(500 000 characters(~170 pages doc) with 30 entities) < /button>
 
         {
-            assetRequest && < div >
-                <
-                button onClick = {
-                    () => insertContextualization() } > Insert contextualization < /button> <
-                /div>} <
-                div
+            assetRequest && <div>
+                <button onClick = {
+                    () => insertContextualization() } > Insert contextualization < /button> </div>
+        } 
+        <div
             draggable = { true }
             onDragStart = { startDrag }
             style = {
@@ -1165,8 +1177,8 @@ export default class EditorExample extends Component {
                         background: 'white'
                     }
                 } >
-                Draggable resource <
-                /div> {
+                Draggable resource 
+                </div> {
                     Object.keys(contextualizations)
                         .map(key => {
                             const onClick = () => deleteContextualization(key);
@@ -1179,33 +1191,25 @@ export default class EditorExample extends Component {
                                 /div>
                             );
                         })
-                } <
-                div > {
+                } <div> {
                     Object.keys(contextualizations).length > 0 && < div >
-                    <
-                    button onClick = { refreshUpstreamContextualizationsList } > Refresh upstream contextualizations list < /button> <
-                    /div>}
+                    <button onClick = { refreshUpstreamContextualizationsList }> Refresh upstream contextualizations list </button> </div>}
                     Change the contextualizer page:
-                        <
-                        input
-                    value = { Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages : '' }
-                    onChange = { onContextualizerPagesChange } >
-                    <
-                    /input> <
-                    /div> <
-                    div >
-                    Change the contextualizer title:
-                        <
-                        input
-                    value = { Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : 0 }
-                    onChange = { onResourceTitleChange } >
-                    <
-                    /input> <
-                    /div> <
-                    /div>
+                        <input
+                            value = { Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages : '' }
+                            onChange = { onContextualizerPagesChange } >
+                        </input> 
+                    </div> 
+                        <div>
+                        Change the contextualizer title:
+                            <input
+                            value = { Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : 0 }
+                            onChange = { onResourceTitleChange } >
+                            </input> 
+                        </div> 
+                    </div>
 
-                    <
-                    div
+                    <div
                     onScroll = { onScroll }
                     style = {
                         {
@@ -1216,9 +1220,8 @@ export default class EditorExample extends Component {
                             width: '80%',
                             overflow: 'auto'
                         }
-                    } >
-                    <
-                    Editor
+                    }>
+                    <Editor
                     mainEditorState = { mainEditorState }
                     notes = { notes }
                     assets = { assets }
@@ -1243,11 +1246,14 @@ export default class EditorExample extends Component {
                     onAssetMouseOut = { onAssetMouseOut }
                     onAssetRequest = { onAssetRequest }
                     onAssetChange = { onDataChange }
+                    onAssetBlur={onAssetBlur}
                     onAssetRequestCancel = { onAssetRequestCancel }
                     onAssetChoice = { onAssetChoice }
 
                     onNoteAdd = { addNote }
                     onNoteDelete = { deleteNote }
+
+                    onAssetFocus={onAssetFocus}
 
                     onNotePointerMouseOver = { onNotePointerMouseOver }
                     onNotePointerMouseOut = { onNotePointerMouseOut }
@@ -1259,9 +1265,8 @@ export default class EditorExample extends Component {
                     inlineAssetComponents = { inlineAssetComponents }
                     blockAssetComponents = { blockAssetComponents }
                     AssetChoiceComponent = { ExampleBlockAssetChoice }
-                    /> <
-                    /div> <
-                    /div>
+                    /> </div>
+                    </div>
                 );
         }
     }

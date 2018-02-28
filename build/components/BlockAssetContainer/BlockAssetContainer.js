@@ -128,15 +128,19 @@ var BlockAssetContainer = function (_Component) {
       });
       this.unsubscribe = this.context.emitter.subscribeToAssets(function (assets) {
         var asset = assets[_this2.props.blockProps.assetId];
-        _this2.setState({
-          asset: asset
-        });
+        if (asset !== _this2.state.asset) {
+          _this2.setState({
+            asset: asset
+          });
+        }
       });
 
       this.unsubscribeToRenderingMode = this.context.emitter.subscribeToRenderingMode(function (renderingMode) {
-        _this2.setState({
-          renderingMode: renderingMode
-        });
+        if (_this2.state.renderingMode !== renderingMode) {
+          _this2.setState({
+            renderingMode: renderingMode
+          });
+        }
       });
     }
   }, {
@@ -174,7 +178,7 @@ BlockAssetContainer.contextTypes = {
 
 BlockAssetContainer.propTypes = {
   children: _propTypes2.default.array,
-  // assetId: PropTypes.string,
+  assetId: _propTypes2.default.string,
   blockProps: _propTypes2.default.shape({
     assetId: _propTypes2.default.string,
     AssetComponent: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.element]),

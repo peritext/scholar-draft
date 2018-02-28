@@ -42,16 +42,20 @@ class BlockAssetContainer extends Component {
     });
     this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.blockProps.assetId];
-      this.setState({
-        asset
-      });
+      if (asset !== this.state.asset) {
+        this.setState({
+          asset
+        });
+      }
     });
 
     this.unsubscribeToRenderingMode = this.context.emitter
       .subscribeToRenderingMode((renderingMode) => {
-        this.setState({
-          renderingMode
-        });
+        if (this.state.renderingMode !== renderingMode) {
+          this.setState({
+            renderingMode
+          });
+        }
       });
   }
 
@@ -130,7 +134,7 @@ class BlockAssetContainer extends Component {
 
 BlockAssetContainer.propTypes = {
   children: PropTypes.array,
-  // assetId: PropTypes.string,
+  assetId: PropTypes.string,
   blockProps: PropTypes.shape({
     assetId: PropTypes.string,
     AssetComponent: PropTypes.oneOfType([

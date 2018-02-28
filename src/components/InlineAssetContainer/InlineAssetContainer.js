@@ -41,16 +41,20 @@ class InlineAssetContainer extends Component {
     });
     this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.assetId];
-      this.setState({
-        asset
-      });
+      if (asset !== this.state.asset) {
+        this.setState({
+          asset
+        });
+      }
     });
 
     this.unsubscribeToRenderingMode = this.context.emitter
       .subscribeToRenderingMode((renderingMode) => {
-        this.setState({
-          renderingMode
-        });
+        if (this.state.renderingMode !== renderingMode) {
+          this.setState({
+            renderingMode
+          });
+        }
       });
   }
 

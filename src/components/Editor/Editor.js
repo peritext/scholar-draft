@@ -41,6 +41,7 @@ export default class Editor extends Component {
     onAssetClick: PropTypes.func,
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
+    onAssetBlur: PropTypes.func,
 
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
@@ -330,6 +331,7 @@ export default class Editor extends Component {
       onAssetClick,
       onAssetMouseOver,
       onAssetMouseOut,
+      onAssetBlur,
 
       onNotePointerMouseOver,
       onNotePointerMouseOut,
@@ -452,6 +454,7 @@ export default class Editor extends Component {
               onAssetClick={onAssetClick}
               onAssetMouseOver={onAssetMouseOver}
               onAssetMouseOut={onAssetMouseOut}
+              onAssetBlur={onAssetBlur}
 
               onNotePointerMouseOver={onNotePointerMouseOver}
               onNotePointerMouseOut={onNotePointerMouseOut}
