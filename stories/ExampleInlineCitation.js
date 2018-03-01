@@ -45,7 +45,7 @@ const InlineCitation = ({
     onAssetFocus(e);
   };
   return (
-    <span className="citation-inline">
+    <span className="citation-inline" style={{background: 'red'}}>
       <span><i>
             <FieldInput
               value={resource.title}

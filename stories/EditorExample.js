@@ -109,6 +109,9 @@ export default class EditorExample extends Component {
         document.addEventListener('copy', this.onCopy);
         document.addEventListener('cut', this.onCopy);
         document.addEventListener('paste', this.onPaste);
+        if (!this.props.empty) {
+            this.loadExampleState(example500000);
+        }
     }
 
     componentWillUpdate = (nextProps, nextState) => {
@@ -139,7 +142,7 @@ export default class EditorExample extends Component {
     }
 
     componentWillUpdate = () => {
-        // console.time('editor update time');
+        console.time('editor update time');
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -147,7 +150,7 @@ export default class EditorExample extends Component {
             // this.cleanStuffFromEditorInspection(this.state);
             this.debouncedCleanStuffFromEditorInspection(this.state);
         }
-        // console.timeEnd('editor update time');
+        console.timeEnd('editor update time');
     }
 
     /**
@@ -593,7 +596,6 @@ export default class EditorExample extends Component {
         // this.setState({
         //   focusedEditorId: undefined //  contentId
         // });
-
         setTimeout(() => {
             this.setState({
                 assetRequest: true,
@@ -1053,6 +1055,7 @@ export default class EditorExample extends Component {
         }
 
         const onClick = (event, contentId = 'main') => {
+            console.log('on click', contentId);
             if (this.state.focusedEditorId !== contentId) {
                 let editorState;
                 if (contentId === 'main') {
@@ -1064,7 +1067,8 @@ export default class EditorExample extends Component {
                   const selection = editorState.getSelection();
 
                   this.setState({
-                      focusedEditorId: undefined
+                      focusedEditorId: undefined,
+                      assetRequestContentId: contentId
                   });
                   setTimeout(() => {
                       this.setState({
@@ -1136,6 +1140,7 @@ export default class EditorExample extends Component {
 
     // console.log('focused', focusedEditorId);
     // console.log('active', document.activeElement);
+    // console.log('asset request content id rendering', assetRequestContentId);
 
     return ( 
         <div style = {
@@ -1233,6 +1238,8 @@ export default class EditorExample extends Component {
                     ref = { bindRef }
 
                     focusedEditorId = { focusedEditorId }
+
+                    assetRequestContentId = {assetRequestContentId}
 
                     onEditorChange = { onEditorChange }
 

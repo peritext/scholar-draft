@@ -8,6 +8,9 @@ storiesOf('Peritext Scholarly editor', module)
   .add('Basic editor (without footnotes support)', () => (
     <BasicEditorExample />
   ))
-  .add('Complete editor (with footnotes support)', () => (
+  .add('Complete editor (with footnotes support) - with big content', () => (
     <EditorExample />
+  ))
+  .add('Complete editor (with footnotes support) - empty', () => (
+    <EditorExample empty />
   ))

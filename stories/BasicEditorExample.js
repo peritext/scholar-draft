@@ -668,6 +668,7 @@ export default class ConnectedEditorExample extends Component {
 
             assets={assets}
             assetRequestPosition={assetRequestPosition}
+            assetRequestContentId={'main'}
             assetChoiceProps={assetChoiceProps}
 
             isActive={!readOnly}
