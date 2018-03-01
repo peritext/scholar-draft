@@ -320,6 +320,7 @@ var Editor = function (_Component) {
       var _props = this.props,
           mainEditorState = _props.mainEditorState,
           notes = _props.notes,
+          notesOrder = _props.notesOrder,
           assets = _props.assets,
           _props$editorClass = _props.editorClass,
           editorClass = _props$editorClass === undefined ? 'scholar-draft-Editor' : _props$editorClass,
@@ -409,6 +410,12 @@ var Editor = function (_Component) {
       var bindGlobalScrollbarRef = function bindGlobalScrollbarRef(scrollbar) {
         _this2.globalScrollbar = scrollbar;
       };
+
+      var activeNotes = notesOrder || (0, _keys2.default)(notes || {}).sort(function (first, second) {
+        if (notes[first].order > notes[second].order) {
+          return 1;
+        }return -1;
+      });
       return _react2.default.createElement(
         'div',
         { className: editorClass },
@@ -478,11 +485,7 @@ var Editor = function (_Component) {
           _react2.default.createElement(
             'aside',
             { className: 'notes-container' },
-            (0, _keys2.default)(notes || {}).sort(function (first, second) {
-              if (notes[first].order > notes[second].order) {
-                return 1;
-              }return -1;
-            }).map(this.renderNoteEditor)
+            activeNotes.map(this.renderNoteEditor)
           ),
           BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)
         )
@@ -495,6 +498,7 @@ var Editor = function (_Component) {
 Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
   notes: _propTypes2.default.object,
+  notesOrder: _propTypes2.default.array,
   assets: _propTypes2.default.object,
 
   editorClass: _propTypes2.default.string,

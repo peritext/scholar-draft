@@ -1009,6 +1009,7 @@ export default class EditorExample extends Component {
             mainEditorState,
             clipboard,
             notes,
+            notesOrder,
             inlineAssetComponents,
             blockAssetComponents,
             contextualizations,
@@ -1230,6 +1231,7 @@ export default class EditorExample extends Component {
                     <Editor
                     mainEditorState = { mainEditorState }
                     notes = { notes }
+                    notesOrder={notesOrder}
                     assets = { assets }
 
                     clipboard = { clipboard }

@@ -27,6 +27,7 @@ export default class Editor extends Component {
   static propTypes = {
     mainEditorState: PropTypes.object,
     notes: PropTypes.object,
+    notesOrder: PropTypes.array,
     assets: PropTypes.object,
 
     editorClass: PropTypes.string,
@@ -320,6 +321,7 @@ export default class Editor extends Component {
     const {
       mainEditorState,
       notes,
+      notesOrder,
       assets,
 
       editorClass = 'scholar-draft-Editor',
@@ -417,6 +419,13 @@ export default class Editor extends Component {
     const bindGlobalScrollbarRef = (scrollbar) => {
       this.globalScrollbar = scrollbar;
     };
+
+    const activeNotes = notesOrder || Object.keys(notes || {})
+      .sort((first, second) => {
+        if (notes[first].order > notes[second].order) {
+          return 1;
+        } return -1;
+      });
     return (
       <div className={editorClass}>
         <Scrollbars
@@ -480,12 +489,7 @@ export default class Editor extends Component {
           </section>
           <aside className="notes-container">
             {
-              Object.keys(notes || {})
-                .sort((first, second) => {
-                  if (notes[first].order > notes[second].order) {
-                    return 1;
-                  } return -1;
-                })
+              activeNotes
                 .map(this.renderNoteEditor)
             }
           </aside>
