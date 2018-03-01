@@ -86,6 +86,7 @@ var NoteContainer = function (_Component) {
           inlineEntities = _this$props$inlineEnt === undefined ? [] : _this$props$inlineEnt,
           iconMap = _this$props.iconMap,
           assetChoiceProps = _this$props.assetChoiceProps,
+          assetRequestContentId = _this$props.assetRequestContentId,
           clipboard = _this$props.clipboard,
           editorStyle = _this$props.editorStyle;
 
@@ -155,6 +156,8 @@ var NoteContainer = function (_Component) {
 
             assetRequestPosition: assetRequestPosition,
             onAssetRequestCancel: onAssetRequestCancel,
+            isRequestingAssets: assetRequestContentId === contentId,
+
             AssetChoiceComponent: AssetChoiceComponent,
             assetChoiceProps: assetChoiceProps,
 
@@ -186,6 +189,7 @@ NoteContainer.propTypes = {
   note: _propTypes2.default.object,
   assets: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
+  assetRequestContentId: _propTypes2.default.string,
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
 

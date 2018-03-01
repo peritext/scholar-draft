@@ -15,6 +15,7 @@ class NoteContainer extends Component {
     note: PropTypes.object,
     assets: PropTypes.object,
     assetRequestPosition: PropTypes.object,
+    assetRequestContentId: PropTypes.string,
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
 
@@ -84,6 +85,7 @@ class NoteContainer extends Component {
       iconMap,
       
       assetChoiceProps,
+      assetRequestContentId,
 
       clipboard,
 
@@ -137,6 +139,8 @@ class NoteContainer extends Component {
 
             assetRequestPosition={assetRequestPosition}
             onAssetRequestCancel={onAssetRequestCancel}
+            isRequestingAssets={assetRequestContentId === contentId}
+
             AssetChoiceComponent={AssetChoiceComponent}
             assetChoiceProps={assetChoiceProps}
 

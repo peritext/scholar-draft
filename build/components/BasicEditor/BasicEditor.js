@@ -372,6 +372,7 @@ BasicEditor.propTypes = {
   contentId: _propTypes2.default.string,
   messages: _propTypes2.default.object,
   isActive: _propTypes2.default.bool,
+  isRequestingAssets: _propTypes2.default.bool,
   /*
    * Method props
    */
@@ -462,31 +463,46 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.componentDidMount = function () {
-    setTimeout(function () {
-      _this2.setState({
-        readOnly: false
-      });
+    // setTimeout(() => {
+    _this2.setState({
+      readOnly: false
     });
+    // });
   };
 
   this.componentWillReceiveProps = function (nextProps, nextState) {
+    // console.time(`editor ${this.props.contentId}`);
+    // console.time(`editor ${this.props.contentId} receives props`);
+
     var stateMods = {};
-    // hiding the toolbars when editor is set to inactive
-    if (_this2.props.isActive && !nextProps.isActive) {
-      // locking the draft-editor if asset choice component is not open
-      if (!nextProps.assetRequestPosition) {
-        stateMods = (0, _extends3.default)({}, stateMods, {
-          readOnly: true,
-          styles: {
-            sideToolbar: {
-              display: 'none'
-            },
-            inlineToolbar: {
-              display: 'none'
-            }
+    if (_this2.props.isRequestingAssets && !nextProps.isRequestingAssets) {
+      // console.log('hiding', this.props.contentId);
+      stateMods = (0, _extends3.default)({}, stateMods, {
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none'
           }
-        });
-      }
+        }
+      });
+    }
+    // hiding the toolbars when editor is set to inactive
+    if (_this2.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition) {
+      // locking the draft-editor if asset choice component is not open
+      // console.log('hding 2', this.props.contentId);
+      stateMods = (0, _extends3.default)({}, stateMods, {
+        readOnly: true,
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none'
+          }
+        }
+      });
     } else if (!_this2.props.isActive && nextProps.isActive) {
       var selection = _this2.state.editorState.getSelection();
 
@@ -552,7 +568,9 @@ var _initialiseProps = function _initialiseProps() {
         // re-rendering after a timeout.
         // not doing that causes the draft editor not to update
         // before a new modification is applied to it
-        _this2.forceRender(nextProps);
+        setTimeout(function () {
+          return _this2.forceRender(nextProps);
+        });
       }
     }
     // trigger changes when notes are changed
@@ -562,24 +580,31 @@ var _initialiseProps = function _initialiseProps() {
     }
     // apply state changes
     if ((0, _keys2.default)(stateMods).length > 0) {
+      // console.log('update', nextProps.contentId);
       _this2.setState(stateMods);
     }
+    // console.timeEnd(`editor ${this.props.contentId} receives props`);
   };
 
   this.shouldComponentUpdate = function (nextProps, nextState) {
-    if (_this2.state.readOnly !== nextState.readOnly || _this2.props.isActive !== nextProps.isActive || _this2.props.styles !== nextProps.styles || _this2.state.editorState !== nextProps.editorState || _this2.props.editorState !== nextProps.editorState || _this2.props.assetRequestPosition !== nextProps.assetRequestPosition
-    // Object.keys(this.state.assets).length !== Object.keys(nextProps.assets).length
-    ) {
-        return true;
-      }
+    if (_this2.state.readOnly !== nextState.readOnly || _this2.props.isActive !== nextProps.isActive || _this2.state.styles !== nextState.styles || _this2.state.editorState !== nextProps.editorState || _this2.props.editorState !== nextProps.editorState || _this2.props.assetRequestPosition !== nextProps.assetRequestPosition) {
+      return true;
+    }
     return false;
+  };
+
+  this.componentWillUpdate = function () {
+    // console.time(`rendering ${this.props.contentId}`)
   };
 
   this.componentDidUpdate = function (prevProps, prevState) {
     _this2.updateSelection();
+    // console.timeEnd(`rendering ${this.props.contentId}`)
     if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly && _this2.props.isActive || prevState.readOnly && !_this2.state.readOnly) {
       _this2.editor.focus();
     }
+    // console.timeEnd(`editor ${this.props.contentId}`);
+
   };
 
   this.onNoteAdd = function () {
@@ -960,7 +985,7 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.updateSelection = function () {
-    if (!_this2.props.isActive) {
+    if (!(_this2.props.isActive || _this2.props.isRequestingAssets)) {
       return;
     }
     var left = void 0;
@@ -1021,7 +1046,7 @@ var _initialiseProps = function _initialiseProps() {
       } else {
         styles.inlineToolbar.display = 'none';
       }
-    } else {
+    } else if (!_this2.props.isRequestingAssets) {
       styles.sideToolbar.display = 'none';
       styles.inlineToolbar.display = 'none';
     }
@@ -1107,6 +1132,9 @@ var _initialiseProps = function _initialiseProps() {
         onNoteAdd = _this2.onNoteAdd,
         _defaultKeyBindingFn = _this2._defaultKeyBindingFn;
 
+    // console.time(`preparing rendering ${contentId}`)
+
+
     /**
      * Functions handling draft editor locking/unlocking
      * and callbacks related to inline asset choices with asset choice component
@@ -1184,6 +1212,8 @@ var _initialiseProps = function _initialiseProps() {
     var keyBindingFn = typeof _this2.props.keyBindingFn === 'function' ? _this2.props.keyBindingFn : _defaultKeyBindingFn;
     // props-provided iconMap can be merged with defaultIconMap for displaying custom icons
     var iconMap = _this2.props.iconMap ? (0, _extends3.default)({}, _defaultIconMap2.default, _this2.props.iconMap) : _defaultIconMap2.default;
+
+    // console.timeEnd(`preparing rendering ${contentId}`)
 
     return _react2.default.createElement(
       'div',

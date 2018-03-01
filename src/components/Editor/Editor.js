@@ -53,6 +53,7 @@ export default class Editor extends Component {
     onBlur: PropTypes.func,
 
     assetRequestPosition: PropTypes.object,
+    assetRequestContentId: PropTypes.string,
     assetChoiceProps: PropTypes.object,
     
     inlineAssetComponents: PropTypes.object,
@@ -197,6 +198,7 @@ export default class Editor extends Component {
       onBlur,
 
       assetRequestPosition,
+      assetRequestContentId,
       assetChoiceProps,
       
       inlineAssetComponents,
@@ -269,6 +271,7 @@ export default class Editor extends Component {
         contentId={noteId}
       
         assetRequestPosition={assetRequestPosition}
+        assetRequestContentId={assetRequestContentId}
         assetChoiceProps={assetChoiceProps}
       
         isActive={noteId === focusedEditorId}
@@ -342,6 +345,7 @@ export default class Editor extends Component {
       onBlur,
 
       assetRequestPosition,
+      assetRequestContentId,
       assetChoiceProps,
       
       inlineAssetComponents,
@@ -432,6 +436,7 @@ export default class Editor extends Component {
               contentId="main"
 
               assetRequestPosition={assetRequestPosition}
+              isRequestingAssets={assetRequestContentId === 'main'}
               assetChoiceProps={assetChoiceProps}
 
               isActive={focusedEditorId === 'main'}

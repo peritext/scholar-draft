@@ -79,6 +79,7 @@ export default class BasicEditor extends Component {
     contentId: PropTypes.string,
     messages: PropTypes.object,
     isActive: PropTypes.bool,
+    isRequestingAssets: PropTypes.bool,
     /*
      * Method props
      */
@@ -218,32 +219,50 @@ export default class BasicEditor extends Component {
    */
 
   componentDidMount = () => {
-    setTimeout(() => {
-      this.setState({
-        readOnly: false
-      });
+    // setTimeout(() => {
+    this.setState({
+      readOnly: false
     });
+    // });
   }
 
   componentWillReceiveProps = (nextProps, nextState) => {
+    // console.time(`editor ${this.props.contentId}`);
+    // console.time(`editor ${this.props.contentId} receives props`);
+    
     let stateMods = {};
-    // hiding the toolbars when editor is set to inactive
-    if (this.props.isActive && !nextProps.isActive) {
-      // locking the draft-editor if asset choice component is not open
-      if (!nextProps.assetRequestPosition) {
-        stateMods = {
-          ...stateMods,
-          readOnly: true,
-          styles: {
-            sideToolbar: {
-              display: 'none'
-            },
-            inlineToolbar: {
-              display: 'none',
-            }
+    if (this.props.isRequestingAssets && !nextProps.isRequestingAssets) {
+      // console.log('hiding', this.props.contentId);
+      stateMods = {
+        ...stateMods,
+        styles: {
+          sideToolbar: {
+            display: 'none'
           },
-        };
-      }
+          inlineToolbar: {
+            display: 'none',
+          }
+        },
+      };
+    }
+    // hiding the toolbars when editor is set to inactive
+    if (
+      (this.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition) 
+    ) {
+      // locking the draft-editor if asset choice component is not open
+      // console.log('hding 2', this.props.contentId);
+      stateMods = {
+        ...stateMods,
+        readOnly: true,
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none',
+          }
+        },
+      };
     } else if (!this.props.isActive && nextProps.isActive) {
       const selection = this.state.editorState.getSelection();
 
@@ -320,7 +339,7 @@ export default class BasicEditor extends Component {
         // re-rendering after a timeout.
         // not doing that causes the draft editor not to update
         // before a new modification is applied to it
-        this.forceRender(nextProps);
+        setTimeout(() => this.forceRender(nextProps));
       }
     }
     // trigger changes when notes are changed
@@ -330,27 +349,34 @@ export default class BasicEditor extends Component {
     }
     // apply state changes
     if (Object.keys(stateMods).length > 0) {
+      // console.log('update', nextProps.contentId);
       this.setState(stateMods);
     }
+    // console.timeEnd(`editor ${this.props.contentId} receives props`);
+
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
     if (
       this.state.readOnly !== nextState.readOnly ||
       this.props.isActive !== nextProps.isActive ||
-      this.props.styles !== nextProps.styles ||
+      this.state.styles !== nextState.styles ||
       this.state.editorState !== nextProps.editorState ||
       this.props.editorState !== nextProps.editorState ||
       this.props.assetRequestPosition !== nextProps.assetRequestPosition
-      // Object.keys(this.state.assets).length !== Object.keys(nextProps.assets).length
     ) {
       return true;
     }
     return false;
   }
 
+  componentWillUpdate = () => {
+    // console.time(`rendering ${this.props.contentId}`)
+  }
+
   componentDidUpdate = (prevProps, prevState) => {
     this.updateSelection();
+    // console.timeEnd(`rendering ${this.props.contentId}`)
     if (
       (
         this.props.editorState !== prevProps.editorState && 
@@ -363,6 +389,9 @@ export default class BasicEditor extends Component {
     ) {
       this.editor.focus();
     }
+    // console.timeEnd(`editor ${this.props.contentId}`);
+
+
   }
 
   /**
@@ -871,7 +900,7 @@ export default class BasicEditor extends Component {
    * updates the positions of toolbars relatively to current draft selection
    */
   updateSelection = () => {
-    if (!this.props.isActive) {
+    if (!(this.props.isActive || this.props.isRequestingAssets)) {
       return;
     }
     let left;
@@ -903,6 +932,7 @@ export default class BasicEditor extends Component {
     const {
       assetRequestPosition
     } = this.props;
+
 
     const sideToolbarEle = this.sideToolbar.toolbar;
 
@@ -943,10 +973,11 @@ export default class BasicEditor extends Component {
       } else {
         styles.inlineToolbar.display = 'none';
       }
-    } else {
+    } else if (!this.props.isRequestingAssets) {
       styles.sideToolbar.display = 'none';
       styles.inlineToolbar.display = 'none';
     }
+
 
     if (JSON.stringify(styles) !== JSON.stringify(this.state.styles)) {
       this.setState({
@@ -1005,6 +1036,8 @@ export default class BasicEditor extends Component {
 
       onAssetRequest: onAssetRequestUpstream,
       assetRequestPosition,
+      // isRequestingAssets,
+
       onAssetRequestCancel,
       onAssetChoice,
 
@@ -1046,6 +1079,8 @@ export default class BasicEditor extends Component {
       onNoteAdd,
       _defaultKeyBindingFn,
     } = this;
+
+    // console.time(`preparing rendering ${contentId}`)
 
 
     /**
@@ -1129,6 +1164,8 @@ export default class BasicEditor extends Component {
         ...defaultIconMap,
         ...this.props.iconMap
       } : defaultIconMap;
+
+    // console.timeEnd(`preparing rendering ${contentId}`)
 
     return (
       <div 

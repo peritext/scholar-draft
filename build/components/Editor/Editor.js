@@ -143,6 +143,7 @@ var Editor = function (_Component) {
           onClick = _this$props.onClick,
           onBlur = _this$props.onBlur,
           assetRequestPosition = _this$props.assetRequestPosition,
+          assetRequestContentId = _this$props.assetRequestContentId,
           assetChoiceProps = _this$props.assetChoiceProps,
           inlineAssetComponents = _this$props.inlineAssetComponents,
           blockAssetComponents = _this$props.blockAssetComponents,
@@ -211,6 +212,7 @@ var Editor = function (_Component) {
         contentId: noteId,
 
         assetRequestPosition: assetRequestPosition,
+        assetRequestContentId: assetRequestContentId,
         assetChoiceProps: assetChoiceProps,
 
         isActive: noteId === focusedEditorId,
@@ -339,6 +341,7 @@ var Editor = function (_Component) {
           onClick = _props.onClick,
           onBlur = _props.onBlur,
           assetRequestPosition = _props.assetRequestPosition,
+          assetRequestContentId = _props.assetRequestContentId,
           assetChoiceProps = _props.assetChoiceProps,
           inlineAssetComponents = _props.inlineAssetComponents,
           blockAssetComponents = _props.blockAssetComponents,
@@ -430,6 +433,7 @@ var Editor = function (_Component) {
               contentId: 'main',
 
               assetRequestPosition: assetRequestPosition,
+              isRequestingAssets: assetRequestContentId === 'main',
               assetChoiceProps: assetChoiceProps,
 
               isActive: focusedEditorId === 'main',
@@ -517,6 +521,7 @@ Editor.propTypes = {
   onBlur: _propTypes2.default.func,
 
   assetRequestPosition: _propTypes2.default.object,
+  assetRequestContentId: _propTypes2.default.string,
   assetChoiceProps: _propTypes2.default.object,
 
   inlineAssetComponents: _propTypes2.default.object,
