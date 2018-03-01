@@ -181,7 +181,7 @@ export default class EditorExample extends Component {
         } else {
             activeId = Object.keys(this.state.notes)
                 .find(id => id === focusedEditorId);
-            editorState = this.state.notes[activeId].contents;
+            editorState = this.state.notes[activeId].editorState;
             clipboard = this.editor.notes[activeId].editor.editor.getClipboard();
         }
         // todo : this is bad, due to problems with readonly management
@@ -211,7 +211,7 @@ export default class EditorExample extends Component {
                 // copying note pointer and note
                 if (type === NOTE_POINTER) {
                     const noteId = eData.data.noteId;
-                    const noteContent = this.state.notes[noteId].contents.getCurrentContent();
+                    const noteContent = this.state.notes[noteId].editorState.getCurrentContent();
                     const rawContent = convertToRaw(noteContent);
                     copiedEntities[noteId] = [];
                     copiedNotes.push({
@@ -303,7 +303,7 @@ export default class EditorExample extends Component {
         } else {
             activeId = Object.keys(this.state.notes)
                 .find(id => focusedEditorId === id);
-            editorState = this.state.notes[activeId].contents;
+            editorState = this.state.notes[activeId].editorState;
         }
 
         const currentContent = editorState.getCurrentContent();
@@ -345,7 +345,7 @@ export default class EditorExample extends Component {
                             ...result,
                             [id]: {
                                 ...note,
-                                contents: noteEditorState,
+                                editorState: noteEditorState,
                                 oldId: note.id,
                                 id
                             }
@@ -477,7 +477,7 @@ export default class EditorExample extends Component {
                         });
                     } else {
                         copiedEntities[contentId].forEach(entity => {
-                            const editor = stateMods.notes[contentId].contents;
+                            const editor = stateMods.notes[contentId].editorState;
 
 
                             newContentState = editor.getCurrentContent();
@@ -496,7 +496,7 @@ export default class EditorExample extends Component {
                                     }
                                 })
                             })
-                            stateMods.notes[contentId].contents = EditorState.push(
+                            stateMods.notes[contentId].editorState = EditorState.push(
                                 newEditorState,
                                 newContentState,
                                 'create-entity'
@@ -528,7 +528,7 @@ export default class EditorExample extends Component {
                 ...this.state.notes,
                 [activeId]: {
                     ...this.state.notes[activeId],
-                    contents: insertFragment(stateMods.notes[activeId].contents, newClipboard)
+                    editorState: insertFragment(stateMods.notes[activeId].editorState, newClipboard)
                 }
             }
         }
@@ -557,7 +557,7 @@ export default class EditorExample extends Component {
         const notesEditorStates = Object.keys(this.state.notes).reduce((result, noteId) => {
             return {
                 ...result,
-                [noteId]: this.state.notes[noteId].contents
+                [noteId]: this.state.notes[noteId].editorState
             }
         }, {});
         let editorStates = {
@@ -584,7 +584,7 @@ export default class EditorExample extends Component {
                     ...this.state.notes,
                     [editorStateId]: {
                         ...this.state.notes[editorStateId],
-                        contents: editorState
+                        editorState: editorState
                     }
                 }
             });
@@ -678,7 +678,7 @@ export default class EditorExample extends Component {
         };
         let editorState = inputEditorState;
         if (!editorState) {
-            editorState = assetRequestContentId === 'main' ? mainEditorState : notes[assetRequestContentId].contents;
+            editorState = assetRequestContentId === 'main' ? mainEditorState : notes[assetRequestContentId].editorState;
         }
         const newEditorState = insertAssetInEditor(editorState, { id: contextualization.id }, assetRequestSelection);
         const newState = {
@@ -691,12 +691,11 @@ export default class EditorExample extends Component {
             },
             notes: this.state.notes,
             focusedEditorId: assetRequestContentId
-            // contents: newEditorState,
         };
         if (assetRequestContentId === 'main') {
             newState.mainEditorState = newEditorState;
         } else {
-            newState.notes[assetRequestContentId].contents = newEditorState;
+            newState.notes[assetRequestContentId].editorState = newEditorState;
         }
         newState.focusedEditorId = undefined;
         this.setState(newState);
@@ -763,11 +762,11 @@ export default class EditorExample extends Component {
         let notes = this.state.notes;
         deleteAssetFromEditor(this.state.mainEditorState, id, newEditorState => {
             mapSeries(notes, (note, cb) => {
-                deleteAssetFromEditor(note.contents, id, newNoteEditorState => {
+                deleteAssetFromEditor(note.editorState, id, newNoteEditorState => {
                     cb(null, {
                         ...note,
                         id: note.id,
-                        contents: newNoteEditorState
+                        editorState: newNoteEditorState
                     });
                 });
             }, (err, finalNotes) => {
@@ -795,7 +794,7 @@ export default class EditorExample extends Component {
         // in notes
         Object.keys(this.state.notes)
             .forEach(noteId => {
-                const noteEditor = this.state.notes[noteId].contents;
+                const noteEditor = this.state.notes[noteId].editorState;
                 used = used.concat(getUsedAssets(noteEditor, contextualizations))
             });
         const unusedAssets = Object.keys(contextualizations).filter(id => used.indexOf(id) === -1);
@@ -817,7 +816,7 @@ export default class EditorExample extends Component {
             [id]: {
                 id,
                 // generate decorated editor
-                contents: this.editor.generateEmptyEditor()
+                editorState: this.editor.generateEmptyEditor()
             }
         };
         const { newNotes, notesOrder } = updateNotesFromEditor(mainEditorState, notes);
@@ -851,7 +850,7 @@ export default class EditorExample extends Component {
 
     addTextAtCurrentSelection = (text) => {
         const contentId = this.state.assetRequestContentId;
-        const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].contents;
+        const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
 
         const newContentState = Modifier.insertText(
             editorState.getCurrentContent(),
@@ -872,8 +871,8 @@ export default class EditorExample extends Component {
                     ...this.state.notes,
                     [contentId]: {
                         ...this.state.notes[contentId],
-                        contents: EditorState.push(
-                            this.state.notes[contentId].contents,
+                        editorState: EditorState.push(
+                            this.state.notes[contentId].editorState,
                             newContentState,
                             'insert-text'
                         )
@@ -901,7 +900,7 @@ export default class EditorExample extends Component {
                 ...result,
                 [noteId]: {
                     ...this.state.notes[noteId],
-                    contents: convertToRaw(notes[noteId].contents.getCurrentContent())
+                    contents: convertToRaw(notes[noteId].editorState.getCurrentContent())
                 }
             }), {})
         };
@@ -927,7 +926,7 @@ export default class EditorExample extends Component {
                 ...result,
                 [noteId]: {
                     ...notes[noteId],
-                    contents: EditorState.createWithContent(convertFromRaw(notes[noteId].contents))
+                    editorState: EditorState.createWithContent(convertFromRaw(notes[noteId].contents))
                 }
             }), {})
         });
@@ -1043,7 +1042,7 @@ export default class EditorExample extends Component {
 
         const onDrop = (contentId, payload, selection) => {
             console.log('on drop');
-            const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].contents;
+            const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
             this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
         };
         const onDragOver = id => {
@@ -1061,7 +1060,7 @@ export default class EditorExample extends Component {
                 if (contentId === 'main') {
                     editorState = this.state.mainEditorState;
                 } else if (this.state.notes[contentId]) {
-                    editorState = this.state.notes[contentId].contents;
+                    editorState = this.state.notes[contentId].editorState;
                 }
                 if (editorState) {
                   const selection = editorState.getSelection();
@@ -1111,7 +1110,7 @@ export default class EditorExample extends Component {
         if (assetRequestContentId === 'main') {
             assetRequestPosition = mainEditorState.getSelection();
         } else if (assetRequestContentId && notes[assetRequestContentId]) {
-            assetRequestPosition = notes[assetRequestContentId].contents.getSelection();
+            assetRequestPosition = notes[assetRequestContentId].editorState.getSelection();
         }
     }
 

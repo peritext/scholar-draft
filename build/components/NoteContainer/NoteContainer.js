@@ -105,6 +105,11 @@ var NoteContainer = function (_Component) {
         onEditorClick(event);
       };
 
+      var onDelete = function onDelete(event) {
+        event.stopPropagation();
+        onClickDelete(event);
+      };
+
       var onClickScrollToNotePointerHandler = function onClickScrollToNotePointerHandler(event) {
         event.stopPropagation();
         onClickScrollToNotePointer(note.id);
@@ -120,7 +125,7 @@ var NoteContainer = function (_Component) {
           { className: 'note-header', onClick: onHeaderClick },
           _react2.default.createElement(
             'button',
-            { onClick: onClickDelete },
+            { onClick: onDelete },
             'x'
           ),
           _react2.default.createElement(
@@ -139,7 +144,7 @@ var NoteContainer = function (_Component) {
           'div',
           { className: 'note-body' },
           _react2.default.createElement(_BasicEditor2.default, {
-            editorState: note.editorState || note.contents,
+            editorState: note.editorState,
             contentId: contentId,
             assets: assets,
             ref: bindRef,

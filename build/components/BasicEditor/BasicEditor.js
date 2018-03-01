@@ -465,14 +465,14 @@ var _initialiseProps = function _initialiseProps() {
   this.componentDidMount = function () {
     // setTimeout(() => {
     _this2.setState({
-      readOnly: false
+      readOnly: false,
+      editorState: _this2.props.editorState ? _draftJs.EditorState.createWithContent(_this2.props.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor()
     });
     // });
   };
 
   this.componentWillReceiveProps = function (nextProps, nextState) {
     // console.time(`editor ${this.props.contentId}`);
-    // console.time(`editor ${this.props.contentId} receives props`);
 
     var stateMods = {};
     if (_this2.props.isRequestingAssets && !nextProps.isRequestingAssets) {
@@ -1214,6 +1214,7 @@ var _initialiseProps = function _initialiseProps() {
     var iconMap = _this2.props.iconMap ? (0, _extends3.default)({}, _defaultIconMap2.default, _this2.props.iconMap) : _defaultIconMap2.default;
 
     // console.timeEnd(`preparing rendering ${contentId}`)
+
 
     return _react2.default.createElement(
       'div',

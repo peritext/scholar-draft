@@ -5,6 +5,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+
 import './NoteContainer.scss';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
@@ -106,6 +107,11 @@ class NoteContainer extends Component {
       onEditorClick(event);
     };
 
+    const onDelete = (event) => {
+      event.stopPropagation();
+      onClickDelete(event);
+    };
+
     const onClickScrollToNotePointerHandler = (event) => {
       event.stopPropagation();
       onClickScrollToNotePointer(note.id);
@@ -116,13 +122,13 @@ class NoteContainer extends Component {
         id={`note-container-${note.id}`}
       >
         <div className="note-header" onClick={onHeaderClick}>
-          <button onClick={onClickDelete}>x</button>
+          <button onClick={onDelete}>x</button>
           <h3>Note {note.order}</h3>
           <button onClick={onClickScrollToNotePointerHandler}>↑</button>
         </div>
         <div className="note-body">
           <BasicEditor 
-            editorState={note.editorState || note.contents}
+            editorState={note.editorState}
             contentId={contentId}
             assets={assets}
             ref={bindRef}

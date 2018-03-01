@@ -221,14 +221,17 @@ export default class BasicEditor extends Component {
   componentDidMount = () => {
     // setTimeout(() => {
     this.setState({
-      readOnly: false
+      readOnly: false,
+      editorState: this.props.editorState ? EditorState.createWithContent(
+        this.props.editorState.getCurrentContent(), 
+        this.createDecorator()
+      ) : this.generateEmptyEditor()
     });
     // });
   }
 
   componentWillReceiveProps = (nextProps, nextState) => {
     // console.time(`editor ${this.props.contentId}`);
-    // console.time(`editor ${this.props.contentId} receives props`);
     
     let stateMods = {};
     if (this.props.isRequestingAssets && !nextProps.isRequestingAssets) {
@@ -1166,6 +1169,7 @@ export default class BasicEditor extends Component {
       } : defaultIconMap;
 
     // console.timeEnd(`preparing rendering ${contentId}`)
+
 
     return (
       <div 
