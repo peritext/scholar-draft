@@ -43,6 +43,8 @@ var _rebound = require('rebound');
 
 var _draftJs = require('draft-js');
 
+var _utils = require('../../utils');
+
 var _BasicEditor = require('../BasicEditor/BasicEditor');
 
 var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
@@ -54,13 +56,6 @@ var _NoteContainer2 = _interopRequireDefault(_NoteContainer);
 require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * This module exports a component representing an editor with main editor and footnotes,
- * with related interface and decorators.
- * Asset components must be provided through props
- * @module scholar-draft/Editor
- */
 
 var Editor = function (_Component) {
   (0, _inherits3.default)(Editor, _Component);
@@ -77,7 +72,6 @@ var Editor = function (_Component) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
 
     _this.componentDidMount = function () {
-
       // we use a spring system to handle automatic scrolls
       // (e.g. note pointer clicked or click in the table of contents)
       _this.springSystem = new _rebound.SpringSystem();
@@ -85,6 +79,24 @@ var Editor = function (_Component) {
       _this.spring.addListener({
         onSpringUpdate: _this.handleSpringUpdate
       });
+    };
+
+    _this.componentWillReceiveProps = function (nextProps) {
+      if (_this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+        setTimeout(function () {
+          var _getSelection = getSelection(),
+              anchorNode = _getSelection.anchorNode;
+
+          var offset = (0, _utils.getOffsetRelativeToContainer)(anchorNode, _this.props.className || 'scholar-draft-Editor');
+
+          if (offset.offsetY && !isNaN(offset.offsetY)) {
+            /* eslint no-restricted-globals : 0  */
+            var scrollTo = offset.offsetY - _this.globalScrollbar.getClientHeight() / 2;
+            _this.scrollTop(scrollTo);
+          }
+          // this.scrollTop(rect.top);
+        });
+      }
     };
 
     _this.handleSpringUpdate = function (spring) {
@@ -493,12 +505,20 @@ var Editor = function (_Component) {
     }
   }]);
   return Editor;
-}(_react.Component);
+}(_react.Component); /**
+                      * This module exports a component representing an editor with main editor and footnotes,
+                      * with related interface and decorators.
+                      * Asset components must be provided through props
+                      * @module scholar-draft/Editor
+                      */
 
 Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
   notes: _propTypes2.default.object,
   notesOrder: _propTypes2.default.array,
+
+  className: _propTypes2.default.string,
+
   assets: _propTypes2.default.object,
 
   editorClass: _propTypes2.default.string,

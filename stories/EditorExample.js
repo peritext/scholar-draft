@@ -110,7 +110,11 @@ export default class EditorExample extends Component {
         document.addEventListener('cut', this.onCopy);
         document.addEventListener('paste', this.onPaste);
         if (!this.props.empty) {
-            this.loadExampleState(example500000);
+            if (this.props.startingData) {
+                this.loadExampleState(this.props.startingData)
+            } else {
+                this.loadExampleState(example500000);
+            }
         }
     }
 

@@ -28,6 +28,43 @@ import insertEmptyBlock from './modifiers/insertEmptyBlock';
 import leaveList from './modifiers/leaveList';
 import insertText from './modifiers/insertText';
 
+export const getOffsetRelativeToContainer = (el, stopClassName) => {
+  let element = el;
+  let { parentNode } = element;
+  const offset = {
+    offsetX: el.offsetLeft,
+    offsetY: el.offsetTop
+  };
+
+  while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+    offset.offsetX += parentNode.offsetLeft;
+    offset.offsetY += parentNode.offsetTop;
+    element = parentNode;
+    const { parentNode: newParentNode } = element.parentNode;
+    parentNode = newParentNode;
+  }
+
+  return offset;
+};
+
+export const getEventTextRange = (pageX, pageY) => {
+  let range;
+  let textNode;
+  let offset;
+
+  if (document.caretPositionFromPoint) { // standard
+    range = document.caretPositionFromPoint(pageX, pageY);
+    textNode = range.offsetNode;
+    const { offset: rangeOffset } = range;
+    offset = rangeOffset;
+
+  } else if (document.caretRangeFromPoint) { // WebKit
+    range = document.caretRangeFromPoint(pageX, pageY);
+    textNode = range.startContainer;
+    offset = range.startOffset;
+  }
+  return { range, textNode, offset };
+};
 
 /**
  * Inserts an inline or block asset within a draft-js editorState

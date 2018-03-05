@@ -16,6 +16,10 @@ import {
 
 import { EditorState } from 'draft-js';
 
+
+import { getOffsetRelativeToContainer, } from '../../utils';
+
+
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 
@@ -28,6 +32,9 @@ export default class Editor extends Component {
     mainEditorState: PropTypes.object,
     notes: PropTypes.object,
     notesOrder: PropTypes.array,
+
+    className: PropTypes.string,
+
     assets: PropTypes.object,
 
     editorClass: PropTypes.string,
@@ -90,7 +97,6 @@ export default class Editor extends Component {
    * Executes code on instance after the component is mounted
    */
   componentDidMount = () => {
-
     // we use a spring system to handle automatic scrolls
     // (e.g. note pointer clicked or click in the table of contents)
     this.springSystem = new SpringSystem();
@@ -98,6 +104,21 @@ export default class Editor extends Component {
     this.spring.addListener({
       onSpringUpdate: this.handleSpringUpdate
     });
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+      setTimeout(() => {
+        const { anchorNode } = getSelection();
+        const offset = getOffsetRelativeToContainer(anchorNode, this.props.className || 'scholar-draft-Editor');
+
+        if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
+          const scrollTo = offset.offsetY - (this.globalScrollbar.getClientHeight() / 2);
+          this.scrollTop(scrollTo);
+        }
+        // this.scrollTop(rect.top);
+      });
+    }
   }
 
   /**
@@ -110,7 +131,6 @@ export default class Editor extends Component {
       this.globalScrollbar.scrollTop(val);
     }
   }
-
 
   /**
    * Programmatically modifies the scroll state of the component
