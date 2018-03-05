@@ -72,21 +72,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // modifiers helping to modify editorState
 var getOffsetRelativeToContainer = exports.getOffsetRelativeToContainer = function getOffsetRelativeToContainer(el, stopClassName) {
   var element = el;
-  var _element = element,
-      parentNode = _element.parentNode;
-
   var offset = {
-    offsetX: el.offsetLeft,
-    offsetY: el.offsetTop
+    offsetX: 0,
+    offsetY: 0
   };
+  if (element) {
+    var _element = element,
+        parentNode = _element.parentNode;
 
-  while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
-    offset.offsetX += parentNode.offsetLeft;
-    offset.offsetY += parentNode.offsetTop;
-    element = parentNode;
-    var newParentNode = element.parentNode.parentNode;
+    offset = {
+      offsetX: el.offsetLeft,
+      offsetY: el.offsetTop
+    };
 
-    parentNode = newParentNode;
+    while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+      offset.offsetX += parentNode.offsetLeft;
+      offset.offsetY += parentNode.offsetTop;
+      element = parentNode;
+      var newParentNode = element.parentNode.parentNode;
+
+      parentNode = newParentNode;
+    }
   }
 
   return offset;

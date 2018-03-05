@@ -87,12 +87,14 @@ var Editor = function (_Component) {
           var _getSelection = getSelection(),
               anchorNode = _getSelection.anchorNode;
 
-          var offset = (0, _utils.getOffsetRelativeToContainer)(anchorNode, _this.props.className || 'scholar-draft-Editor');
+          if (anchorNode) {
+            var offset = (0, _utils.getOffsetRelativeToContainer)(anchorNode, _this.props.className || 'scholar-draft-Editor');
 
-          if (offset.offsetY && !isNaN(offset.offsetY)) {
-            /* eslint no-restricted-globals : 0  */
-            var scrollTo = offset.offsetY - _this.globalScrollbar.getClientHeight() / 2;
-            _this.scrollTop(scrollTo);
+            if (offset.offsetY && !isNaN(offset.offsetY)) {
+              /* eslint no-restricted-globals : 0  */
+              var scrollTo = offset.offsetY - _this.globalScrollbar.getClientHeight() / 2;
+              _this.scrollTop(scrollTo);
+            }
           }
           // this.scrollTop(rect.top);
         });

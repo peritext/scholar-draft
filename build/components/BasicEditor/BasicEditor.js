@@ -463,12 +463,10 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.componentDidMount = function () {
-    // setTimeout(() => {
     _this2.setState({
       readOnly: false,
       editorState: _this2.props.editorState ? _draftJs.EditorState.createWithContent(_this2.props.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor()
     });
-    // });
   };
 
   this.componentWillReceiveProps = function (nextProps, nextState) {
@@ -504,11 +502,14 @@ var _initialiseProps = function _initialiseProps() {
           }
         }
       });
-    } else if (!_this2.props.isActive && nextProps.isActive) {
+    } else if (!_this2.props.isActive && nextProps.isActive && !_this2.props.assetRequestPosition) {
       var selection = _this2.state.editorState.getSelection();
       stateMods = (0, _extends3.default)({}, stateMods, {
-        readOnly: false,
-        editorState: nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor()
+        readOnly: false
+        // editorState: nextProps.editorState ? EditorState.createWithContent(
+        //   nextProps.editorState.getCurrentContent(), 
+        //   this.createDecorator()
+        // ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       });
 
@@ -517,6 +518,9 @@ var _initialiseProps = function _initialiseProps() {
             el = _state$lastClickCoord.el,
             pageX = _state$lastClickCoord.pageX,
             pageY = _state$lastClickCoord.pageY;
+
+
+        stateMods.lastClickCoordinates = undefined;
 
         var _getEventTextRange = (0, _utils.getEventTextRange)(pageX, pageY),
             offset = _getEventTextRange.offset;
@@ -550,8 +554,6 @@ var _initialiseProps = function _initialiseProps() {
             focusOffset: startOffset
           }));
           var selectedEditorState = _draftJs.EditorState.acceptSelection(_this2.state.editorState, newSelection);
-          // setTimeout(() => {
-
           stateMods = (0, _extends3.default)({}, stateMods, {
             editorState: selectedEditorState || _this2.generateEmptyEditor()
           });
@@ -561,11 +563,18 @@ var _initialiseProps = function _initialiseProps() {
             _this2.forceRender((0, _extends3.default)({}, _this2.props, { editorState: selectedEditorState }));
           });
         }
+      } else {
+        stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor();
+        setTimeout(function () {
+          return _this2.forceRender(_this2.props);
+        });
       }
 
       // updating locally stored editorState when the one given by props
       // has changed
     } else if (_this2.props.editorState !== nextProps.editorState) {
+      // console.log('storing new editor state with selection', 
+      // nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
       stateMods = (0, _extends3.default)({}, stateMods, {
         editorState: nextProps.editorState || _this2.generateEmptyEditor()
       });
@@ -646,18 +655,28 @@ var _initialiseProps = function _initialiseProps() {
   this.componentDidUpdate = function (prevProps, prevState) {
     _this2.updateSelection();
     // console.timeEnd(`rendering ${this.props.contentId}`)
-    if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly &&
+    if (
+    /* (
+    this.props.editorState !== prevProps.editorState && 
+    this.editor &&
+    !this.state.readOnly && 
     // this.props.isActive &&
-    prevState.readOnly || prevState.readOnly && !_this2.state.readOnly) {
+    prevState.readOnly
+    )
+    ||
+    */
+    prevState.readOnly && !_this2.state.readOnly) {
       // draft triggers an unwanted onChange event when focusing
       _this2.setState({
         isFocusing: true
       });
       setTimeout(function () {
-        _this2.setState({
-          isFocusing: false
-        });
         _this2.editor.focus();
+        setTimeout(function () {
+          return _this2.setState({
+            isFocusing: false
+          });
+        });
       });
     }
   };
@@ -723,10 +742,13 @@ var _initialiseProps = function _initialiseProps() {
   this.onChange = function (editorState) {
     var feedUndoStack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-    if (feedUndoStack === true) {
-      _this2.feedUndoStack(editorState);
-    }
+    // console.log(this.props.contentId, 
+    // ' on change', editorState.getSelection().getStartOffset(), 
+    // 'is focusing', this.state.isFocusing)
     if (typeof _this2.props.onEditorChange === 'function' && !_this2.state.readOnly && !_this2.state.isFocusing) {
+      if (feedUndoStack === true) {
+        _this2.feedUndoStack(editorState);
+      }
       _this2.props.onEditorChange(editorState);
     }
   };
@@ -787,6 +809,7 @@ var _initialiseProps = function _initialiseProps() {
     var selectedEditorState = _draftJs.EditorState.forceSelection(newEditorState, editorState.getSelection());
     var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
+    // console.log('force editor state', selectedEditorState.getSelection().getStartOffset())
     _this2.setState({
       editorState: selectedEditorState
     });
@@ -1215,14 +1238,16 @@ var _initialiseProps = function _initialiseProps() {
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      var coordinates = {
-        clientX: event.clientX,
-        clientY: event.clientY,
-        el: event.target,
-        pageX: event.pageX,
-        pageY: event.pageY
-      };
-      stateMods.lastClickCoordinates = coordinates;
+      if (_this2.state.readOnly) {
+        var coordinates = {
+          clientX: event.clientX,
+          clientY: event.clientY,
+          el: event.target,
+          pageX: event.pageX,
+          pageY: event.pageY
+        };
+        stateMods.lastClickCoordinates = coordinates;
+      }
       if (_this2.props.isActive && _this2.state.readOnly) {
         stateMods.readOnly = false;
       }
@@ -1281,6 +1306,8 @@ var _initialiseProps = function _initialiseProps() {
     var iconMap = _this2.props.iconMap ? (0, _extends3.default)({}, _defaultIconMap2.default, _this2.props.iconMap) : _defaultIconMap2.default;
 
     // console.timeEnd(`preparing rendering ${contentId}`)
+    // console.log(this.props.contentId, 
+    // 'render with selection', stateEditorState.getSelection().getStartOffset());
     return _react2.default.createElement(
       'div',
       {

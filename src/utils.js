@@ -30,20 +30,26 @@ import insertText from './modifiers/insertText';
 
 export const getOffsetRelativeToContainer = (el, stopClassName) => {
   let element = el;
-  let { parentNode } = element;
-  const offset = {
-    offsetX: el.offsetLeft,
-    offsetY: el.offsetTop
+  let offset = {
+    offsetX: 0,
+    offsetY: 0
   };
+  if (element) {
+    let { parentNode } = element;
+    offset = {
+      offsetX: el.offsetLeft,
+      offsetY: el.offsetTop
+    };
 
-  while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
-    offset.offsetX += parentNode.offsetLeft;
-    offset.offsetY += parentNode.offsetTop;
-    element = parentNode;
-    const { parentNode: newParentNode } = element.parentNode;
-    parentNode = newParentNode;
+    while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+      offset.offsetX += parentNode.offsetLeft;
+      offset.offsetY += parentNode.offsetTop;
+      element = parentNode;
+      const { parentNode: newParentNode } = element.parentNode;
+      parentNode = newParentNode;
+    }
   }
-
+    
   return offset;
 };
 

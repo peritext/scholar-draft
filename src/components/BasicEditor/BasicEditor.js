@@ -221,7 +221,6 @@ export default class BasicEditor extends Component {
    */
 
   componentDidMount = () => {
-    // setTimeout(() => {
     this.setState({
       readOnly: false,
       editorState: this.props.editorState ? EditorState.createWithContent(
@@ -229,7 +228,6 @@ export default class BasicEditor extends Component {
         this.createDecorator()
       ) : this.generateEmptyEditor()
     });
-    // });
   }
 
   componentWillReceiveProps = (nextProps, nextState) => {
@@ -269,15 +267,15 @@ export default class BasicEditor extends Component {
           }
         },
       };
-    } else if (!this.props.isActive && nextProps.isActive) {
+    } else if (!this.props.isActive && nextProps.isActive && !this.props.assetRequestPosition) {
       const selection = this.state.editorState.getSelection();
       stateMods = {
         ...stateMods,
         readOnly: false,
-        editorState: nextProps.editorState ? EditorState.createWithContent(
-          nextProps.editorState.getCurrentContent(), 
-          this.createDecorator()
-        ) : this.generateEmptyEditor(),
+        // editorState: nextProps.editorState ? EditorState.createWithContent(
+        //   nextProps.editorState.getCurrentContent(), 
+        //   this.createDecorator()
+        // ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       };
 
@@ -289,6 +287,8 @@ export default class BasicEditor extends Component {
           pageX, 
           pageY
         } = this.state.lastClickCoordinates;
+
+        stateMods.lastClickCoordinates = undefined;
 
         const { offset } = getEventTextRange(pageX, pageY);
         let element = el;
@@ -326,8 +326,6 @@ export default class BasicEditor extends Component {
             this.state.editorState, 
             newSelection
           );
-          // setTimeout(() => {
-
           stateMods = {
             ...stateMods,
             editorState: selectedEditorState || this.generateEmptyEditor()
@@ -338,11 +336,19 @@ export default class BasicEditor extends Component {
             this.forceRender({ ...this.props, editorState: selectedEditorState });
           });
         }
+      } else {
+        stateMods.editorState = nextProps.editorState ? EditorState.createWithContent(
+          nextProps.editorState.getCurrentContent(), 
+          this.createDecorator()
+        ) : this.generateEmptyEditor();
+        setTimeout(() => this.forceRender(this.props));
       }
       
     // updating locally stored editorState when the one given by props
     // has changed
     } else if (this.props.editorState !== nextProps.editorState) {
+      // console.log('storing new editor state with selection', 
+      // nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
       stateMods = {
         ...stateMods,
         editorState: nextProps.editorState || this.generateEmptyEditor()
@@ -437,14 +443,15 @@ export default class BasicEditor extends Component {
     this.updateSelection();
     // console.timeEnd(`rendering ${this.props.contentId}`)
     if (
-      (
-        this.props.editorState !== prevProps.editorState && 
+      /* (
+      this.props.editorState !== prevProps.editorState && 
       this.editor &&
       !this.state.readOnly && 
       // this.props.isActive &&
       prevState.readOnly
       )
       ||
+      */
       (prevState.readOnly && !this.state.readOnly)
     ) {
       // draft triggers an unwanted onChange event when focusing
@@ -452,10 +459,11 @@ export default class BasicEditor extends Component {
         isFocusing: true
       });
       setTimeout(() => {
-        this.setState({
-          isFocusing: false
-        });
         this.editor.focus();
+        setTimeout(() => 
+          this.setState({
+            isFocusing: false
+          }));
       });
     } 
   }
@@ -540,14 +548,17 @@ export default class BasicEditor extends Component {
    * @param {ImmutableRecord} editorState - the new editor state
    */
   onChange = (editorState, feedUndoStack = true) => {
-    if (feedUndoStack === true) {
-      this.feedUndoStack(editorState);
-    }
+    // console.log(this.props.contentId, 
+    // ' on change', editorState.getSelection().getStartOffset(), 
+    // 'is focusing', this.state.isFocusing)
     if (
       typeof this.props.onEditorChange === 'function' && 
       !this.state.readOnly && 
       !this.state.isFocusing
     ) {
+      if (feedUndoStack === true) {
+        this.feedUndoStack(editorState);
+      }
       this.props.onEditorChange(editorState);
     }
   }
@@ -637,6 +648,7 @@ export default class BasicEditor extends Component {
     );
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
+    // console.log('force editor state', selectedEditorState.getSelection().getStartOffset())
     this.setState({ 
       editorState: selectedEditorState,
     });
@@ -1177,14 +1189,16 @@ export default class BasicEditor extends Component {
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      const coordinates = {
-        clientX: event.clientX, 
-        clientY: event.clientY, 
-        el: event.target,
-        pageX: event.pageX,
-        pageY: event.pageY,
-      };
-      stateMods.lastClickCoordinates = coordinates;
+      if (this.state.readOnly) {
+        const coordinates = {
+          clientX: event.clientX, 
+          clientY: event.clientY, 
+          el: event.target,
+          pageX: event.pageX,
+          pageY: event.pageY,
+        };
+        stateMods.lastClickCoordinates = coordinates;
+      }
       if (this.props.isActive && this.state.readOnly) {
         stateMods.readOnly = false;
       }
@@ -1249,6 +1263,8 @@ export default class BasicEditor extends Component {
       } : defaultIconMap;
 
     // console.timeEnd(`preparing rendering ${contentId}`)
+    // console.log(this.props.contentId, 
+    // 'render with selection', stateEditorState.getSelection().getStartOffset());
     return (
       <div 
         className={editorClass + (readOnly ? '' : ' active')}

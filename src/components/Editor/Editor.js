@@ -110,11 +110,13 @@ export default class Editor extends Component {
     if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
       setTimeout(() => {
         const { anchorNode } = getSelection();
-        const offset = getOffsetRelativeToContainer(anchorNode, this.props.className || 'scholar-draft-Editor');
+        if (anchorNode) {
+          const offset = getOffsetRelativeToContainer(anchorNode, this.props.className || 'scholar-draft-Editor');
 
-        if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
-          const scrollTo = offset.offsetY - (this.globalScrollbar.getClientHeight() / 2);
-          this.scrollTop(scrollTo);
+          if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
+            const scrollTo = offset.offsetY - (this.globalScrollbar.getClientHeight() / 2);
+            this.scrollTop(scrollTo);
+          }
         }
         // this.scrollTop(rect.top);
       });
