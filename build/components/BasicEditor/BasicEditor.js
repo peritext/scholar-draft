@@ -187,16 +187,6 @@ var BasicEditor = function (_Component) {
    * Component livecycle hooks
    */
 
-  // if (
-  //   this.state.readOnly !== nextState.readOnly ||
-  //   this.state.editorState !== nextProps.editorState ||
-  //   this.state.assets !== nextProps.assets
-  // ) {
-  //   return true;
-  // }
-  // return false;
-
-
   /**
    * Handles note addition in a secured and appropriate way
    */
@@ -210,6 +200,12 @@ var BasicEditor = function (_Component) {
 
   /**
    * Unlocks draft js editor when an asset is unfocused
+   * @param {object} event - the input event
+   */
+
+
+  /**
+   * Locks draft js editor and hides the toolbars when editor is blured
    * @param {object} event - the input event
    */
 
@@ -376,6 +372,7 @@ BasicEditor.propTypes = {
   contentId: _propTypes2.default.string,
   messages: _propTypes2.default.object,
   isActive: _propTypes2.default.bool,
+  isRequestingAssets: _propTypes2.default.bool,
   /*
    * Method props
    */
@@ -390,6 +387,7 @@ BasicEditor.propTypes = {
   onDragOver: _propTypes2.default.func,
   onClick: _propTypes2.default.func,
   onBlur: _propTypes2.default.func,
+  onFocus: _propTypes2.default.func,
   onAssetChoice: _propTypes2.default.func,
   onAssetChange: _propTypes2.default.func,
   onAssetRequestCancel: _propTypes2.default.func,
@@ -416,7 +414,9 @@ BasicEditor.propTypes = {
 
   placeholder: _propTypes2.default.string,
 
-  iconMap: _propTypes2.default.object };
+  iconMap: _propTypes2.default.object,
+
+  styles: _propTypes2.default.object };
 BasicEditor.defaultProps = {
   blockAssetComponents: {}
 };
@@ -434,6 +434,8 @@ BasicEditor.childContextTypes = {
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,
   onNotePointerMouseClick: _propTypes2.default.func,
+
+  onFocus: _propTypes2.default.func,
 
   iconMap: _propTypes2.default.object };
 
@@ -461,47 +463,106 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.componentDidMount = function () {
-    setTimeout(function () {
-      _this2.setState({
-        readOnly: false
-      });
-      _this2.forceRender(_this2.props);
+    // setTimeout(() => {
+    _this2.setState({
+      readOnly: false,
+      editorState: _this2.props.editorState ? _draftJs.EditorState.createWithContent(_this2.props.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor()
     });
+    // });
   };
 
   this.componentWillReceiveProps = function (nextProps, nextState) {
-    var stateMods = {};
-    // hiding the toolbars when editor is set to inactive
-    if (_this2.props.isActive && !nextProps.isActive) {
+    // console.time(`editor ${this.props.contentId}`);
 
-      // locking the draft-editor if asset choice component is not open
-      if (!nextProps.assetRequestPosition) {
-        stateMods = (0, _extends3.default)({}, stateMods, {
-          readOnly: true,
-          styles: {
-            sideToolbar: {
-              display: 'none'
-            },
-            inlineToolbar: {
-              display: 'none'
-            }
+    var stateMods = {};
+
+    if (_this2.props.isRequestingAssets && !nextProps.isRequestingAssets) {
+      // console.log('hiding', this.props.contentId);
+      stateMods = (0, _extends3.default)({}, stateMods, {
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none'
           }
-        });
-      }
+        }
+      });
+    }
+    // hiding the toolbars when editor is set to inactive
+    if (_this2.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition) {
+      // locking the draft-editor if asset choice component is not open
+      // console.log('hding 2', this.props.contentId);
+      stateMods = (0, _extends3.default)({}, stateMods, {
+        readOnly: true,
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none'
+          }
+        }
+      });
     } else if (!_this2.props.isActive && nextProps.isActive) {
       var selection = _this2.state.editorState.getSelection();
-
       stateMods = (0, _extends3.default)({}, stateMods, {
         readOnly: false,
         editorState: nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor()
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       });
-      _this2.focus(undefined);
-      setTimeout(function () {
-        _this2.setState({
-          editorState: _draftJs.EditorState.forceSelection(_this2.state.editorState, selection)
-        });
-      });
+
+      if (_this2.state.lastClickCoordinates) {
+        var _state$lastClickCoord = _this2.state.lastClickCoordinates,
+            el = _state$lastClickCoord.el,
+            pageX = _state$lastClickCoord.pageX,
+            pageY = _state$lastClickCoord.pageY;
+
+        var _getEventTextRange = (0, _utils.getEventTextRange)(pageX, pageY),
+            offset = _getEventTextRange.offset;
+
+        var element = el;
+        var parent = element.parentNode;
+
+        // calculating the block-relative text offset of the selection
+        var startOffset = offset;
+
+        while (parent && !(parent.hasAttribute('data-block') && parent.attributes['data-offset-key']) && parent.tagName !== 'BODY') {
+          var previousSibling = element.previousSibling;
+          while (previousSibling) {
+            // not counting inline assets contents and note pointers
+            if (previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1) {
+              startOffset += previousSibling.textContent.length;
+            }
+            previousSibling = previousSibling.previousSibling;
+          }
+          element = parent;
+          parent = element.parentNode;
+        }
+        if (parent && parent.attributes['data-offset-key']) {
+          var blockId = parent.attributes['data-offset-key'].value;
+          blockId = blockId && blockId.split('-')[0];
+
+          var newSelection = new _draftJs.SelectionState((0, _extends3.default)({}, selection.toJS(), {
+            anchorKey: blockId,
+            focusKey: blockId,
+            anchorOffset: startOffset,
+            focusOffset: startOffset
+          }));
+          var selectedEditorState = _draftJs.EditorState.acceptSelection(_this2.state.editorState, newSelection);
+          // setTimeout(() => {
+
+          stateMods = (0, _extends3.default)({}, stateMods, {
+            editorState: selectedEditorState || _this2.generateEmptyEditor()
+          });
+
+          setTimeout(function () {
+            _this2.onChange(selectedEditorState, false);
+            _this2.forceRender((0, _extends3.default)({}, _this2.props, { editorState: selectedEditorState }));
+          });
+        }
+      }
+
       // updating locally stored editorState when the one given by props
       // has changed
     } else if (_this2.props.editorState !== nextProps.editorState) {
@@ -534,7 +595,6 @@ var _initialiseProps = function _initialiseProps() {
         setTimeout(function () {
           return _this2.forceRender(nextProps);
         });
-        // setTimeout(() => this.forceRender(nextProps), 500);
       }
     }
     // trigger changes when notes are changed
@@ -554,7 +614,9 @@ var _initialiseProps = function _initialiseProps() {
         // re-rendering after a timeout.
         // not doing that causes the draft editor not to update
         // before a new modification is applied to it
-        _this2.forceRender(nextProps);
+        setTimeout(function () {
+          return _this2.forceRender(nextProps);
+        });
       }
     }
     // trigger changes when notes are changed
@@ -564,18 +626,39 @@ var _initialiseProps = function _initialiseProps() {
     }
     // apply state changes
     if ((0, _keys2.default)(stateMods).length > 0) {
+      // console.log('update', nextProps.contentId);
       _this2.setState(stateMods);
     }
+    // console.timeEnd(`editor ${this.props.contentId} receives props`);
   };
 
   this.shouldComponentUpdate = function (nextProps, nextState) {
-    return true;
+    if (_this2.state.readOnly !== nextState.readOnly || _this2.props.isActive !== nextProps.isActive || _this2.state.styles !== nextState.styles || _this2.state.editorState !== nextProps.editorState || _this2.props.editorState !== nextProps.editorState || _this2.props.assetRequestPosition !== nextProps.assetRequestPosition) {
+      return true;
+    }
+    return false;
   };
 
-  this.componentDidUpdate = function (prevProps) {
-    _this2.debouncedUpdateSelection();
-    if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly && _this2.props.isActive) {
-      _this2.editor.focus();
+  this.componentWillUpdate = function () {
+    // console.time(`rendering ${this.props.contentId}`)
+  };
+
+  this.componentDidUpdate = function (prevProps, prevState) {
+    _this2.updateSelection();
+    // console.timeEnd(`rendering ${this.props.contentId}`)
+    if (_this2.props.editorState !== prevProps.editorState && _this2.editor && !_this2.state.readOnly &&
+    // this.props.isActive &&
+    prevState.readOnly || prevState.readOnly && !_this2.state.readOnly) {
+      // draft triggers an unwanted onChange event when focusing
+      _this2.setState({
+        isFocusing: true
+      });
+      setTimeout(function () {
+        _this2.setState({
+          isFocusing: false
+        });
+        _this2.editor.focus();
+      });
     }
   };
 
@@ -625,13 +708,25 @@ var _initialiseProps = function _initialiseProps() {
     }
   };
 
+  this.onFocus = function (event) {
+    event.stopPropagation();
+
+    // calls onBlur callbacks if provided
+    var onFocus = _this2.props.onFocus;
+
+
+    if (typeof onFocus === 'function') {
+      onFocus(event);
+    }
+  };
+
   this.onChange = function (editorState) {
     var feedUndoStack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     if (feedUndoStack === true) {
       _this2.feedUndoStack(editorState);
     }
-    if (typeof _this2.props.onEditorChange === 'function' && !_this2.props.readOnly) {
+    if (typeof _this2.props.onEditorChange === 'function' && !_this2.state.readOnly && !_this2.state.isFocusing) {
       _this2.props.onEditorChange(editorState);
     }
   };
@@ -686,10 +781,10 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.forceRender = function (props) {
-    var editorState = props.editorState || _this2.generateEmptyEditor();
+    var editorState = props.editorState || _this2.state.editorState || _this2.generateEmptyEditor();
     var content = editorState.getCurrentContent();
     var newEditorState = _draftJs.EditorState.createWithContent(content, _this2.createDecorator());
-    var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    var selectedEditorState = _draftJs.EditorState.forceSelection(newEditorState, editorState.getSelection());
     var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
     _this2.setState({
@@ -948,7 +1043,13 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.updateSelection = function () {
-    if (!_this2.props.isActive) {
+    if (!(_this2.props.isRequestingAssets || _this2.props.isActive) && _this2.state.styles.sideToolbar.display !== 'none') {
+      _this2.setState({
+        styles: {
+          sideToolbar: { display: 'none' },
+          inlineToolbar: { display: 'none' }
+        }
+      });
       return;
     }
     var left = void 0;
@@ -977,13 +1078,15 @@ var _initialiseProps = function _initialiseProps() {
     if (!sideToolbarEle) {
       return;
     }
+
     var rangeBounds = selectionRange.getBoundingClientRect();
 
     var selectedBlock = (0, _utils.getSelectedBlockElement)(selectionRange);
-    if (selectedBlock) {
+    if (selectedBlock && _this2.props.isActive) {
       var blockBounds = selectedBlock.getBoundingClientRect();
-      var editorBounds = _this2.state.editorBounds;
-
+      var editorNode = _this2.editor && _this2.editor.editor;
+      var editorBounds = editorNode.getBoundingClientRect();
+      // const { editorBounds } = this.state;
       if (!editorBounds) return;
       sideToolbarTop = rangeBounds.top || blockBounds.top;
       styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
@@ -1008,7 +1111,7 @@ var _initialiseProps = function _initialiseProps() {
       } else {
         styles.inlineToolbar.display = 'none';
       }
-    } else {
+    } else if (!_this2.props.isRequestingAssets) {
       styles.sideToolbar.display = 'none';
       styles.inlineToolbar.display = 'none';
     }
@@ -1022,17 +1125,9 @@ var _initialiseProps = function _initialiseProps() {
 
   this.focus = function (event) {
 
-    var stateMods = {};
-
-    var editorNode = _this2.editor && _this2.editor.editor;
-    stateMods.editorBounds = editorNode.getBoundingClientRect();
-
-    if ((0, _keys2.default)(stateMods).length) {
-      _this2.setState(stateMods);
-    }
     setTimeout(function () {
       if (!_this2.state.readOnly) {
-        editorNode.focus();
+        _this2.editor.focus();
       }
     });
   };
@@ -1094,6 +1189,9 @@ var _initialiseProps = function _initialiseProps() {
         onNoteAdd = _this2.onNoteAdd,
         _defaultKeyBindingFn = _this2._defaultKeyBindingFn;
 
+    // console.time(`preparing rendering ${contentId}`)
+
+
     /**
      * Functions handling draft editor locking/unlocking
      * and callbacks related to inline asset choices with asset choice component
@@ -1113,14 +1211,24 @@ var _initialiseProps = function _initialiseProps() {
     // unlocking draft-js editor when clicked
     var onMainClick = function onMainClick(event) {
       event.stopPropagation();
+      var stateMods = {};
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      // if (this.state.readOnly) {
-      //   this.setState({
-      //     readOnly: false
-      //   });
-      // }
+      var coordinates = {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        el: event.target,
+        pageX: event.pageX,
+        pageY: event.pageY
+      };
+      stateMods.lastClickCoordinates = coordinates;
+      if (_this2.props.isActive && _this2.state.readOnly) {
+        stateMods.readOnly = false;
+      }
+      if ((0, _keys2.default)(stateMods).length > 0) {
+        _this2.setState(stateMods);
+      }
       // this.focus(event);
     };
 
@@ -1134,9 +1242,12 @@ var _initialiseProps = function _initialiseProps() {
     // unlocking draft-js editor when asset choice is abandonned
     var onOnAssetRequestCancel = function onOnAssetRequestCancel() {
       onAssetRequestCancel();
-      // this.setState({
-      //   readOnly: false
-      // });
+
+      _this2.forceRender(_this2.props);
+
+      _this2.setState({
+        readOnly: false
+      });
     };
 
     // unlocking draft-js editor when asset is choosen
@@ -1151,7 +1262,7 @@ var _initialiseProps = function _initialiseProps() {
      * component bindings and final props definitions
      */
 
-    var realEditorState = editorState || _this2.generateEmptyEditor();
+    var realEditorState = editorState || _this2.generateEmptyEditor(); /* eslint no-unused-vars : 0 */
 
     var bindEditorRef = function bindEditorRef(editor) {
       _this2.editor = editor;
@@ -1169,6 +1280,7 @@ var _initialiseProps = function _initialiseProps() {
     // props-provided iconMap can be merged with defaultIconMap for displaying custom icons
     var iconMap = _this2.props.iconMap ? (0, _extends3.default)({}, _defaultIconMap2.default, _this2.props.iconMap) : _defaultIconMap2.default;
 
+    // console.timeEnd(`preparing rendering ${contentId}`)
     return _react2.default.createElement(
       'div',
       {
@@ -1180,7 +1292,7 @@ var _initialiseProps = function _initialiseProps() {
       },
       _react2.default.createElement(_InlineToolbar2.default, {
         ref: bindInlineToolbar,
-        editorState: realEditorState,
+        editorState: stateEditorState,
         updateEditorState: onChange,
         iconMap: iconMap,
         style: styles.inlineToolbar
@@ -1227,6 +1339,7 @@ var _initialiseProps = function _initialiseProps() {
         handleKeyCommand: _handleKeyCommand,
         handleBeforeInput: _handleBeforeInput,
         handleReturn: _handleReturn,
+        onFocus: _this2.onFocus,
         onBlur: _this2.onBlur,
         onTab: _onTab,
 

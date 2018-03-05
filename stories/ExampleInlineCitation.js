@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import FieldInput from './FieldInput';
+
 const InlineCitation = ({
   assetId,
   asset,
@@ -20,6 +22,7 @@ const InlineCitation = ({
 
   const onResourceTitleChange = e => {
     const title = e.target.value;
+    e.stopPropagation();
     onAssetChange('resources', resourceId, {
       ...resource,
       title
@@ -28,6 +31,7 @@ const InlineCitation = ({
 
   const onContextualizerPageChange = e => {
     const pages = e.target.value;
+    e.stopPropagation();
     onAssetChange('contextualizers', contextualizerId, {
       ...contextualizer,
       pages
@@ -41,16 +45,16 @@ const InlineCitation = ({
     onAssetFocus(e);
   };
   return (
-    <span className="citation-inline">
+    <span className="citation-inline" style={{background: 'red'}}>
       <span><i>
-            <input
+            <FieldInput
               value={resource.title}
               onChange={onResourceTitleChange}
               onClick={onTitleClick}
               onFocus={onAssetFocus}
               onBlur={onAssetBlur}
             />
-          </i>. <i>pp. <input
+          </i>. <i>pp. <FieldInput
               value={contextualizer.pages}
               onChange={onContextualizerPageChange}
               onFocus={onAssetFocus}

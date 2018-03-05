@@ -101,7 +101,7 @@ class NotePointer extends Component {
 }
 
 NotePointer.propTypes = {
-  noteId: PropTypes.string,
+  noteId: PropTypes.string
 };
 
 export default NotePointer;

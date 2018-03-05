@@ -109,6 +109,13 @@ export default class EditorExample extends Component {
         document.addEventListener('copy', this.onCopy);
         document.addEventListener('cut', this.onCopy);
         document.addEventListener('paste', this.onPaste);
+        if (!this.props.empty) {
+            if (this.props.startingData) {
+                this.loadExampleState(this.props.startingData)
+            } else {
+                this.loadExampleState(example500000);
+            }
+        }
     }
 
     componentWillUpdate = (nextProps, nextState) => {
@@ -139,7 +146,7 @@ export default class EditorExample extends Component {
     }
 
     componentWillUpdate = () => {
-        // console.time('editor update time');
+        console.time('editor update time');
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -147,7 +154,7 @@ export default class EditorExample extends Component {
             // this.cleanStuffFromEditorInspection(this.state);
             this.debouncedCleanStuffFromEditorInspection(this.state);
         }
-        // console.timeEnd('editor update time');
+        console.timeEnd('editor update time');
     }
 
     /**
@@ -170,7 +177,6 @@ export default class EditorExample extends Component {
         const {
             focusedEditorId
         } = this.state;
-        console.log('focused editor id', focusedEditorId);
         // case: data is copied from the main editor
         if (focusedEditorId === 'main') {
             clipboard = this.editor.mainEditor.editor.getClipboard();
@@ -179,7 +185,7 @@ export default class EditorExample extends Component {
         } else {
             activeId = Object.keys(this.state.notes)
                 .find(id => id === focusedEditorId);
-            editorState = this.state.notes[activeId].contents;
+            editorState = this.state.notes[activeId].editorState;
             clipboard = this.editor.notes[activeId].editor.editor.getClipboard();
         }
         // todo : this is bad, due to problems with readonly management
@@ -209,7 +215,7 @@ export default class EditorExample extends Component {
                 // copying note pointer and note
                 if (type === NOTE_POINTER) {
                     const noteId = eData.data.noteId;
-                    const noteContent = this.state.notes[noteId].contents.getCurrentContent();
+                    const noteContent = this.state.notes[noteId].editorState.getCurrentContent();
                     const rawContent = convertToRaw(noteContent);
                     copiedEntities[noteId] = [];
                     copiedNotes.push({
@@ -225,7 +231,7 @@ export default class EditorExample extends Component {
                                 entityKey = char.entity;
                                 entity = currentContent.getEntity(entityKey);
                                 eData = entity.toJS();
-                                console.log('pushing entity', eData, 'for content id', activeId, entityKey);
+                                // console.log('pushing entity', eData, 'for content id', activeId, entityKey);
                                 copiedEntities[noteId].push({
                                     key: entityKey,
                                     entity: eData
@@ -277,7 +283,6 @@ export default class EditorExample extends Component {
             copiedData // model-dependent set of data objects saved to clipboard
         } = this.state;
 
-        console.log('copied data', copiedData);
 
         // this hack allows to check if data comes from out of the editor
         if (!clipboard || e.clipboardData.getData('text/plain') !== SCHOLAR_DRAFT_CLIPBOARD_CODE) {
@@ -302,7 +307,7 @@ export default class EditorExample extends Component {
         } else {
             activeId = Object.keys(this.state.notes)
                 .find(id => focusedEditorId === id);
-            editorState = this.state.notes[activeId].contents;
+            editorState = this.state.notes[activeId].editorState;
         }
 
         const currentContent = editorState.getCurrentContent();
@@ -344,7 +349,7 @@ export default class EditorExample extends Component {
                             ...result,
                             [id]: {
                                 ...note,
-                                contents: noteEditorState,
+                                editorState: noteEditorState,
                                 oldId: note.id,
                                 id
                             }
@@ -476,7 +481,7 @@ export default class EditorExample extends Component {
                         });
                     } else {
                         copiedEntities[contentId].forEach(entity => {
-                            const editor = stateMods.notes[contentId].contents;
+                            const editor = stateMods.notes[contentId].editorState;
 
 
                             newContentState = editor.getCurrentContent();
@@ -495,7 +500,7 @@ export default class EditorExample extends Component {
                                     }
                                 })
                             })
-                            stateMods.notes[contentId].contents = EditorState.push(
+                            stateMods.notes[contentId].editorState = EditorState.push(
                                 newEditorState,
                                 newContentState,
                                 'create-entity'
@@ -527,7 +532,7 @@ export default class EditorExample extends Component {
                 ...this.state.notes,
                 [activeId]: {
                     ...this.state.notes[activeId],
-                    contents: insertFragment(stateMods.notes[activeId].contents, newClipboard)
+                    editorState: insertFragment(stateMods.notes[activeId].editorState, newClipboard)
                 }
             }
         }
@@ -556,7 +561,7 @@ export default class EditorExample extends Component {
         const notesEditorStates = Object.keys(this.state.notes).reduce((result, noteId) => {
             return {
                 ...result,
-                [noteId]: this.state.notes[noteId].contents
+                [noteId]: this.state.notes[noteId].editorState
             }
         }, {});
         let editorStates = {
@@ -583,7 +588,7 @@ export default class EditorExample extends Component {
                     ...this.state.notes,
                     [editorStateId]: {
                         ...this.state.notes[editorStateId],
-                        contents: editorState
+                        editorState: editorState
                     }
                 }
             });
@@ -595,7 +600,6 @@ export default class EditorExample extends Component {
         // this.setState({
         //   focusedEditorId: undefined //  contentId
         // });
-
         setTimeout(() => {
             this.setState({
                 assetRequest: true,
@@ -678,7 +682,7 @@ export default class EditorExample extends Component {
         };
         let editorState = inputEditorState;
         if (!editorState) {
-            editorState = assetRequestContentId === 'main' ? mainEditorState : notes[assetRequestContentId].contents;
+            editorState = assetRequestContentId === 'main' ? mainEditorState : notes[assetRequestContentId].editorState;
         }
         const newEditorState = insertAssetInEditor(editorState, { id: contextualization.id }, assetRequestSelection);
         const newState = {
@@ -691,12 +695,11 @@ export default class EditorExample extends Component {
             },
             notes: this.state.notes,
             focusedEditorId: assetRequestContentId
-            // contents: newEditorState,
         };
         if (assetRequestContentId === 'main') {
             newState.mainEditorState = newEditorState;
         } else {
-            newState.notes[assetRequestContentId].contents = newEditorState;
+            newState.notes[assetRequestContentId].editorState = newEditorState;
         }
         newState.focusedEditorId = undefined;
         this.setState(newState);
@@ -720,6 +723,7 @@ export default class EditorExample extends Component {
                 }
             }
         })
+        setTimeout(() => this.setState({assets: this.computeAssets(this.state)}))
     }
 
     updateContextualizerPages = pages => {
@@ -731,7 +735,8 @@ export default class EditorExample extends Component {
                     pages
                 }
             }
-        })
+        });
+        setTimeout(() => this.setState({assets: this.computeAssets(this.state)}))
     }
 
     onDataChange = (dataProp, id, newObject) => {
@@ -741,6 +746,11 @@ export default class EditorExample extends Component {
                 [id]: newObject
             }
         });
+        setTimeout(() => {
+            this.setState({
+                assets: this.computeAssets(this.state)
+            })
+        })
     }
 
     deleteContextualizations = ids => {
@@ -756,11 +766,11 @@ export default class EditorExample extends Component {
         let notes = this.state.notes;
         deleteAssetFromEditor(this.state.mainEditorState, id, newEditorState => {
             mapSeries(notes, (note, cb) => {
-                deleteAssetFromEditor(note.contents, id, newNoteEditorState => {
+                deleteAssetFromEditor(note.editorState, id, newNoteEditorState => {
                     cb(null, {
                         ...note,
                         id: note.id,
-                        contents: newNoteEditorState
+                        editorState: newNoteEditorState
                     });
                 });
             }, (err, finalNotes) => {
@@ -788,7 +798,7 @@ export default class EditorExample extends Component {
         // in notes
         Object.keys(this.state.notes)
             .forEach(noteId => {
-                const noteEditor = this.state.notes[noteId].contents;
+                const noteEditor = this.state.notes[noteId].editorState;
                 used = used.concat(getUsedAssets(noteEditor, contextualizations))
             });
         const unusedAssets = Object.keys(contextualizations).filter(id => used.indexOf(id) === -1);
@@ -810,7 +820,7 @@ export default class EditorExample extends Component {
             [id]: {
                 id,
                 // generate decorated editor
-                contents: this.editor.generateEmptyEditor()
+                editorState: this.editor.generateEmptyEditor()
             }
         };
         const { newNotes, notesOrder } = updateNotesFromEditor(mainEditorState, notes);
@@ -844,7 +854,7 @@ export default class EditorExample extends Component {
 
     addTextAtCurrentSelection = (text) => {
         const contentId = this.state.assetRequestContentId;
-        const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].contents;
+        const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
 
         const newContentState = Modifier.insertText(
             editorState.getCurrentContent(),
@@ -865,8 +875,8 @@ export default class EditorExample extends Component {
                     ...this.state.notes,
                     [contentId]: {
                         ...this.state.notes[contentId],
-                        contents: EditorState.push(
-                            this.state.notes[contentId].contents,
+                        editorState: EditorState.push(
+                            this.state.notes[contentId].editorState,
                             newContentState,
                             'insert-text'
                         )
@@ -894,7 +904,7 @@ export default class EditorExample extends Component {
                 ...result,
                 [noteId]: {
                     ...this.state.notes[noteId],
-                    contents: convertToRaw(notes[noteId].contents.getCurrentContent())
+                    contents: convertToRaw(notes[noteId].editorState.getCurrentContent())
                 }
             }), {})
         };
@@ -920,7 +930,7 @@ export default class EditorExample extends Component {
                 ...result,
                 [noteId]: {
                     ...notes[noteId],
-                    contents: EditorState.createWithContent(convertFromRaw(notes[noteId].contents))
+                    editorState: EditorState.createWithContent(convertFromRaw(notes[noteId].contents))
                 }
             }), {})
         });
@@ -1003,6 +1013,7 @@ export default class EditorExample extends Component {
             mainEditorState,
             clipboard,
             notes,
+            notesOrder,
             inlineAssetComponents,
             blockAssetComponents,
             contextualizations,
@@ -1035,7 +1046,8 @@ export default class EditorExample extends Component {
         };
 
         const onDrop = (contentId, payload, selection) => {
-            const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].contents;
+            console.log('on drop');
+            const editorState = contentId === 'main' ? this.state.mainEditorState : this.state.notes[contentId].editorState;
             this.insertContextualization(contentId, EditorState.acceptSelection(editorState, selection));
         };
         const onDragOver = id => {
@@ -1047,18 +1059,20 @@ export default class EditorExample extends Component {
         }
 
         const onClick = (event, contentId = 'main') => {
+            console.log('on click', contentId);
             if (this.state.focusedEditorId !== contentId) {
                 let editorState;
                 if (contentId === 'main') {
                     editorState = this.state.mainEditorState;
                 } else if (this.state.notes[contentId]) {
-                    editorState = this.state.notes[contentId].contents;
+                    editorState = this.state.notes[contentId].editorState;
                 }
                 if (editorState) {
                   const selection = editorState.getSelection();
 
                   this.setState({
-                      focusedEditorId: undefined
+                      focusedEditorId: undefined,
+                      assetRequestContentId: contentId
                   });
                   setTimeout(() => {
                       this.setState({
@@ -1085,6 +1099,10 @@ export default class EditorExample extends Component {
         // });
     };
 
+    const onAssetFocus = id => {
+        console.log('on asset focus', id);
+    }
+
     const assetChoiceProps = {
         options: ['asset 1', 'asset 2', 'asset 3'],
         addPlainText: (text) => {
@@ -1097,7 +1115,7 @@ export default class EditorExample extends Component {
         if (assetRequestContentId === 'main') {
             assetRequestPosition = mainEditorState.getSelection();
         } else if (assetRequestContentId && notes[assetRequestContentId]) {
-            assetRequestPosition = notes[assetRequestContentId].contents.getSelection();
+            assetRequestPosition = notes[assetRequestContentId].editorState.getSelection();
         }
     }
 
@@ -1120,8 +1138,16 @@ export default class EditorExample extends Component {
         }
     }
 
-    return ( <
-        div style = {
+    const onAssetBlur = e => {
+        console.log('on asset blur');
+    }
+
+    // console.log('focused', focusedEditorId);
+    // console.log('active', document.activeElement);
+    // console.log('asset request content id rendering', assetRequestContentId);
+
+    return ( 
+        <div style = {
             {
                 position: 'absolute',
                 left: 0,
@@ -1130,9 +1156,8 @@ export default class EditorExample extends Component {
                 height: '100%',
                 overflow: 'hidden'
             }
-        } >
-        <
-        div style = {
+        }>
+        <div style = {
             {
                 position: 'fixed',
                 padding: '1rem',
@@ -1143,20 +1168,18 @@ export default class EditorExample extends Component {
                 zIndex: 3,
                 overflow: 'auto'
             }
-        } >
-        <
-        button onClick = { changeRenderingMode } > Change rendering mode(present: { renderingMode }) < /button> <
-        button onClick = { downloadState } > Download current state < /button> <
-        button onClick = { load300000ExampleState } > Load example state(300 000 characters without entities) < /button> <
-        button onClick = { load500000ExampleState } > Load example state(500 000 characters(~170 pages doc) with 30 entities) < /button>
+        }>
+        <button onClick = { changeRenderingMode } > Change rendering mode(present: { renderingMode }) < /button> 
+        <button onClick = { downloadState } > Download current state < /button> 
+        <button onClick = { load300000ExampleState } > Load example state(300 000 characters without entities) < /button> 
+        <button onClick = { load500000ExampleState } > Load example state(500 000 characters(~170 pages doc) with 30 entities) < /button>
 
         {
-            assetRequest && < div >
-                <
-                button onClick = {
-                    () => insertContextualization() } > Insert contextualization < /button> <
-                /div>} <
-                div
+            assetRequest && <div>
+                <button onClick = {
+                    () => insertContextualization() } > Insert contextualization < /button> </div>
+        } 
+        <div
             draggable = { true }
             onDragStart = { startDrag }
             style = {
@@ -1165,8 +1188,8 @@ export default class EditorExample extends Component {
                         background: 'white'
                     }
                 } >
-                Draggable resource <
-                /div> {
+                Draggable resource 
+                </div> {
                     Object.keys(contextualizations)
                         .map(key => {
                             const onClick = () => deleteContextualization(key);
@@ -1179,33 +1202,25 @@ export default class EditorExample extends Component {
                                 /div>
                             );
                         })
-                } <
-                div > {
+                } <div> {
                     Object.keys(contextualizations).length > 0 && < div >
-                    <
-                    button onClick = { refreshUpstreamContextualizationsList } > Refresh upstream contextualizations list < /button> <
-                    /div>}
+                    <button onClick = { refreshUpstreamContextualizationsList }> Refresh upstream contextualizations list </button> </div>}
                     Change the contextualizer page:
-                        <
-                        input
-                    value = { Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages : '' }
-                    onChange = { onContextualizerPagesChange } >
-                    <
-                    /input> <
-                    /div> <
-                    div >
-                    Change the contextualizer title:
-                        <
-                        input
-                    value = { Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : 0 }
-                    onChange = { onResourceTitleChange } >
-                    <
-                    /input> <
-                    /div> <
-                    /div>
+                        <input
+                            value = { Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages : '' }
+                            onChange = { onContextualizerPagesChange } >
+                        </input> 
+                    </div> 
+                        <div>
+                        Change the contextualizer title:
+                            <input
+                            value = { Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : 0 }
+                            onChange = { onResourceTitleChange } >
+                            </input> 
+                        </div> 
+                    </div>
 
-                    <
-                    div
+                    <div
                     onScroll = { onScroll }
                     style = {
                         {
@@ -1216,11 +1231,11 @@ export default class EditorExample extends Component {
                             width: '80%',
                             overflow: 'auto'
                         }
-                    } >
-                    <
-                    Editor
+                    }>
+                    <Editor
                     mainEditorState = { mainEditorState }
                     notes = { notes }
+                    notesOrder={notesOrder}
                     assets = { assets }
 
                     clipboard = { clipboard }
@@ -1228,6 +1243,8 @@ export default class EditorExample extends Component {
                     ref = { bindRef }
 
                     focusedEditorId = { focusedEditorId }
+
+                    assetRequestContentId = {assetRequestContentId}
 
                     onEditorChange = { onEditorChange }
 
@@ -1243,11 +1260,14 @@ export default class EditorExample extends Component {
                     onAssetMouseOut = { onAssetMouseOut }
                     onAssetRequest = { onAssetRequest }
                     onAssetChange = { onDataChange }
+                    onAssetBlur={onAssetBlur}
                     onAssetRequestCancel = { onAssetRequestCancel }
                     onAssetChoice = { onAssetChoice }
 
                     onNoteAdd = { addNote }
                     onNoteDelete = { deleteNote }
+
+                    onAssetFocus={onAssetFocus}
 
                     onNotePointerMouseOver = { onNotePointerMouseOver }
                     onNotePointerMouseOut = { onNotePointerMouseOut }
@@ -1259,9 +1279,8 @@ export default class EditorExample extends Component {
                     inlineAssetComponents = { inlineAssetComponents }
                     blockAssetComponents = { blockAssetComponents }
                     AssetChoiceComponent = { ExampleBlockAssetChoice }
-                    /> <
-                    /div> <
-                    /div>
+                    /> </div>
+                    </div>
                 );
         }
     }

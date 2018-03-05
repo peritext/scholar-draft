@@ -16,6 +16,10 @@ import {
 
 import { EditorState } from 'draft-js';
 
+
+import { getOffsetRelativeToContainer, } from '../../utils';
+
+
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 
@@ -27,6 +31,10 @@ export default class Editor extends Component {
   static propTypes = {
     mainEditorState: PropTypes.object,
     notes: PropTypes.object,
+    notesOrder: PropTypes.array,
+
+    className: PropTypes.string,
+
     assets: PropTypes.object,
 
     editorClass: PropTypes.string,
@@ -41,6 +49,7 @@ export default class Editor extends Component {
     onAssetClick: PropTypes.func,
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
+    onAssetBlur: PropTypes.func,
 
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
@@ -52,6 +61,7 @@ export default class Editor extends Component {
     onBlur: PropTypes.func,
 
     assetRequestPosition: PropTypes.object,
+    assetRequestContentId: PropTypes.string,
     assetChoiceProps: PropTypes.object,
     
     inlineAssetComponents: PropTypes.object,
@@ -87,7 +97,6 @@ export default class Editor extends Component {
    * Executes code on instance after the component is mounted
    */
   componentDidMount = () => {
-
     // we use a spring system to handle automatic scrolls
     // (e.g. note pointer clicked or click in the table of contents)
     this.springSystem = new SpringSystem();
@@ -95,6 +104,21 @@ export default class Editor extends Component {
     this.spring.addListener({
       onSpringUpdate: this.handleSpringUpdate
     });
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+      setTimeout(() => {
+        const { anchorNode } = getSelection();
+        const offset = getOffsetRelativeToContainer(anchorNode, this.props.className || 'scholar-draft-Editor');
+
+        if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
+          const scrollTo = offset.offsetY - (this.globalScrollbar.getClientHeight() / 2);
+          this.scrollTop(scrollTo);
+        }
+        // this.scrollTop(rect.top);
+      });
+    }
   }
 
   /**
@@ -107,7 +131,6 @@ export default class Editor extends Component {
       this.globalScrollbar.scrollTop(val);
     }
   }
-
 
   /**
    * Programmatically modifies the scroll state of the component
@@ -196,6 +219,7 @@ export default class Editor extends Component {
       onBlur,
 
       assetRequestPosition,
+      assetRequestContentId,
       assetChoiceProps,
       
       inlineAssetComponents,
@@ -268,6 +292,7 @@ export default class Editor extends Component {
         contentId={noteId}
       
         assetRequestPosition={assetRequestPosition}
+        assetRequestContentId={assetRequestContentId}
         assetChoiceProps={assetChoiceProps}
       
         isActive={noteId === focusedEditorId}
@@ -316,6 +341,7 @@ export default class Editor extends Component {
     const {
       mainEditorState,
       notes,
+      notesOrder,
       assets,
 
       editorClass = 'scholar-draft-Editor',
@@ -330,6 +356,7 @@ export default class Editor extends Component {
       onAssetClick,
       onAssetMouseOver,
       onAssetMouseOut,
+      onAssetBlur,
 
       onNotePointerMouseOver,
       onNotePointerMouseOut,
@@ -340,6 +367,7 @@ export default class Editor extends Component {
       onBlur,
 
       assetRequestPosition,
+      assetRequestContentId,
       assetChoiceProps,
       
       inlineAssetComponents,
@@ -411,6 +439,13 @@ export default class Editor extends Component {
     const bindGlobalScrollbarRef = (scrollbar) => {
       this.globalScrollbar = scrollbar;
     };
+
+    const activeNotes = notesOrder || Object.keys(notes || {})
+      .sort((first, second) => {
+        if (notes[first].order > notes[second].order) {
+          return 1;
+        } return -1;
+      });
     return (
       <div className={editorClass}>
         <Scrollbars
@@ -430,6 +465,7 @@ export default class Editor extends Component {
               contentId="main"
 
               assetRequestPosition={assetRequestPosition}
+              isRequestingAssets={assetRequestContentId === 'main'}
               assetChoiceProps={assetChoiceProps}
 
               isActive={focusedEditorId === 'main'}
@@ -452,6 +488,7 @@ export default class Editor extends Component {
               onAssetClick={onAssetClick}
               onAssetMouseOver={onAssetMouseOver}
               onAssetMouseOut={onAssetMouseOut}
+              onAssetBlur={onAssetBlur}
 
               onNotePointerMouseOver={onNotePointerMouseOver}
               onNotePointerMouseOut={onNotePointerMouseOut}
@@ -472,12 +509,7 @@ export default class Editor extends Component {
           </section>
           <aside className="notes-container">
             {
-              Object.keys(notes || {})
-                .sort((first, second) => {
-                  if (notes[first].order > notes[second].order) {
-                    return 1;
-                  } return -1;
-                })
+              activeNotes
                 .map(this.renderNoteEditor)
             }
           </aside>

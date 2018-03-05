@@ -140,7 +140,7 @@ export default class ConnectedEditorExample extends Component {
     this.setState({
       contextualizationRequest: true,
       contextualizationRequestSelection: selection,
-      readOnly: true
+      // readOnly: true
     });
   }
 
@@ -148,7 +148,7 @@ export default class ConnectedEditorExample extends Component {
     this.setState({
       contextualizationRequest: undefined,
       contextualizationRequestSelection: undefined,
-      readOnly: false
+      // readOnly: false
     });
     setTimeout(() => {
       this.editor.focus();
@@ -668,9 +668,10 @@ export default class ConnectedEditorExample extends Component {
 
             assets={assets}
             assetRequestPosition={assetRequestPosition}
+            assetRequestContentId={'main'}
             assetChoiceProps={assetChoiceProps}
 
-            isActive={true}
+            isActive={!readOnly}
 
             onEditorChange={onEditorChange}
             onAssetRequest={onAssetRequest}

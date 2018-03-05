@@ -43,6 +43,8 @@ var _rebound = require('rebound');
 
 var _draftJs = require('draft-js');
 
+var _utils = require('../../utils');
+
 var _BasicEditor = require('../BasicEditor/BasicEditor');
 
 var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
@@ -54,13 +56,6 @@ var _NoteContainer2 = _interopRequireDefault(_NoteContainer);
 require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * This module exports a component representing an editor with main editor and footnotes,
- * with related interface and decorators.
- * Asset components must be provided through props
- * @module scholar-draft/Editor
- */
 
 var Editor = function (_Component) {
   (0, _inherits3.default)(Editor, _Component);
@@ -77,7 +72,6 @@ var Editor = function (_Component) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
 
     _this.componentDidMount = function () {
-
       // we use a spring system to handle automatic scrolls
       // (e.g. note pointer clicked or click in the table of contents)
       _this.springSystem = new _rebound.SpringSystem();
@@ -85,6 +79,24 @@ var Editor = function (_Component) {
       _this.spring.addListener({
         onSpringUpdate: _this.handleSpringUpdate
       });
+    };
+
+    _this.componentWillReceiveProps = function (nextProps) {
+      if (_this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+        setTimeout(function () {
+          var _getSelection = getSelection(),
+              anchorNode = _getSelection.anchorNode;
+
+          var offset = (0, _utils.getOffsetRelativeToContainer)(anchorNode, _this.props.className || 'scholar-draft-Editor');
+
+          if (offset.offsetY && !isNaN(offset.offsetY)) {
+            /* eslint no-restricted-globals : 0  */
+            var scrollTo = offset.offsetY - _this.globalScrollbar.getClientHeight() / 2;
+            _this.scrollTop(scrollTo);
+          }
+          // this.scrollTop(rect.top);
+        });
+      }
     };
 
     _this.handleSpringUpdate = function (spring) {
@@ -143,6 +155,7 @@ var Editor = function (_Component) {
           onClick = _this$props.onClick,
           onBlur = _this$props.onBlur,
           assetRequestPosition = _this$props.assetRequestPosition,
+          assetRequestContentId = _this$props.assetRequestContentId,
           assetChoiceProps = _this$props.assetChoiceProps,
           inlineAssetComponents = _this$props.inlineAssetComponents,
           blockAssetComponents = _this$props.blockAssetComponents,
@@ -211,6 +224,7 @@ var Editor = function (_Component) {
         contentId: noteId,
 
         assetRequestPosition: assetRequestPosition,
+        assetRequestContentId: assetRequestContentId,
         assetChoiceProps: assetChoiceProps,
 
         isActive: noteId === focusedEditorId,
@@ -318,6 +332,7 @@ var Editor = function (_Component) {
       var _props = this.props,
           mainEditorState = _props.mainEditorState,
           notes = _props.notes,
+          notesOrder = _props.notesOrder,
           assets = _props.assets,
           _props$editorClass = _props.editorClass,
           editorClass = _props$editorClass === undefined ? 'scholar-draft-Editor' : _props$editorClass,
@@ -330,6 +345,7 @@ var Editor = function (_Component) {
           onAssetClick = _props.onAssetClick,
           onAssetMouseOver = _props.onAssetMouseOver,
           onAssetMouseOut = _props.onAssetMouseOut,
+          onAssetBlur = _props.onAssetBlur,
           onNotePointerMouseOver = _props.onNotePointerMouseOver,
           onNotePointerMouseOut = _props.onNotePointerMouseOut,
           onNotePointerMouseClick = _props.onNotePointerMouseClick,
@@ -338,6 +354,7 @@ var Editor = function (_Component) {
           onClick = _props.onClick,
           onBlur = _props.onBlur,
           assetRequestPosition = _props.assetRequestPosition,
+          assetRequestContentId = _props.assetRequestContentId,
           assetChoiceProps = _props.assetChoiceProps,
           inlineAssetComponents = _props.inlineAssetComponents,
           blockAssetComponents = _props.blockAssetComponents,
@@ -405,6 +422,12 @@ var Editor = function (_Component) {
       var bindGlobalScrollbarRef = function bindGlobalScrollbarRef(scrollbar) {
         _this2.globalScrollbar = scrollbar;
       };
+
+      var activeNotes = notesOrder || (0, _keys2.default)(notes || {}).sort(function (first, second) {
+        if (notes[first].order > notes[second].order) {
+          return 1;
+        }return -1;
+      });
       return _react2.default.createElement(
         'div',
         { className: editorClass },
@@ -429,6 +452,7 @@ var Editor = function (_Component) {
               contentId: 'main',
 
               assetRequestPosition: assetRequestPosition,
+              isRequestingAssets: assetRequestContentId === 'main',
               assetChoiceProps: assetChoiceProps,
 
               isActive: focusedEditorId === 'main',
@@ -451,6 +475,7 @@ var Editor = function (_Component) {
               onAssetClick: onAssetClick,
               onAssetMouseOver: onAssetMouseOver,
               onAssetMouseOut: onAssetMouseOut,
+              onAssetBlur: onAssetBlur,
 
               onNotePointerMouseOver: onNotePointerMouseOver,
               onNotePointerMouseOut: onNotePointerMouseOut,
@@ -472,11 +497,7 @@ var Editor = function (_Component) {
           _react2.default.createElement(
             'aside',
             { className: 'notes-container' },
-            (0, _keys2.default)(notes || {}).sort(function (first, second) {
-              if (notes[first].order > notes[second].order) {
-                return 1;
-              }return -1;
-            }).map(this.renderNoteEditor)
+            activeNotes.map(this.renderNoteEditor)
           ),
           BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)
         )
@@ -484,11 +505,20 @@ var Editor = function (_Component) {
     }
   }]);
   return Editor;
-}(_react.Component);
+}(_react.Component); /**
+                      * This module exports a component representing an editor with main editor and footnotes,
+                      * with related interface and decorators.
+                      * Asset components must be provided through props
+                      * @module scholar-draft/Editor
+                      */
 
 Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
   notes: _propTypes2.default.object,
+  notesOrder: _propTypes2.default.array,
+
+  className: _propTypes2.default.string,
+
   assets: _propTypes2.default.object,
 
   editorClass: _propTypes2.default.string,
@@ -503,6 +533,7 @@ Editor.propTypes = {
   onAssetClick: _propTypes2.default.func,
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
+  onAssetBlur: _propTypes2.default.func,
 
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,
@@ -514,6 +545,7 @@ Editor.propTypes = {
   onBlur: _propTypes2.default.func,
 
   assetRequestPosition: _propTypes2.default.object,
+  assetRequestContentId: _propTypes2.default.string,
   assetChoiceProps: _propTypes2.default.object,
 
   inlineAssetComponents: _propTypes2.default.object,

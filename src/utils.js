@@ -28,6 +28,43 @@ import insertEmptyBlock from './modifiers/insertEmptyBlock';
 import leaveList from './modifiers/leaveList';
 import insertText from './modifiers/insertText';
 
+export const getOffsetRelativeToContainer = (el, stopClassName) => {
+  let element = el;
+  let { parentNode } = element;
+  const offset = {
+    offsetX: el.offsetLeft,
+    offsetY: el.offsetTop
+  };
+
+  while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+    offset.offsetX += parentNode.offsetLeft;
+    offset.offsetY += parentNode.offsetTop;
+    element = parentNode;
+    const { parentNode: newParentNode } = element.parentNode;
+    parentNode = newParentNode;
+  }
+
+  return offset;
+};
+
+export const getEventTextRange = (pageX, pageY) => {
+  let range;
+  let textNode;
+  let offset;
+
+  if (document.caretPositionFromPoint) { // standard
+    range = document.caretPositionFromPoint(pageX, pageY);
+    textNode = range.offsetNode;
+    const { offset: rangeOffset } = range;
+    offset = rangeOffset;
+
+  } else if (document.caretRangeFromPoint) { // WebKit
+    range = document.caretRangeFromPoint(pageX, pageY);
+    textNode = range.startContainer;
+    offset = range.startOffset;
+  }
+  return { range, textNode, offset };
+};
 
 /**
  * Inserts an inline or block asset within a draft-js editorState
@@ -102,7 +139,7 @@ export function insertAssetInEditor(
     const finalSelection = SelectionState.createEmpty(block.getKey());
     updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
   // insert inline asset instruction
-  } else {
+  } else if (insertionType === INLINE_ASSET) {
     // determine the range of the entity
     const anchorKey = thatSelection.getAnchorKey();
     const currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -131,7 +168,7 @@ export function insertAssetInEditor(
       );
     }
     // now we add a whitespace character after the new entity
-    const endSelection = thatSelection.merge({
+    let endSelection = thatSelection.merge({
       anchorOffset: thatSelection.getEndOffset() + selectedText.length,
       focusOffset: thatSelection.getEndOffset() + selectedText.length,
     });
@@ -142,11 +179,17 @@ export function insertAssetInEditor(
       null,
       null
     );
+    // then we put the selection at end
+    endSelection = endSelection.merge({
+      anchorOffset: endSelection.getEndOffset() + 1,
+      focusOffset: endSelection.getEndOffset() + 1,
+    });
     // finally, apply new content state ...
     updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
     // ... and put selection after newly created content
-    updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
+    updatedEditor = EditorState.forceSelection(updatedEditor, endSelection);
   }
+  console.log('create');
   return updatedEditor;
 }
 
@@ -215,7 +258,7 @@ export function insertInlineAssetInEditor(
   newContentState = Modifier.replaceText(
     newContentState,
     endSelection,
-    '  ',
+    ' ',
     null,
     null
   );

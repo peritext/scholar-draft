@@ -5,6 +5,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+
 import './NoteContainer.scss';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
@@ -15,6 +16,7 @@ class NoteContainer extends Component {
     note: PropTypes.object,
     assets: PropTypes.object,
     assetRequestPosition: PropTypes.object,
+    assetRequestContentId: PropTypes.string,
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
 
@@ -46,9 +48,6 @@ class NoteContainer extends Component {
     
     assetChoiceProps: PropTypes.object,
     clipboard: PropTypes.object,
-
-
-    readOnly: PropTypes.bool,
   }
 
   focus = () => {
@@ -87,10 +86,10 @@ class NoteContainer extends Component {
       iconMap,
       
       assetChoiceProps,
+      assetRequestContentId,
 
       clipboard,
 
-      readOnly,
       editorStyle
     } = this.props;
 
@@ -108,6 +107,11 @@ class NoteContainer extends Component {
       onEditorClick(event);
     };
 
+    const onDelete = (event) => {
+      event.stopPropagation();
+      onClickDelete(event);
+    };
+
     const onClickScrollToNotePointerHandler = (event) => {
       event.stopPropagation();
       onClickScrollToNotePointer(note.id);
@@ -118,16 +122,15 @@ class NoteContainer extends Component {
         id={`note-container-${note.id}`}
       >
         <div className="note-header" onClick={onHeaderClick}>
-          <button onClick={onClickDelete}>x</button>
+          <button onClick={onDelete}>x</button>
           <h3>Note {note.order}</h3>
           <button onClick={onClickScrollToNotePointerHandler}>↑</button>
         </div>
         <div className="note-body">
           <BasicEditor 
-            editorState={note.editorState || note.contents}
+            editorState={note.editorState}
             contentId={contentId}
             assets={assets}
-            readOnly={readOnly}
             ref={bindRef}
             onClick={onClick}
             onDrop={onDrop}
@@ -142,6 +145,8 @@ class NoteContainer extends Component {
 
             assetRequestPosition={assetRequestPosition}
             onAssetRequestCancel={onAssetRequestCancel}
+            isRequestingAssets={assetRequestContentId === contentId}
+
             AssetChoiceComponent={AssetChoiceComponent}
             assetChoiceProps={assetChoiceProps}
 

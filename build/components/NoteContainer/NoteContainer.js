@@ -86,8 +86,8 @@ var NoteContainer = function (_Component) {
           inlineEntities = _this$props$inlineEnt === undefined ? [] : _this$props$inlineEnt,
           iconMap = _this$props.iconMap,
           assetChoiceProps = _this$props.assetChoiceProps,
+          assetRequestContentId = _this$props.assetRequestContentId,
           clipboard = _this$props.clipboard,
-          readOnly = _this$props.readOnly,
           editorStyle = _this$props.editorStyle;
 
 
@@ -105,6 +105,11 @@ var NoteContainer = function (_Component) {
         onEditorClick(event);
       };
 
+      var onDelete = function onDelete(event) {
+        event.stopPropagation();
+        onClickDelete(event);
+      };
+
       var onClickScrollToNotePointerHandler = function onClickScrollToNotePointerHandler(event) {
         event.stopPropagation();
         onClickScrollToNotePointer(note.id);
@@ -120,7 +125,7 @@ var NoteContainer = function (_Component) {
           { className: 'note-header', onClick: onHeaderClick },
           _react2.default.createElement(
             'button',
-            { onClick: onClickDelete },
+            { onClick: onDelete },
             'x'
           ),
           _react2.default.createElement(
@@ -139,10 +144,9 @@ var NoteContainer = function (_Component) {
           'div',
           { className: 'note-body' },
           _react2.default.createElement(_BasicEditor2.default, {
-            editorState: note.editorState || note.contents,
+            editorState: note.editorState,
             contentId: contentId,
             assets: assets,
-            readOnly: readOnly,
             ref: bindRef,
             onClick: onClick,
             onDrop: onDrop,
@@ -157,6 +161,8 @@ var NoteContainer = function (_Component) {
 
             assetRequestPosition: assetRequestPosition,
             onAssetRequestCancel: onAssetRequestCancel,
+            isRequestingAssets: assetRequestContentId === contentId,
+
             AssetChoiceComponent: AssetChoiceComponent,
             assetChoiceProps: assetChoiceProps,
 
@@ -188,6 +194,7 @@ NoteContainer.propTypes = {
   note: _propTypes2.default.object,
   assets: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
+  assetRequestContentId: _propTypes2.default.string,
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
 
@@ -217,9 +224,7 @@ NoteContainer.propTypes = {
   iconMap: _propTypes2.default.object,
 
   assetChoiceProps: _propTypes2.default.object,
-  clipboard: _propTypes2.default.object,
-
-  readOnly: _propTypes2.default.bool
+  clipboard: _propTypes2.default.object
 };
 exports.default = NoteContainer;
 module.exports = exports['default'];

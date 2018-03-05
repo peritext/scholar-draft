@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = undefined;
+exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = exports.getEventTextRange = exports.getOffsetRelativeToContainer = undefined;
 
 var _map = require('babel-runtime/core-js/map');
 
@@ -69,6 +69,54 @@ var _insertText2 = _interopRequireDefault(_insertText);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// modifiers helping to modify editorState
+var getOffsetRelativeToContainer = exports.getOffsetRelativeToContainer = function getOffsetRelativeToContainer(el, stopClassName) {
+  var element = el;
+  var _element = element,
+      parentNode = _element.parentNode;
+
+  var offset = {
+    offsetX: el.offsetLeft,
+    offsetY: el.offsetTop
+  };
+
+  while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+    offset.offsetX += parentNode.offsetLeft;
+    offset.offsetY += parentNode.offsetTop;
+    element = parentNode;
+    var newParentNode = element.parentNode.parentNode;
+
+    parentNode = newParentNode;
+  }
+
+  return offset;
+}; /**
+    * This module exports a series of draft-js utils
+    * to manipulate scholar-draft state upstream to component's implementation
+    * @module scholar-draft/utils
+    */
+var getEventTextRange = exports.getEventTextRange = function getEventTextRange(pageX, pageY) {
+  var range = void 0;
+  var textNode = void 0;
+  var offset = void 0;
+
+  if (document.caretPositionFromPoint) {
+    // standard
+    range = document.caretPositionFromPoint(pageX, pageY);
+    textNode = range.offsetNode;
+    var _range = range,
+        rangeOffset = _range.offset;
+
+    offset = rangeOffset;
+  } else if (document.caretRangeFromPoint) {
+    // WebKit
+    range = document.caretRangeFromPoint(pageX, pageY);
+    textNode = range.startContainer;
+    offset = range.startOffset;
+  }
+  return { range: range, textNode: textNode, offset: offset };
+};
+
 /**
  * Inserts an inline or block asset within a draft-js editorState
  * @param {ImmutableRecord} editorState - the editor state before change
@@ -76,9 +124,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {object} selection - the selection to use for targetting asset insertion
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
-
-
-// modifiers helping to modify editorState
 function insertAssetInEditor(editorState, asset, selection) {
   var currentContent = editorState.getCurrentContent();
   var activeSelection = editorState.getSelection();
@@ -130,7 +175,7 @@ function insertAssetInEditor(editorState, asset, selection) {
     var finalSelection = _draftJs.SelectionState.createEmpty(block.getKey());
     updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, finalSelection);
     // insert inline asset instruction
-  } else {
+  } else if (insertionType === _constants.INLINE_ASSET) {
     // determine the range of the entity
     var anchorKey = thatSelection.getAnchorKey();
     var currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -154,11 +199,17 @@ function insertAssetInEditor(editorState, asset, selection) {
       focusOffset: thatSelection.getEndOffset() + selectedText.length
     });
     newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null);
+    // then we put the selection at end
+    endSelection = endSelection.merge({
+      anchorOffset: endSelection.getEndOffset() + 1,
+      focusOffset: endSelection.getEndOffset() + 1
+    });
     // finally, apply new content state ...
     updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
     // ... and put selection after newly created content
-    updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
+    updatedEditor = _draftJs.EditorState.forceSelection(updatedEditor, endSelection);
   }
+  console.log('create');
   return updatedEditor;
 }
 
@@ -168,11 +219,6 @@ function insertAssetInEditor(editorState, asset, selection) {
  * @param {object} asset - the asset data to embed withing draft-js new entity
  * @param {object} selection - the selection to use for targetting asset insertion
  * @return {ImmutableRecord} updatedEditorState - the new editor state
- */
-/**
- * This module exports a series of draft-js utils
- * to manipulate scholar-draft state upstream to component's implementation
- * @module scholar-draft/utils
  */
 function insertInlineAssetInEditor(editorState, asset, selection) {
   var currentContent = editorState.getCurrentContent();
@@ -209,7 +255,7 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
     anchorOffset: thatSelection.getEndOffset() + selectedText.length,
     focusOffset: thatSelection.getEndOffset() + selectedText.length
   });
-  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '  ', null, null);
+  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null);
   updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
   updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;

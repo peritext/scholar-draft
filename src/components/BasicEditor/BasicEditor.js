@@ -18,6 +18,7 @@ import {
   KeyBindingUtil,
   getDefaultKeyBinding,
   RichUtils,
+  SelectionState,
   Modifier,
   Editor
 } from 'draft-js';
@@ -38,6 +39,7 @@ import {
   isParentOf,
   checkCharacterForState,
   checkReturnForState,
+  getEventTextRange,
   Emitter
 } from '../../utils';
 
@@ -79,6 +81,7 @@ export default class BasicEditor extends Component {
     contentId: PropTypes.string,
     messages: PropTypes.object,
     isActive: PropTypes.bool,
+    isRequestingAssets: PropTypes.bool,
     /*
      * Method props
      */
@@ -93,6 +96,7 @@ export default class BasicEditor extends Component {
     onDragOver: PropTypes.func,
     onClick: PropTypes.func,
     onBlur: PropTypes.func,
+    onFocus: PropTypes.func,
     onAssetChoice: PropTypes.func,
     onAssetChange: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
@@ -121,6 +125,8 @@ export default class BasicEditor extends Component {
     placeholder: PropTypes.string,
 
     iconMap: PropTypes.object,
+
+    styles: PropTypes.object,
   }
 
   /**
@@ -147,6 +153,9 @@ export default class BasicEditor extends Component {
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
     onNotePointerMouseClick: PropTypes.func,
+
+
+    onFocus: PropTypes.func,
 
     iconMap: PropTypes.object
   }
@@ -212,37 +221,56 @@ export default class BasicEditor extends Component {
    */
 
   componentDidMount = () => {
-    setTimeout(() => {
-      this.setState({
-        readOnly: false
-      });
-      this.forceRender(this.props);
+    // setTimeout(() => {
+    this.setState({
+      readOnly: false,
+      editorState: this.props.editorState ? EditorState.createWithContent(
+        this.props.editorState.getCurrentContent(), 
+        this.createDecorator()
+      ) : this.generateEmptyEditor()
     });
+    // });
   }
 
   componentWillReceiveProps = (nextProps, nextState) => {
+    // console.time(`editor ${this.props.contentId}`);
+    
     let stateMods = {};
-    // hiding the toolbars when editor is set to inactive
-    if (this.props.isActive && !nextProps.isActive) {
 
-      // locking the draft-editor if asset choice component is not open
-      if (!nextProps.assetRequestPosition) {
-        stateMods = {
-          ...stateMods,
-          readOnly: true,
-          styles: {
-            sideToolbar: {
-              display: 'none'
-            },
-            inlineToolbar: {
-              display: 'none',
-            }
+    if (this.props.isRequestingAssets && !nextProps.isRequestingAssets) {
+      // console.log('hiding', this.props.contentId);
+      stateMods = {
+        ...stateMods,
+        styles: {
+          sideToolbar: {
+            display: 'none'
           },
-        };
-      }
+          inlineToolbar: {
+            display: 'none',
+          }
+        },
+      };
+    }
+    // hiding the toolbars when editor is set to inactive
+    if (
+      (this.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition) 
+    ) {
+      // locking the draft-editor if asset choice component is not open
+      // console.log('hding 2', this.props.contentId);
+      stateMods = {
+        ...stateMods,
+        readOnly: true,
+        styles: {
+          sideToolbar: {
+            display: 'none'
+          },
+          inlineToolbar: {
+            display: 'none',
+          }
+        },
+      };
     } else if (!this.props.isActive && nextProps.isActive) {
       const selection = this.state.editorState.getSelection();
-
       stateMods = {
         ...stateMods,
         readOnly: false,
@@ -252,12 +280,66 @@ export default class BasicEditor extends Component {
         ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       };
-      this.focus(undefined);
-      setTimeout(() => {
-        this.setState({
-          editorState: EditorState.forceSelection(this.state.editorState, selection),
-        });
-      });
+
+      if (this.state.lastClickCoordinates) {
+        const {
+          // clientX, 
+          // clientY, 
+          el, 
+          pageX, 
+          pageY
+        } = this.state.lastClickCoordinates;
+
+        const { offset } = getEventTextRange(pageX, pageY);
+        let element = el;
+        let parent = element.parentNode;
+
+        // calculating the block-relative text offset of the selection
+        let startOffset = offset;
+
+        while (parent && !(parent.hasAttribute('data-block') && parent.attributes['data-offset-key']) && parent.tagName !== 'BODY') {
+          let previousSibling = element.previousSibling;
+          while (previousSibling) {
+            // not counting inline assets contents and note pointers
+            if (
+              previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1
+            ) {
+              startOffset += previousSibling.textContent.length;
+            }
+            previousSibling = previousSibling.previousSibling;
+          }
+          element = parent;
+          parent = element.parentNode;
+        }
+        if (parent && parent.attributes['data-offset-key']) {
+          let blockId = parent.attributes['data-offset-key'].value;
+          blockId = blockId && blockId.split('-')[0];
+
+          const newSelection = new SelectionState({
+            ...selection.toJS(),
+            anchorKey: blockId,
+            focusKey: blockId,
+            anchorOffset: startOffset,
+            focusOffset: startOffset,
+          });
+          const selectedEditorState = EditorState.acceptSelection(
+            this.state.editorState, 
+            newSelection
+          );
+          // setTimeout(() => {
+
+          stateMods = {
+            ...stateMods,
+            editorState: selectedEditorState || this.generateEmptyEditor()
+          };
+
+          setTimeout(() => {
+            this.onChange(selectedEditorState, false);
+            this.forceRender({ ...this.props, editorState: selectedEditorState });
+          });
+        }
+      }
+      
     // updating locally stored editorState when the one given by props
     // has changed
     } else if (this.props.editorState !== nextProps.editorState) {
@@ -293,7 +375,6 @@ export default class BasicEditor extends Component {
         // before a new modification is applied to it
         // this is weird but it works
         setTimeout(() => this.forceRender(nextProps));
-        // setTimeout(() => this.forceRender(nextProps), 500);
       }
     }
     // trigger changes when notes are changed
@@ -317,7 +398,7 @@ export default class BasicEditor extends Component {
         // re-rendering after a timeout.
         // not doing that causes the draft editor not to update
         // before a new modification is applied to it
-        this.forceRender(nextProps);
+        setTimeout(() => this.forceRender(nextProps));
       }
     }
     // trigger changes when notes are changed
@@ -327,31 +408,56 @@ export default class BasicEditor extends Component {
     }
     // apply state changes
     if (Object.keys(stateMods).length > 0) {
+      // console.log('update', nextProps.contentId);
       this.setState(stateMods);
     }
+    // console.timeEnd(`editor ${this.props.contentId} receives props`);
+
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => 
-    true
-    // if (
-    //   this.state.readOnly !== nextState.readOnly ||
-    //   this.state.editorState !== nextProps.editorState ||
-    //   this.state.assets !== nextProps.assets
-    // ) {
-    //   return true;
-    // }
-    // return false;
-  
-
-  componentDidUpdate = (prevProps) => {
-    this.debouncedUpdateSelection();
+  shouldComponentUpdate = (nextProps, nextState) => {
     if (
-      this.props.editorState !== prevProps.editorState && 
-      this.editor &&
-      !this.state.readOnly && this.props.isActive
+      this.state.readOnly !== nextState.readOnly ||
+      this.props.isActive !== nextProps.isActive ||
+      this.state.styles !== nextState.styles ||
+      this.state.editorState !== nextProps.editorState ||
+      this.props.editorState !== nextProps.editorState ||
+      this.props.assetRequestPosition !== nextProps.assetRequestPosition
     ) {
-      this.editor.focus();
+      return true;
     }
+    return false;
+  }
+
+  componentWillUpdate = () => {
+    // console.time(`rendering ${this.props.contentId}`)
+  }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    this.updateSelection();
+    // console.timeEnd(`rendering ${this.props.contentId}`)
+    if (
+      (
+        this.props.editorState !== prevProps.editorState && 
+      this.editor &&
+      !this.state.readOnly && 
+      // this.props.isActive &&
+      prevState.readOnly
+      )
+      ||
+      (prevState.readOnly && !this.state.readOnly)
+    ) {
+      // draft triggers an unwanted onChange event when focusing
+      this.setState({
+        isFocusing: true
+      });
+      setTimeout(() => {
+        this.setState({
+          isFocusing: false
+        });
+        this.editor.focus();
+      });
+    } 
   }
 
   /**
@@ -415,6 +521,21 @@ export default class BasicEditor extends Component {
   };
 
   /**
+   * Locks draft js editor and hides the toolbars when editor is blured
+   * @param {object} event - the input event
+   */
+  onFocus = (event) => {
+    event.stopPropagation();
+
+    // calls onBlur callbacks if provided
+    const { onFocus } = this.props;
+
+    if (typeof onFocus === 'function') {
+      onFocus(event);
+    }
+  };
+
+  /**
    * Fires onEditorChange callback if provided 
    * @param {ImmutableRecord} editorState - the new editor state
    */
@@ -422,7 +543,11 @@ export default class BasicEditor extends Component {
     if (feedUndoStack === true) {
       this.feedUndoStack(editorState);
     }
-    if (typeof this.props.onEditorChange === 'function' && !this.props.readOnly) {
+    if (
+      typeof this.props.onEditorChange === 'function' && 
+      !this.state.readOnly && 
+      !this.state.isFocusing
+    ) {
       this.props.onEditorChange(editorState);
     }
   }
@@ -503,10 +628,10 @@ export default class BasicEditor extends Component {
    * @params {object} props - the component's props to manipulate
    */
   forceRender = (props) => {
-    const editorState = props.editorState || this.generateEmptyEditor();
+    const editorState = props.editorState || this.state.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
-    let selectedEditorState = EditorState.acceptSelection(
+    let selectedEditorState = EditorState.forceSelection(
       newEditorState, 
       editorState.getSelection()
     );
@@ -848,7 +973,13 @@ export default class BasicEditor extends Component {
    * updates the positions of toolbars relatively to current draft selection
    */
   updateSelection = () => {
-    if (!this.props.isActive) {
+    if (!(this.props.isRequestingAssets || this.props.isActive) && this.state.styles.sideToolbar.display !== 'none') {
+      this.setState({
+        styles: {
+          sideToolbar: { display: 'none' },
+          inlineToolbar: { display: 'none' }
+        }
+      });
       return;
     }
     let left;
@@ -869,7 +1000,6 @@ export default class BasicEditor extends Component {
 
     if (!selectionRange) return;
 
-
     if (
       !editorEle 
       || !isParentOf(selectionRange.commonAncestorContainer, editorEle.editor)
@@ -881,18 +1011,22 @@ export default class BasicEditor extends Component {
       assetRequestPosition
     } = this.props;
 
+
     const sideToolbarEle = this.sideToolbar.toolbar;
 
 
     if (!sideToolbarEle) {
       return;
     }
+
     const rangeBounds = selectionRange.getBoundingClientRect();
 
     const selectedBlock = getSelectedBlockElement(selectionRange);
-    if (selectedBlock) {
+    if (selectedBlock && this.props.isActive) {
       const blockBounds = selectedBlock.getBoundingClientRect();
-      const { editorBounds } = this.state;
+      const editorNode = this.editor && this.editor.editor;
+      const editorBounds = editorNode.getBoundingClientRect();
+      // const { editorBounds } = this.state;
       if (!editorBounds) return;
       sideToolbarTop = rangeBounds.top || blockBounds.top;
       styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
@@ -919,7 +1053,7 @@ export default class BasicEditor extends Component {
       } else {
         styles.inlineToolbar.display = 'none';
       }
-    } else {
+    } else if (!this.props.isRequestingAssets) {
       styles.sideToolbar.display = 'none';
       styles.inlineToolbar.display = 'none';
     }
@@ -938,17 +1072,9 @@ export default class BasicEditor extends Component {
    */
   focus = (event) => {
 
-    const stateMods = {};
-
-    const editorNode = this.editor && this.editor.editor;
-    stateMods.editorBounds = editorNode.getBoundingClientRect();
-
-    if (Object.keys(stateMods).length) {
-      this.setState(stateMods);
-    }
     setTimeout(() => {
       if (!this.state.readOnly) {
-        editorNode.focus();
+        this.editor.focus();
       }
     });
 
@@ -982,6 +1108,8 @@ export default class BasicEditor extends Component {
 
       onAssetRequest: onAssetRequestUpstream,
       assetRequestPosition,
+      // isRequestingAssets,
+
       onAssetRequestCancel,
       onAssetChoice,
 
@@ -1024,6 +1152,8 @@ export default class BasicEditor extends Component {
       _defaultKeyBindingFn,
     } = this;
 
+    // console.time(`preparing rendering ${contentId}`)
+
 
     /**
      * Functions handling draft editor locking/unlocking
@@ -1043,14 +1173,24 @@ export default class BasicEditor extends Component {
     // unlocking draft-js editor when clicked
     const onMainClick = (event) => {
       event.stopPropagation();
+      const stateMods = {};
       if (typeof onClick === 'function') {
         onClick(event);
       }
-      // if (this.state.readOnly) {
-      //   this.setState({
-      //     readOnly: false
-      //   });
-      // }
+      const coordinates = {
+        clientX: event.clientX, 
+        clientY: event.clientY, 
+        el: event.target,
+        pageX: event.pageX,
+        pageY: event.pageY,
+      };
+      stateMods.lastClickCoordinates = coordinates;
+      if (this.props.isActive && this.state.readOnly) {
+        stateMods.readOnly = false;
+      }
+      if (Object.keys(stateMods).length > 0) {
+        this.setState(stateMods);
+      }
       // this.focus(event);
     };
 
@@ -1064,9 +1204,13 @@ export default class BasicEditor extends Component {
     // unlocking draft-js editor when asset choice is abandonned
     const onOnAssetRequestCancel = () => {
       onAssetRequestCancel();
-      // this.setState({
-      //   readOnly: false
-      // });
+
+
+      this.forceRender(this.props);
+
+      this.setState({
+        readOnly: false
+      });
     };
 
     // unlocking draft-js editor when asset is choosen
@@ -1081,7 +1225,8 @@ export default class BasicEditor extends Component {
      * component bindings and final props definitions
      */
 
-    const realEditorState = editorState || this.generateEmptyEditor();
+    const realEditorState = editorState 
+      || this.generateEmptyEditor(); /* eslint no-unused-vars : 0 */
     
     const bindEditorRef = (editor) => {
       this.editor = editor;
@@ -1103,6 +1248,7 @@ export default class BasicEditor extends Component {
         ...this.props.iconMap
       } : defaultIconMap;
 
+    // console.timeEnd(`preparing rendering ${contentId}`)
     return (
       <div 
         className={editorClass + (readOnly ? '' : ' active')}
@@ -1113,7 +1259,7 @@ export default class BasicEditor extends Component {
       >
         <InlineToolbar
           ref={bindInlineToolbar}
-          editorState={realEditorState}
+          editorState={stateEditorState}
           updateEditorState={onChange}
           iconMap={iconMap}
           style={styles.inlineToolbar}
@@ -1160,6 +1306,7 @@ export default class BasicEditor extends Component {
           handleKeyCommand={_handleKeyCommand}
           handleBeforeInput={_handleBeforeInput}
           handleReturn={_handleReturn}
+          onFocus={this.onFocus}
           onBlur={this.onBlur}
           onTab={_onTab}
 
