@@ -79,7 +79,6 @@ export default class BasicEditor extends Component {
     blockAssetComponents: PropTypes.object,
     assetRequestPosition: PropTypes.object,
     contentId: PropTypes.string,
-    messages: PropTypes.object,
     isActive: PropTypes.bool,
     isRequestingAssets: PropTypes.bool,
     /*
@@ -118,6 +117,7 @@ export default class BasicEditor extends Component {
     NotePointerComponent: PropTypes.func,
     BibliographyComponent: PropTypes.func,
     inlineEntities: PropTypes.array,
+    messages: PropTypes.object,
 
     renderingMode: PropTypes.string,
 
@@ -153,6 +153,8 @@ export default class BasicEditor extends Component {
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
     onNotePointerMouseClick: PropTypes.func,
+
+    messages: PropTypes.object,
 
 
     onFocus: PropTypes.func,
@@ -203,6 +205,7 @@ export default class BasicEditor extends Component {
     assets: this.props.assets,
     assetChoiceProps: this.props.assetChoiceProps,
     iconMap: this.props.iconMap,
+    messages: this.props.messages,
 
     onAssetMouseOver: this.props.onAssetMouseOver,
     onAssetMouseOut: this.props.onAssetMouseOut,
@@ -1110,14 +1113,6 @@ export default class BasicEditor extends Component {
       allowInlineAsset = true,
       allowBlockAsset = true,
 
-      messages = {
-        tooltips: {
-          addNote: 'add a note (shortcut: "cmd + ^")',
-          addAsset: 'add an asset (shortcut: "@")',
-          cancel: 'cancel',
-        }
-      },
-
       onAssetRequest: onAssetRequestUpstream,
       assetRequestPosition,
       // isRequestingAssets,
@@ -1138,6 +1133,24 @@ export default class BasicEditor extends Component {
 
       ...otherProps
     } = this.props;
+
+    const messages = {
+      addNote: 
+          this.props.messages && 
+          this.props.messages.addNote ? 
+            this.props.messages.addNote : 
+            'add a note (shortcut: "cmd + ^")',
+      summonAsset: 
+          this.props.messages && 
+          this.props.messages.summonAsset ? 
+            this.props.messages.summonAsset :
+            'add an asset (shortcut: "@")',
+      cancel: 
+          this.props.messages 
+          && this.props.messages.cancel ? 
+            this.props.messages.cancel 
+            : 'cancel',
+    };
 
     // internal state
     const {

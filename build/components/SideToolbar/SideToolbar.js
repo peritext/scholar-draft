@@ -114,13 +114,13 @@ var SideToolbar = function (_Component) {
         allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(_NoteButton2.default, {
           onClick: onNoteAdd,
           iconMap: iconMap,
-          message: messages && messages.tooltips && messages.tooltips.addNote
+          message: messages && messages.addNote
         }),
         (allowAssets.inline || allowAssets.block) && _react2.default.createElement(_AssetButton2.default, {
           onClick: onAssetButtonClick,
           active: assetSelectorActive,
           iconMap: iconMap,
-          message: messages && messages.tooltips && assetSelectorActive ? messages.tooltips.cancel : messages.tooltips.addAsset
+          message: messages && assetSelectorActive ? messages.cancel : messages.summonAsset
         }),
         assetRequestPosition && _react2.default.createElement(
           'span',

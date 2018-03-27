@@ -370,7 +370,6 @@ BasicEditor.propTypes = {
   blockAssetComponents: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
-  messages: _propTypes2.default.object,
   isActive: _propTypes2.default.bool,
   isRequestingAssets: _propTypes2.default.bool,
   /*
@@ -409,6 +408,7 @@ BasicEditor.propTypes = {
   NotePointerComponent: _propTypes2.default.func,
   BibliographyComponent: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
+  messages: _propTypes2.default.object,
 
   renderingMode: _propTypes2.default.string,
 
@@ -435,6 +435,8 @@ BasicEditor.childContextTypes = {
   onNotePointerMouseOut: _propTypes2.default.func,
   onNotePointerMouseClick: _propTypes2.default.func,
 
+  messages: _propTypes2.default.object,
+
   onFocus: _propTypes2.default.func,
 
   iconMap: _propTypes2.default.object };
@@ -448,6 +450,7 @@ var _initialiseProps = function _initialiseProps() {
       assets: _this2.props.assets,
       assetChoiceProps: _this2.props.assetChoiceProps,
       iconMap: _this2.props.iconMap,
+      messages: _this2.props.messages,
 
       onAssetMouseOver: _this2.props.onAssetMouseOver,
       onAssetMouseOut: _this2.props.onAssetMouseOut,
@@ -1171,14 +1174,6 @@ var _initialiseProps = function _initialiseProps() {
         allowInlineAsset = _props3$allowInlineAs === undefined ? true : _props3$allowInlineAs,
         _props3$allowBlockAss = _props3.allowBlockAsset,
         allowBlockAsset = _props3$allowBlockAss === undefined ? true : _props3$allowBlockAss,
-        _props3$messages = _props3.messages,
-        messages = _props3$messages === undefined ? {
-      tooltips: {
-        addNote: 'add a note (shortcut: "cmd + ^")',
-        addAsset: 'add an asset (shortcut: "@")',
-        cancel: 'cancel'
-      }
-    } : _props3$messages,
         onAssetRequestUpstream = _props3.onAssetRequest,
         assetRequestPosition = _props3.assetRequestPosition,
         onAssetRequestCancel = _props3.onAssetRequestCancel,
@@ -1189,10 +1184,16 @@ var _initialiseProps = function _initialiseProps() {
         assetChoiceProps = _props3.assetChoiceProps,
         BibliographyComponent = _props3.BibliographyComponent,
         isActive = _props3.isActive,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'messages', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive']);
+
+
+    var messages = {
+      addNote: _this2.props.messages && _this2.props.messages.addNote ? _this2.props.messages.addNote : 'add a note (shortcut: "cmd + ^")',
+      summonAsset: _this2.props.messages && _this2.props.messages.summonAsset ? _this2.props.messages.summonAsset : 'add an asset (shortcut: "@")',
+      cancel: _this2.props.messages && _this2.props.messages.cancel ? _this2.props.messages.cancel : 'cancel'
+    };
 
     // internal state
-
     var _state3 = _this2.state,
         readOnly = _state3.readOnly,
         stateEditorState = _state3.editorState,

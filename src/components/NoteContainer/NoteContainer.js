@@ -20,6 +20,8 @@ class NoteContainer extends Component {
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
 
+    messages: PropTypes.object,
+
     renderingMode: PropTypes.string,
 
 
@@ -63,6 +65,7 @@ class NoteContainer extends Component {
       contentId,
       isActive,
       renderingMode,
+      messages,
       
       onEditorChange,
       onAssetRequest,
@@ -138,6 +141,8 @@ class NoteContainer extends Component {
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
+
+            messages={messages}
 
             renderingMode={renderingMode}
 

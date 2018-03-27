@@ -143,6 +143,7 @@ var Editor = function (_Component) {
       var _this$props = _this.props,
           notes = _this$props.notes,
           assets = _this$props.assets,
+          messages = _this$props.messages,
           onEditorChange = _this$props.onEditorChange,
           onAssetChange = _this$props.onAssetChange,
           onAssetRequest = _this$props.onAssetRequest,
@@ -222,6 +223,8 @@ var Editor = function (_Component) {
         assets: assets,
 
         ref: bindNote,
+
+        messages: messages,
 
         contentId: noteId,
 
@@ -336,6 +339,7 @@ var Editor = function (_Component) {
           notes = _props.notes,
           notesOrder = _props.notesOrder,
           assets = _props.assets,
+          messages = _props.messages,
           _props$editorClass = _props.editorClass,
           editorClass = _props$editorClass === undefined ? 'scholar-draft-Editor' : _props$editorClass,
           onEditorChange = _props.onEditorChange,
@@ -449,6 +453,8 @@ var Editor = function (_Component) {
               assets: assets,
               ref: bindMainEditor,
 
+              messages: messages,
+
               notes: notes,
 
               contentId: 'main',
@@ -518,6 +524,12 @@ Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
   notes: _propTypes2.default.object,
   notesOrder: _propTypes2.default.array,
+
+  messages: _propTypes2.default.shape({
+    addNote: _propTypes2.default.string,
+    summonAsset: _propTypes2.default.string,
+    cancel: _propTypes2.default.string
+  }),
 
   className: _propTypes2.default.string,
 

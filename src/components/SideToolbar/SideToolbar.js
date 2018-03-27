@@ -99,7 +99,7 @@ export default class SideToolbar extends Component {
         <NoteButton 
           onClick={onNoteAdd} 
           iconMap={iconMap}
-          message={messages && messages.tooltips && messages.tooltips.addNote}
+          message={messages && messages.addNote}
         />
         }
         {(allowAssets.inline || allowAssets.block) && 
@@ -108,10 +108,10 @@ export default class SideToolbar extends Component {
           active={assetSelectorActive}
           iconMap={iconMap}
           message={
-            messages && messages.tooltips && 
+            messages &&
             assetSelectorActive ? 
-              messages.tooltips.cancel : 
-              messages.tooltips.addAsset
+              messages.cancel : 
+              messages.summonAsset
           }
         />}
         {assetRequestPosition &&

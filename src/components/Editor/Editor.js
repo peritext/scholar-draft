@@ -33,6 +33,12 @@ export default class Editor extends Component {
     notes: PropTypes.object,
     notesOrder: PropTypes.array,
 
+    messages: PropTypes.shape({
+      addNote: PropTypes.string,
+      summonAsset: PropTypes.string, 
+      cancel: PropTypes.string,
+    }),
+
     className: PropTypes.string,
 
     assets: PropTypes.object,
@@ -203,6 +209,8 @@ export default class Editor extends Component {
     const {
       notes,
       assets,
+
+      messages,
       
       onEditorChange,
 
@@ -290,6 +298,8 @@ export default class Editor extends Component {
         assets={assets}
       
         ref={bindNote}
+
+        messages={messages}
       
         contentId={noteId}
       
@@ -345,6 +355,8 @@ export default class Editor extends Component {
       notes,
       notesOrder,
       assets,
+
+      messages,
 
       editorClass = 'scholar-draft-Editor',
       
@@ -461,6 +473,8 @@ export default class Editor extends Component {
               editorState={mainEditorState}
               assets={assets}
               ref={bindMainEditor}
+
+              messages={messages}
 
               notes={notes}
 
