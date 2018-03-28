@@ -77,6 +77,7 @@ export default class Editor extends Component {
     BibliographyComponent: PropTypes.func,
     inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
+    inlineButtons: PropTypes.array,
 
     renderingMode: PropTypes.string,
 
@@ -244,6 +245,7 @@ export default class Editor extends Component {
       clipboard,
       focusedEditorId,
       NoteContainerComponent,
+      inlineButtons,
 
       renderingMode,
 
@@ -333,6 +335,7 @@ export default class Editor extends Component {
         onAssetMouseOver={onAssetMouseOver}
         onAssetMouseOut={onAssetMouseOut}
       
+        inlineButtons={inlineButtons}
         inlineAssetComponents={inlineAssetComponents}
         blockAssetComponents={blockAssetComponents}
         AssetChoiceComponent={AssetChoiceComponent}
@@ -384,6 +387,7 @@ export default class Editor extends Component {
       assetRequestContentId,
       assetChoiceProps,
       
+      inlineButtons,
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
@@ -510,6 +514,7 @@ export default class Editor extends Component {
               onNotePointerMouseOut={onNotePointerMouseOut}
               onNotePointerMouseClick={onNotePointerMouseClickHandler}
             
+              inlineButtons={inlineButtons}
               inlineAssetComponents={inlineAssetComponents}
               blockAssetComponents={blockAssetComponents}
               AssetChoiceComponent={AssetChoiceComponent}

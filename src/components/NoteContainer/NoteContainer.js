@@ -24,6 +24,8 @@ class NoteContainer extends Component {
 
     renderingMode: PropTypes.string,
 
+    inlineButtons: PropTypes.array,
+
 
     addTextAtCurrentSelection: PropTypes.func,
     onEditorChange: PropTypes.func,
@@ -87,6 +89,7 @@ class NoteContainer extends Component {
       AssetChoiceComponent,
       inlineEntities = [],
       iconMap,
+      inlineButtons,
       
       assetChoiceProps,
       assetRequestContentId,
@@ -165,6 +168,7 @@ class NoteContainer extends Component {
             onAssetMouseOver={onAssetMouseOver}
             onAssetMouseOut={onAssetMouseOut}
             
+            inlineButtons={inlineButtons}
             inlineAssetComponents={inlineAssetComponents}
             blockAssetComponents={blockAssetComponents}
             inlineEntities={inlineEntities}

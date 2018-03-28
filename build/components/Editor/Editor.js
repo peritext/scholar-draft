@@ -170,6 +170,7 @@ var Editor = function (_Component) {
           clipboard = _this$props.clipboard,
           focusedEditorId = _this$props.focusedEditorId,
           NoteContainerComponent = _this$props.NoteContainerComponent,
+          inlineButtons = _this$props.inlineButtons,
           renderingMode = _this$props.renderingMode;
 
       var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
@@ -258,6 +259,7 @@ var Editor = function (_Component) {
         onAssetMouseOver: onAssetMouseOver,
         onAssetMouseOut: onAssetMouseOut,
 
+        inlineButtons: inlineButtons,
         inlineAssetComponents: inlineAssetComponents,
         blockAssetComponents: blockAssetComponents,
         AssetChoiceComponent: AssetChoiceComponent,
@@ -362,6 +364,7 @@ var Editor = function (_Component) {
           assetRequestPosition = _props.assetRequestPosition,
           assetRequestContentId = _props.assetRequestContentId,
           assetChoiceProps = _props.assetChoiceProps,
+          inlineButtons = _props.inlineButtons,
           inlineAssetComponents = _props.inlineAssetComponents,
           blockAssetComponents = _props.blockAssetComponents,
           AssetChoiceComponent = _props.AssetChoiceComponent,
@@ -489,6 +492,7 @@ var Editor = function (_Component) {
               onNotePointerMouseOut: onNotePointerMouseOut,
               onNotePointerMouseClick: onNotePointerMouseClickHandler,
 
+              inlineButtons: inlineButtons,
               inlineAssetComponents: inlineAssetComponents,
               blockAssetComponents: blockAssetComponents,
               AssetChoiceComponent: AssetChoiceComponent,
@@ -569,6 +573,7 @@ Editor.propTypes = {
   BibliographyComponent: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,
+  inlineButtons: _propTypes2.default.array,
 
   renderingMode: _propTypes2.default.string,
 

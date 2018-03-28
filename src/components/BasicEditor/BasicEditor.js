@@ -113,7 +113,7 @@ export default class BasicEditor extends Component {
     AssetChoiceComponent: PropTypes.func,
     assetChoiceProps: PropTypes.object,
     keyBindingFn: PropTypes.func,
-    inlineButtons: PropTypes.object,
+    inlineButtons: PropTypes.array,
     NotePointerComponent: PropTypes.func,
     BibliographyComponent: PropTypes.func,
     inlineEntities: PropTypes.array,
@@ -1131,6 +1131,8 @@ export default class BasicEditor extends Component {
 
       isActive,
 
+      inlineButtons,
+
       ...otherProps
     } = this.props;
 
@@ -1288,6 +1290,7 @@ export default class BasicEditor extends Component {
       >
         <InlineToolbar
           ref={bindInlineToolbar}
+          buttons={inlineButtons}
           editorState={stateEditorState}
           updateEditorState={onChange}
           iconMap={iconMap}

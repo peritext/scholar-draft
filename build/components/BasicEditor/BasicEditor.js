@@ -404,7 +404,7 @@ BasicEditor.propTypes = {
   AssetChoiceComponent: _propTypes2.default.func,
   assetChoiceProps: _propTypes2.default.object,
   keyBindingFn: _propTypes2.default.func,
-  inlineButtons: _propTypes2.default.object,
+  inlineButtons: _propTypes2.default.array,
   NotePointerComponent: _propTypes2.default.func,
   BibliographyComponent: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
@@ -1184,7 +1184,8 @@ var _initialiseProps = function _initialiseProps() {
         assetChoiceProps = _props3.assetChoiceProps,
         BibliographyComponent = _props3.BibliographyComponent,
         isActive = _props3.isActive,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive']);
+        inlineButtons = _props3.inlineButtons,
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive', 'inlineButtons']);
 
 
     var messages = {
@@ -1320,6 +1321,7 @@ var _initialiseProps = function _initialiseProps() {
       },
       _react2.default.createElement(_InlineToolbar2.default, {
         ref: bindInlineToolbar,
+        buttons: inlineButtons,
         editorState: stateEditorState,
         updateEditorState: onChange,
         iconMap: iconMap,

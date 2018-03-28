@@ -86,6 +86,7 @@ var NoteContainer = function (_Component) {
           _this$props$inlineEnt = _this$props.inlineEntities,
           inlineEntities = _this$props$inlineEnt === undefined ? [] : _this$props$inlineEnt,
           iconMap = _this$props.iconMap,
+          inlineButtons = _this$props.inlineButtons,
           assetChoiceProps = _this$props.assetChoiceProps,
           assetRequestContentId = _this$props.assetRequestContentId,
           clipboard = _this$props.clipboard,
@@ -178,6 +179,7 @@ var NoteContainer = function (_Component) {
             onAssetMouseOver: onAssetMouseOver,
             onAssetMouseOut: onAssetMouseOut,
 
+            inlineButtons: inlineButtons,
             inlineAssetComponents: inlineAssetComponents,
             blockAssetComponents: blockAssetComponents,
             inlineEntities: inlineEntities,
@@ -204,6 +206,8 @@ NoteContainer.propTypes = {
   messages: _propTypes2.default.object,
 
   renderingMode: _propTypes2.default.string,
+
+  inlineButtons: _propTypes2.default.array,
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,
