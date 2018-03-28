@@ -705,7 +705,7 @@ export default class BasicEditor extends Component {
     if (event && hasCommandModifier(event)) {
       switch (event.keyCode) {
       // `^`
-      case 229:
+      case 81:
         return 'add-note';
         // `z`
       case 90:
@@ -1139,7 +1139,7 @@ export default class BasicEditor extends Component {
           this.props.messages && 
           this.props.messages.addNote ? 
             this.props.messages.addNote : 
-            'add a note (shortcut: "cmd + ^")',
+            'add a note (shortcut: "cmd + q")',
       summonAsset: 
           this.props.messages && 
           this.props.messages.summonAsset ? 

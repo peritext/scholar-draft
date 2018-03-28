@@ -859,7 +859,7 @@ var _initialiseProps = function _initialiseProps() {
     if (event && hasCommandModifier(event)) {
       switch (event.keyCode) {
         // `^`
-        case 229:
+        case 81:
           return 'add-note';
         // `z`
         case 90:
@@ -1188,7 +1188,7 @@ var _initialiseProps = function _initialiseProps() {
 
 
     var messages = {
-      addNote: _this2.props.messages && _this2.props.messages.addNote ? _this2.props.messages.addNote : 'add a note (shortcut: "cmd + ^")',
+      addNote: _this2.props.messages && _this2.props.messages.addNote ? _this2.props.messages.addNote : 'add a note (shortcut: "cmd + q")',
       summonAsset: _this2.props.messages && _this2.props.messages.summonAsset ? _this2.props.messages.summonAsset : 'add an asset (shortcut: "@")',
       cancel: _this2.props.messages && _this2.props.messages.cancel ? _this2.props.messages.cancel : 'cancel'
     };
