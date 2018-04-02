@@ -858,8 +858,8 @@ var _initialiseProps = function _initialiseProps() {
   this._defaultKeyBindingFn = function (event) {
     if (event && hasCommandModifier(event)) {
       switch (event.keyCode) {
-        // `b`
-        case 66:
+        // `m`
+        case 77:
           return 'add-note';
         // `z`
         case 90:
@@ -1189,7 +1189,7 @@ var _initialiseProps = function _initialiseProps() {
 
 
     var messages = {
-      addNote: _this2.props.messages && _this2.props.messages.addNote ? _this2.props.messages.addNote : 'add a note (shortcut: "cmd + b")',
+      addNote: _this2.props.messages && _this2.props.messages.addNote ? _this2.props.messages.addNote : 'add a note (shortcut: "cmd + m")',
       summonAsset: _this2.props.messages && _this2.props.messages.summonAsset ? _this2.props.messages.summonAsset : 'add an asset (shortcut: "@")',
       cancel: _this2.props.messages && _this2.props.messages.cancel ? _this2.props.messages.cancel : 'cancel'
     };
