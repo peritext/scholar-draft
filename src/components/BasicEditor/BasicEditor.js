@@ -704,8 +704,8 @@ export default class BasicEditor extends Component {
   _defaultKeyBindingFn = (event) => {
     if (event && hasCommandModifier(event)) {
       switch (event.keyCode) {
-      // `^`
-      case 81:
+      // `b`
+      case 66:
         return 'add-note';
         // `z`
       case 90:
@@ -1141,7 +1141,7 @@ export default class BasicEditor extends Component {
           this.props.messages && 
           this.props.messages.addNote ? 
             this.props.messages.addNote : 
-            'add a note (shortcut: "cmd + q")',
+            'add a note (shortcut: "cmd + b")',
       summonAsset: 
           this.props.messages && 
           this.props.messages.summonAsset ? 
