@@ -125,8 +125,9 @@ class BlockAssetContainer extends Component {
           onAssetBlur={onAssetBlur}
           iconMap={iconMap}
           renderingMode={renderingMode}
-        />
-        <div>{children}</div>
+        >
+          {children}
+        </RealAssetComponent>
       </div>
     );
   }

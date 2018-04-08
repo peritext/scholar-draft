@@ -122,8 +122,9 @@ class InlineAssetContainer extends Component {
           onAssetBlur={onAssetBlur}
           iconMap={iconMap}
           renderingMode={renderingMode}
-        />
-        <span>{children}</span>
+        >
+          {children}
+        </AssetComponent>
       </span>
     );
   }

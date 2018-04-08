@@ -276,10 +276,12 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 function insertBlockAssetInEditor(editorState, asset, selection) {
+  var mutable = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
   var activeSelection = editorState.getSelection();
   var inputSelection = selection || activeSelection;
 
-  var newContentState = editorState.getCurrentContent().createEntity(_constants.BLOCK_ASSET, 'IMMUTABLE', {
+  var newContentState = editorState.getCurrentContent().createEntity(_constants.BLOCK_ASSET, mutable ? 'MUTABLE' : 'IMMUTABLE', {
     insertionType: _constants.BLOCK_ASSET,
     asset: asset
   });

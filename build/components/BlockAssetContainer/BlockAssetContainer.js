@@ -96,18 +96,17 @@ var BlockAssetContainer = function (_Component) {
           onMouseOut: onMOut,
           onBlur: onMOut
         },
-        _react2.default.createElement(RealAssetComponent, {
-          assetId: assetId,
-          asset: asset,
-          onAssetChange: onAssetChange,
-          onAssetFocus: onAssetFocus,
-          onAssetBlur: onAssetBlur,
-          iconMap: iconMap,
-          renderingMode: renderingMode
-        }),
         _react2.default.createElement(
-          'div',
-          null,
+          RealAssetComponent,
+          {
+            assetId: assetId,
+            asset: asset,
+            onAssetChange: onAssetChange,
+            onAssetFocus: onAssetFocus,
+            onAssetBlur: onAssetBlur,
+            iconMap: iconMap,
+            renderingMode: renderingMode
+          },
           children
         )
       );

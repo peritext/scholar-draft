@@ -283,14 +283,15 @@ export function insertInlineAssetInEditor(
 export function insertBlockAssetInEditor(
   editorState, 
   asset, 
-  selection
+  selection,
+  mutable = false
 ) {
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
 
   const newContentState = editorState.getCurrentContent().createEntity(
     BLOCK_ASSET,
-    'IMMUTABLE',
+    mutable ? 'MUTABLE' : 'IMMUTABLE',
     {
       insertionType: BLOCK_ASSET,
       asset

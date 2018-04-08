@@ -93,18 +93,17 @@ var InlineAssetContainer = function (_Component) {
           onMouseOut: onMOut,
           onBlur: onMOut
         },
-        _react2.default.createElement(AssetComponent, {
-          assetId: assetId,
-          asset: asset,
-          onAssetChange: onAssetChange,
-          onAssetFocus: onAssetFocus,
-          onAssetBlur: onAssetBlur,
-          iconMap: iconMap,
-          renderingMode: renderingMode
-        }),
         _react2.default.createElement(
-          'span',
-          null,
+          AssetComponent,
+          {
+            assetId: assetId,
+            asset: asset,
+            onAssetChange: onAssetChange,
+            onAssetFocus: onAssetFocus,
+            onAssetBlur: onAssetBlur,
+            iconMap: iconMap,
+            renderingMode: renderingMode
+          },
           children
         )
       );
