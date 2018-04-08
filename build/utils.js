@@ -215,7 +215,6 @@ function insertAssetInEditor(editorState, asset, selection) {
     // ... and put selection after newly created content
     updatedEditor = _draftJs.EditorState.forceSelection(updatedEditor, endSelection);
   }
-  console.log('create');
   return updatedEditor;
 }
 
@@ -227,10 +226,12 @@ function insertAssetInEditor(editorState, asset, selection) {
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 function insertInlineAssetInEditor(editorState, asset, selection) {
+  var mutable = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
   var currentContent = editorState.getCurrentContent();
   var activeSelection = editorState.getSelection();
   var inputSelection = selection || activeSelection;
-  var newContentState = editorState.getCurrentContent().createEntity(_constants.INLINE_ASSET, 'IMMUTABLE', {
+  var newContentState = editorState.getCurrentContent().createEntity(_constants.INLINE_ASSET, mutable ? 'MUTABLE' : 'IMMUTABLE', {
     insertionType: _constants.INLINE_ASSET,
     asset: asset
   });

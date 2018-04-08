@@ -195,7 +195,6 @@ export function insertAssetInEditor(
     // ... and put selection after newly created content
     updatedEditor = EditorState.forceSelection(updatedEditor, endSelection);
   }
-  console.log('create');
   return updatedEditor;
 }
 
@@ -209,14 +208,15 @@ export function insertAssetInEditor(
 export function insertInlineAssetInEditor(
   editorState, 
   asset, 
-  selection
+  selection,
+  mutable = false
 ) {
   const currentContent = editorState.getCurrentContent();
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
   let newContentState = editorState.getCurrentContent().createEntity(
     INLINE_ASSET,
-    'IMMUTABLE',
+    mutable ? 'MUTABLE' : 'IMMUTABLE',
     {
       insertionType: INLINE_ASSET,
       asset
