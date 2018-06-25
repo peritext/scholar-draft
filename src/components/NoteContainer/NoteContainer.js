@@ -19,6 +19,7 @@ class NoteContainer extends Component {
     assetRequestContentId: PropTypes.string,
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
+    customContext: PropTypes.object,
 
     messages: PropTypes.object,
 
@@ -71,6 +72,7 @@ class NoteContainer extends Component {
       isActive,
       renderingMode,
       messages,
+      customContext,
       
       onEditorChange,
       onAssetRequest,
@@ -175,6 +177,7 @@ class NoteContainer extends Component {
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
+            customContext={customContext}
 
             messages={messages}
 

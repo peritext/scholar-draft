@@ -41,7 +41,7 @@ export const getOffsetRelativeToContainer = (el, stopClassName) => {
       offsetY: el.offsetTop
     };
 
-    while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+    while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
       offset.offsetX += parentNode.offsetLeft;
       offset.offsetY += parentNode.offsetTop;
       element = parentNode;
@@ -787,6 +787,7 @@ export class Emitter {
   notesListeners = new Map()
   assetChoicePropsListeners = new Map()
   renderingModeListeners = new Map()
+  customContextListeners = new Map()
 
   subscribeToAssets = (listener) => {
     const id = generateId();
@@ -813,6 +814,12 @@ export class Emitter {
     return () => this.renderingModeListeners.delete(id);
   }
 
+  subscribeToCustomContext = (listener) => {
+    const id = generateId();
+    this.customContextListeners.set(id, listener);
+    return () => this.customContextListeners.delete(id);
+  }
+
 
   dispatchAssets = (assets) => {
     this.assetsListeners.forEach((listener) => {
@@ -834,6 +841,12 @@ export class Emitter {
   dispatchRenderingMode = (renderingMode) => {
     this.renderingModeListeners.forEach((listener) => {
       listener(renderingMode);
+    });
+  }
+
+  dispatchCustomContext = (customContext) => {
+    this.customContextListeners.forEach((listener) => {
+      listener(customContext);
     });
   }
 }

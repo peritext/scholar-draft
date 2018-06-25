@@ -367,6 +367,7 @@ BasicEditor.propTypes = {
   notes: _propTypes2.default.object,
   clipboard: _propTypes2.default.object,
   inlineAssetComponents: _propTypes2.default.object,
+  customContext: _propTypes2.default.object,
   blockAssetComponents: _propTypes2.default.object,
   assetRequestPosition: _propTypes2.default.object,
   contentId: _propTypes2.default.string,
@@ -583,6 +584,11 @@ var _initialiseProps = function _initialiseProps() {
       stateMods = (0, _extends3.default)({}, stateMods, {
         editorState: nextProps.editorState || _this2.generateEmptyEditor()
       });
+    }
+
+    // updating rendering mode
+    if (_this2.props.customContext !== nextProps.customContext) {
+      _this2.emitter.dispatchCustomContext(nextProps.customContext);
     }
 
     // updating rendering mode

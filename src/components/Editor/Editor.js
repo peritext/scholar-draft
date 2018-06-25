@@ -38,6 +38,7 @@ export default class Editor extends Component {
       summonAsset: PropTypes.string, 
       cancel: PropTypes.string,
     }),
+    customContext: PropTypes.object,
 
     className: PropTypes.string,
 
@@ -213,6 +214,7 @@ export default class Editor extends Component {
     const {
       notes,
       assets,
+      customContext,
 
       messages,
       
@@ -306,6 +308,7 @@ export default class Editor extends Component {
         note={note}
         notes={notes}
         assets={assets}
+        customContext={customContext}
       
         ref={bindNote}
 
@@ -369,6 +372,7 @@ export default class Editor extends Component {
       notes,
       notesOrder,
       assets,
+      customContext,
 
       messages,
 
@@ -490,6 +494,7 @@ export default class Editor extends Component {
               editorState={mainEditorState}
               assets={assets}
               ref={bindMainEditor}
+              customContext={customContext}
 
               messages={messages}
 

@@ -39,7 +39,7 @@ class InlineAssetContainer extends Component {
       asset: this.context.assets[this.props.assetId],
       renderingMode: this.props.renderingMode
     });
-    this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
+    this.unsubscribeToAssets = this.context.emitter.subscribeToAssets((assets) => {
       const asset = assets[this.props.assetId];
       if (asset !== this.state.asset) {
         this.setState({
@@ -47,6 +47,15 @@ class InlineAssetContainer extends Component {
         });
       }
     });
+
+    this.unsubscribeToCustomContext = this.context
+      .emitter.subscribeToCustomContext((customContext) => {
+        if (customContext !== this.state.customContext) {
+          this.setState({
+            customContext
+          });
+        }
+      });
 
     this.unsubscribeToRenderingMode = this.context.emitter
       .subscribeToRenderingMode((renderingMode) => {
@@ -59,14 +68,16 @@ class InlineAssetContainer extends Component {
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
+    this.unsubscribeToAssets();
     this.unsubscribeToRenderingMode();
+    this.unsubscribeToCustomContext();
   }
 
   render = () => {
     const {
       asset,
-      renderingMode
+      renderingMode,
+      customContext,
     } = this.state;
     if (!asset) {
       return null;
@@ -117,6 +128,7 @@ class InlineAssetContainer extends Component {
         <AssetComponent
           assetId={assetId}
           asset={asset}
+          customContext={customContext}
           onAssetChange={onAssetChange}
           onAssetFocus={onAssetFocus}
           onAssetBlur={onAssetBlur}

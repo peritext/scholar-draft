@@ -66,6 +66,7 @@ var NoteContainer = function (_Component) {
           isActive = _this$props.isActive,
           renderingMode = _this$props.renderingMode,
           messages = _this$props.messages,
+          customContext = _this$props.customContext,
           onEditorChange = _this$props.onEditorChange,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -182,6 +183,7 @@ var NoteContainer = function (_Component) {
             onBlur: onBlur,
             addTextAtCurrentSelection: addTextAtCurrentSelection,
             clipboard: clipboard,
+            customContext: customContext,
 
             messages: messages,
 
@@ -231,6 +233,7 @@ NoteContainer.propTypes = {
   assetRequestContentId: _propTypes2.default.string,
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
+  customContext: _propTypes2.default.object,
 
   messages: _propTypes2.default.object,
 

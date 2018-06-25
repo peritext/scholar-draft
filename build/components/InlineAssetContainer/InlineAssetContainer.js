@@ -47,7 +47,8 @@ var InlineAssetContainer = function (_Component) {
     _this.render = function () {
       var _this$state = _this.state,
           asset = _this$state.asset,
-          renderingMode = _this$state.renderingMode;
+          renderingMode = _this$state.renderingMode,
+          customContext = _this$state.customContext;
 
       if (!asset) {
         return null;
@@ -98,6 +99,7 @@ var InlineAssetContainer = function (_Component) {
           {
             assetId: assetId,
             asset: asset,
+            customContext: customContext,
             onAssetChange: onAssetChange,
             onAssetFocus: onAssetFocus,
             onAssetBlur: onAssetBlur,
@@ -122,11 +124,19 @@ var InlineAssetContainer = function (_Component) {
         asset: this.context.assets[this.props.assetId],
         renderingMode: this.props.renderingMode
       });
-      this.unsubscribe = this.context.emitter.subscribeToAssets(function (assets) {
+      this.unsubscribeToAssets = this.context.emitter.subscribeToAssets(function (assets) {
         var asset = assets[_this2.props.assetId];
         if (asset !== _this2.state.asset) {
           _this2.setState({
             asset: asset
+          });
+        }
+      });
+
+      this.unsubscribeToCustomContext = this.context.emitter.subscribeToCustomContext(function (customContext) {
+        if (customContext !== _this2.state.customContext) {
+          _this2.setState({
+            customContext: customContext
           });
         }
       });
@@ -142,8 +152,9 @@ var InlineAssetContainer = function (_Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      this.unsubscribe();
+      this.unsubscribeToAssets();
       this.unsubscribeToRenderingMode();
+      this.unsubscribeToCustomContext();
     }
   }]);
   return InlineAssetContainer;

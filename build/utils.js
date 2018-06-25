@@ -85,7 +85,7 @@ var getOffsetRelativeToContainer = exports.getOffsetRelativeToContainer = functi
       offsetY: el.offsetTop
     };
 
-    while (parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+    while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
       offset.offsetX += parentNode.offsetLeft;
       offset.offsetY += parentNode.offsetTop;
       element = parentNode;
@@ -736,6 +736,7 @@ var Emitter = exports.Emitter = function Emitter() {
   this.notesListeners = new _map2.default();
   this.assetChoicePropsListeners = new _map2.default();
   this.renderingModeListeners = new _map2.default();
+  this.customContextListeners = new _map2.default();
 
   this.subscribeToAssets = function (listener) {
     var id = (0, _uuid.v4)();
@@ -769,6 +770,14 @@ var Emitter = exports.Emitter = function Emitter() {
     };
   };
 
+  this.subscribeToCustomContext = function (listener) {
+    var id = (0, _uuid.v4)();
+    _this.customContextListeners.set(id, listener);
+    return function () {
+      return _this.customContextListeners.delete(id);
+    };
+  };
+
   this.dispatchAssets = function (assets) {
     _this.assetsListeners.forEach(function (listener) {
       listener(assets);
@@ -790,6 +799,12 @@ var Emitter = exports.Emitter = function Emitter() {
   this.dispatchRenderingMode = function (renderingMode) {
     _this.renderingModeListeners.forEach(function (listener) {
       listener(renderingMode);
+    });
+  };
+
+  this.dispatchCustomContext = function (customContext) {
+    _this.customContextListeners.forEach(function (listener) {
+      listener(customContext);
     });
   };
 };

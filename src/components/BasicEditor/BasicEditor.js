@@ -76,6 +76,7 @@ export default class BasicEditor extends Component {
     notes: PropTypes.object,
     clipboard: PropTypes.object,
     inlineAssetComponents: PropTypes.object,
+    customContext: PropTypes.object,
     blockAssetComponents: PropTypes.object,
     assetRequestPosition: PropTypes.object,
     contentId: PropTypes.string,
@@ -358,6 +359,11 @@ export default class BasicEditor extends Component {
         ...stateMods,
         editorState: nextProps.editorState || this.generateEmptyEditor()
       };
+    }
+
+    // updating rendering mode
+    if (this.props.customContext !== nextProps.customContext) {
+      this.emitter.dispatchCustomContext(nextProps.customContext);
     }
 
 
