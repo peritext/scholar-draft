@@ -81,6 +81,8 @@ var SideToolbar = function (_Component) {
           iconMap = _this$props.iconMap,
           assetRequestPosition = _this$props.assetRequestPosition,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
+          AssetButtonComponent = _this$props.AssetButtonComponent,
+          NoteButtonComponent = _this$props.NoteButtonComponent,
           _this$props$allowNote = _this$props.allowNotesInsertion,
           allowNotesInsertion = _this$props$allowNote === undefined ? false : _this$props$allowNote,
           style = _this$props.style;
@@ -104,6 +106,9 @@ var SideToolbar = function (_Component) {
       };
       var assetSelectorActive = assetRequestPosition !== undefined;
 
+      var AssetButton = AssetButtonComponent || _AssetButton2.default;
+      var NoteButton = NoteButtonComponent || _NoteButton2.default;
+
       return _react2.default.createElement(
         'div',
         {
@@ -111,12 +116,12 @@ var SideToolbar = function (_Component) {
           ref: bindToolbar,
           style: style
         },
-        allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(_NoteButton2.default, {
+        allowNotesInsertion && !assetRequestPosition && _react2.default.createElement(NoteButton, {
           onClick: onNoteAdd,
           iconMap: iconMap,
           message: messages && messages.addNote
         }),
-        (allowAssets.inline || allowAssets.block) && _react2.default.createElement(_AssetButton2.default, {
+        (allowAssets.inline || allowAssets.block) && _react2.default.createElement(AssetButton, {
           onClick: onAssetButtonClick,
           active: assetSelectorActive,
           iconMap: iconMap,
@@ -168,6 +173,8 @@ SideToolbar.propTypes = {
   }),
 
   AssetChoiceComponent: _propTypes2.default.func,
+  AssetButtonComponent: _propTypes2.default.func,
+  NoteButtonComponent: _propTypes2.default.func,
   onNoteAdd: _propTypes2.default.func,
   onAssetChoice: _propTypes2.default.func,
   onAssetRequest: _propTypes2.default.func,

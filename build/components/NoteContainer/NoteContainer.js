@@ -83,6 +83,8 @@ var NoteContainer = function (_Component) {
           inlineAssetComponents = _this$props.inlineAssetComponents,
           blockAssetComponents = _this$props.blockAssetComponents,
           AssetChoiceComponent = _this$props.AssetChoiceComponent,
+          AssetButtonComponent = _this$props.AssetButtonComponent,
+          NoteButtonComponent = _this$props.NoteButtonComponent,
           _this$props$inlineEnt = _this$props.inlineEntities,
           inlineEntities = _this$props$inlineEnt === undefined ? [] : _this$props$inlineEnt,
           iconMap = _this$props.iconMap,
@@ -90,7 +92,8 @@ var NoteContainer = function (_Component) {
           assetChoiceProps = _this$props.assetChoiceProps,
           assetRequestContentId = _this$props.assetRequestContentId,
           clipboard = _this$props.clipboard,
-          editorStyle = _this$props.editorStyle;
+          editorStyle = _this$props.editorStyle,
+          NoteLayout = _this$props.NoteLayout;
 
 
       var bindRef = function bindRef(editor) {
@@ -116,35 +119,58 @@ var NoteContainer = function (_Component) {
         event.stopPropagation();
         onClickScrollToNotePointer(note.id);
       };
-      return note ? _react2.default.createElement(
-        'section',
-        {
-          className: 'scholar-draft-NoteContainer',
-          id: 'note-container-' + note.id
-        },
-        _react2.default.createElement(
-          'div',
-          { className: 'note-header', onClick: onHeaderClick },
-          _react2.default.createElement(
-            'button',
-            { onClick: onDelete },
-            'x'
-          ),
-          _react2.default.createElement(
-            'h3',
-            null,
-            'Note ',
-            note.order
-          ),
-          _react2.default.createElement(
-            'button',
-            { onClick: onClickScrollToNotePointerHandler },
-            '\u2191'
-          )
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'note-body' },
+      if (note) {
+        var Layout = NoteLayout ? function (_ref2) {
+          var children = _ref2.children;
+          return _react2.default.createElement(
+            NoteLayout,
+            {
+              note: note,
+              onHeaderClick: onHeaderClick,
+              onDelete: onDelete,
+              onClickToRetroLink: onClickScrollToNotePointerHandler,
+              id: 'note-container-' + note.id
+            },
+            children
+          );
+        } : function (_ref3) {
+          var children = _ref3.children;
+          return _react2.default.createElement(
+            'section',
+            {
+              className: 'scholar-draft-NoteContainer',
+              id: 'note-container-' + note.id
+            },
+            _react2.default.createElement(
+              'div',
+              { className: 'note-header', onClick: onHeaderClick },
+              _react2.default.createElement(
+                'button',
+                { onClick: onDelete },
+                'x'
+              ),
+              _react2.default.createElement(
+                'h3',
+                null,
+                'Note ',
+                note.order
+              ),
+              _react2.default.createElement(
+                'button',
+                { onClick: onClickScrollToNotePointerHandler },
+                '\u2191'
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'note-body' },
+              children
+            )
+          );
+        };
+        return _react2.default.createElement(
+          Layout,
+          null,
           _react2.default.createElement(_BasicEditor2.default, {
             editorState: note.editorState,
             contentId: contentId,
@@ -167,6 +193,8 @@ var NoteContainer = function (_Component) {
             onAssetRequestCancel: onAssetRequestCancel,
             isRequestingAssets: assetRequestContentId === contentId,
 
+            AssetButtonComponent: AssetButtonComponent,
+            NoteButtonComponent: NoteButtonComponent,
             AssetChoiceComponent: AssetChoiceComponent,
             assetChoiceProps: assetChoiceProps,
 
@@ -187,8 +215,9 @@ var NoteContainer = function (_Component) {
             allowNotesInsertion: false,
             editorStyle: editorStyle
           })
-        )
-      ) : null;
+        );
+      }
+      return null;
     }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
   }
 
@@ -228,6 +257,9 @@ NoteContainer.propTypes = {
   inlineAssetComponents: _propTypes2.default.object,
   blockAssetComponents: _propTypes2.default.object,
   AssetChoiceComponent: _propTypes2.default.func,
+  AssetButtonComponent: _propTypes2.default.func,
+  NoteButtonComponent: _propTypes2.default.func,
+  NoteLayout: _propTypes2.default.func,
   editorStyle: _propTypes2.default.object,
   inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,

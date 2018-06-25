@@ -111,6 +111,8 @@ export default class BasicEditor extends Component {
     allowInlineAsset: PropTypes.bool,
     allowBlockAsset: PropTypes.bool,
     AssetChoiceComponent: PropTypes.func,
+    AssetButtonComponent: PropTypes.func,
+    NoteButtonComponent: PropTypes.func,
     assetChoiceProps: PropTypes.object,
     keyBindingFn: PropTypes.func,
     inlineButtons: PropTypes.array,
@@ -462,11 +464,13 @@ export default class BasicEditor extends Component {
         isFocusing: true
       });
       setTimeout(() => {
-        this.editor.focus();
-        setTimeout(() => 
-          this.setState({
-            isFocusing: false
-          }));
+        if (this && this.editor) {
+          this.editor.focus();
+          setTimeout(() => 
+            this.setState({
+              isFocusing: false
+            }));
+        }
       });
     } 
   }
@@ -1127,6 +1131,9 @@ export default class BasicEditor extends Component {
       AssetChoiceComponent,
       assetChoiceProps,
 
+      AssetButtonComponent,
+      NoteButtonComponent,
+
       BibliographyComponent,
 
       isActive,
@@ -1315,6 +1322,8 @@ export default class BasicEditor extends Component {
           onAssetChoiceFocus={onAssetChoiceFocus}
 
           AssetChoiceComponent={AssetChoiceComponent}
+          AssetButtonComponent={AssetButtonComponent}
+          NoteButtonComponent={NoteButtonComponent}
           iconMap={iconMap}
 
           messages={messages}

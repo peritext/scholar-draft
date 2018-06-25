@@ -402,6 +402,8 @@ BasicEditor.propTypes = {
   allowInlineAsset: _propTypes2.default.bool,
   allowBlockAsset: _propTypes2.default.bool,
   AssetChoiceComponent: _propTypes2.default.func,
+  AssetButtonComponent: _propTypes2.default.func,
+  NoteButtonComponent: _propTypes2.default.func,
   assetChoiceProps: _propTypes2.default.object,
   keyBindingFn: _propTypes2.default.func,
   inlineButtons: _propTypes2.default.array,
@@ -674,12 +676,14 @@ var _initialiseProps = function _initialiseProps() {
         isFocusing: true
       });
       setTimeout(function () {
-        _this2.editor.focus();
-        setTimeout(function () {
-          return _this2.setState({
-            isFocusing: false
+        if (_this2 && _this2.editor) {
+          _this2.editor.focus();
+          setTimeout(function () {
+            return _this2.setState({
+              isFocusing: false
+            });
           });
-        });
+        }
       });
     }
   };
@@ -1182,10 +1186,12 @@ var _initialiseProps = function _initialiseProps() {
         onClick = _props3.onClick,
         AssetChoiceComponent = _props3.AssetChoiceComponent,
         assetChoiceProps = _props3.assetChoiceProps,
+        AssetButtonComponent = _props3.AssetButtonComponent,
+        NoteButtonComponent = _props3.NoteButtonComponent,
         BibliographyComponent = _props3.BibliographyComponent,
         isActive = _props3.isActive,
         inlineButtons = _props3.inlineButtons,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'BibliographyComponent', 'isActive', 'inlineButtons']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'BibliographyComponent', 'isActive', 'inlineButtons']);
 
 
     var messages = {
@@ -1346,6 +1352,8 @@ var _initialiseProps = function _initialiseProps() {
         onAssetChoiceFocus: onAssetChoiceFocus,
 
         AssetChoiceComponent: AssetChoiceComponent,
+        AssetButtonComponent: AssetButtonComponent,
+        NoteButtonComponent: NoteButtonComponent,
         iconMap: iconMap,
 
         messages: messages,

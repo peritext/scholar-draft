@@ -46,6 +46,9 @@ class NoteContainer extends Component {
     inlineAssetComponents: PropTypes.object,
     blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
+    AssetButtonComponent: PropTypes.func,
+    NoteButtonComponent: PropTypes.func,
+    NoteLayout: PropTypes.func,
     editorStyle: PropTypes.object,
     inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
@@ -87,6 +90,8 @@ class NoteContainer extends Component {
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
+      AssetButtonComponent,
+      NoteButtonComponent,
       inlineEntities = [],
       iconMap,
       inlineButtons,
@@ -96,7 +101,9 @@ class NoteContainer extends Component {
 
       clipboard,
 
-      editorStyle
+      editorStyle,
+
+      NoteLayout
     } = this.props;
 
     const bindRef = (editor) => {
@@ -122,17 +129,41 @@ class NoteContainer extends Component {
       event.stopPropagation();
       onClickScrollToNotePointer(note.id);
     };
-    return note ? (
-      <section 
-        className="scholar-draft-NoteContainer"
-        id={`note-container-${note.id}`}
-      >
-        <div className="note-header" onClick={onHeaderClick}>
-          <button onClick={onDelete}>x</button>
-          <h3>Note {note.order}</h3>
-          <button onClick={onClickScrollToNotePointerHandler}>↑</button>
-        </div>
-        <div className="note-body">
+    if (note) {
+      const Layout = NoteLayout ?
+        ({
+          children
+        }) => (
+          <NoteLayout
+            note={note}
+            onHeaderClick={onHeaderClick}
+            onDelete={onDelete}
+            onClickToRetroLink={onClickScrollToNotePointerHandler}
+            id={`note-container-${note.id}`}
+          >
+            {children}
+          </NoteLayout>
+        )
+        :
+        ({
+          children,
+        }) => (
+          <section 
+            className="scholar-draft-NoteContainer"
+            id={`note-container-${note.id}`}
+          >
+            <div className="note-header" onClick={onHeaderClick}>
+              <button onClick={onDelete}>x</button>
+              <h3>Note {note.order}</h3>
+              <button onClick={onClickScrollToNotePointerHandler}>↑</button>
+            </div>
+            <div className="note-body">
+              {children}
+            </div>
+          </section>
+        );
+      return (
+        <Layout>
           <BasicEditor 
             editorState={note.editorState}
             contentId={contentId}
@@ -155,6 +186,8 @@ class NoteContainer extends Component {
             onAssetRequestCancel={onAssetRequestCancel}
             isRequestingAssets={assetRequestContentId === contentId}
 
+            AssetButtonComponent={AssetButtonComponent}
+            NoteButtonComponent={NoteButtonComponent}
             AssetChoiceComponent={AssetChoiceComponent}
             assetChoiceProps={assetChoiceProps}
 
@@ -176,9 +209,10 @@ class NoteContainer extends Component {
             allowNotesInsertion={false}
             editorStyle={editorStyle}
           />
-        </div>
-      </section>
-    ) : null;
+        </Layout>
+      );
+    }
+    return null;
   }
 }
 

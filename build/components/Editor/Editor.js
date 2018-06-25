@@ -170,8 +170,11 @@ var Editor = function (_Component) {
           clipboard = _this$props.clipboard,
           focusedEditorId = _this$props.focusedEditorId,
           NoteContainerComponent = _this$props.NoteContainerComponent,
+          AssetButtonComponent = _this$props.AssetButtonComponent,
+          NoteButtonComponent = _this$props.NoteButtonComponent,
           inlineButtons = _this$props.inlineButtons,
-          renderingMode = _this$props.renderingMode;
+          renderingMode = _this$props.renderingMode,
+          NoteLayout = _this$props.NoteLayout;
 
       var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
         return onEditorChange(noteId, editor);
@@ -266,6 +269,9 @@ var Editor = function (_Component) {
         inlineEntities: inlineEntities,
         iconMap: iconMap,
         keyBindingFn: keyBindingFn,
+        NoteLayout: NoteLayout,
+        AssetButtonComponent: AssetButtonComponent,
+        NoteButtonComponent: NoteButtonComponent,
 
         editorStyle: editorStyles && editorStyles.noteEditor
       });
@@ -370,6 +376,8 @@ var Editor = function (_Component) {
           AssetChoiceComponent = _props.AssetChoiceComponent,
           NotePointerComponent = _props.NotePointerComponent,
           BibliographyComponent = _props.BibliographyComponent,
+          AssetButtonComponent = _props.AssetButtonComponent,
+          NoteButtonComponent = _props.NoteButtonComponent,
           _props$inlineEntities = _props.inlineEntities,
           inlineEntities = _props$inlineEntities === undefined ? [] : _props$inlineEntities,
           iconMap = _props.iconMap,
@@ -497,6 +505,8 @@ var Editor = function (_Component) {
               blockAssetComponents: blockAssetComponents,
               AssetChoiceComponent: AssetChoiceComponent,
               NotePointerComponent: NotePointerComponent,
+              AssetButtonComponent: AssetButtonComponent,
+              NoteButtonComponent: NoteButtonComponent,
               inlineEntities: inlineEntities,
               iconMap: iconMap,
 
@@ -571,6 +581,9 @@ Editor.propTypes = {
   AssetChoiceComponent: _propTypes2.default.func,
   NotePointerComponent: _propTypes2.default.func,
   BibliographyComponent: _propTypes2.default.func,
+  AssetButtonComponent: _propTypes2.default.func,
+  NoteButtonComponent: _propTypes2.default.func,
+  NoteLayout: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
   iconMap: _propTypes2.default.object,
   inlineButtons: _propTypes2.default.array,

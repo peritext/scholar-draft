@@ -5,8 +5,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import AssetButton from '../ToolbarButtons/AssetButton';
-import NoteButton from '../ToolbarButtons/NoteButton';
+import DefaultAssetButton from '../ToolbarButtons/AssetButton';
+import DefaultNoteButton from '../ToolbarButtons/NoteButton';
   
 import './SideToolbar.scss';
 
@@ -33,6 +33,8 @@ export default class SideToolbar extends Component {
     }),
 
     AssetChoiceComponent: PropTypes.func,
+    AssetButtonComponent: PropTypes.func,
+    NoteButtonComponent: PropTypes.func,
     onNoteAdd: PropTypes.func,
     onAssetChoice: PropTypes.func,
     onAssetRequest: PropTypes.func,
@@ -67,6 +69,8 @@ export default class SideToolbar extends Component {
       assetRequestPosition,
 
       AssetChoiceComponent,
+      AssetButtonComponent,
+      NoteButtonComponent,
 
       allowNotesInsertion = false,
       style,
@@ -88,6 +92,10 @@ export default class SideToolbar extends Component {
     };
     const stopEventPropagation = event => event.stopPropagation();
     const assetSelectorActive = assetRequestPosition !== undefined;
+
+
+    const AssetButton = AssetButtonComponent || DefaultAssetButton;
+    const NoteButton = NoteButtonComponent || DefaultNoteButton;
 
     return (
       <div

@@ -75,6 +75,9 @@ export default class Editor extends Component {
     AssetChoiceComponent: PropTypes.func,
     NotePointerComponent: PropTypes.func,
     BibliographyComponent: PropTypes.func,
+    AssetButtonComponent: PropTypes.func,
+    NoteButtonComponent: PropTypes.func,
+    NoteLayout: PropTypes.func,
     inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
     inlineButtons: PropTypes.array,
@@ -245,9 +248,13 @@ export default class Editor extends Component {
       clipboard,
       focusedEditorId,
       NoteContainerComponent,
+      AssetButtonComponent,
+      NoteButtonComponent,
       inlineButtons,
 
       renderingMode,
+
+      NoteLayout,
 
     } = this.props;
     const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
@@ -291,6 +298,7 @@ export default class Editor extends Component {
       }
     };
 
+
     const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
     return (
       <NoteContainer
@@ -308,7 +316,7 @@ export default class Editor extends Component {
         assetRequestPosition={assetRequestPosition}
         assetRequestContentId={assetRequestContentId}
         assetChoiceProps={assetChoiceProps}
-      
+
         isActive={noteId === focusedEditorId}
       
         onEditorClick={onNoteEditorClick}
@@ -342,6 +350,9 @@ export default class Editor extends Component {
         inlineEntities={inlineEntities}
         iconMap={iconMap}
         keyBindingFn={keyBindingFn}
+        NoteLayout={NoteLayout}
+        AssetButtonComponent={AssetButtonComponent}
+        NoteButtonComponent={NoteButtonComponent}
       
         editorStyle={editorStyles && editorStyles.noteEditor}
       />
@@ -393,6 +404,8 @@ export default class Editor extends Component {
       AssetChoiceComponent,
       NotePointerComponent,
       BibliographyComponent,
+      AssetButtonComponent,
+      NoteButtonComponent,
       inlineEntities = [],
       iconMap,
 
@@ -519,6 +532,8 @@ export default class Editor extends Component {
               blockAssetComponents={blockAssetComponents}
               AssetChoiceComponent={AssetChoiceComponent}
               NotePointerComponent={NotePointerComponent}
+              AssetButtonComponent={AssetButtonComponent}
+              NoteButtonComponent={NoteButtonComponent}
               inlineEntities={inlineEntities}
               iconMap={iconMap}
 
