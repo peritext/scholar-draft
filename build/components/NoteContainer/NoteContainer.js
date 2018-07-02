@@ -96,8 +96,8 @@ var Layout = function Layout(_ref) {
 };
 
 Layout.propTypes = {
-  children: _propTypes2.default.array,
-  NoteLayout: _propTypes2.default.oneOfTypes([_propTypes2.default.element, _propTypes2.default.function]),
+  children: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.object]),
+  NoteLayout: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func]),
   note: _propTypes2.default.object,
   onHeaderClick: _propTypes2.default.func,
   onDelete: _propTypes2.default.func,

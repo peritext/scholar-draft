@@ -49,8 +49,8 @@ const Layout = ({
 };
 
 Layout.propTypes = {
-  children: PropTypes.array,
-  NoteLayout: PropTypes.oneOfTypes([PropTypes.element, PropTypes.function]),
+  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  NoteLayout: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
   note: PropTypes.object,
   onHeaderClick: PropTypes.func,
   onDelete: PropTypes.func,
