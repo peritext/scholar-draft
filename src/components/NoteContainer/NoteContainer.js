@@ -10,6 +10,53 @@ import './NoteContainer.scss';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 
+const Layout = ({
+  children,
+  NoteLayout,
+  note,
+  onHeaderClick,
+  onDelete,
+  onClickScrollToNotePointerHandler
+}) => {
+  if (NoteLayout) {
+    return (
+      <NoteLayout
+        note={note}
+        onHeaderClick={onHeaderClick}
+        onDelete={onDelete}
+        onClickToRetroLink={onClickScrollToNotePointerHandler}
+        id={`note-container-${note.id}`}
+      >
+        {children}
+      </NoteLayout>
+    );
+  }
+  return (
+    <section 
+      className="scholar-draft-NoteContainer"
+      id={`note-container-${note.id}`}
+    >
+      <div className="note-header" onClick={onHeaderClick}>
+        <button onClick={onDelete}>x</button>
+        <h3>Note {note.order}</h3>
+        <button onClick={onClickScrollToNotePointerHandler}>↑</button>
+      </div>
+      <div className="note-body">
+        {children}
+      </div>
+    </section>
+  );
+};
+
+Layout.propTypes = {
+  children: PropTypes.array,
+  NoteLayout: PropTypes.oneOfTypes([PropTypes.element, PropTypes.function]),
+  note: PropTypes.object,
+  onHeaderClick: PropTypes.func,
+  onDelete: PropTypes.func,
+  onClickScrollToNotePointerHandler: PropTypes.func
+};
+
 class NoteContainer extends Component {
 
   static propTypes= {
@@ -19,7 +66,6 @@ class NoteContainer extends Component {
     assetRequestContentId: PropTypes.string,
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
-    customContext: PropTypes.object,
 
     messages: PropTypes.object,
 
@@ -72,7 +118,6 @@ class NoteContainer extends Component {
       isActive,
       renderingMode,
       messages,
-      customContext,
       
       onEditorChange,
       onAssetRequest,
@@ -132,40 +177,14 @@ class NoteContainer extends Component {
       onClickScrollToNotePointer(note.id);
     };
     if (note) {
-      const Layout = NoteLayout ?
-        ({
-          children
-        }) => (
-          <NoteLayout
-            note={note}
-            onHeaderClick={onHeaderClick}
-            onDelete={onDelete}
-            onClickToRetroLink={onClickScrollToNotePointerHandler}
-            id={`note-container-${note.id}`}
-          >
-            {children}
-          </NoteLayout>
-        )
-        :
-        ({
-          children,
-        }) => (
-          <section 
-            className="scholar-draft-NoteContainer"
-            id={`note-container-${note.id}`}
-          >
-            <div className="note-header" onClick={onHeaderClick}>
-              <button onClick={onDelete}>x</button>
-              <h3>Note {note.order}</h3>
-              <button onClick={onClickScrollToNotePointerHandler}>↑</button>
-            </div>
-            <div className="note-body">
-              {children}
-            </div>
-          </section>
-        );
       return (
-        <Layout>
+        <Layout
+          NoteLayout={NoteLayout}
+          note={note}
+          onHeaderClick={onHeaderClick}
+          onDelete={onDelete}
+          onClickScrollToNotePointerHandler={onClickScrollToNotePointerHandler}
+        >
           <BasicEditor 
             editorState={note.editorState}
             contentId={contentId}
@@ -177,7 +196,6 @@ class NoteContainer extends Component {
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
-            customContext={customContext}
 
             messages={messages}
 

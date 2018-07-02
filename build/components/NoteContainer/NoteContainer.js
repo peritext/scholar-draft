@@ -40,11 +40,75 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * This module exports a react component wrapping a editable note representation
  * @module scholar-draft/NoteContainer
  */
+var Layout = function Layout(_ref) {
+  var children = _ref.children,
+      NoteLayout = _ref.NoteLayout,
+      note = _ref.note,
+      onHeaderClick = _ref.onHeaderClick,
+      onDelete = _ref.onDelete,
+      onClickScrollToNotePointerHandler = _ref.onClickScrollToNotePointerHandler;
+
+  if (NoteLayout) {
+    return _react2.default.createElement(
+      NoteLayout,
+      {
+        note: note,
+        onHeaderClick: onHeaderClick,
+        onDelete: onDelete,
+        onClickToRetroLink: onClickScrollToNotePointerHandler,
+        id: 'note-container-' + note.id
+      },
+      children
+    );
+  }
+  return _react2.default.createElement(
+    'section',
+    {
+      className: 'scholar-draft-NoteContainer',
+      id: 'note-container-' + note.id
+    },
+    _react2.default.createElement(
+      'div',
+      { className: 'note-header', onClick: onHeaderClick },
+      _react2.default.createElement(
+        'button',
+        { onClick: onDelete },
+        'x'
+      ),
+      _react2.default.createElement(
+        'h3',
+        null,
+        'Note ',
+        note.order
+      ),
+      _react2.default.createElement(
+        'button',
+        { onClick: onClickScrollToNotePointerHandler },
+        '\u2191'
+      )
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'note-body' },
+      children
+    )
+  );
+};
+
+Layout.propTypes = {
+  children: _propTypes2.default.array,
+  NoteLayout: _propTypes2.default.oneOfTypes([_propTypes2.default.element, _propTypes2.default.function]),
+  note: _propTypes2.default.object,
+  onHeaderClick: _propTypes2.default.func,
+  onDelete: _propTypes2.default.func,
+  onClickScrollToNotePointerHandler: _propTypes2.default.func
+};
+
 var NoteContainer = function (_Component) {
   (0, _inherits3.default)(NoteContainer, _Component);
 
   function NoteContainer() {
-    var _ref;
+    var _ref2;
 
     var _temp, _this, _ret;
 
@@ -54,7 +118,7 @@ var NoteContainer = function (_Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = NoteContainer.__proto__ || (0, _getPrototypeOf2.default)(NoteContainer)).call.apply(_ref, [this].concat(args))), _this), _this.focus = function () {
+    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref2 = NoteContainer.__proto__ || (0, _getPrototypeOf2.default)(NoteContainer)).call.apply(_ref2, [this].concat(args))), _this), _this.focus = function () {
       _this.editor.focus();
     }, _this.render = function () {
       var _this$props = _this.props,
@@ -66,7 +130,6 @@ var NoteContainer = function (_Component) {
           isActive = _this$props.isActive,
           renderingMode = _this$props.renderingMode,
           messages = _this$props.messages,
-          customContext = _this$props.customContext,
           onEditorChange = _this$props.onEditorChange,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -121,57 +184,15 @@ var NoteContainer = function (_Component) {
         onClickScrollToNotePointer(note.id);
       };
       if (note) {
-        var Layout = NoteLayout ? function (_ref2) {
-          var children = _ref2.children;
-          return _react2.default.createElement(
-            NoteLayout,
-            {
-              note: note,
-              onHeaderClick: onHeaderClick,
-              onDelete: onDelete,
-              onClickToRetroLink: onClickScrollToNotePointerHandler,
-              id: 'note-container-' + note.id
-            },
-            children
-          );
-        } : function (_ref3) {
-          var children = _ref3.children;
-          return _react2.default.createElement(
-            'section',
-            {
-              className: 'scholar-draft-NoteContainer',
-              id: 'note-container-' + note.id
-            },
-            _react2.default.createElement(
-              'div',
-              { className: 'note-header', onClick: onHeaderClick },
-              _react2.default.createElement(
-                'button',
-                { onClick: onDelete },
-                'x'
-              ),
-              _react2.default.createElement(
-                'h3',
-                null,
-                'Note ',
-                note.order
-              ),
-              _react2.default.createElement(
-                'button',
-                { onClick: onClickScrollToNotePointerHandler },
-                '\u2191'
-              )
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'note-body' },
-              children
-            )
-          );
-        };
         return _react2.default.createElement(
           Layout,
-          null,
+          {
+            NoteLayout: NoteLayout,
+            note: note,
+            onHeaderClick: onHeaderClick,
+            onDelete: onDelete,
+            onClickScrollToNotePointerHandler: onClickScrollToNotePointerHandler
+          },
           _react2.default.createElement(_BasicEditor2.default, {
             editorState: note.editorState,
             contentId: contentId,
@@ -183,7 +204,6 @@ var NoteContainer = function (_Component) {
             onBlur: onBlur,
             addTextAtCurrentSelection: addTextAtCurrentSelection,
             clipboard: clipboard,
-            customContext: customContext,
 
             messages: messages,
 
@@ -233,7 +253,6 @@ NoteContainer.propTypes = {
   assetRequestContentId: _propTypes2.default.string,
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
-  customContext: _propTypes2.default.object,
 
   messages: _propTypes2.default.object,
 
