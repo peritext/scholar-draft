@@ -1038,6 +1038,7 @@ export default class BasicEditor extends Component {
 
 
     const sideToolbarEle = this.sideToolbar.toolbar;
+    const inlineToolbarEle = this.inlineToolbar.toolbar;
 
 
     if (!sideToolbarEle) {
@@ -1065,6 +1066,8 @@ export default class BasicEditor extends Component {
       styles.sideToolbar.display = 'block';
 
       if (!selectionRange.collapsed) {
+        const inlineToolbarWidth = inlineToolbarEle.offsetWidth || 200;
+
         styles.inlineToolbar.position = 'fixed';
         styles.inlineToolbar.display = 'block';
         let startNode = selectionRange.startContainer;
@@ -1072,8 +1075,17 @@ export default class BasicEditor extends Component {
           startNode = startNode.parentNode;
         }
         const popTop = rangeBounds.top - popoverSpacing;
-        left = rangeBounds.left;/* eslint prefer-destructuring:0 */
-        styles.inlineToolbar.left = left;
+        left = rangeBounds.left - (inlineToolbarWidth / 2);/* eslint prefer-destructuring:0 */
+        // prevent inline toolbar collapse
+        // left = left + inlineToolbarWidth / 2  > 
+        // editorBounds.right ? editorBounds.right - inlineToolbarWidth : left;
+        if (left + (inlineToolbarWidth * 1.2) < editorBounds.right) {
+          styles.inlineToolbar.left = left;
+          styles.inlineToolbar.right = 'unset';
+        } else {
+          styles.inlineToolbar.right = 0;
+          styles.inlineToolbar.left = 'unset';
+        }
         styles.inlineToolbar.top = popTop;
       } else {
         styles.inlineToolbar.display = 'none';

@@ -1110,6 +1110,7 @@ var _initialiseProps = function _initialiseProps() {
 
 
     var sideToolbarEle = _this2.sideToolbar.toolbar;
+    var inlineToolbarEle = _this2.inlineToolbar.toolbar;
 
     if (!sideToolbarEle) {
       return;
@@ -1134,6 +1135,8 @@ var _initialiseProps = function _initialiseProps() {
       styles.sideToolbar.display = 'block';
 
       if (!selectionRange.collapsed) {
+        var inlineToolbarWidth = inlineToolbarEle.offsetWidth || 200;
+
         styles.inlineToolbar.position = 'fixed';
         styles.inlineToolbar.display = 'block';
         var startNode = selectionRange.startContainer;
@@ -1141,8 +1144,17 @@ var _initialiseProps = function _initialiseProps() {
           startNode = startNode.parentNode;
         }
         var popTop = rangeBounds.top - popoverSpacing;
-        left = rangeBounds.left; /* eslint prefer-destructuring:0 */
-        styles.inlineToolbar.left = left;
+        left = rangeBounds.left - inlineToolbarWidth / 2; /* eslint prefer-destructuring:0 */
+        // prevent inline toolbar collapse
+        // left = left + inlineToolbarWidth / 2  > 
+        // editorBounds.right ? editorBounds.right - inlineToolbarWidth : left;
+        if (left + inlineToolbarWidth * 1.2 < editorBounds.right) {
+          styles.inlineToolbar.left = left;
+          styles.inlineToolbar.right = 'unset';
+        } else {
+          styles.inlineToolbar.right = 0;
+          styles.inlineToolbar.left = 'unset';
+        }
         styles.inlineToolbar.top = popTop;
       } else {
         styles.inlineToolbar.display = 'none';
