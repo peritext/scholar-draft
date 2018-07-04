@@ -145,7 +145,7 @@ var BasicEditor = function (_Component) {
 
     _this.debouncedUpdateSelection = (0, _lodash.debounce)(_this.updateSelection, 100);
     // undo stack is debounced to improve performance
-    _this.feedUndoStack = (0, _lodash.debounce)(_this.feedUndoStack, 1000);
+    // this.feedUndoStack = debounce(this.feedUndoStack, 1000);
     // it is needed to bind this function right away for being able
     // to initialize the state
     _this.generateEmptyEditor = _this.generateEmptyEditor.bind(_this);
@@ -154,8 +154,8 @@ var BasicEditor = function (_Component) {
       // editor state is initialized with a decorated editorState (notes + assets + ...)
       editorState: _this.generateEmptyEditor(),
       // editor states undo and redo stacks
-      undoStack: [],
-      redoStack: [],
+      // undoStack: [],
+      // redoStack: [],
       // toolbars styles are represented as css-in-js
       styles: {
         inlineToolbar: {},
@@ -226,7 +226,21 @@ var BasicEditor = function (_Component) {
    * Stores previous editor states in an undo stack
    * @param {ImmutableRecord} editorState - the input editor state
    */
-
+  // feedUndoStack = (editorState) => {
+  //   const {
+  //     undoStack
+  //   } = this.state;
+  //   // max length for undo stack
+  //   // todo: store that in props or in a variable
+  //   const newUndoStack = undoStack.length > 50 ? 
+  //      undoStack.slice(undoStack.length - 50) : undoStack;
+  //   this.setState({
+  //     undoStack: [
+  //       ...newUndoStack,
+  //       editorState
+  //     ]
+  //   });
+  // }
 
   /**
    * Manages relevant state changes and callbacks when undo is called
@@ -753,66 +767,69 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.onChange = function (editorState) {
-    var feedUndoStack = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
+    // onChange = (editorState, feedUndoStack = true) => {
     // console.log(this.props.contentId, 
     // ' on change', editorState.getSelection().getStartOffset(), 
     // 'is focusing', this.state.isFocusing)
     if (typeof _this2.props.onEditorChange === 'function' && !_this2.state.readOnly && !_this2.state.isFocusing) {
-      if (feedUndoStack === true) {
-        _this2.feedUndoStack(editorState);
-      }
+      // if (feedUndoStack === true) {
+      //   this.feedUndoStack(editorState);
+      // }
       _this2.props.onEditorChange(editorState);
     }
   };
 
-  this.feedUndoStack = function (editorState) {
-    var undoStack = _this2.state.undoStack;
-    // max length for undo stack
-    // todo: store that in props or in a variable
-
-    var newUndoStack = undoStack.length > 50 ? undoStack.slice(undoStack.length - 50) : undoStack;
-    _this2.setState({
-      undoStack: [].concat((0, _toConsumableArray3.default)(newUndoStack), [editorState])
+  this.undo = function () {
+    // const {
+    //   undoStack,
+    //   redoStack
+    // } = this.state;
+    // const newUndoStack = [...undoStack];
+    // if (undoStack.length > 1) {
+    //   const last = newUndoStack.pop();
+    //   this.setState({
+    //     redoStack: [
+    //       ...redoStack,
+    //       last
+    //     ],
+    //     undoStack: newUndoStack
+    //   });
+    //   this.onChange(newUndoStack[newUndoStack.length - 1], false);
+    //   // draft-js won't notice the change of editorState
+    //   // so we have to force it to re-render after having received
+    //   // the new editorStaten
+    //   setTimeout(() => this.forceRender(this.props));
+    // }
+    _this2.onChange(_draftJs.EditorState.undo(_this2.props.editorState), false);
+    // draft-js won't notice the change of editorState
+    // so we have to force it to re-render after having received
+    // the new editorStaten
+    setTimeout(function () {
+      return _this2.forceRender(_this2.props);
     });
   };
 
-  this.undo = function () {
-    var _state = _this2.state,
-        undoStack = _state.undoStack,
-        redoStack = _state.redoStack;
-
-    var newUndoStack = [].concat((0, _toConsumableArray3.default)(undoStack));
-    if (undoStack.length > 1) {
-      var last = newUndoStack.pop();
-      _this2.setState({
-        redoStack: [].concat((0, _toConsumableArray3.default)(redoStack), [last]),
-        undoStack: newUndoStack
-      });
-      _this2.onChange(newUndoStack[newUndoStack.length - 1], false);
-      // draft-js won't notice the change of editorState
-      // so we have to force it to re-render after having received
-      // the new editorStaten
-      setTimeout(function () {
-        return _this2.forceRender(_this2.props);
-      });
-    }
-  };
-
   this.redo = function () {
-    var _state2 = _this2.state,
-        undoStack = _state2.undoStack,
-        redoStack = _state2.redoStack;
-
-    var newRedoStack = [].concat((0, _toConsumableArray3.default)(redoStack));
-    if (redoStack.length) {
-      var last = newRedoStack.pop();
-      _this2.setState({
-        undoStack: [].concat((0, _toConsumableArray3.default)(undoStack), [last]),
-        redoStack: newRedoStack
-      });
-      _this2.onChange(last);
-    }
+    // const {
+    //   undoStack,
+    //   redoStack
+    // } = this.state;
+    // const newRedoStack = [...redoStack];
+    // if (redoStack.length) {
+    //   const last = newRedoStack.pop();
+    //   this.setState({
+    //     undoStack: [
+    //       ...undoStack,
+    //       last
+    //     ],
+    //     redoStack: newRedoStack
+    //   });
+    //   this.onChange(last);
+    // }
+    _this2.onChange(_draftJs.EditorState.redo(_this2.props.editorState), false);
+    setTimeout(function () {
+      return _this2.forceRender(_this2.props);
+    });
   };
 
   this.forceRender = function (props) {
@@ -983,9 +1000,9 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._handlePastedText = function (text, html) {
-    setTimeout(function () {
-      _this2.feedUndoStack(_this2.state.editorState);
-    }, 1);
+    // setTimeout(() => {
+    //   this.feedUndoStack(this.state.editorState);
+    // }, 1);
 
     if (_this2.props.clipboard || text === _constants.SCHOLAR_DRAFT_CLIPBOARD_CODE) {
       _this2.editor.setClipboard(null);
@@ -1219,10 +1236,10 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     // internal state
-    var _state3 = _this2.state,
-        readOnly = _state3.readOnly,
-        stateEditorState = _state3.editorState,
-        styles = _state3.styles;
+    var _state = _this2.state,
+        readOnly = _state.readOnly,
+        stateEditorState = _state.editorState,
+        styles = _state.styles;
 
     // class functions
 
