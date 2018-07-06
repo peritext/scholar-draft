@@ -57,6 +57,28 @@ require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var DefaultElementLayout = function DefaultElementLayout(_ref) {
+  var children = _ref.children,
+      style = _ref.style,
+      className = _ref.className;
+  return _react2.default.createElement(
+    'div',
+    { style: style, className: className },
+    children
+  );
+}; /**
+    * This module exports a component representing an editor with main editor and footnotes,
+    * with related interface and decorators.
+    * Asset components must be provided through props
+    * @module scholar-draft/Editor
+    */
+
+DefaultElementLayout.propTypes = {
+  children: _propTypes2.default.oneOfTypes([_propTypes2.default.array, _propTypes2.default.element, _propTypes2.default.func]),
+  style: _propTypes2.default.string,
+  className: _propTypes2.default.string
+};
+
 var Editor = function (_Component) {
   (0, _inherits3.default)(Editor, _Component);
 
@@ -89,7 +111,6 @@ var Editor = function (_Component) {
 
           if (anchorNode) {
             var offset = (0, _utils.getOffsetRelativeToContainer)(anchorNode, _this.props.className || 'scholar-draft-Editor');
-
             if (offset.offsetY && !isNaN(offset.offsetY)) {
               /* eslint no-restricted-globals : 0  */
               var scrollTo = offset.offsetY - _this.globalScrollbar.getClientHeight() / 2;
@@ -381,6 +402,7 @@ var Editor = function (_Component) {
           BibliographyComponent = _props.BibliographyComponent,
           AssetButtonComponent = _props.AssetButtonComponent,
           NoteButtonComponent = _props.NoteButtonComponent,
+          ElementLayoutComponent = _props.ElementLayoutComponent,
           _props$inlineEntities = _props.inlineEntities,
           inlineEntities = _props$inlineEntities === undefined ? [] : _props$inlineEntities,
           iconMap = _props.iconMap,
@@ -388,6 +410,9 @@ var Editor = function (_Component) {
           clipboard = _props.clipboard,
           focusedEditorId = _props.focusedEditorId,
           renderingMode = _props.renderingMode;
+
+
+      var ElementLayout = ElementLayoutComponent || DefaultElementLayout;
 
       /**
        * bindings
@@ -460,7 +485,7 @@ var Editor = function (_Component) {
             universal: true
           },
           _react2.default.createElement(
-            'section',
+            ElementLayout,
             { className: 'main-container-editor' },
             _react2.default.createElement(_BasicEditor2.default, {
               editorState: mainEditorState,
@@ -521,22 +546,21 @@ var Editor = function (_Component) {
             })
           ),
           _react2.default.createElement(
-            'aside',
+            ElementLayout,
             { className: 'notes-container' },
             activeNotes.map(this.renderNoteEditor)
           ),
-          BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)
+          BibliographyComponent && _react2.default.createElement(
+            ElementLayout,
+            { className: 'bibliography-container' },
+            _react2.default.createElement(BibliographyComponent, null)
+          )
         )
       );
     }
   }]);
   return Editor;
-}(_react.Component); /**
-                      * This module exports a component representing an editor with main editor and footnotes,
-                      * with related interface and decorators.
-                      * Asset components must be provided through props
-                      * @module scholar-draft/Editor
-                      */
+}(_react.Component);
 
 Editor.propTypes = {
   mainEditorState: _propTypes2.default.object,
@@ -600,6 +624,7 @@ Editor.propTypes = {
   editorStyles: _propTypes2.default.object,
   clipboard: _propTypes2.default.object,
   focusedEditorId: _propTypes2.default.string,
-  NoteContainerComponent: _propTypes2.default.func };
+  NoteContainerComponent: _propTypes2.default.func,
+  ElementLayoutComponent: _propTypes2.default.func };
 exports.default = Editor;
 module.exports = exports['default'];

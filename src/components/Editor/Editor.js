@@ -26,6 +26,18 @@ import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 
 import './Editor.scss';
 
+const DefaultElementLayout = ({
+  children,
+  style,
+  className
+}) => (<div style={style} className={className}>{children}</div>);
+
+DefaultElementLayout.propTypes = {
+  children: PropTypes.oneOfTypes([PropTypes.array, PropTypes.element, PropTypes.func]),
+  style: PropTypes.string,
+  className: PropTypes.string
+};
+
 export default class Editor extends Component {
 
   static propTypes = {
@@ -91,6 +103,7 @@ export default class Editor extends Component {
     clipboard: PropTypes.object,
     focusedEditorId: PropTypes.string,
     NoteContainerComponent: PropTypes.func,
+    ElementLayoutComponent: PropTypes.func,
   }
 
   /**
@@ -123,7 +136,6 @@ export default class Editor extends Component {
         const { anchorNode } = getSelection();
         if (anchorNode) {
           const offset = getOffsetRelativeToContainer(anchorNode, this.props.className || 'scholar-draft-Editor');
-
           if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
             const scrollTo = offset.offsetY - (this.globalScrollbar.getClientHeight() / 2);
             this.scrollTop(scrollTo);
@@ -410,6 +422,7 @@ export default class Editor extends Component {
       BibliographyComponent,
       AssetButtonComponent,
       NoteButtonComponent,
+      ElementLayoutComponent,
       inlineEntities = [],
       iconMap,
 
@@ -421,6 +434,8 @@ export default class Editor extends Component {
 
       // keyBindingFn,
     } = this.props;
+
+    const ElementLayout = ElementLayoutComponent || DefaultElementLayout;
 
     /**
      * bindings
@@ -489,7 +504,7 @@ export default class Editor extends Component {
           onUpdate={this.onScrollUpdate}
           universal
         >
-          <section className="main-container-editor">
+          <ElementLayout className="main-container-editor">
             <BasicEditor 
               editorState={mainEditorState}
               assets={assets}
@@ -547,15 +562,19 @@ export default class Editor extends Component {
               allowNotesInsertion
               editorStyle={editorStyles && editorStyles.mainEditor}
             />
-          </section>
-          <aside className="notes-container">
+          </ElementLayout>
+          <ElementLayout className="notes-container">
             {
               activeNotes
                 .map(this.renderNoteEditor)
             }
-          </aside>
+          </ElementLayout>
           {
-            BibliographyComponent && <BibliographyComponent />
+            BibliographyComponent 
+            && 
+              <ElementLayout className="bibliography-container">
+                <BibliographyComponent />
+              </ElementLayout>
           }
         </Scrollbars>
       </div>
