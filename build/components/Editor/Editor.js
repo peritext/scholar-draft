@@ -74,7 +74,7 @@ var DefaultElementLayout = function DefaultElementLayout(_ref) {
     */
 
 DefaultElementLayout.propTypes = {
-  children: _propTypes2.default.oneOfTypes([_propTypes2.default.array, _propTypes2.default.element, _propTypes2.default.func]),
+  children: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.element, _propTypes2.default.func]),
   style: _propTypes2.default.string,
   className: _propTypes2.default.string
 };

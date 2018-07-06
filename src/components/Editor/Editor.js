@@ -33,7 +33,7 @@ const DefaultElementLayout = ({
 }) => (<div style={style} className={className}>{children}</div>);
 
 DefaultElementLayout.propTypes = {
-  children: PropTypes.oneOfTypes([PropTypes.array, PropTypes.element, PropTypes.func]),
+  children: PropTypes.oneOfType([PropTypes.array, PropTypes.element, PropTypes.func]),
   style: PropTypes.string,
   className: PropTypes.string
 };
