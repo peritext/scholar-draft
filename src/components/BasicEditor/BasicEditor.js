@@ -577,6 +577,10 @@ export default class BasicEditor extends Component {
     }
   }
 
+  componentWillUnmout = () => {
+    this.debouncedUpdateSelection.cancel();
+  }
+
   /**
    * Stores previous editor states in an undo stack
    * @param {ImmutableRecord} editorState - the input editor state

@@ -779,6 +779,10 @@ var _initialiseProps = function _initialiseProps() {
     }
   };
 
+  this.componentWillUnmout = function () {
+    _this2.debouncedUpdateSelection.cancel();
+  };
+
   this.undo = function () {
     // const {
     //   undoStack,
