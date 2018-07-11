@@ -408,6 +408,7 @@ BasicEditor.propTypes = {
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,
   onNotePointerMouseClick: _propTypes2.default.func,
+  handlePastedText: _propTypes2.default.func,
   /*
    * Parametrization props
    */
@@ -1003,13 +1004,8 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._handlePastedText = function (text, html) {
-    // setTimeout(() => {
-    //   this.feedUndoStack(this.state.editorState);
-    // }, 1);
-
-    if (_this2.props.clipboard || text === _constants.SCHOLAR_DRAFT_CLIPBOARD_CODE) {
-      _this2.editor.setClipboard(null);
-      return true;
+    if (typeof _this2.props.handlePastedText === 'function') {
+      return _this2.props.handlePastedText(text, html);
     }
     return false;
   };

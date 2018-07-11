@@ -70,6 +70,7 @@ export default class Editor extends Component {
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
     onAssetBlur: PropTypes.func,
+    handlePastedText: PropTypes.func,
 
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
@@ -241,6 +242,7 @@ export default class Editor extends Component {
       onAssetClick,
       onAssetMouseOver,
       onAssetMouseOut,
+      handlePastedText,
 
       onNoteDelete,
       onDrop,
@@ -350,6 +352,7 @@ export default class Editor extends Component {
         onAssetRequestCancel={onAssetRequestCancel}
         onAssetChange={onAssetChange}
         onAssetChoice={onAssetChoice}
+        handlePastedText={handlePastedText}
       
         clipboard={clipboard}
       
@@ -405,6 +408,7 @@ export default class Editor extends Component {
       onAssetMouseOver,
       onAssetMouseOut,
       onAssetBlur,
+      handlePastedText,
 
       onNotePointerMouseOver,
       onNotePointerMouseOut,
@@ -533,6 +537,7 @@ export default class Editor extends Component {
               onBlur={onMainBlur}
 
               renderingMode={renderingMode}
+              handlePastedText={handlePastedText}
             
               onEditorChange={onMainEditorChange}
               onDragOver={onMainDragOver}

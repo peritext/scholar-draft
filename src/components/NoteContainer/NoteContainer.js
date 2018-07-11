@@ -90,6 +90,7 @@ class NoteContainer extends Component {
     onAssetClick: PropTypes.func,
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
+    handlePastedText: PropTypes.func,
 
     inlineAssetComponents: PropTypes.object,
     blockAssetComponents: PropTypes.object,
@@ -131,6 +132,7 @@ class NoteContainer extends Component {
       onDragOver,
       onBlur,
       onEditorClick,
+      handlePastedText,
 
       onAssetClick,
       onClickScrollToNotePointer,
@@ -199,6 +201,7 @@ class NoteContainer extends Component {
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
             editorPlaceholder={editorPlaceholder}
+            handlePastedText={handlePastedText}
 
             messages={messages}
 

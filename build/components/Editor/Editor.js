@@ -175,6 +175,7 @@ var Editor = function (_Component) {
           onAssetClick = _this$props.onAssetClick,
           onAssetMouseOver = _this$props.onAssetMouseOver,
           onAssetMouseOut = _this$props.onAssetMouseOut,
+          handlePastedText = _this$props.handlePastedText,
           onNoteDelete = _this$props.onNoteDelete,
           onDrop = _this$props.onDrop,
           onDragOver = _this$props.onDragOver,
@@ -276,6 +277,7 @@ var Editor = function (_Component) {
         onAssetRequestCancel: onAssetRequestCancel,
         onAssetChange: onAssetChange,
         onAssetChoice: onAssetChoice,
+        handlePastedText: handlePastedText,
 
         clipboard: clipboard,
 
@@ -387,6 +389,7 @@ var Editor = function (_Component) {
           onAssetMouseOver = _props.onAssetMouseOver,
           onAssetMouseOut = _props.onAssetMouseOut,
           onAssetBlur = _props.onAssetBlur,
+          handlePastedText = _props.handlePastedText,
           onNotePointerMouseOver = _props.onNotePointerMouseOver,
           onNotePointerMouseOut = _props.onNotePointerMouseOut,
           onNotePointerMouseClick = _props.onNotePointerMouseClick,
@@ -514,6 +517,7 @@ var Editor = function (_Component) {
               onBlur: onMainBlur,
 
               renderingMode: renderingMode,
+              handlePastedText: handlePastedText,
 
               onEditorChange: onMainEditorChange,
               onDragOver: onMainDragOver,
@@ -597,6 +601,7 @@ Editor.propTypes = {
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
   onAssetBlur: _propTypes2.default.func,
+  handlePastedText: _propTypes2.default.func,
 
   onNotePointerMouseOver: _propTypes2.default.func,
   onNotePointerMouseOut: _propTypes2.default.func,

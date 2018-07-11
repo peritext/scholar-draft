@@ -103,6 +103,7 @@ export default class BasicEditor extends Component {
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
     onNotePointerMouseClick: PropTypes.func,
+    handlePastedText: PropTypes.func,
     /*
      * Parametrization props
      */
@@ -874,13 +875,8 @@ export default class BasicEditor extends Component {
    * @param {string} html - the html representation of pasted content
    */
   _handlePastedText = (text, html) => {
-    // setTimeout(() => {
-    //   this.feedUndoStack(this.state.editorState);
-    // }, 1);
-
-    if (this.props.clipboard || text === SCHOLAR_DRAFT_CLIPBOARD_CODE) {
-      this.editor.setClipboard(null);
-      return true;
+    if (typeof this.props.handlePastedText === 'function') {
+      return this.props.handlePastedText(text, html);
     }
     return false;
   }

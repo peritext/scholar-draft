@@ -141,6 +141,7 @@ var NoteContainer = function (_Component) {
           onDragOver = _this$props.onDragOver,
           onBlur = _this$props.onBlur,
           onEditorClick = _this$props.onEditorClick,
+          handlePastedText = _this$props.handlePastedText,
           onAssetClick = _this$props.onAssetClick,
           onClickScrollToNotePointer = _this$props.onClickScrollToNotePointer,
           onAssetMouseOver = _this$props.onAssetMouseOver,
@@ -206,6 +207,7 @@ var NoteContainer = function (_Component) {
             addTextAtCurrentSelection: addTextAtCurrentSelection,
             clipboard: clipboard,
             editorPlaceholder: editorPlaceholder,
+            handlePastedText: handlePastedText,
 
             messages: messages,
 
@@ -278,6 +280,7 @@ NoteContainer.propTypes = {
   onAssetClick: _propTypes2.default.func,
   onAssetMouseOver: _propTypes2.default.func,
   onAssetMouseOut: _propTypes2.default.func,
+  handlePastedText: _propTypes2.default.func,
 
   inlineAssetComponents: _propTypes2.default.object,
   blockAssetComponents: _propTypes2.default.object,
