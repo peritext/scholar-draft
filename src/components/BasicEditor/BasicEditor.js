@@ -107,6 +107,7 @@ export default class BasicEditor extends Component {
      * Parametrization props
      */
     editorClass: PropTypes.string,
+    editorPlaceholder: PropTypes.string,
     editorStyle: PropTypes.object,
     allowNotesInsertion: PropTypes.bool,
     allowInlineAsset: PropTypes.bool,
@@ -123,9 +124,6 @@ export default class BasicEditor extends Component {
     messages: PropTypes.object,
 
     renderingMode: PropTypes.string,
-
-
-    placeholder: PropTypes.string,
 
     iconMap: PropTypes.object,
 
@@ -1143,7 +1141,7 @@ export default class BasicEditor extends Component {
 
       contentId,
 
-      placeholder = 'write your text',
+      editorPlaceholder = 'write your text',
 
       allowNotesInsertion = false,
       allowInlineAsset = true,
@@ -1371,7 +1369,7 @@ export default class BasicEditor extends Component {
           blockRendererFn={_blockRenderer}
           spellCheck
           readOnly={isActive ? readOnly : true}
-          placeholder={placeholder}
+          placeholder={editorPlaceholder}
 
           keyBindingFn={keyBindingFn}
 

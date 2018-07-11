@@ -165,6 +165,7 @@ var Editor = function (_Component) {
           notes = _this$props.notes,
           assets = _this$props.assets,
           customContext = _this$props.customContext,
+          editorPlaceholder = _this$props.editorPlaceholder,
           messages = _this$props.messages,
           onEditorChange = _this$props.onEditorChange,
           onAssetChange = _this$props.onAssetChange,
@@ -248,6 +249,7 @@ var Editor = function (_Component) {
         notes: notes,
         assets: assets,
         customContext: customContext,
+        editorPlaceholder: editorPlaceholder,
 
         ref: bindNote,
 
@@ -371,6 +373,7 @@ var Editor = function (_Component) {
           notesOrder = _props.notesOrder,
           assets = _props.assets,
           customContext = _props.customContext,
+          editorPlaceholder = _props.editorPlaceholder,
           messages = _props.messages,
           _props$editorClass = _props.editorClass,
           editorClass = _props$editorClass === undefined ? 'scholar-draft-Editor' : _props$editorClass,
@@ -495,6 +498,8 @@ var Editor = function (_Component) {
 
               messages: messages,
 
+              editorPlaceholder: editorPlaceholder,
+
               notes: notes,
 
               contentId: 'main',
@@ -582,6 +587,7 @@ Editor.propTypes = {
 
   onEditorChange: _propTypes2.default.func,
   onNoteAdd: _propTypes2.default.func,
+  editorPlaceholder: _propTypes2.default.string,
 
   onAssetChange: _propTypes2.default.func,
   onAssetRequest: _propTypes2.default.func,

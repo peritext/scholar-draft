@@ -60,6 +60,7 @@ export default class Editor extends Component {
     
     onEditorChange: PropTypes.func,
     onNoteAdd: PropTypes.func,
+    editorPlaceholder: PropTypes.string,
 
     onAssetChange: PropTypes.func,
     onAssetRequest: PropTypes.func,
@@ -227,6 +228,7 @@ export default class Editor extends Component {
       notes,
       assets,
       customContext,
+      editorPlaceholder,
 
       messages,
       
@@ -321,6 +323,7 @@ export default class Editor extends Component {
         notes={notes}
         assets={assets}
         customContext={customContext}
+        editorPlaceholder={editorPlaceholder}
       
         ref={bindNote}
 
@@ -385,6 +388,7 @@ export default class Editor extends Component {
       notesOrder,
       assets,
       customContext,
+      editorPlaceholder,
 
       messages,
 
@@ -512,6 +516,8 @@ export default class Editor extends Component {
               customContext={customContext}
 
               messages={messages}
+
+              editorPlaceholder={editorPlaceholder}
 
               notes={notes}
 

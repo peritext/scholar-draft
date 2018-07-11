@@ -130,6 +130,7 @@ var NoteContainer = function (_Component) {
           isActive = _this$props.isActive,
           renderingMode = _this$props.renderingMode,
           messages = _this$props.messages,
+          editorPlaceholder = _this$props.editorPlaceholder,
           onEditorChange = _this$props.onEditorChange,
           onAssetRequest = _this$props.onAssetRequest,
           onAssetRequestCancel = _this$props.onAssetRequestCancel,
@@ -204,6 +205,7 @@ var NoteContainer = function (_Component) {
             onBlur: onBlur,
             addTextAtCurrentSelection: addTextAtCurrentSelection,
             clipboard: clipboard,
+            editorPlaceholder: editorPlaceholder,
 
             messages: messages,
 
@@ -259,6 +261,7 @@ NoteContainer.propTypes = {
   renderingMode: _propTypes2.default.string,
 
   inlineButtons: _propTypes2.default.array,
+  editorPlaceholder: _propTypes2.default.string,
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,

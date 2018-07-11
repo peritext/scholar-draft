@@ -16,7 +16,7 @@ const Layout = ({
   note,
   onHeaderClick,
   onDelete,
-  onClickScrollToNotePointerHandler
+  onClickScrollToNotePointerHandler,
 }) => {
   if (NoteLayout) {
     return (
@@ -72,6 +72,7 @@ class NoteContainer extends Component {
     renderingMode: PropTypes.string,
 
     inlineButtons: PropTypes.array,
+    editorPlaceholder: PropTypes.string,
 
 
     addTextAtCurrentSelection: PropTypes.func,
@@ -118,6 +119,7 @@ class NoteContainer extends Component {
       isActive,
       renderingMode,
       messages,
+      editorPlaceholder,
       
       onEditorChange,
       onAssetRequest,
@@ -196,6 +198,7 @@ class NoteContainer extends Component {
             onBlur={onBlur}
             addTextAtCurrentSelection={addTextAtCurrentSelection}
             clipboard={clipboard}
+            editorPlaceholder={editorPlaceholder}
 
             messages={messages}
 

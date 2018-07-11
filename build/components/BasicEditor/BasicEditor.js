@@ -412,6 +412,7 @@ BasicEditor.propTypes = {
    * Parametrization props
    */
   editorClass: _propTypes2.default.string,
+  editorPlaceholder: _propTypes2.default.string,
   editorStyle: _propTypes2.default.object,
   allowNotesInsertion: _propTypes2.default.bool,
   allowInlineAsset: _propTypes2.default.bool,
@@ -428,8 +429,6 @@ BasicEditor.propTypes = {
   messages: _propTypes2.default.object,
 
   renderingMode: _propTypes2.default.string,
-
-  placeholder: _propTypes2.default.string,
 
   iconMap: _propTypes2.default.object,
 
@@ -1209,8 +1208,8 @@ var _initialiseProps = function _initialiseProps() {
         _props3$editorClass = _props3.editorClass,
         editorClass = _props3$editorClass === undefined ? 'scholar-draft-BasicEditor' : _props3$editorClass,
         contentId = _props3.contentId,
-        _props3$placeholder = _props3.placeholder,
-        placeholder = _props3$placeholder === undefined ? 'write your text' : _props3$placeholder,
+        _props3$editorPlaceho = _props3.editorPlaceholder,
+        editorPlaceholder = _props3$editorPlaceho === undefined ? 'write your text' : _props3$editorPlaceho,
         _props3$allowNotesIns = _props3.allowNotesInsertion,
         allowNotesInsertion = _props3$allowNotesIns === undefined ? false : _props3$allowNotesIns,
         _props3$allowInlineAs = _props3.allowInlineAsset,
@@ -1230,7 +1229,7 @@ var _initialiseProps = function _initialiseProps() {
         BibliographyComponent = _props3.BibliographyComponent,
         isActive = _props3.isActive,
         inlineButtons = _props3.inlineButtons,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'placeholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'BibliographyComponent', 'isActive', 'inlineButtons']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'editorPlaceholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'BibliographyComponent', 'isActive', 'inlineButtons']);
 
 
     var messages = {
@@ -1408,7 +1407,7 @@ var _initialiseProps = function _initialiseProps() {
         blockRendererFn: _blockRenderer,
         spellCheck: true,
         readOnly: isActive ? readOnly : true,
-        placeholder: placeholder,
+        placeholder: editorPlaceholder,
 
         keyBindingFn: keyBindingFn,
 
