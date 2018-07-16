@@ -261,13 +261,13 @@ export function insertInlineAssetInEditor(
     anchorOffset: thatSelection.getEndOffset() + selectedText.length,
     focusOffset: thatSelection.getEndOffset() + selectedText.length,
   });
-  newContentState = Modifier.replaceText(
-    newContentState,
-    endSelection,
-    ' ',
-    null,
-    null
-  );
+  // newContentState = Modifier.replaceText(
+  //   newContentState,
+  //   endSelection,
+  //   ' ',
+  //   null,
+  //   null
+  // );
   updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
   updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;
