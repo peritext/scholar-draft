@@ -60,7 +60,7 @@ var SideToolbar = function (_Component) {
     }
 
     return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideToolbar.__proto__ || (0, _getPrototypeOf2.default)(SideToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
-      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion || _this.props.style !== nextProps.style;
+      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion || _this.props.AssetButtonComponent !== nextProps.AssetButtonComponent || _this.props.style !== nextProps.style;
     }, _this.render = function () {
       var _this$props = _this.props,
           editorState = _this$props.editorState,

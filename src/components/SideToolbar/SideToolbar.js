@@ -46,6 +46,7 @@ export default class SideToolbar extends Component {
     this.props.editorState !== nextProps.editorState ||
       this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
       this.props.allowNotesInsertion !== nextProps.allowNotesInsertion ||
+      this.props.AssetButtonComponent !== nextProps.AssetButtonComponent ||
       this.props.style !== nextProps.style
   )
 

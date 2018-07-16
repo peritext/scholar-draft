@@ -262,7 +262,13 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
     anchorOffset: thatSelection.getEndOffset() + selectedText.length,
     focusOffset: thatSelection.getEndOffset() + selectedText.length
   });
-  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null);
+  // newContentState = Modifier.replaceText(
+  //   newContentState,
+  //   endSelection,
+  //   ' ',
+  //   null,
+  //   null
+  // );
   updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
   updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
   return updatedEditor;

@@ -667,7 +667,7 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.shouldComponentUpdate = function (nextProps, nextState) {
-    if (_this2.state.readOnly !== nextState.readOnly || _this2.props.isActive !== nextProps.isActive || _this2.state.styles !== nextState.styles || _this2.state.editorState !== nextProps.editorState || _this2.props.editorState !== nextProps.editorState || _this2.props.assetRequestPosition !== nextProps.assetRequestPosition) {
+    if (_this2.state.readOnly !== nextState.readOnly || _this2.props.isActive !== nextProps.isActive || _this2.state.styles !== nextState.styles || _this2.state.editorState !== nextProps.editorState || _this2.props.editorState !== nextProps.editorState || _this2.props.assetRequestPosition !== nextProps.assetRequestPosition || _this2.props.AssetButtonComponent !== nextProps.AssetButtonComponent) {
       return true;
     }
     return false;
@@ -1191,6 +1191,7 @@ var _initialiseProps = function _initialiseProps() {
 
     setTimeout(function () {
       if (!_this2.state.readOnly) {
+        console.log('focusing on editor');
         _this2.editor.focus();
       }
     });

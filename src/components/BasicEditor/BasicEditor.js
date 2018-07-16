@@ -438,7 +438,8 @@ export default class BasicEditor extends Component {
       this.state.styles !== nextState.styles ||
       this.state.editorState !== nextProps.editorState ||
       this.props.editorState !== nextProps.editorState ||
-      this.props.assetRequestPosition !== nextProps.assetRequestPosition
+      this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
+      this.props.AssetButtonComponent !== nextProps.AssetButtonComponent
     ) {
       return true;
     }
@@ -1119,6 +1120,7 @@ export default class BasicEditor extends Component {
 
     setTimeout(() => {
       if (!this.state.readOnly) {
+        console.log('focusing on editor');
         this.editor.focus();
       }
     });
