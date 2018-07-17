@@ -307,7 +307,7 @@ export default class BasicEditor extends Component {
           while (previousSibling) {
             // not counting inline assets contents and note pointers
             if (
-              previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1
+              previousSibling.className && previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1
             ) {
               startOffset += previousSibling.textContent.length;
             }

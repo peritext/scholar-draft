@@ -555,7 +555,7 @@ var _initialiseProps = function _initialiseProps() {
           var previousSibling = element.previousSibling;
           while (previousSibling) {
             // not counting inline assets contents and note pointers
-            if (previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1) {
+            if (previousSibling.className && previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1) {
               startOffset += previousSibling.textContent.length;
             }
             previousSibling = previousSibling.previousSibling;
