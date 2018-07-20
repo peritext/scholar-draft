@@ -727,6 +727,7 @@ export default class BasicEditor extends Component {
    */
   _defaultKeyBindingFn = (event) => {
     if (event && hasCommandModifier(event)) {
+      console.log(event.keyCode);
       switch (event.keyCode) {
       // `m`
       case 77:
@@ -737,6 +738,8 @@ export default class BasicEditor extends Component {
         // `y`
       case 89:
         return 'editor-redo';
+      case 192:
+        return 'summon-asset';
 
       default:
         break;
@@ -758,6 +761,48 @@ export default class BasicEditor extends Component {
       this.undo();
     } else if (command === 'editor-redo') {
       this.redo();
+    } else if (command === 'summon-asset') {
+      this.props.onAssetRequest();
+    // this is a workaround for a corner case
+    // when an inline entity containing html contents is placed at the end of block
+    // draft-js seems to be confused concerning the selection offset
+    // when hitting backspace in that solution
+    // @todo see in future versions of draft-js if the problem is solved
+    } else if (command === 'backspace') {
+      const editorState = this.props.editorState;
+      const selection = this.props.editorState.getSelection();
+      const contentState = editorState.getCurrentContent();
+      if (selection.isCollapsed()) {
+        const selectedBlockKey = selection.getStartKey();
+        const selectionOffset = selection.getStartOffset();
+        const selectedBlock = contentState.getBlockForKey(selectedBlockKey);
+        const selectedBlockLength = selectedBlock.getLength();
+        // check of the selection offset returned by draft
+        // is greater than selected block length (which should be impossible)
+        if (selectionOffset > selectedBlockLength) {
+          // remove entity mention from the last character of the real block
+          const cleaningSelection = selection.merge({
+            anchorOffset: selectedBlockLength - 1,
+            focusOffset: selectedBlockLength
+          });
+          const newContentState = Modifier.applyEntity(
+            contentState,
+            cleaningSelection,
+            null
+          );
+          const updatedEditorState = EditorState.push(editorState, newContentState, 'remove-entity');
+          // update selection
+          const newEditorState = EditorState.forceSelection(
+            updatedEditorState,
+            cleaningSelection.merge({
+              focusOffset: selectedBlockLength - 1
+            })
+          );
+          this.onChange(newEditorState);
+          return 'handled';
+        }
+      }
+
     }
     const { editorState } = this.props;
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -774,10 +819,10 @@ export default class BasicEditor extends Component {
    */
   _handleBeforeInput = (character) => {
     // todo : make that feature more subtle and customizable through props
-    if (character === '@') {
-      this.props.onAssetRequest();
-      return 'handled';
-    }
+    // if (character === '@') {
+    //   this.props.onAssetRequest();
+    //   return 'handled';
+    // }
     if (character !== ' ') {
       return 'not-handled';
     }

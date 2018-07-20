@@ -888,6 +888,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this._defaultKeyBindingFn = function (event) {
     if (event && hasCommandModifier(event)) {
+      console.log(event.keyCode);
       switch (event.keyCode) {
         // `m`
         case 77:
@@ -898,6 +899,8 @@ var _initialiseProps = function _initialiseProps() {
         // `y`
         case 89:
           return 'editor-redo';
+        case 192:
+          return 'summon-asset';
 
         default:
           break;
@@ -914,6 +917,40 @@ var _initialiseProps = function _initialiseProps() {
       _this2.undo();
     } else if (command === 'editor-redo') {
       _this2.redo();
+    } else if (command === 'summon-asset') {
+      _this2.props.onAssetRequest();
+      // this is a workaround for a corner case
+      // when an inline entity containing html contents is placed at the end of block
+      // draft-js seems to be confused concerning the selection offset
+      // when hitting backspace in that solution
+      // @todo see in future versions of draft-js if the problem is solved
+    } else if (command === 'backspace') {
+      var _editorState = _this2.props.editorState;
+      var selection = _this2.props.editorState.getSelection();
+      var contentState = _editorState.getCurrentContent();
+      if (selection.isCollapsed()) {
+        var selectedBlockKey = selection.getStartKey();
+        var selectionOffset = selection.getStartOffset();
+        var selectedBlock = contentState.getBlockForKey(selectedBlockKey);
+        var selectedBlockLength = selectedBlock.getLength();
+        // check of the selection offset returned by draft
+        // is greater than selected block length (which should be impossible)
+        if (selectionOffset > selectedBlockLength) {
+          // remove entity mention from the last character of the real block
+          var cleaningSelection = selection.merge({
+            anchorOffset: selectedBlockLength - 1,
+            focusOffset: selectedBlockLength
+          });
+          var newContentState = _draftJs.Modifier.applyEntity(contentState, cleaningSelection, null);
+          var updatedEditorState = _draftJs.EditorState.push(_editorState, newContentState, 'remove-entity');
+          // update selection
+          var newEditorState = _draftJs.EditorState.forceSelection(updatedEditorState, cleaningSelection.merge({
+            focusOffset: selectedBlockLength - 1
+          }));
+          _this2.onChange(newEditorState);
+          return 'handled';
+        }
+      }
     }
     var editorState = _this2.props.editorState;
 
@@ -927,10 +964,10 @@ var _initialiseProps = function _initialiseProps() {
 
   this._handleBeforeInput = function (character) {
     // todo : make that feature more subtle and customizable through props
-    if (character === '@') {
-      _this2.props.onAssetRequest();
-      return 'handled';
-    }
+    // if (character === '@') {
+    //   this.props.onAssetRequest();
+    //   return 'handled';
+    // }
     if (character !== ' ') {
       return 'not-handled';
     }
