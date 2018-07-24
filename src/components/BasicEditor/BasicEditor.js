@@ -347,6 +347,7 @@ export default class BasicEditor extends Component {
           nextProps.editorState.getCurrentContent(), 
           this.createDecorator()
         ) : this.generateEmptyEditor();
+        console.log('force render default');
         setTimeout(() => this.forceRender(this.props));
       }
       
@@ -631,7 +632,7 @@ export default class BasicEditor extends Component {
     this.onChange(EditorState.undo(this.props.editorState), false);
     // draft-js won't notice the change of editorState
     // so we have to force it to re-render after having received
-    // the new editorStaten
+    // the new editorState
     setTimeout(() => this.forceRender(this.props));
 
   }
@@ -670,18 +671,29 @@ export default class BasicEditor extends Component {
    */
   forceRender = (props) => {
     const editorState = props.editorState || this.state.editorState || this.generateEmptyEditor();
+    const prevSelection = editorState.getSelection();
     const content = editorState.getCurrentContent();
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
-    let selectedEditorState = EditorState.acceptSelection(
-      newEditorState, 
-      editorState.getSelection()
-    );
+    let selectedEditorState;
+    // we try to overcome the following error in firefox : https://bugzilla.mozilla.org/show_bug.cgi?id=921444
+    // which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > 0) {
+      selectedEditorState = EditorState.acceptSelection(
+        newEditorState, 
+        prevSelection
+      );
+    } else {
+      selectedEditorState = EditorState.forceSelection(
+        newEditorState, 
+        prevSelection
+      );
+    }
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
-    // console.log('force editor state', selectedEditorState.getSelection().getStartOffset())
     this.setState({ 
       editorState: selectedEditorState,
     });
+      
   }
 
   /**

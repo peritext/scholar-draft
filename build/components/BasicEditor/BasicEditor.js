@@ -586,6 +586,7 @@ var _initialiseProps = function _initialiseProps() {
         }
       } else {
         stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor();
+        console.log('force render default');
         setTimeout(function () {
           return _this2.forceRender(_this2.props);
         });
@@ -810,7 +811,7 @@ var _initialiseProps = function _initialiseProps() {
     _this2.onChange(_draftJs.EditorState.undo(_this2.props.editorState), false);
     // draft-js won't notice the change of editorState
     // so we have to force it to re-render after having received
-    // the new editorStaten
+    // the new editorState
     setTimeout(function () {
       return _this2.forceRender(_this2.props);
     });
@@ -841,12 +842,19 @@ var _initialiseProps = function _initialiseProps() {
 
   this.forceRender = function (props) {
     var editorState = props.editorState || _this2.state.editorState || _this2.generateEmptyEditor();
+    var prevSelection = editorState.getSelection();
     var content = editorState.getCurrentContent();
     var newEditorState = _draftJs.EditorState.createWithContent(content, _this2.createDecorator());
-    var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
+    var selectedEditorState = void 0;
+    // we try to overcome the following error in firefox : https://bugzilla.mozilla.org/show_bug.cgi?id=921444
+    // which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > 0) {
+      selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, prevSelection);
+    } else {
+      selectedEditorState = _draftJs.EditorState.forceSelection(newEditorState, prevSelection);
+    }
     var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
-    // console.log('force editor state', selectedEditorState.getSelection().getStartOffset())
     _this2.setState({
       editorState: selectedEditorState
     });
