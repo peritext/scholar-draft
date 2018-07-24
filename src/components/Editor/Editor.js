@@ -144,7 +144,7 @@ export default class Editor extends Component {
           }
         }
         // this.scrollTop(rect.top);
-      });
+      }, 300);
     }
   }
 

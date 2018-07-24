@@ -347,7 +347,6 @@ export default class BasicEditor extends Component {
           nextProps.editorState.getCurrentContent(), 
           this.createDecorator()
         ) : this.generateEmptyEditor();
-        console.log('force render default');
         setTimeout(() => this.forceRender(this.props));
       }
       

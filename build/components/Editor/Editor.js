@@ -118,7 +118,7 @@ var Editor = function (_Component) {
             }
           }
           // this.scrollTop(rect.top);
-        });
+        }, 300);
       }
     };
 

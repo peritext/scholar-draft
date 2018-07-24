@@ -586,7 +586,6 @@ var _initialiseProps = function _initialiseProps() {
         }
       } else {
         stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor();
-        console.log('force render default');
         setTimeout(function () {
           return _this2.forceRender(_this2.props);
         });
