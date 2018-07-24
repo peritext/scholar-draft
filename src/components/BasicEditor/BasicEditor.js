@@ -742,7 +742,6 @@ export default class BasicEditor extends Component {
    */
   _defaultKeyBindingFn = (event) => {
     if (event && hasCommandModifier(event)) {
-      console.log(event.keyCode);
       switch (event.keyCode) {
       // `m`
       case 77:
@@ -753,7 +752,8 @@ export default class BasicEditor extends Component {
         // `y`
       case 89:
         return 'editor-redo';
-      case 192:
+        // `l`
+      case 76:
         return 'summon-asset';
 
       default:

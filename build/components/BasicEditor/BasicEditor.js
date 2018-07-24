@@ -899,7 +899,6 @@ var _initialiseProps = function _initialiseProps() {
 
   this._defaultKeyBindingFn = function (event) {
     if (event && hasCommandModifier(event)) {
-      console.log(event.keyCode);
       switch (event.keyCode) {
         // `m`
         case 77:
@@ -910,7 +909,8 @@ var _initialiseProps = function _initialiseProps() {
         // `y`
         case 89:
           return 'editor-redo';
-        case 192:
+        // `l`
+        case 76:
           return 'summon-asset';
 
         default:
