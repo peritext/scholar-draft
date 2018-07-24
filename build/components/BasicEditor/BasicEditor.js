@@ -522,6 +522,7 @@ var _initialiseProps = function _initialiseProps() {
           }
         }
       });
+      _this2.debouncedUpdateSelection.cancel();
     } else if (!_this2.props.isActive && nextProps.isActive && !_this2.props.assetRequestPosition) {
       var selection = _this2.state.editorState.getSelection();
       stateMods = (0, _extends3.default)({}, stateMods, {
@@ -678,7 +679,9 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.componentDidUpdate = function (prevProps, prevState) {
-    _this2.updateSelection();
+    if (!_this2.state.readOnly) {
+      _this2.updateSelection();
+    }
     // console.timeEnd(`rendering ${this.props.contentId}`)
     if (
     /* (
@@ -840,7 +843,7 @@ var _initialiseProps = function _initialiseProps() {
     var editorState = props.editorState || _this2.state.editorState || _this2.generateEmptyEditor();
     var content = editorState.getCurrentContent();
     var newEditorState = _draftJs.EditorState.createWithContent(content, _this2.createDecorator());
-    var selectedEditorState = _draftJs.EditorState.forceSelection(newEditorState, editorState.getSelection());
+    var selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, editorState.getSelection());
     var inlineStyle = _this2.state.editorState.getCurrentInlineStyle();
     selectedEditorState = _draftJs.EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
     // console.log('force editor state', selectedEditorState.getSelection().getStartOffset())

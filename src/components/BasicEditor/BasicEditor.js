@@ -272,6 +272,7 @@ export default class BasicEditor extends Component {
           }
         },
       };
+      this.debouncedUpdateSelection.cancel();
     } else if (!this.props.isActive && nextProps.isActive && !this.props.assetRequestPosition) {
       const selection = this.state.editorState.getSelection();
       stateMods = {
@@ -451,7 +452,9 @@ export default class BasicEditor extends Component {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    this.updateSelection();
+    if (!this.state.readOnly) {
+      this.updateSelection();
+    }
     // console.timeEnd(`rendering ${this.props.contentId}`)
     if (
       /* (
@@ -669,7 +672,7 @@ export default class BasicEditor extends Component {
     const editorState = props.editorState || this.state.editorState || this.generateEmptyEditor();
     const content = editorState.getCurrentContent();
     const newEditorState = EditorState.createWithContent(content, this.createDecorator());
-    let selectedEditorState = EditorState.forceSelection(
+    let selectedEditorState = EditorState.acceptSelection(
       newEditorState, 
       editorState.getSelection()
     );
