@@ -37,10 +37,9 @@ export const getOffsetRelativeToContainer = (el, stopClassName) => {
   if (element) {
     let { parentNode } = element;
     offset = {
-      offsetX: el.offsetLeft,
-      offsetY: el.offsetTop
+      offsetX: el.offsetLeft || 0,
+      offsetY: el.offsetTop || 0
     };
-
     while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
       offset.offsetX += parentNode.offsetLeft;
       offset.offsetY += parentNode.offsetTop;
@@ -49,7 +48,6 @@ export const getOffsetRelativeToContainer = (el, stopClassName) => {
       parentNode = newParentNode;
     }
   }
-    
   return offset;
 };
 
