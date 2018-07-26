@@ -273,7 +273,9 @@ export default class BasicEditor extends Component {
         },
       };
       this.debouncedUpdateSelection.cancel();
-    } else if (!this.props.isActive && nextProps.isActive/* && !this.props.assetRequestPosition*/) {
+    } else if (!this.props.isActive && nextProps.isActive
+    /* && !this.props.assetRequestPosition */
+    ) {
       const selection = this.state.editorState.getSelection();
       stateMods = {
         ...stateMods,
@@ -296,51 +298,55 @@ export default class BasicEditor extends Component {
 
         stateMods.lastClickCoordinates = undefined;
 
-        const { offset } = getEventTextRange(pageX, pageY);
-        let element = el;
-        let parent = element.parentNode;
+        try {
+          const { offset } = getEventTextRange(pageX, pageY);
+          let element = el;
+          let parent = element.parentNode;
 
-        // calculating the block-relative text offset of the selection
-        let startOffset = offset;
+          // calculating the block-relative text offset of the selection
+          let startOffset = offset;
 
-        while (parent && !(parent.hasAttribute('data-block') && parent.attributes['data-offset-key']) && parent.tagName !== 'BODY') {
-          let previousSibling = element.previousSibling;
-          while (previousSibling) {
-            // not counting inline assets contents and note pointers
-            if (
-              previousSibling.className && previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1
-            ) {
-              startOffset += previousSibling.textContent.length;
+          while (parent && !(parent.hasAttribute('data-block') && parent.attributes['data-offset-key']) && parent.tagName !== 'BODY') {
+            let previousSibling = element.previousSibling;
+            while (previousSibling) {
+              // not counting inline assets contents and note pointers
+              if (
+                previousSibling.className && previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1
+              ) {
+                startOffset += previousSibling.textContent.length;
+              }
+              previousSibling = previousSibling.previousSibling;
             }
-            previousSibling = previousSibling.previousSibling;
+            element = parent;
+            parent = element.parentNode;
           }
-          element = parent;
-          parent = element.parentNode;
-        }
-        if (parent && parent.attributes['data-offset-key']) {
-          let blockId = parent.attributes['data-offset-key'].value;
-          blockId = blockId && blockId.split('-')[0];
+          if (parent && parent.attributes['data-offset-key']) {
+            let blockId = parent.attributes['data-offset-key'].value;
+            blockId = blockId && blockId.split('-')[0];
 
-          const newSelection = new SelectionState({
-            ...selection.toJS(),
-            anchorKey: blockId,
-            focusKey: blockId,
-            anchorOffset: startOffset,
-            focusOffset: startOffset,
-          });
-          const selectedEditorState = EditorState.acceptSelection(
-            this.state.editorState, 
-            newSelection
-          );
-          stateMods = {
-            ...stateMods,
-            editorState: selectedEditorState || this.generateEmptyEditor()
-          };
+            const newSelection = new SelectionState({
+              ...selection.toJS(),
+              anchorKey: blockId,
+              focusKey: blockId,
+              anchorOffset: startOffset,
+              focusOffset: startOffset,
+            });
+            const selectedEditorState = EditorState.acceptSelection(
+              this.state.editorState, 
+              newSelection
+            );
+            stateMods = {
+              ...stateMods,
+              editorState: selectedEditorState || this.generateEmptyEditor()
+            };
 
-          setTimeout(() => {
-            this.onChange(selectedEditorState, false);
-            this.forceRender({ ...this.props, editorState: selectedEditorState });
-          });
+            setTimeout(() => {
+              this.onChange(selectedEditorState, false);
+              this.forceRender({ ...this.props, editorState: selectedEditorState });
+            });
+          }
+        } catch (error) {
+          console.error(error);
         }
       } else {
         stateMods.editorState = nextProps.editorState ? EditorState.createWithContent(
