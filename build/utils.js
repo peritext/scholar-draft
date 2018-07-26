@@ -81,10 +81,9 @@ var getOffsetRelativeToContainer = exports.getOffsetRelativeToContainer = functi
         parentNode = _element.parentNode;
 
     offset = {
-      offsetX: el.offsetLeft,
-      offsetY: el.offsetTop
+      offsetX: el.offsetLeft || 0,
+      offsetY: el.offsetTop || 0
     };
-
     while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
       offset.offsetX += parentNode.offsetLeft;
       offset.offsetY += parentNode.offsetTop;
@@ -94,7 +93,6 @@ var getOffsetRelativeToContainer = exports.getOffsetRelativeToContainer = functi
       parentNode = newParentNode;
     }
   }
-
   return offset;
 }; /**
     * This module exports a series of draft-js utils

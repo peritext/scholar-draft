@@ -43,8 +43,6 @@ var _rebound = require('rebound');
 
 var _draftJs = require('draft-js');
 
-var _utils = require('../../utils');
-
 var _BasicEditor = require('../BasicEditor/BasicEditor');
 
 var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
@@ -57,6 +55,13 @@ require('./Editor.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * This module exports a component representing an editor with main editor and footnotes,
+ * with related interface and decorators.
+ * Asset components must be provided through props
+ * @module scholar-draft/Editor
+ */
+
 var DefaultElementLayout = function DefaultElementLayout(_ref) {
   var children = _ref.children,
       style = _ref.style,
@@ -66,12 +71,10 @@ var DefaultElementLayout = function DefaultElementLayout(_ref) {
     { style: style, className: className },
     children
   );
-}; /**
-    * This module exports a component representing an editor with main editor and footnotes,
-    * with related interface and decorators.
-    * Asset components must be provided through props
-    * @module scholar-draft/Editor
-    */
+};
+
+// import { getOffsetRelativeToContainer, } from '../../utils';
+
 
 DefaultElementLayout.propTypes = {
   children: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.element, _propTypes2.default.func]),
@@ -103,24 +106,28 @@ var Editor = function (_Component) {
       });
     };
 
-    _this.componentWillReceiveProps = function (nextProps) {
-      if (_this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
-        setTimeout(function () {
-          var _getSelection = getSelection(),
-              anchorNode = _getSelection.anchorNode;
+    _this.componentWillReceiveProps = function (nextProps) {}
+    // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+    //   setTimeout(() => {
+    //     const { anchorNode } = getSelection();
+    //     if (anchorNode) {
+    //       const offset = getOffsetRelativeToContainer(
+    //        anchorNode, this.props.className || 'scholar-draft-Editor');
+    //       if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
+    //         const scrollTo = offset.offsetY;// - (this.globalScrollbar.getClientHeight() / 2);
+    //         this.scrollTop(scrollTo);
+    //       }
+    //     }
+    //     // this.scrollTop(rect.top);
+    //   }, 300);
+    // }
 
-          if (anchorNode) {
-            var offset = (0, _utils.getOffsetRelativeToContainer)(anchorNode, _this.props.className || 'scholar-draft-Editor');
-            if (offset.offsetY && !isNaN(offset.offsetY)) {
-              /* eslint no-restricted-globals : 0  */
-              var scrollTo = offset.offsetY - _this.globalScrollbar.getClientHeight() / 2;
-              _this.scrollTop(scrollTo);
-            }
-          }
-          // this.scrollTop(rect.top);
-        }, 300);
-      }
-    };
+
+    /**
+     * Handles the scrolling process using the spring system
+     * @param {object} spring - the spring system instance
+     */
+    ;
 
     _this.handleSpringUpdate = function (spring) {
       var val = spring.getCurrentValue();
@@ -310,12 +317,6 @@ var Editor = function (_Component) {
 
   /**
    * Executes code on instance after the component is mounted
-   */
-
-
-  /**
-   * Handles the scrolling process using the spring system
-   * @param {object} spring - the spring system instance
    */
 
 
@@ -583,7 +584,7 @@ Editor.propTypes = {
   }),
   customContext: _propTypes2.default.object,
 
-  className: _propTypes2.default.string,
+  // className: PropTypes.string,
 
   assets: _propTypes2.default.object,
 

@@ -17,7 +17,7 @@ import {
 import { EditorState } from 'draft-js';
 
 
-import { getOffsetRelativeToContainer, } from '../../utils';
+// import { getOffsetRelativeToContainer, } from '../../utils';
 
 
 import BasicEditor from '../BasicEditor/BasicEditor';
@@ -52,7 +52,7 @@ export default class Editor extends Component {
     }),
     customContext: PropTypes.object,
 
-    className: PropTypes.string,
+    // className: PropTypes.string,
 
     assets: PropTypes.object,
 
@@ -133,19 +133,20 @@ export default class Editor extends Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
-      setTimeout(() => {
-        const { anchorNode } = getSelection();
-        if (anchorNode) {
-          const offset = getOffsetRelativeToContainer(anchorNode, this.props.className || 'scholar-draft-Editor');
-          if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
-            const scrollTo = offset.offsetY - (this.globalScrollbar.getClientHeight() / 2);
-            this.scrollTop(scrollTo);
-          }
-        }
-        // this.scrollTop(rect.top);
-      }, 300);
-    }
+    // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+    //   setTimeout(() => {
+    //     const { anchorNode } = getSelection();
+    //     if (anchorNode) {
+    //       const offset = getOffsetRelativeToContainer(
+    //        anchorNode, this.props.className || 'scholar-draft-Editor');
+    //       if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
+    //         const scrollTo = offset.offsetY;// - (this.globalScrollbar.getClientHeight() / 2);
+    //         this.scrollTop(scrollTo);
+    //       }
+    //     }
+    //     // this.scrollTop(rect.top);
+    //   }, 300);
+    // }
   }
 
   /**
