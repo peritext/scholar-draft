@@ -273,7 +273,7 @@ export default class BasicEditor extends Component {
         },
       };
       this.debouncedUpdateSelection.cancel();
-    } else if (!this.props.isActive && nextProps.isActive && !this.props.assetRequestPosition) {
+    } else if (!this.props.isActive && nextProps.isActive/* && !this.props.assetRequestPosition*/) {
       const selection = this.state.editorState.getSelection();
       stateMods = {
         ...stateMods,

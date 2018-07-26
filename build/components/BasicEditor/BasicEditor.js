@@ -523,77 +523,77 @@ var _initialiseProps = function _initialiseProps() {
         }
       });
       _this2.debouncedUpdateSelection.cancel();
-    } else if (!_this2.props.isActive && nextProps.isActive && !_this2.props.assetRequestPosition) {
-      var selection = _this2.state.editorState.getSelection();
-      stateMods = (0, _extends3.default)({}, stateMods, {
-        readOnly: false
-        // editorState: nextProps.editorState ? EditorState.createWithContent(
-        //   nextProps.editorState.getCurrentContent(), 
-        //   this.createDecorator()
-        // ) : this.generateEmptyEditor(),
-        // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
-      });
-
-      if (_this2.state.lastClickCoordinates) {
-        var _state$lastClickCoord = _this2.state.lastClickCoordinates,
-            el = _state$lastClickCoord.el,
-            pageX = _state$lastClickCoord.pageX,
-            pageY = _state$lastClickCoord.pageY;
-
-
-        stateMods.lastClickCoordinates = undefined;
-
-        var _getEventTextRange = (0, _utils.getEventTextRange)(pageX, pageY),
-            offset = _getEventTextRange.offset;
-
-        var element = el;
-        var parent = element.parentNode;
-
-        // calculating the block-relative text offset of the selection
-        var startOffset = offset;
-
-        while (parent && !(parent.hasAttribute('data-block') && parent.attributes['data-offset-key']) && parent.tagName !== 'BODY') {
-          var previousSibling = element.previousSibling;
-          while (previousSibling) {
-            // not counting inline assets contents and note pointers
-            if (previousSibling.className && previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1) {
-              startOffset += previousSibling.textContent.length;
-            }
-            previousSibling = previousSibling.previousSibling;
-          }
-          element = parent;
-          parent = element.parentNode;
-        }
-        if (parent && parent.attributes['data-offset-key']) {
-          var blockId = parent.attributes['data-offset-key'].value;
-          blockId = blockId && blockId.split('-')[0];
-
-          var newSelection = new _draftJs.SelectionState((0, _extends3.default)({}, selection.toJS(), {
-            anchorKey: blockId,
-            focusKey: blockId,
-            anchorOffset: startOffset,
-            focusOffset: startOffset
-          }));
-          var selectedEditorState = _draftJs.EditorState.acceptSelection(_this2.state.editorState, newSelection);
-          stateMods = (0, _extends3.default)({}, stateMods, {
-            editorState: selectedEditorState || _this2.generateEmptyEditor()
-          });
-
-          setTimeout(function () {
-            _this2.onChange(selectedEditorState, false);
-            _this2.forceRender((0, _extends3.default)({}, _this2.props, { editorState: selectedEditorState }));
-          });
-        }
-      } else {
-        stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor();
-        setTimeout(function () {
-          return _this2.forceRender(_this2.props);
+    } else if (!_this2.props.isActive && nextProps.isActive /* && !this.props.assetRequestPosition*/) {
+        var selection = _this2.state.editorState.getSelection();
+        stateMods = (0, _extends3.default)({}, stateMods, {
+          readOnly: false
+          // editorState: nextProps.editorState ? EditorState.createWithContent(
+          //   nextProps.editorState.getCurrentContent(), 
+          //   this.createDecorator()
+          // ) : this.generateEmptyEditor(),
+          // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
         });
-      }
 
-      // updating locally stored editorState when the one given by props
-      // has changed
-    } else if (_this2.props.editorState !== nextProps.editorState) {
+        if (_this2.state.lastClickCoordinates) {
+          var _state$lastClickCoord = _this2.state.lastClickCoordinates,
+              el = _state$lastClickCoord.el,
+              pageX = _state$lastClickCoord.pageX,
+              pageY = _state$lastClickCoord.pageY;
+
+
+          stateMods.lastClickCoordinates = undefined;
+
+          var _getEventTextRange = (0, _utils.getEventTextRange)(pageX, pageY),
+              offset = _getEventTextRange.offset;
+
+          var element = el;
+          var parent = element.parentNode;
+
+          // calculating the block-relative text offset of the selection
+          var startOffset = offset;
+
+          while (parent && !(parent.hasAttribute('data-block') && parent.attributes['data-offset-key']) && parent.tagName !== 'BODY') {
+            var previousSibling = element.previousSibling;
+            while (previousSibling) {
+              // not counting inline assets contents and note pointers
+              if (previousSibling.className && previousSibling.className.indexOf('scholar-draft-InlineAssetContainer') === -1) {
+                startOffset += previousSibling.textContent.length;
+              }
+              previousSibling = previousSibling.previousSibling;
+            }
+            element = parent;
+            parent = element.parentNode;
+          }
+          if (parent && parent.attributes['data-offset-key']) {
+            var blockId = parent.attributes['data-offset-key'].value;
+            blockId = blockId && blockId.split('-')[0];
+
+            var newSelection = new _draftJs.SelectionState((0, _extends3.default)({}, selection.toJS(), {
+              anchorKey: blockId,
+              focusKey: blockId,
+              anchorOffset: startOffset,
+              focusOffset: startOffset
+            }));
+            var selectedEditorState = _draftJs.EditorState.acceptSelection(_this2.state.editorState, newSelection);
+            stateMods = (0, _extends3.default)({}, stateMods, {
+              editorState: selectedEditorState || _this2.generateEmptyEditor()
+            });
+
+            setTimeout(function () {
+              _this2.onChange(selectedEditorState, false);
+              _this2.forceRender((0, _extends3.default)({}, _this2.props, { editorState: selectedEditorState }));
+            });
+          }
+        } else {
+          stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this2.createDecorator()) : _this2.generateEmptyEditor();
+          setTimeout(function () {
+            return _this2.forceRender(_this2.props);
+          });
+        }
+
+        // updating locally stored editorState when the one given by props
+        // has changed
+      } else if (_this2.props.editorState !== nextProps.editorState) {
       // console.log('storing new editor state with selection', 
       // nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
       stateMods = (0, _extends3.default)({}, stateMods, {
