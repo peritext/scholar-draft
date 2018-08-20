@@ -74,6 +74,8 @@ class NoteContainer extends Component {
     inlineButtons: PropTypes.array,
     editorPlaceholder: PropTypes.string,
 
+    containerDimensions: PropTypes.object,
+
 
     addTextAtCurrentSelection: PropTypes.func,
     onEditorChange: PropTypes.func,
@@ -146,7 +148,8 @@ class NoteContainer extends Component {
       inlineEntities = [],
       iconMap,
       inlineButtons,
-      
+      containerDimensions,
+
       assetChoiceProps,
       assetRequestContentId,
 
@@ -202,6 +205,8 @@ class NoteContainer extends Component {
             clipboard={clipboard}
             editorPlaceholder={editorPlaceholder}
             handlePastedText={handlePastedText}
+
+            containerDimensions={containerDimensions}
 
             messages={messages}
 

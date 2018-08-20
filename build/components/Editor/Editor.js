@@ -207,6 +207,12 @@ var Editor = function (_Component) {
           renderingMode = _this$props.renderingMode,
           NoteLayout = _this$props.NoteLayout;
 
+
+      var containerDimensions = void 0;
+      if (_this.editor) {
+        containerDimensions = _this.editor.getBoundingClientRect();
+      }
+
       var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
         return onEditorChange(noteId, editor);
       };
@@ -296,6 +302,7 @@ var Editor = function (_Component) {
         onAssetMouseOver: onAssetMouseOver,
         onAssetMouseOut: onAssetMouseOut,
 
+        containerDimensions: containerDimensions,
         inlineButtons: inlineButtons,
         inlineAssetComponents: inlineAssetComponents,
         blockAssetComponents: blockAssetComponents,
@@ -480,9 +487,18 @@ var Editor = function (_Component) {
           return 1;
         }return -1;
       });
+
+      var bindEditorRef = function bindEditorRef(editor) {
+        _this2.editor = editor;
+      };
+
+      var containerDimensions = void 0;
+      if (this.editor) {
+        containerDimensions = this.editor.getBoundingClientRect();
+      }
       return _react2.default.createElement(
         'div',
-        { className: editorClass },
+        { ref: bindEditorRef, className: editorClass },
         _react2.default.createElement(
           _reactCustomScrollbars.Scrollbars,
           {
@@ -548,6 +564,8 @@ var Editor = function (_Component) {
               NoteButtonComponent: NoteButtonComponent,
               inlineEntities: inlineEntities,
               iconMap: iconMap,
+
+              containerDimensions: containerDimensions,
 
               clipboard: clipboard,
 

@@ -39,16 +39,89 @@ export default class SideToolbar extends Component {
     onAssetChoice: PropTypes.func,
     onAssetRequest: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
+    containerDimensions: PropTypes.object,
 
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      assetChoiceStyle: undefined
+    };
+  }
 
   shouldComponentUpdate = (nextProps, nextState) => (
     this.props.editorState !== nextProps.editorState ||
       this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
       this.props.allowNotesInsertion !== nextProps.allowNotesInsertion ||
       this.props.AssetButtonComponent !== nextProps.AssetButtonComponent ||
-      this.props.style !== nextProps.style
+      this.props.style !== nextProps.style ||
+      this.state.assetChoiceStyle !== nextState.assetChoiceStyle
   )
+
+  componentDidUpdate = () => {
+    setTimeout(() => {
+      const { containerDimensions } = this.props;
+      let assetChoiceStyle;
+      if (
+        this.assetChoiceComponent 
+        && this.assetButton 
+        && this.assetButton.element 
+        && this.assetChoiceComponent.element 
+        && containerDimensions
+      ) {
+        const { width, height } = this.assetChoiceComponent.element.getBoundingClientRect();
+        const {
+          x: btnX, /* eslint id-length : 0 */
+          y: btnY, /* eslint id-length : 0 */
+          width: assetButtonWidth, 
+          height: assetButtonHeight 
+        } = this.assetButton.element.getBoundingClientRect();
+        const rightExtremity = btnX + assetButtonWidth + width;
+        const bottomExtremity = btnY + height;
+        const rightBoundary = containerDimensions.x + containerDimensions.width;
+        const bottomBoundary = containerDimensions.y + containerDimensions.height;
+
+        if (
+          (
+            rightExtremity > rightBoundary 
+            && bottomExtremity > bottomBoundary
+          )
+          ||
+          (
+            rightExtremity > rightBoundary 
+            && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
+          )
+        ) {
+          assetChoiceStyle = {
+            left: -(width + assetButtonWidth),
+            top: -(assetButtonHeight + height),
+          };
+        } else if (rightExtremity > rightBoundary) {
+          assetChoiceStyle = {
+            left: -(width + assetButtonWidth),
+          };
+        } else if (bottomExtremity > bottomBoundary) {
+          assetChoiceStyle = {
+            // left: -(width + assetButtonWidth * 2),
+            top: -(assetButtonHeight + height),
+          };
+        }
+      }
+      if (
+        !(
+          this.state.assetChoiceStyle === assetChoiceStyle 
+            || 
+            (
+              this.state.assetChoiceStyle 
+              && assetChoiceStyle 
+              && JSON.stringify(this.state.assetChoiceStyle) === JSON.stringify(assetChoiceStyle))
+        )
+      ) {
+        this.setState({ assetChoiceStyle });
+      }
+    }, 500);
+  }
 
   render = () => {
 
@@ -78,6 +151,11 @@ export default class SideToolbar extends Component {
             
     } = this.props;
 
+    const {
+      assetChoiceStyle
+    } = this.state;
+
+
     const onAssetButtonClick = (event) => {
       event.stopPropagation();
       if (assetRequestPosition) {
@@ -91,12 +169,19 @@ export default class SideToolbar extends Component {
     const bindToolbar = (toolbar) => {
       this.toolbar = toolbar;
     };
+    const bindAssetChoiceComponentRef = (assetChoiceComponent) => {
+      this.assetChoiceComponent = assetChoiceComponent;
+    };
+    const bindAssetButton = (assetButton) => {
+      this.assetButton = assetButton;
+    };
     const stopEventPropagation = event => event.stopPropagation();
     const assetSelectorActive = assetRequestPosition !== undefined;
 
 
     const AssetButton = AssetButtonComponent || DefaultAssetButton;
     const NoteButton = NoteButtonComponent || DefaultNoteButton;
+    
 
     return (
       <div
@@ -116,6 +201,7 @@ export default class SideToolbar extends Component {
           onClick={onAssetButtonClick} 
           active={assetSelectorActive}
           iconMap={iconMap}
+          ref={bindAssetButton}
           message={
             messages &&
             assetSelectorActive ? 
@@ -127,9 +213,11 @@ export default class SideToolbar extends Component {
           <span
             className="block-asset-choice-container" 
             onClick={stopEventPropagation}
+            style={assetChoiceStyle}
           >
             <AssetChoiceComponent
               {...assetChoiceProps}
+              ref={bindAssetChoiceComponentRef}
               contentId={contentId}
               onAssetChoice={onAssetChoice}
               onAssetRequestCancel={onAssetRequestCancel}

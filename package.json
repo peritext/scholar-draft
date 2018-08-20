@@ -1,6 +1,6 @@
 {
   "name": "scholar-draft",
-  "version": "0.2.42",
+  "version": "0.2.43",
   "description": "draft editor handling footnotes editing and inline/block assets connected to upstream logic",
   "main": "build/index.js",
   "scripts": {
@@ -149,11 +149,11 @@
     "storybook": "1.0.0",
     "style-loader": "^0.20.2",
     "webpack": "^3.11.0",
+    "chai-enzyme": "^0.8.0",
     "@storybook/react": "3.3.13"
   },
   "dependencies": {
     "async": "^2.4.0",
-    "chai-enzyme": "^0.8.0",
     "draft-js": "^0.10.5",
     "draft-js-checkable-list-item": "^3.0.0",
     "draft-js-multidecorators": "git+https://github.com/echenley/draft-js-multidecorators.git",

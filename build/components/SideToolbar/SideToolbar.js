@@ -9,6 +9,10 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -48,20 +52,59 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var SideToolbar = function (_Component) {
   (0, _inherits3.default)(SideToolbar, _Component);
 
-  function SideToolbar() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
+  function SideToolbar(props) {
     (0, _classCallCheck3.default)(this, SideToolbar);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = (0, _possibleConstructorReturn3.default)(this, (SideToolbar.__proto__ || (0, _getPrototypeOf2.default)(SideToolbar)).call(this, props));
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = SideToolbar.__proto__ || (0, _getPrototypeOf2.default)(SideToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
-      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion || _this.props.AssetButtonComponent !== nextProps.AssetButtonComponent || _this.props.style !== nextProps.style;
-    }, _this.render = function () {
+    _this.shouldComponentUpdate = function (nextProps, nextState) {
+      return _this.props.editorState !== nextProps.editorState || _this.props.assetRequestPosition !== nextProps.assetRequestPosition || _this.props.allowNotesInsertion !== nextProps.allowNotesInsertion || _this.props.AssetButtonComponent !== nextProps.AssetButtonComponent || _this.props.style !== nextProps.style || _this.state.assetChoiceStyle !== nextState.assetChoiceStyle;
+    };
+
+    _this.componentDidUpdate = function () {
+      setTimeout(function () {
+        var containerDimensions = _this.props.containerDimensions;
+
+        var assetChoiceStyle = void 0;
+        if (_this.assetChoiceComponent && _this.assetButton && _this.assetButton.element && _this.assetChoiceComponent.element && containerDimensions) {
+          var _this$assetChoiceComp = _this.assetChoiceComponent.element.getBoundingClientRect(),
+              width = _this$assetChoiceComp.width,
+              height = _this$assetChoiceComp.height;
+
+          var _this$assetButton$ele = _this.assetButton.element.getBoundingClientRect(),
+              btnX = _this$assetButton$ele.x,
+              btnY = _this$assetButton$ele.y,
+              assetButtonWidth = _this$assetButton$ele.width,
+              assetButtonHeight = _this$assetButton$ele.height;
+
+          var rightExtremity = btnX + assetButtonWidth + width;
+          var bottomExtremity = btnY + height;
+          var rightBoundary = containerDimensions.x + containerDimensions.width;
+          var bottomBoundary = containerDimensions.y + containerDimensions.height;
+
+          if (rightExtremity > rightBoundary && bottomExtremity > bottomBoundary || rightExtremity > rightBoundary && bottomExtremity + assetButtonHeight * 2 + height > bottomBoundary) {
+            assetChoiceStyle = {
+              left: -(width + assetButtonWidth),
+              top: -(assetButtonHeight + height)
+            };
+          } else if (rightExtremity > rightBoundary) {
+            assetChoiceStyle = {
+              left: -(width + assetButtonWidth)
+            };
+          } else if (bottomExtremity > bottomBoundary) {
+            assetChoiceStyle = {
+              // left: -(width + assetButtonWidth * 2),
+              top: -(assetButtonHeight + height)
+            };
+          }
+        }
+        if (!(_this.state.assetChoiceStyle === assetChoiceStyle || _this.state.assetChoiceStyle && assetChoiceStyle && (0, _stringify2.default)(_this.state.assetChoiceStyle) === (0, _stringify2.default)(assetChoiceStyle))) {
+          _this.setState({ assetChoiceStyle: assetChoiceStyle });
+        }
+      }, 500);
+    };
+
+    _this.render = function () {
       var _this$props = _this.props,
           editorState = _this$props.editorState,
           contentId = _this$props.contentId,
@@ -86,6 +129,7 @@ var SideToolbar = function (_Component) {
           _this$props$allowNote = _this$props.allowNotesInsertion,
           allowNotesInsertion = _this$props$allowNote === undefined ? false : _this$props$allowNote,
           style = _this$props.style;
+      var assetChoiceStyle = _this.state.assetChoiceStyle;
 
 
       var onAssetButtonClick = function onAssetButtonClick(event) {
@@ -100,6 +144,12 @@ var SideToolbar = function (_Component) {
 
       var bindToolbar = function bindToolbar(toolbar) {
         _this.toolbar = toolbar;
+      };
+      var bindAssetChoiceComponentRef = function bindAssetChoiceComponentRef(assetChoiceComponent) {
+        _this.assetChoiceComponent = assetChoiceComponent;
+      };
+      var bindAssetButton = function bindAssetButton(assetButton) {
+        _this.assetButton = assetButton;
       };
       var stopEventPropagation = function stopEventPropagation(event) {
         return event.stopPropagation();
@@ -125,15 +175,18 @@ var SideToolbar = function (_Component) {
           onClick: onAssetButtonClick,
           active: assetSelectorActive,
           iconMap: iconMap,
+          ref: bindAssetButton,
           message: messages && assetSelectorActive ? messages.cancel : messages.summonAsset
         }),
         assetRequestPosition && _react2.default.createElement(
           'span',
           {
             className: 'block-asset-choice-container',
-            onClick: stopEventPropagation
+            onClick: stopEventPropagation,
+            style: assetChoiceStyle
           },
           _react2.default.createElement(AssetChoiceComponent, (0, _extends3.default)({}, assetChoiceProps, {
+            ref: bindAssetChoiceComponentRef,
             contentId: contentId,
             onAssetChoice: onAssetChoice,
             onAssetRequestCancel: onAssetRequestCancel,
@@ -142,7 +195,12 @@ var SideToolbar = function (_Component) {
           }))
         )
       );
-    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+    };
+
+    _this.state = {
+      assetChoiceStyle: undefined
+    };
+    return _this;
   }
 
   return SideToolbar;
@@ -178,7 +236,8 @@ SideToolbar.propTypes = {
   onNoteAdd: _propTypes2.default.func,
   onAssetChoice: _propTypes2.default.func,
   onAssetRequest: _propTypes2.default.func,
-  onAssetRequestCancel: _propTypes2.default.func
+  onAssetRequestCancel: _propTypes2.default.func,
+  containerDimensions: _propTypes2.default.object
 
 };
 exports.default = SideToolbar;

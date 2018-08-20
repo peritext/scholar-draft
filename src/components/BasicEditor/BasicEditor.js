@@ -82,6 +82,7 @@ export default class BasicEditor extends Component {
     contentId: PropTypes.string,
     isActive: PropTypes.bool,
     isRequestingAssets: PropTypes.bool,
+    containerDimensions: PropTypes.object,
     /*
      * Method props
      */
@@ -1233,6 +1234,8 @@ export default class BasicEditor extends Component {
 
       inlineButtons,
 
+      containerDimensions,
+
       ...otherProps
     } = this.props;
 
@@ -1418,6 +1421,8 @@ export default class BasicEditor extends Component {
           AssetButtonComponent={AssetButtonComponent}
           NoteButtonComponent={NoteButtonComponent}
           iconMap={iconMap}
+
+          containerDimensions={containerDimensions}
 
           messages={messages}
 

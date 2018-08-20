@@ -276,6 +276,12 @@ export default class Editor extends Component {
       NoteLayout,
 
     } = this.props;
+
+    let containerDimensions;
+    if (this.editor) {
+      containerDimensions = this.editor.getBoundingClientRect();
+    }
+
     const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
     const onNoteAssetRequest = (selection) => {
       onAssetRequest(noteId, selection);
@@ -365,6 +371,7 @@ export default class Editor extends Component {
         onAssetMouseOver={onAssetMouseOver}
         onAssetMouseOut={onAssetMouseOut}
       
+        containerDimensions={containerDimensions}
         inlineButtons={inlineButtons}
         inlineAssetComponents={inlineAssetComponents}
         blockAssetComponents={blockAssetComponents}
@@ -505,8 +512,17 @@ export default class Editor extends Component {
           return 1;
         } return -1;
       });
+
+    const bindEditorRef = (editor) => {
+      this.editor = editor;
+    };
+
+    let containerDimensions;
+    if (this.editor) {
+      containerDimensions = this.editor.getBoundingClientRect();
+    }
     return (
-      <div className={editorClass}>
+      <div ref={bindEditorRef} className={editorClass}>
         <Scrollbars
           ref={bindGlobalScrollbarRef}
           autoHide
@@ -568,6 +584,8 @@ export default class Editor extends Component {
               NoteButtonComponent={NoteButtonComponent}
               inlineEntities={inlineEntities}
               iconMap={iconMap}
+
+              containerDimensions={containerDimensions}
 
               clipboard={clipboard}
 

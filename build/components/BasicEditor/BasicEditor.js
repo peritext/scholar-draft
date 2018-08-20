@@ -387,6 +387,7 @@ BasicEditor.propTypes = {
   contentId: _propTypes2.default.string,
   isActive: _propTypes2.default.bool,
   isRequestingAssets: _propTypes2.default.bool,
+  containerDimensions: _propTypes2.default.object,
   /*
    * Method props
    */
@@ -1279,7 +1280,8 @@ var _initialiseProps = function _initialiseProps() {
         BibliographyComponent = _props3.BibliographyComponent,
         isActive = _props3.isActive,
         inlineButtons = _props3.inlineButtons,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'editorPlaceholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'BibliographyComponent', 'isActive', 'inlineButtons']);
+        containerDimensions = _props3.containerDimensions,
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'editorPlaceholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'BibliographyComponent', 'isActive', 'inlineButtons', 'containerDimensions']);
 
 
     var messages = {
@@ -1443,6 +1445,8 @@ var _initialiseProps = function _initialiseProps() {
         AssetButtonComponent: AssetButtonComponent,
         NoteButtonComponent: NoteButtonComponent,
         iconMap: iconMap,
+
+        containerDimensions: containerDimensions,
 
         messages: messages,
 

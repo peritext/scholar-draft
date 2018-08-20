@@ -1,31 +1,38 @@
 /* eslint react/prop-types: 0 */
 
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 
-const AssetButton = ({ 
-  onClick, 
-  active,
-  iconMap,
-  message,
-  ...otherProps 
-}) => {
-  const onMouseDown = event => event.preventDefault();
-  return (
-    <div
-      className={`scholar-draft-AssetButton${active ? ' active' : ''}`}
-      onMouseDown={onMouseDown}
-      onClick={onClick}
-      data-tip={message}
-      {...otherProps}
-    >
-      {iconMap.asset}
-      <ReactTooltip 
-        place={active ? 'left' : 'right'}
-      />
-    </div>);
-};
+class AssetButton extends Component {
+  render = () => {
+    const {
+      onClick, 
+      active,
+      iconMap,
+      message,
+      ...otherProps 
+    } = this.props;
+    const onMouseDown = event => event.preventDefault();
+    const bindRef = (element) => {
+      this.element = element;
+    };
+    return (
+      <div
+        ref={bindRef}
+        className={`scholar-draft-AssetButton${active ? ' active' : ''}`}
+        onMouseDown={onMouseDown}
+        onClick={onClick}
+        data-tip={message}
+        {...otherProps}
+      >
+        {iconMap.asset}
+        <ReactTooltip 
+          place={active ? 'left' : 'right'}
+        />
+      </div>);
+  }
+}
 
 AssetButton.propTypes = {
 

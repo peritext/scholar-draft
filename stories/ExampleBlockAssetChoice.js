@@ -78,8 +78,11 @@ class BlockAssetChoice extends Component {
     const bindRef = input => {
       this.input = input;
     };
+    const bindElement = element => {
+      this.element = element;
+    }
     return (
-      <div>
+      <div ref={bindElement}>
         <form onSubmit={this.onSubmit}>
           @<input
             ref={bindRef}

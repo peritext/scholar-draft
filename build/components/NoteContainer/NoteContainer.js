@@ -155,6 +155,7 @@ var NoteContainer = function (_Component) {
           inlineEntities = _this$props$inlineEnt === undefined ? [] : _this$props$inlineEnt,
           iconMap = _this$props.iconMap,
           inlineButtons = _this$props.inlineButtons,
+          containerDimensions = _this$props.containerDimensions,
           assetChoiceProps = _this$props.assetChoiceProps,
           assetRequestContentId = _this$props.assetRequestContentId,
           clipboard = _this$props.clipboard,
@@ -208,6 +209,8 @@ var NoteContainer = function (_Component) {
             clipboard: clipboard,
             editorPlaceholder: editorPlaceholder,
             handlePastedText: handlePastedText,
+
+            containerDimensions: containerDimensions,
 
             messages: messages,
 
@@ -264,6 +267,8 @@ NoteContainer.propTypes = {
 
   inlineButtons: _propTypes2.default.array,
   editorPlaceholder: _propTypes2.default.string,
+
+  containerDimensions: _propTypes2.default.object,
 
   addTextAtCurrentSelection: _propTypes2.default.func,
   onEditorChange: _propTypes2.default.func,
