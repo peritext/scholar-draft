@@ -92,7 +92,7 @@ var Editor = function (_Component) {
   function Editor(props) {
     (0, _classCallCheck3.default)(this, Editor);
 
-    // this is used as a map of refs 
+    // this is used as a map of refs
     // to interact with note components
     var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
 
@@ -503,6 +503,7 @@ var Editor = function (_Component) {
           _reactCustomScrollbars.Scrollbars,
           {
             ref: bindGlobalScrollbarRef,
+            className: 'custom-scrollbars',
             autoHide: true,
             onUpdate: this.onScrollUpdate,
             universal: true

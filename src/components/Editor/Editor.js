@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import {
-  SpringSystem, 
+  SpringSystem,
   MathUtil
 } from 'rebound';
 
@@ -47,7 +47,7 @@ export default class Editor extends Component {
 
     messages: PropTypes.shape({
       addNote: PropTypes.string,
-      summonAsset: PropTypes.string, 
+      summonAsset: PropTypes.string,
       cancel: PropTypes.string,
     }),
     customContext: PropTypes.object,
@@ -57,7 +57,7 @@ export default class Editor extends Component {
     assets: PropTypes.object,
 
     editorClass: PropTypes.string,
-    
+
     onEditorChange: PropTypes.func,
     onNoteAdd: PropTypes.func,
     editorPlaceholder: PropTypes.string,
@@ -84,7 +84,7 @@ export default class Editor extends Component {
     assetRequestPosition: PropTypes.object,
     assetRequestContentId: PropTypes.string,
     assetChoiceProps: PropTypes.object,
-    
+
     inlineAssetComponents: PropTypes.object,
     blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
@@ -114,7 +114,7 @@ export default class Editor extends Component {
    */
   constructor(props) {
     super(props);
-    // this is used as a map of refs 
+    // this is used as a map of refs
     // to interact with note components
     this.notes = {};
   }
@@ -233,7 +233,7 @@ export default class Editor extends Component {
       editorPlaceholder,
 
       messages,
-      
+
       onEditorChange,
 
       onAssetChange,
@@ -254,7 +254,7 @@ export default class Editor extends Component {
       assetRequestPosition,
       assetRequestContentId,
       assetChoiceProps,
-      
+
       inlineAssetComponents,
       blockAssetComponents,
       AssetChoiceComponent,
@@ -333,44 +333,44 @@ export default class Editor extends Component {
         assets={assets}
         customContext={customContext}
         editorPlaceholder={editorPlaceholder}
-      
+
         ref={bindNote}
 
         messages={messages}
-      
+
         contentId={noteId}
-      
+
         assetRequestPosition={assetRequestPosition}
         assetRequestContentId={assetRequestContentId}
         assetChoiceProps={assetChoiceProps}
 
         isActive={noteId === focusedEditorId}
-      
+
         onEditorClick={onNoteEditorClick}
         onBlur={onNoteBlur}
-      
+
         renderingMode={renderingMode}
-      
+
         onEditorChange={onThisNoteEditorChange}
-      
+
         onClickScrollToNotePointer={onClickScrollToNotePointer}
-      
+
         onAssetRequest={onNoteAssetRequest}
         onAssetRequestCancel={onAssetRequestCancel}
         onAssetChange={onAssetChange}
         onAssetChoice={onAssetChoice}
         handlePastedText={handlePastedText}
-      
+
         clipboard={clipboard}
-      
+
         onDrop={onNoteDrop}
         onDragOver={onNoteDragOver}
         onClickDelete={onClickDelete}
-      
+
         onAssetClick={onAssetClick}
         onAssetMouseOver={onAssetMouseOver}
         onAssetMouseOut={onAssetMouseOut}
-      
+
         containerDimensions={containerDimensions}
         inlineButtons={inlineButtons}
         inlineAssetComponents={inlineAssetComponents}
@@ -382,7 +382,7 @@ export default class Editor extends Component {
         NoteLayout={NoteLayout}
         AssetButtonComponent={AssetButtonComponent}
         NoteButtonComponent={NoteButtonComponent}
-      
+
         editorStyle={editorStyles && editorStyles.noteEditor}
       />
     );
@@ -404,7 +404,7 @@ export default class Editor extends Component {
       messages,
 
       editorClass = 'scholar-draft-Editor',
-      
+
       onEditorChange,
       onNoteAdd,
 
@@ -429,7 +429,7 @@ export default class Editor extends Component {
       assetRequestPosition,
       assetRequestContentId,
       assetChoiceProps,
-      
+
       inlineButtons,
       inlineAssetComponents,
       blockAssetComponents,
@@ -525,12 +525,13 @@ export default class Editor extends Component {
       <div ref={bindEditorRef} className={editorClass}>
         <Scrollbars
           ref={bindGlobalScrollbarRef}
+          className="custom-scrollbars"
           autoHide
           onUpdate={this.onScrollUpdate}
           universal
         >
           <ElementLayout className="main-container-editor">
-            <BasicEditor 
+            <BasicEditor
               editorState={mainEditorState}
               assets={assets}
               ref={bindMainEditor}
@@ -555,7 +556,7 @@ export default class Editor extends Component {
 
               renderingMode={renderingMode}
               handlePastedText={handlePastedText}
-            
+
               onEditorChange={onMainEditorChange}
               onDragOver={onMainDragOver}
               onDrop={onMainEditorDrop}
@@ -574,7 +575,7 @@ export default class Editor extends Component {
               onNotePointerMouseOver={onNotePointerMouseOver}
               onNotePointerMouseOut={onNotePointerMouseOut}
               onNotePointerMouseClick={onNotePointerMouseClickHandler}
-            
+
               inlineButtons={inlineButtons}
               inlineAssetComponents={inlineAssetComponents}
               blockAssetComponents={blockAssetComponents}
@@ -600,8 +601,8 @@ export default class Editor extends Component {
             }
           </ElementLayout>
           {
-            BibliographyComponent 
-            && 
+            BibliographyComponent
+            &&
               <ElementLayout className="bibliography-container">
                 <BibliographyComponent />
               </ElementLayout>
