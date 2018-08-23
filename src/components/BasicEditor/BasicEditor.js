@@ -11,7 +11,6 @@ import { debounce } from 'lodash';
 
 // draft-js EditorState decorators utils
 import SimpleDecorator from 'draft-js-simpledecorator';
-import MultiDecorator from 'draft-js-multidecorators';
 
 import {
   EditorState,
@@ -24,6 +23,7 @@ import {
 } from 'draft-js';
 
 import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
+import MultiDecorator from '../../multidecorators';
 
 
 // constant entities type names
@@ -230,7 +230,7 @@ export default class BasicEditor extends Component {
     this.setState({
       readOnly: false,
       editorState: this.props.editorState ? EditorState.createWithContent(
-        this.props.editorState.getCurrentContent(), 
+        this.props.editorState.getCurrentContent(),
         this.createDecorator()
       ) : this.generateEmptyEditor()
     });
@@ -238,7 +238,7 @@ export default class BasicEditor extends Component {
 
   componentWillReceiveProps = (nextProps, nextState) => {
     // console.time(`editor ${this.props.contentId}`);
-    
+
     let stateMods = {};
 
     if (this.props.isRequestingAssets && !nextProps.isRequestingAssets) {
@@ -257,7 +257,7 @@ export default class BasicEditor extends Component {
     }
     // hiding the toolbars when editor is set to inactive
     if (
-      (this.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition) 
+      (this.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition)
     ) {
       // locking the draft-editor if asset choice component is not open
       // console.log('hding 2', this.props.contentId);
@@ -282,7 +282,7 @@ export default class BasicEditor extends Component {
         ...stateMods,
         readOnly: false,
         // editorState: nextProps.editorState ? EditorState.createWithContent(
-        //   nextProps.editorState.getCurrentContent(), 
+        //   nextProps.editorState.getCurrentContent(),
         //   this.createDecorator()
         // ) : this.generateEmptyEditor(),
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
@@ -290,10 +290,10 @@ export default class BasicEditor extends Component {
 
       if (this.state.lastClickCoordinates) {
         const {
-          // clientX, 
-          // clientY, 
-          el, 
-          pageX, 
+          // clientX,
+          // clientY,
+          el,
+          pageX,
           pageY
         } = this.state.lastClickCoordinates;
 
@@ -333,7 +333,7 @@ export default class BasicEditor extends Component {
               focusOffset: startOffset,
             });
             const selectedEditorState = EditorState.acceptSelection(
-              this.state.editorState, 
+              this.state.editorState,
               newSelection
             );
             stateMods = {
@@ -351,16 +351,16 @@ export default class BasicEditor extends Component {
         }
       } else {
         stateMods.editorState = nextProps.editorState ? EditorState.createWithContent(
-          nextProps.editorState.getCurrentContent(), 
+          nextProps.editorState.getCurrentContent(),
           this.createDecorator()
         ) : this.generateEmptyEditor();
         setTimeout(() => this.forceRender(this.props));
       }
-      
+
     // updating locally stored editorState when the one given by props
     // has changed
     } else if (this.props.editorState !== nextProps.editorState) {
-      // console.log('storing new editor state with selection', 
+      // console.log('storing new editor state with selection',
       // nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
       stateMods = {
         ...stateMods,
@@ -406,7 +406,7 @@ export default class BasicEditor extends Component {
       // dispatch new notes through context's emitter
       this.emitter.dispatchNotes(nextProps.notes);
       // update state-stored notes
-      stateMods = { 
+      stateMods = {
         ...stateMods,
         notes: nextProps.notes
       };/* eslint react/no-unused-state : 0 */
@@ -465,9 +465,9 @@ export default class BasicEditor extends Component {
     // console.timeEnd(`rendering ${this.props.contentId}`)
     if (
       /* (
-      this.props.editorState !== prevProps.editorState && 
+      this.props.editorState !== prevProps.editorState &&
       this.editor &&
-      !this.state.readOnly && 
+      !this.state.readOnly &&
       // this.props.isActive &&
       prevState.readOnly
       )
@@ -482,13 +482,13 @@ export default class BasicEditor extends Component {
       setTimeout(() => {
         if (this && this.editor) {
           this.editor.focus();
-          setTimeout(() => 
+          setTimeout(() =>
             this.setState({
               isFocusing: false
             }));
         }
       });
-    } 
+    }
   }
 
   /**
@@ -500,7 +500,7 @@ export default class BasicEditor extends Component {
     }
     if (typeof this.props.onEditorChange === 'function') {
       setTimeout(() => {
-        this.props.onEditorChange(this.props.editorState);        
+        this.props.onEditorChange(this.props.editorState);
       }, 1);
     }
   }
@@ -567,17 +567,17 @@ export default class BasicEditor extends Component {
   };
 
   /**
-   * Fires onEditorChange callback if provided 
+   * Fires onEditorChange callback if provided
    * @param {ImmutableRecord} editorState - the new editor state
    */
   onChange = (editorState) => {
   // onChange = (editorState, feedUndoStack = true) => {
-    // console.log(this.props.contentId, 
-    // ' on change', editorState.getSelection().getStartOffset(), 
+    // console.log(this.props.contentId,
+    // ' on change', editorState.getSelection().getStartOffset(),
     // 'is focusing', this.state.isFocusing)
     if (
-      typeof this.props.onEditorChange === 'function' && 
-      !this.state.readOnly && 
+      typeof this.props.onEditorChange === 'function' &&
+      !this.state.readOnly &&
       !this.state.isFocusing
     ) {
       // if (feedUndoStack === true) {
@@ -601,7 +601,7 @@ export default class BasicEditor extends Component {
   //   } = this.state;
   //   // max length for undo stack
   //   // todo: store that in props or in a variable
-  //   const newUndoStack = undoStack.length > 50 ? 
+  //   const newUndoStack = undoStack.length > 50 ?
   //      undoStack.slice(undoStack.length - 50) : undoStack;
   //   this.setState({
   //     undoStack: [
@@ -685,21 +685,21 @@ export default class BasicEditor extends Component {
     // which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > 0) {
       selectedEditorState = EditorState.acceptSelection(
-        newEditorState, 
+        newEditorState,
         prevSelection
       );
     } else {
       selectedEditorState = EditorState.forceSelection(
-        newEditorState, 
+        newEditorState,
         prevSelection
       );
     }
     const inlineStyle = this.state.editorState.getCurrentInlineStyle();
     selectedEditorState = EditorState.setInlineStyleOverride(selectedEditorState, inlineStyle);
-    this.setState({ 
+    this.setState({
       editorState: selectedEditorState,
     });
-      
+
   }
 
   /**
@@ -709,7 +709,7 @@ export default class BasicEditor extends Component {
    */
   _blockRenderer = (contentBlock) => {
     const type = contentBlock.getType();
-    
+
     if (type === 'atomic') {
       const entityKey = contentBlock.getEntityAt(0);
       const contentState = this.state.editorState.getCurrentContent();
@@ -980,8 +980,8 @@ export default class BasicEditor extends Component {
         const data = contentState.getEntity(entityKey).toJS();
         const id = data && data.data && data.data.asset && data.data.asset.id;
         const asset = assets[id];
-        const AssetComponent = asset && components[asset.type] ? 
-          components[asset.type] 
+        const AssetComponent = asset && components[asset.type] ?
+          components[asset.type]
           : () => (<span />);
 
         let props = {};
@@ -1035,7 +1035,7 @@ export default class BasicEditor extends Component {
    * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
    * @param {ImmutableRecord} inputContentState - the content state to parse
    */
-  // todo: improve with all lang./typography 
+  // todo: improve with all lang./typography
   // quotes configurations (french quotes, english quotes, ...)
   findQuotes = (contentBlock, callback, contentState) => {
     const QUOTE_REGEX = /("[^"]+")/gi;
@@ -1086,7 +1086,7 @@ export default class BasicEditor extends Component {
     let sideToolbarTop;
 
     const selectionRange = getSelectionRange();
-    
+
     const editorEle = this.editor;
 
     const styles = {
@@ -1101,10 +1101,10 @@ export default class BasicEditor extends Component {
     if (!selectionRange) return;
 
     if (
-      !editorEle 
+      !editorEle
       || !isParentOf(selectionRange.commonAncestorContainer, editorEle.editor)
-    ) { 
-      return; 
+    ) {
+      return;
     }
 
     const {
@@ -1134,8 +1134,8 @@ export default class BasicEditor extends Component {
       // position at begining of the line if no asset requested or block asset requested
       // else position after selection
       const controlWidth = sideToolbarEle.offsetWidth || 50;
-      left = assetRequestPosition ? 
-        (rangeBounds.right || editorBounds.left) + controlWidth 
+      left = assetRequestPosition ?
+        (rangeBounds.right || editorBounds.left) + controlWidth
         : editorBounds.left - controlWidth;
       styles.sideToolbar.left = left;
       styles.sideToolbar.display = 'block';
@@ -1152,7 +1152,7 @@ export default class BasicEditor extends Component {
         const popTop = rangeBounds.top - popoverSpacing;
         left = rangeBounds.left - (inlineToolbarWidth / 2);/* eslint prefer-destructuring:0 */
         // prevent inline toolbar collapse
-        // left = left + inlineToolbarWidth / 2  > 
+        // left = left + inlineToolbarWidth / 2  >
         // editorBounds.right ? editorBounds.right - inlineToolbarWidth : left;
         if (left + (inlineToolbarWidth * 1.2) < editorBounds.right) {
           styles.inlineToolbar.left = left;
@@ -1175,7 +1175,7 @@ export default class BasicEditor extends Component {
       this.setState({
         styles
       });
-    }    
+    }
   }
 
   /*
@@ -1240,20 +1240,20 @@ export default class BasicEditor extends Component {
     } = this.props;
 
     const messages = {
-      addNote: 
-          this.props.messages && 
-          this.props.messages.addNote ? 
-            this.props.messages.addNote : 
+      addNote:
+          this.props.messages &&
+          this.props.messages.addNote ?
+            this.props.messages.addNote :
             'add a note (shortcut: "cmd + m")',
-      summonAsset: 
-          this.props.messages && 
-          this.props.messages.summonAsset ? 
+      summonAsset:
+          this.props.messages &&
+          this.props.messages.summonAsset ?
             this.props.messages.summonAsset :
             'add an asset (shortcut: "@")',
-      cancel: 
-          this.props.messages 
-          && this.props.messages.cancel ? 
-            this.props.messages.cancel 
+      cancel:
+          this.props.messages
+          && this.props.messages.cancel ?
+            this.props.messages.cancel
             : 'cancel',
     };
 
@@ -1309,8 +1309,8 @@ export default class BasicEditor extends Component {
       }
       if (this.state.readOnly) {
         const coordinates = {
-          clientX: event.clientX, 
-          clientY: event.clientY, 
+          clientX: event.clientX,
+          clientY: event.clientY,
           el: event.target,
           pageX: event.pageX,
           pageY: event.pageY,
@@ -1357,9 +1357,9 @@ export default class BasicEditor extends Component {
      * component bindings and final props definitions
      */
 
-    const realEditorState = editorState 
+    const realEditorState = editorState
       || this.generateEmptyEditor(); /* eslint no-unused-vars : 0 */
-    
+
     const bindEditorRef = (editor) => {
       this.editor = editor;
     };
@@ -1374,17 +1374,17 @@ export default class BasicEditor extends Component {
     // key binding can be provided through props
     const keyBindingFn = typeof this.props.keyBindingFn === 'function' ? this.props.keyBindingFn : _defaultKeyBindingFn;
     // props-provided iconMap can be merged with defaultIconMap for displaying custom icons
-    const iconMap = this.props.iconMap ? 
+    const iconMap = this.props.iconMap ?
       {
         ...defaultIconMap,
         ...this.props.iconMap
       } : defaultIconMap;
 
     // console.timeEnd(`preparing rendering ${contentId}`)
-    // console.log(this.props.contentId, 
+    // console.log(this.props.contentId,
     // 'render with selection', stateEditorState.getSelection().getStartOffset());
     return (
-      <div 
+      <div
         className={editorClass + (readOnly ? '' : ' active')}
         onClick={onMainClick}
         style={editorStyle}
@@ -1456,8 +1456,8 @@ export default class BasicEditor extends Component {
 
           {...otherProps}
         />
-        { 
-          BibliographyComponent && <BibliographyComponent /> 
+        {
+          BibliographyComponent && <BibliographyComponent />
         }
       </div>
     );

@@ -55,15 +55,15 @@ var _draftJsSimpledecorator = require('draft-js-simpledecorator');
 
 var _draftJsSimpledecorator2 = _interopRequireDefault(_draftJsSimpledecorator);
 
-var _draftJsMultidecorators = require('draft-js-multidecorators');
-
-var _draftJsMultidecorators2 = _interopRequireDefault(_draftJsMultidecorators);
-
 var _draftJs = require('draft-js');
 
 var _adjustBlockDepth = require('../../modifiers/adjustBlockDepth');
 
 var _adjustBlockDepth2 = _interopRequireDefault(_adjustBlockDepth);
+
+var _multidecorators = require('../../multidecorators');
+
+var _multidecorators2 = _interopRequireDefault(_multidecorators);
 
 var _constants = require('../../constants');
 
@@ -217,7 +217,7 @@ var BasicEditor = function (_Component) {
 
 
   /**
-   * Fires onEditorChange callback if provided 
+   * Fires onEditorChange callback if provided
    * @param {ImmutableRecord} editorState - the new editor state
    */
 
@@ -232,7 +232,7 @@ var BasicEditor = function (_Component) {
   //   } = this.state;
   //   // max length for undo stack
   //   // todo: store that in props or in a variable
-  //   const newUndoStack = undoStack.length > 50 ? 
+  //   const newUndoStack = undoStack.length > 50 ?
   //      undoStack.slice(undoStack.length - 50) : undoStack;
   //   this.setState({
   //     undoStack: [
@@ -342,7 +342,7 @@ var BasicEditor = function (_Component) {
    * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
    * @param {ImmutableRecord} inputContentState - the content state to parse
    */
-  // todo: improve with all lang./typography 
+  // todo: improve with all lang./typography
   // quotes configurations (french quotes, english quotes, ...)
 
 
@@ -531,7 +531,7 @@ var _initialiseProps = function _initialiseProps() {
         stateMods = (0, _extends3.default)({}, stateMods, {
           readOnly: false
           // editorState: nextProps.editorState ? EditorState.createWithContent(
-          //   nextProps.editorState.getCurrentContent(), 
+          //   nextProps.editorState.getCurrentContent(),
           //   this.createDecorator()
           // ) : this.generateEmptyEditor(),
           // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
@@ -601,7 +601,7 @@ var _initialiseProps = function _initialiseProps() {
         // updating locally stored editorState when the one given by props
         // has changed
       } else if (_this2.props.editorState !== nextProps.editorState) {
-      // console.log('storing new editor state with selection', 
+      // console.log('storing new editor state with selection',
       // nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
       stateMods = (0, _extends3.default)({}, stateMods, {
         editorState: nextProps.editorState || _this2.generateEmptyEditor()
@@ -692,9 +692,9 @@ var _initialiseProps = function _initialiseProps() {
     // console.timeEnd(`rendering ${this.props.contentId}`)
     if (
     /* (
-    this.props.editorState !== prevProps.editorState && 
+    this.props.editorState !== prevProps.editorState &&
     this.editor &&
-    !this.state.readOnly && 
+    !this.state.readOnly &&
     // this.props.isActive &&
     prevState.readOnly
     )
@@ -778,8 +778,8 @@ var _initialiseProps = function _initialiseProps() {
 
   this.onChange = function (editorState) {
     // onChange = (editorState, feedUndoStack = true) => {
-    // console.log(this.props.contentId, 
-    // ' on change', editorState.getSelection().getStartOffset(), 
+    // console.log(this.props.contentId,
+    // ' on change', editorState.getSelection().getStartOffset(),
     // 'is focusing', this.state.isFocusing)
     if (typeof _this2.props.onEditorChange === 'function' && !_this2.state.readOnly && !_this2.state.isFocusing) {
       // if (feedUndoStack === true) {
@@ -1143,7 +1143,7 @@ var _initialiseProps = function _initialiseProps() {
 
   this.createDecorator = function () {
     var ActiveNotePointer = _this2.props.NotePointerComponent || _NotePointer2.default;
-    return new _draftJsMultidecorators2.default([new _draftJsSimpledecorator2.default(_this2.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this2.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this2.findQuotes, _QuoteContainer2.default)].concat((0, _toConsumableArray3.default)((_this2.props.inlineEntities || []).map(function (entity) {
+    return new _multidecorators2.default([new _draftJsSimpledecorator2.default(_this2.findInlineAsset, _InlineAssetContainer2.default), new _draftJsSimpledecorator2.default(_this2.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator2.default(_this2.findQuotes, _QuoteContainer2.default)].concat((0, _toConsumableArray3.default)((_this2.props.inlineEntities || []).map(function (entity) {
       return new _draftJsSimpledecorator2.default(entity.strategy, entity.component);
     }))));
   };
@@ -1216,7 +1216,7 @@ var _initialiseProps = function _initialiseProps() {
         var popTop = rangeBounds.top - popoverSpacing;
         left = rangeBounds.left - inlineToolbarWidth / 2; /* eslint prefer-destructuring:0 */
         // prevent inline toolbar collapse
-        // left = left + inlineToolbarWidth / 2  > 
+        // left = left + inlineToolbarWidth / 2  >
         // editorBounds.right ? editorBounds.right - inlineToolbarWidth : left;
         if (left + inlineToolbarWidth * 1.2 < editorBounds.right) {
           styles.inlineToolbar.left = left;
@@ -1404,7 +1404,7 @@ var _initialiseProps = function _initialiseProps() {
     var iconMap = _this2.props.iconMap ? (0, _extends3.default)({}, _defaultIconMap2.default, _this2.props.iconMap) : _defaultIconMap2.default;
 
     // console.timeEnd(`preparing rendering ${contentId}`)
-    // console.log(this.props.contentId, 
+    // console.log(this.props.contentId,
     // 'render with selection', stateEditorState.getSelection().getStartOffset());
     return _react2.default.createElement(
       'div',
