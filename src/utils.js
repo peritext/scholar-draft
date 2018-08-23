@@ -381,13 +381,13 @@ export function insertNoteInEditor(
   newContentState = Modifier.replaceText(
     newContentState,
     endSelection,
-    '  ',
+    '',
     null,
     null
   );
   endSelection = thatSelection.merge({
-    anchorOffset: anchorOffset + 1,
-    focusOffset: focusOffset + 1,
+    anchorOffset,
+    focusOffset,
   });
   newContentState = Modifier.applyEntity(newContentState, endSelection, newEntityKey);
   updatedEditor = EditorState.push(editorState, newContentState, 'edit-entity');

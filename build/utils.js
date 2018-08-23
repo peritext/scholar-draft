@@ -351,10 +351,10 @@ function insertNoteInEditor(editorState, noteId, selection) {
     anchorOffset: anchorOffset,
     focusOffset: focusOffset
   });
-  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '  ', null, null);
+  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '', null, null);
   endSelection = thatSelection.merge({
-    anchorOffset: anchorOffset + 1,
-    focusOffset: focusOffset + 1
+    anchorOffset: anchorOffset,
+    focusOffset: focusOffset
   });
   newContentState = _draftJs.Modifier.applyEntity(newContentState, endSelection, newEntityKey);
   updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'edit-entity');
