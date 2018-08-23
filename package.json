@@ -23,6 +23,10 @@
     "draft-js"
   ],
   "author": "Robin de Mourat",
+  "contributors": [
+    "Mengying Du",
+    "Guillaume Plique"
+  ],
   "license": "LGPL-3.0",
   "bugs": {
     "url": "https://github.com/peritext/scholar-draft/issues"
