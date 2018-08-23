@@ -219,6 +219,30 @@ export default class Editor extends Component {
   }
 
   /**
+   * Scrolls to a specific note
+   * @param {string} noteId
+   */
+  scrollToNote = (thatNoteId) => {
+    const notePointer = document.getElementById(`note-container-${thatNoteId}`);
+    const scrollTo = notePointer && notePointer.offsetTop;
+    if (scrollTo) {
+      this.scrollTop(scrollTo);
+    }
+  }
+
+  /**
+   * Scrolls to a specific note pointer
+   * @param {string} noteId
+   */
+  scrollToNotePointer = (thatNoteId) => {
+    const notePointer = document.getElementById(`note-pointer-${thatNoteId}`);
+    const scrollTo = notePointer && notePointer.offsetTop;
+    if (scrollTo) {
+      this.scrollTop(scrollTo);
+    }
+  }
+
+  /**
    * Renders a note editor component for a specific note
    * @param {string} noteId - uuid of the note to render
    * @param {number} order - order to attribute to it

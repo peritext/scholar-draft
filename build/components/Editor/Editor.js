@@ -167,6 +167,22 @@ var Editor = function (_Component) {
       return null;
     };
 
+    _this.scrollToNote = function (thatNoteId) {
+      var notePointer = document.getElementById('note-container-' + thatNoteId);
+      var scrollTo = notePointer && notePointer.offsetTop;
+      if (scrollTo) {
+        _this.scrollTop(scrollTo);
+      }
+    };
+
+    _this.scrollToNotePointer = function (thatNoteId) {
+      var notePointer = document.getElementById('note-pointer-' + thatNoteId);
+      var scrollTo = notePointer && notePointer.offsetTop;
+      if (scrollTo) {
+        _this.scrollTop(scrollTo);
+      }
+    };
+
     _this.renderNoteEditor = function (noteId, order) {
       var _this$props = _this.props,
           notes = _this$props.notes,
@@ -356,6 +372,18 @@ var Editor = function (_Component) {
     /**
      * Provides upstream-usable empty editor factory method with proper decorator
      * @return {ImmutableRecord} editorState - output editor state
+     */
+
+
+    /**
+     * Scrolls to a specific note
+     * @param {string} noteId
+     */
+
+
+    /**
+     * Scrolls to a specific note pointer
+     * @param {string} noteId
      */
 
 
