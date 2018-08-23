@@ -5,6 +5,7 @@
  */
 import {
   EditorState,
+  ContentState,
   Modifier,
   AtomicBlockUtils,
   SelectionState
@@ -282,10 +283,25 @@ export function insertBlockAssetInEditor(
   editorState, 
   asset, 
   selection,
-  mutable = false
+  mutable = false,
+  allowReplacingBlock = false,
 ) {
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
+
+  let selectionInEmptyBlock;
+  // let selectionInAtomic;
+  if (inputSelection.isCollapsed()) {
+    const blockId = inputSelection.getAnchorKey();
+    const block = editorState.getCurrentContent().getBlockForKey(blockId);
+    const text = block.getText();
+    const type = block.getType();
+    if (text.trim().length === 0 && type !== 'atomic') {
+      selectionInEmptyBlock = blockId;
+    } /* else if (type === 'atomic') {
+      selectionInAtomic = true;
+    } */
+  }
 
   const newContentState = editorState.getCurrentContent().createEntity(
     BLOCK_ASSET,
@@ -303,15 +319,32 @@ export function insertBlockAssetInEditor(
     focusKey: inputSelection.getFocusKey(),
     anchorKey: inputSelection.getAnchorKey(),
   });
+
   let updatedEditor = EditorState.acceptSelection(
     EditorState.createWithContent(newContentState), 
     thatSelection
   );
+  
   updatedEditor = AtomicBlockUtils.insertAtomicBlock(
     updatedEditor,
     newEntityKey,
     ' '
   );
+  if (selectionInEmptyBlock) {
+    updatedEditor = EditorState.acceptSelection(
+      EditorState.createWithContent(ContentState
+        .createFromBlockArray(/* eslint array-callback-return : 0 */
+          updatedEditor.getCurrentContent().getBlocksAsArray().filter((block, blockIndex) => {
+            const key = block.getKey();
+            if (blockIndex === 0 || key !== selectionInEmptyBlock) {
+              return true;
+            }
+          }),
+          updatedEditor.getCurrentContent().getBlockMap()
+        )), 
+      thatSelection
+    );
+  }
   /**
    * UPDATE SELECTION
    */

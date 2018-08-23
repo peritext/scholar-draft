@@ -281,9 +281,24 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
  */
 function insertBlockAssetInEditor(editorState, asset, selection) {
   var mutable = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var allowReplacingBlock = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
   var activeSelection = editorState.getSelection();
   var inputSelection = selection || activeSelection;
+
+  var selectionInEmptyBlock = void 0;
+  // let selectionInAtomic;
+  if (inputSelection.isCollapsed()) {
+    var blockId = inputSelection.getAnchorKey();
+    var _block = editorState.getCurrentContent().getBlockForKey(blockId);
+    var text = _block.getText();
+    var type = _block.getType();
+    if (text.trim().length === 0 && type !== 'atomic') {
+      selectionInEmptyBlock = blockId;
+    } /* else if (type === 'atomic') {
+      selectionInAtomic = true;
+      } */
+  }
 
   var newContentState = editorState.getCurrentContent().createEntity(_constants.BLOCK_ASSET, mutable ? 'MUTABLE' : 'IMMUTABLE', {
     insertionType: _constants.BLOCK_ASSET,
@@ -297,8 +312,19 @@ function insertBlockAssetInEditor(editorState, asset, selection) {
     focusKey: inputSelection.getFocusKey(),
     anchorKey: inputSelection.getAnchorKey()
   });
+
   var updatedEditor = _draftJs.EditorState.acceptSelection(_draftJs.EditorState.createWithContent(newContentState), thatSelection);
+
   updatedEditor = _draftJs.AtomicBlockUtils.insertAtomicBlock(updatedEditor, newEntityKey, ' ');
+  if (selectionInEmptyBlock) {
+    updatedEditor = _draftJs.EditorState.acceptSelection(_draftJs.EditorState.createWithContent(_draftJs.ContentState.createFromBlockArray( /* eslint array-callback-return : 0 */
+    updatedEditor.getCurrentContent().getBlocksAsArray().filter(function (block, blockIndex) {
+      var key = block.getKey();
+      if (blockIndex === 0 || key !== selectionInEmptyBlock) {
+        return true;
+      }
+    }), updatedEditor.getCurrentContent().getBlockMap())), thatSelection);
+  }
   /**
    * UPDATE SELECTION
    */
