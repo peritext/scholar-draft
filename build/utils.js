@@ -257,8 +257,8 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
     newEntityKey);
   }
   var endSelection = thatSelection.merge({
-    anchorOffset: thatSelection.getEndOffset() + selectedText.length,
-    focusOffset: thatSelection.getEndOffset() + selectedText.length
+    anchorOffset: thatSelection.getEndOffset(),
+    focusOffset: thatSelection.getEndOffset()
   });
   // newContentState = Modifier.replaceText(
   //   newContentState,
@@ -377,10 +377,10 @@ function insertNoteInEditor(editorState, noteId, selection) {
     anchorOffset: anchorOffset,
     focusOffset: focusOffset
   });
-  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '', null, null);
+  newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null);
   endSelection = thatSelection.merge({
-    anchorOffset: anchorOffset,
-    focusOffset: focusOffset
+    anchorOffset: anchorOffset + 1,
+    focusOffset: focusOffset + 1
   });
   newContentState = _draftJs.Modifier.applyEntity(newContentState, endSelection, newEntityKey);
   updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'edit-entity');
@@ -503,9 +503,9 @@ function deleteNoteFromEditor(editorState, id, callback) {
 /**
  * Updates notes number and delete notes which are not any more pointed in the given editor state
  * @param {ImmutableRecord} editorState - the editor state before change
- * @param {object} notes - a map of the notes 
+ * @param {object} notes - a map of the notes
  * with shape {noteId: string, order: number, editorState: ImmutableRecord}
- * @return {obj} {newNotes, notesOrder} - a map of the 
+ * @return {obj} {newNotes, notesOrder} - a map of the
  * updated notes and the notes order infered from the editor
  */
 var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotesFromEditor(editorState, inputNotes) {
@@ -562,9 +562,9 @@ var updateNotesFromEditor = exports.updateNotesFromEditor = function updateNotes
 /**
  * Delete assets which are not linked to an entity in any of a collection of editorStates
  * @param {array<ImmutableRecord>} editorStates - the editor states to look into
- * the array of editor states to parse (e.g. main editor state 
+ * the array of editor states to parse (e.g. main editor state
  * + notes editor states)
- * @param {object} notes - a map of the notes with shape 
+ * @param {object} notes - a map of the notes with shape
  * {noteId: string, order: number, editorState: ImmutableRecord}
  * @return {obj} newAssets - a map of the assets actually in use
  */
@@ -754,7 +754,7 @@ function checkReturnForState(editorState, ev) {
 
 /**
  * This class allows to produce event emitters
- * that will be used to dispatch assets changes 
+ * that will be used to dispatch assets changes
  * and notes changes through context
  */
 

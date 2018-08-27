@@ -79,8 +79,8 @@ export const getEventTextRange = (pageX, pageY) => {
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertAssetInEditor(
-  editorState, 
-  asset, 
+  editorState,
+  asset,
   selection
 ) {
   const currentContent = editorState.getCurrentContent();
@@ -118,7 +118,7 @@ export function insertAssetInEditor(
   });
   // add the given selection to a new editor state with appropriate content state and selection
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState), 
+    EditorState.createWithContent(newContentState),
     thatSelection
   );
   // insert block asset instruction
@@ -205,8 +205,8 @@ export function insertAssetInEditor(
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertInlineAssetInEditor(
-  editorState, 
-  asset, 
+  editorState,
+  asset,
   selection,
   mutable = false
 ) {
@@ -230,7 +230,7 @@ export function insertInlineAssetInEditor(
     anchorKey: inputSelection.getAnchorKey(),
   });
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState), 
+    EditorState.createWithContent(newContentState),
     thatSelection
   );
   const anchorKey = thatSelection.getAnchorKey();
@@ -257,8 +257,8 @@ export function insertInlineAssetInEditor(
     );
   }
   const endSelection = thatSelection.merge({
-    anchorOffset: thatSelection.getEndOffset() + selectedText.length,
-    focusOffset: thatSelection.getEndOffset() + selectedText.length,
+    anchorOffset: thatSelection.getEndOffset(),
+    focusOffset: thatSelection.getEndOffset(),
   });
   // newContentState = Modifier.replaceText(
   //   newContentState,
@@ -280,8 +280,8 @@ export function insertInlineAssetInEditor(
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertBlockAssetInEditor(
-  editorState, 
-  asset, 
+  editorState,
+  asset,
   selection,
   mutable = false,
   allowReplacingBlock = false,
@@ -321,10 +321,10 @@ export function insertBlockAssetInEditor(
   });
 
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState), 
+    EditorState.createWithContent(newContentState),
     thatSelection
   );
-  
+
   updatedEditor = AtomicBlockUtils.insertAtomicBlock(
     updatedEditor,
     newEntityKey,
@@ -341,7 +341,7 @@ export function insertBlockAssetInEditor(
             }
           }),
           updatedEditor.getCurrentContent().getBlockMap()
-        )), 
+        )),
       thatSelection
     );
   }
@@ -372,8 +372,8 @@ export function insertBlockAssetInEditor(
  * @return {ImmutableRecord} updatedEditorState - the new editor state
  */
 export function insertNoteInEditor(
-  editorState, 
-  noteId, 
+  editorState,
+  noteId,
   selection
 ) {
   const currentContent = editorState.getCurrentContent();
@@ -392,7 +392,7 @@ export function insertNoteInEditor(
     anchorKey: activeSelection.getAnchorKey(),
   });
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState), 
+    EditorState.createWithContent(newContentState),
     thatSelection
   );
 
@@ -414,13 +414,13 @@ export function insertNoteInEditor(
   newContentState = Modifier.replaceText(
     newContentState,
     endSelection,
-    '',
+    ' ',
     null,
     null
   );
   endSelection = thatSelection.merge({
-    anchorOffset,
-    focusOffset,
+    anchorOffset: anchorOffset + 1,
+    focusOffset: focusOffset + 1,
   });
   newContentState = Modifier.applyEntity(newContentState, endSelection, newEntityKey);
   updatedEditor = EditorState.push(editorState, newContentState, 'edit-entity');
@@ -435,8 +435,8 @@ export function insertNoteInEditor(
  * @param {func} callback - callbacks the updated editor state purged from targeted entity
  */
 export function deleteAssetFromEditor(
-  editorState, 
-  id, 
+  editorState,
+  id,
   callback
 ) {
   // todo : try to optimize this with draftjs-utils
@@ -453,7 +453,7 @@ export function deleteAssetFromEditor(
       .map(chara => chara.entity)
       // add info about entity and its location
       .map(entityKey => ({
-        entityKey, 
+        entityKey,
         entity: contentState.getEntity(entityKey),
         blockMapId
       }))
@@ -493,8 +493,8 @@ export function deleteAssetFromEditor(
  * @param {func} callback - callbacks the updated editor state purged from targeted entity
  */
 export function deleteNoteFromEditor(
-  editorState, 
-  id, 
+  editorState,
+  id,
   callback
 ) {
   const contentState = editorState.getCurrentContent();
@@ -509,7 +509,7 @@ export function deleteNoteFromEditor(
       .map(chara => chara.entity)
       // add info about entity and its location
       .map(entityKey => ({
-        entityKey, 
+        entityKey,
         entity: contentState.getEntity(entityKey),
         blockMapId
       }))
@@ -543,9 +543,9 @@ export function deleteNoteFromEditor(
 /**
  * Updates notes number and delete notes which are not any more pointed in the given editor state
  * @param {ImmutableRecord} editorState - the editor state before change
- * @param {object} notes - a map of the notes 
+ * @param {object} notes - a map of the notes
  * with shape {noteId: string, order: number, editorState: ImmutableRecord}
- * @return {obj} {newNotes, notesOrder} - a map of the 
+ * @return {obj} {newNotes, notesOrder} - a map of the
  * updated notes and the notes order infered from the editor
  */
 export const updateNotesFromEditor = (editorState, inputNotes) => {
@@ -559,7 +559,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
     block.findEntityRanges((character) => {
       const entityKey = character.getEntity();
       if (entityKey) {
-        entities.push(contentState.getEntity(entityKey));        
+        entities.push(contentState.getEntity(entityKey));
       }
     });
   });
@@ -581,7 +581,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   });
   const notesToDelete = Object.keys(notes)
     .filter((noteId) => {
-      const entity = noteEntities.find((noteEntity, index) => 
+      const entity = noteEntities.find((noteEntity, index) =>
         noteEntity.getData().noteId === noteId);
       return entity === undefined;
     });
@@ -591,7 +591,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   });
 
   return {
-    newNotes: notes, 
+    newNotes: notes,
     notesOrder
   };
 };
@@ -599,9 +599,9 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
 /**
  * Delete assets which are not linked to an entity in any of a collection of editorStates
  * @param {array<ImmutableRecord>} editorStates - the editor states to look into
- * the array of editor states to parse (e.g. main editor state 
+ * the array of editor states to parse (e.g. main editor state
  * + notes editor states)
- * @param {object} notes - a map of the notes with shape 
+ * @param {object} notes - a map of the notes with shape
  * {noteId: string, order: number, editorState: ImmutableRecord}
  * @return {obj} newAssets - a map of the assets actually in use
  */
@@ -616,20 +616,20 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
       block.findEntityRanges((character) => {
         const entityKey = character.getEntity();
         if (entityKey) {
-          entities.push(contentState.getEntity(entityKey));        
+          entities.push(contentState.getEntity(entityKey));
         }
       });
     });
   });
   const assetsEntities = entities
-    .filter(thatEntity => 
+    .filter(thatEntity =>
       thatEntity.getType() === INLINE_ASSET ||
         thatEntity.getType() === BLOCK_ASSET);
 
   // filter unused assets
   return Object.keys(assets)
     .filter((assetId) => {
-      const entity = assetsEntities.find((assetEntity, index) => 
+      const entity = assetsEntities.find((assetEntity, index) =>
         assetEntity.getData().asset.id === assetId);
       return entity !== undefined;
     })
@@ -724,13 +724,13 @@ export const getSelectedBlockElement = (range) => {
   let node = range.startContainer;
   do {
     if (
-      node.getAttribute && 
+      node.getAttribute &&
       (
         node.getAttribute('data-block') == 'true' ||
         node.getAttribute('data-contents') == 'true'
       )
-    ) { 
-      return node; 
+    ) {
+      return node;
     }
     node = node.parentNode;
   } while (node != null);
@@ -810,7 +810,7 @@ export function checkReturnForState(editorState, ev) {
 
 /**
  * This class allows to produce event emitters
- * that will be used to dispatch assets changes 
+ * that will be used to dispatch assets changes
  * and notes changes through context
  */
 export class Emitter {
