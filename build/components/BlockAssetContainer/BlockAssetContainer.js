@@ -47,7 +47,8 @@ var BlockAssetContainer = function (_Component) {
     _this.render = function () {
       var _this$state = _this.state,
           asset = _this$state.asset,
-          renderingMode = _this$state.renderingMode;
+          renderingMode = _this$state.renderingMode,
+          customContext = _this$state.customContext;
 
       if (!asset) {
         return null;
@@ -101,6 +102,7 @@ var BlockAssetContainer = function (_Component) {
           {
             assetId: assetId,
             asset: asset,
+            customContext: customContext,
             onAssetChange: onAssetChange,
             onAssetFocus: onAssetFocus,
             onAssetBlur: onAssetBlur,
@@ -134,6 +136,14 @@ var BlockAssetContainer = function (_Component) {
         // }
       });
 
+      this.unsubscribeToCustomContext = this.context.emitter.subscribeToCustomContext(function (customContext) {
+        if (customContext !== _this2.state.customContext) {
+          _this2.setState({
+            customContext: customContext
+          });
+        }
+      });
+
       this.unsubscribeToRenderingMode = this.context.emitter.subscribeToRenderingMode(function (renderingMode) {
         // if (this.state.renderingMode !== renderingMode) {
         _this2.setState({
@@ -147,6 +157,7 @@ var BlockAssetContainer = function (_Component) {
     value: function componentWillUnmount() {
       this.unsubscribe();
       this.unsubscribeToRenderingMode();
+      this.unsubscribeToCustomContext();
     }
   }]);
   return BlockAssetContainer;

@@ -49,6 +49,15 @@ class BlockAssetContainer extends Component {
       // }
     });
 
+    this.unsubscribeToCustomContext = this.context
+      .emitter.subscribeToCustomContext((customContext) => {
+        if (customContext !== this.state.customContext) {
+          this.setState({
+            customContext
+          });
+        }
+      });
+
     this.unsubscribeToRenderingMode = this.context.emitter
       .subscribeToRenderingMode((renderingMode) => {
         // if (this.state.renderingMode !== renderingMode) {
@@ -62,13 +71,15 @@ class BlockAssetContainer extends Component {
   componentWillUnmount() {
     this.unsubscribe();
     this.unsubscribeToRenderingMode();
+    this.unsubscribeToCustomContext();
   }
 
   render = () => {
 
     const {
       asset,
-      renderingMode
+      renderingMode,
+      customContext
     } = this.state;
     if (!asset) {
       return null;
@@ -120,6 +131,7 @@ class BlockAssetContainer extends Component {
         <RealAssetComponent
           assetId={assetId}
           asset={asset}
+          customContext={customContext}
           onAssetChange={onAssetChange}
           onAssetFocus={onAssetFocus}
           onAssetBlur={onAssetBlur}
