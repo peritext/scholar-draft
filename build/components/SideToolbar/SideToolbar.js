@@ -82,14 +82,24 @@ var SideToolbar = function (_Component) {
           var rightBoundary = containerDimensions.x + containerDimensions.width;
           var bottomBoundary = containerDimensions.y + containerDimensions.height;
 
-          if (rightExtremity > rightBoundary && bottomExtremity > bottomBoundary || rightExtremity > rightBoundary && bottomExtremity + assetButtonHeight * 2 + height > bottomBoundary) {
+          if (
+          // (
+          rightExtremity > rightBoundary && bottomExtremity > bottomBoundary
+          // )
+          // ||
+          // (
+          //   rightExtremity > rightBoundary 
+          //   && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
+          // )
+          ) {
+              assetChoiceStyle = {
+                left: -(width + assetButtonWidth),
+                top: -(assetButtonHeight + height)
+              };
+            } else if (rightExtremity > rightBoundary) {
             assetChoiceStyle = {
               left: -(width + assetButtonWidth),
-              top: -(assetButtonHeight + height)
-            };
-          } else if (rightExtremity > rightBoundary) {
-            assetChoiceStyle = {
-              left: -(width + assetButtonWidth)
+              top: assetButtonWidth
             };
           } else if (bottomExtremity > bottomBoundary) {
             assetChoiceStyle = {

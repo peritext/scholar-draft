@@ -83,15 +83,15 @@ export default class SideToolbar extends Component {
         const bottomBoundary = containerDimensions.y + containerDimensions.height;
 
         if (
-          (
-            rightExtremity > rightBoundary 
-            && bottomExtremity > bottomBoundary
-          )
-          ||
-          (
-            rightExtremity > rightBoundary 
-            && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
-          )
+          // (
+          rightExtremity > rightBoundary 
+          && bottomExtremity > bottomBoundary
+          // )
+          // ||
+          // (
+          //   rightExtremity > rightBoundary 
+          //   && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
+          // )
         ) {
           assetChoiceStyle = {
             left: -(width + assetButtonWidth),
@@ -100,6 +100,7 @@ export default class SideToolbar extends Component {
         } else if (rightExtremity > rightBoundary) {
           assetChoiceStyle = {
             left: -(width + assetButtonWidth),
+            top: assetButtonWidth,
           };
         } else if (bottomExtremity > bottomBoundary) {
           assetChoiceStyle = {
