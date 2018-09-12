@@ -71,54 +71,65 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // modifiers helping to modify editorState
 var getOffsetRelativeToContainer = exports.getOffsetRelativeToContainer = function getOffsetRelativeToContainer(el, stopClassName) {
-  var element = el;
-  var offset = {
-    offsetX: 0,
-    offsetY: 0
-  };
-  if (element) {
-    var _element = element,
-        parentNode = _element.parentNode;
-
-    offset = {
-      offsetX: el.offsetLeft || 0,
-      offsetY: el.offsetTop || 0
+  try {
+    var element = el;
+    var offset = {
+      offsetX: 0,
+      offsetY: 0
     };
-    while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
-      offset.offsetX += parentNode.offsetLeft;
-      offset.offsetY += parentNode.offsetTop;
-      element = parentNode;
-      var newParentNode = element.parentNode.parentNode;
+    if (element) {
+      var _element = element,
+          parentNode = _element.parentNode;
 
-      parentNode = newParentNode;
+      offset = {
+        offsetX: el.offsetLeft || 0,
+        offsetY: el.offsetTop || 0
+      };
+      while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+        offset.offsetX += parentNode.offsetLeft;
+        offset.offsetY += parentNode.offsetTop;
+        element = parentNode;
+        var newParentNode = element.parentNode.parentNode;
+
+        parentNode = newParentNode;
+      }
     }
+    return offset;
+  } catch (error) {
+    return {
+      offsetX: 0,
+      offsetY: 0
+    };
   }
-  return offset;
 }; /**
     * This module exports a series of draft-js utils
     * to manipulate scholar-draft state upstream to component's implementation
     * @module scholar-draft/utils
     */
 var getEventTextRange = exports.getEventTextRange = function getEventTextRange(pageX, pageY) {
-  var range = void 0;
-  var textNode = void 0;
-  var offset = void 0;
+  try {
+    var range = void 0;
+    var textNode = void 0;
+    var offset = void 0;
 
-  if (document.caretPositionFromPoint) {
-    // standard
-    range = document.caretPositionFromPoint(pageX, pageY);
-    textNode = range.offsetNode;
-    var _range = range,
-        rangeOffset = _range.offset;
+    if (document.caretPositionFromPoint) {
+      // standard
+      range = document.caretPositionFromPoint(pageX, pageY);
+      textNode = range.offsetNode;
+      var _range = range,
+          rangeOffset = _range.offset;
 
-    offset = rangeOffset;
-  } else if (document.caretRangeFromPoint) {
-    // WebKit
-    range = document.caretRangeFromPoint(pageX, pageY);
-    textNode = range.startContainer;
-    offset = range.startOffset;
+      offset = rangeOffset;
+    } else if (document.caretRangeFromPoint) {
+      // WebKit
+      range = document.caretRangeFromPoint(pageX, pageY);
+      textNode = range.startContainer;
+      offset = range.startOffset;
+    }
+    return { range: range, textNode: textNode, offset: offset };
+  } catch (error) {
+    return undefined;
   }
-  return { range: range, textNode: textNode, offset: offset };
 };
 
 /**
@@ -671,13 +682,17 @@ function insertFragment(editorState, fragment) {
  * @return {object} node
  */
 var getSelectedBlockElement = exports.getSelectedBlockElement = function getSelectedBlockElement(range) {
-  var node = range.startContainer;
-  do {
-    if (node.getAttribute && (node.getAttribute('data-block') == 'true' || node.getAttribute('data-contents') == 'true')) {
-      return node;
-    }
-    node = node.parentNode;
-  } while (node != null);
+  try {
+    var node = range.startContainer;
+    do {
+      if (node.getAttribute && (node.getAttribute('data-block') == 'true' || node.getAttribute('data-contents') == 'true')) {
+        return node;
+      }
+      node = node.parentNode;
+    } while (node != null);
+  } catch (error) {
+    return null;
+  }
   return null;
 };
 
@@ -698,13 +713,17 @@ var getSelectionRange = exports.getSelectionRange = function getSelectionRange()
  * @return {boolean} isParent - whether yes or no
  */
 var isParentOf = exports.isParentOf = function isParentOf(inputEle, maybeParent) {
-  var ele = inputEle;
-  while (ele.parentNode != null && ele.parentNode != document.body) {
-    /* eslint eqeqeq:0 */
-    if (ele.parentNode === maybeParent) return true;
-    ele = ele.parentNode;
+  try {
+    var ele = inputEle;
+    while (ele.parentNode != null && ele.parentNode != document.body) {
+      /* eslint eqeqeq:0 */
+      if (ele.parentNode === maybeParent) return true;
+      ele = ele.parentNode;
+    }
+    return false;
+  } catch (error) {
+    return false;
   }
-  return false;
 };
 
 /**

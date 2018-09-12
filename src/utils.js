@@ -30,45 +30,57 @@ import leaveList from './modifiers/leaveList';
 import insertText from './modifiers/insertText';
 
 export const getOffsetRelativeToContainer = (el, stopClassName) => {
-  let element = el;
-  let offset = {
-    offsetX: 0,
-    offsetY: 0
-  };
-  if (element) {
-    let { parentNode } = element;
-    offset = {
-      offsetX: el.offsetLeft || 0,
-      offsetY: el.offsetTop || 0
+  try {
+    let element = el;
+    let offset = {
+      offsetX: 0,
+      offsetY: 0
     };
-    while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
-      offset.offsetX += parentNode.offsetLeft;
-      offset.offsetY += parentNode.offsetTop;
-      element = parentNode;
-      const { parentNode: newParentNode } = element.parentNode;
-      parentNode = newParentNode;
+    if (element) {
+      let { parentNode } = element;
+      offset = {
+        offsetX: el.offsetLeft || 0,
+        offsetY: el.offsetTop || 0
+      };
+      while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+        offset.offsetX += parentNode.offsetLeft;
+        offset.offsetY += parentNode.offsetTop;
+        element = parentNode;
+        const { parentNode: newParentNode } = element.parentNode;
+        parentNode = newParentNode;
+      }
     }
+    return offset;
+  } catch (error) {
+    return {
+      offsetX: 0,
+      offsetY: 0,
+    };
   }
-  return offset;
 };
 
 export const getEventTextRange = (pageX, pageY) => {
-  let range;
-  let textNode;
-  let offset;
+  try {
+    let range;
+    let textNode;
+    let offset;
 
-  if (document.caretPositionFromPoint) { // standard
-    range = document.caretPositionFromPoint(pageX, pageY);
-    textNode = range.offsetNode;
-    const { offset: rangeOffset } = range;
-    offset = rangeOffset;
+    if (document.caretPositionFromPoint) { // standard
+      range = document.caretPositionFromPoint(pageX, pageY);
+      textNode = range.offsetNode;
+      const { offset: rangeOffset } = range;
+      offset = rangeOffset;
 
-  } else if (document.caretRangeFromPoint) { // WebKit
-    range = document.caretRangeFromPoint(pageX, pageY);
-    textNode = range.startContainer;
-    offset = range.startOffset;
-  }
-  return { range, textNode, offset };
+    } else if (document.caretRangeFromPoint) { // WebKit
+      range = document.caretRangeFromPoint(pageX, pageY);
+      textNode = range.startContainer;
+      offset = range.startOffset;
+    }
+    return { range, textNode, offset };
+  } catch (error) {
+    return undefined;
+  } 
+    
 };
 
 /**
@@ -721,19 +733,23 @@ export function insertFragment(editorState, fragment) {
  * @return {object} node
  */
 export const getSelectedBlockElement = (range) => {
-  let node = range.startContainer;
-  do {
-    if (
-      node.getAttribute &&
-      (
-        node.getAttribute('data-block') == 'true' ||
-        node.getAttribute('data-contents') == 'true'
-      )
-    ) {
-      return node;
-    }
-    node = node.parentNode;
-  } while (node != null);
+  try {
+    let node = range.startContainer;
+    do {
+      if (
+        node.getAttribute &&
+        (
+          node.getAttribute('data-block') == 'true' ||
+          node.getAttribute('data-contents') == 'true'
+        )
+      ) {
+        return node;
+      }
+      node = node.parentNode;
+    } while (node != null);
+  } catch (error) {
+    return null;
+  }
   return null;
 };
 
@@ -754,12 +770,16 @@ export const getSelectionRange = () => {
  * @return {boolean} isParent - whether yes or no
  */
 export const isParentOf = (inputEle, maybeParent) => {
-  let ele = inputEle;
-  while (ele.parentNode != null && ele.parentNode != document.body) { /* eslint eqeqeq:0 */
-    if (ele.parentNode === maybeParent) return true;
-    ele = ele.parentNode;
+  try {
+    let ele = inputEle;
+    while (ele.parentNode != null && ele.parentNode != document.body) { /* eslint eqeqeq:0 */
+      if (ele.parentNode === maybeParent) return true;
+      ele = ele.parentNode;
+    }
+    return false;
+  } catch (error) {
+    return false;
   }
-  return false;
 };
 
 /**
