@@ -288,6 +288,7 @@ export default class BasicEditor extends Component {
         // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
       };
 
+
       if (this.state.lastClickCoordinates) {
         const {
           // clientX,
