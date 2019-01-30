@@ -1,7 +1,7 @@
 {
   "name": "scholar-draft",
   "version": "0.2.54",
-  "description": "draft editor handling footnotes editing and inline/block assets connected to upstream logic",
+  "description": "draft-js editor wrapper handling footnotes and inline/block assets connected to upstream logic",
   "main": "build/index.js",
   "scripts": {
     "autocommit-add": "git add build",
@@ -114,7 +114,9 @@
     ]
   },
   "peerDependencies": {
-    "immutable": "immutable^3.7.6"
+    "lodash": "^4.17.4",
+    "react": "^16.7.0-alpha",
+    "react-dom": "^16.7.0-alpha"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
@@ -160,17 +162,10 @@
     "@storybook/react": "3.3.13"
   },
   "dependencies": {
-    "async": "^2.4.0",
     "draft-js": "^0.10.5",
     "draft-js-checkable-list-item": "^3.0.4",
     "draft-js-simpledecorator": "^1.0.2",
-    "draftjs-utils": "^0.9.3",
-    "fbjs": "^0.8.12",
-    "lodash": "^4.17.4",
-    "prop-types": "^15.5.8",
-    "react": "^16.2.0",
     "react-custom-scrollbars": "^4.1.0",
-    "react-dom": "^16.2.0",
     "react-tooltip": "^3.3.0",
     "rebound": "0.0.15",
     "uuid": "^3.0.1"
