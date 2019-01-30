@@ -16,7 +16,7 @@ exports.getUsedAssets = getUsedAssets;
 exports.insertFragment = insertFragment;
 exports.checkCharacterForState = checkCharacterForState;
 exports.checkReturnForState = checkReturnForState;
-exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = exports.getEventTextRange = exports.getOffsetRelativeToContainer = void 0;
+exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.getAssetEntity = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = exports.getEventTextRange = exports.getOffsetRelativeToContainer = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -680,7 +680,10 @@ var getAssetEntity = function getAssetEntity(editorState, id) {
  */
 
 
-function getUnusedAssets(editorState, assets) {
+exports.getAssetEntity = getAssetEntity;
+
+function getUnusedAssets(editorState) {
+  var assets = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   return Object.keys(assets).filter(function (id) {
     return getAssetEntity(editorState, id) === undefined;
   });
@@ -693,7 +696,8 @@ function getUnusedAssets(editorState, assets) {
  */
 
 
-function getUsedAssets(editorState, assets) {
+function getUsedAssets(editorState) {
+  var assets = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   return Object.keys(assets).filter(function (id) {
     return getAssetEntity(editorState, id) !== undefined;
   });

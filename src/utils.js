@@ -683,7 +683,7 @@ export const updateAssetsFromEditors = ( editorStates, inputAssets ) => {
  * @param {string} id - the asset id
  * @return {ImmutableRecord} entity - the related draft-js entity
  */
-const getAssetEntity = ( editorState, id ) => {
+export const getAssetEntity = ( editorState, id ) => {
   let entity;
   let data;
   let assetEntity;
@@ -713,7 +713,7 @@ const getAssetEntity = ( editorState, id ) => {
  * @param {object} assets - a map of the assets to parse
  * @return {array} newAssets - array of unused assets
  */
-export function getUnusedAssets( editorState, assets ) {
+export function getUnusedAssets( editorState, assets = {} ) {
   return Object
     .keys( assets )
     .filter( ( id ) => getAssetEntity( editorState, id ) === undefined );
@@ -725,7 +725,7 @@ export function getUnusedAssets( editorState, assets ) {
  * @param {object} assets - a map of the assets to parse
  * @return {array} newAssets - array of used assets
  */
-export function getUsedAssets( editorState, assets ) {
+export function getUsedAssets( editorState, assets = {} ) {
   return Object
     .keys( assets )
     .filter( ( id ) => getAssetEntity( editorState, id ) !== undefined );
