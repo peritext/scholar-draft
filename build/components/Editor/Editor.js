@@ -527,21 +527,29 @@ function (_Component) {
 
 exports.default = Editor;
 (0, _defineProperty2.default)(Editor, "propTypes", {
+  /**
+   * EDITOR STATE
+   */
+  // draft-js immutable object representing the main editor state
   mainEditorState: _propTypes.default.object,
+  // map of immutable objects representing the notes editor state
   notes: _propTypes.default.object,
+  // array of ids for representing the order of notes
   notesOrder: _propTypes.default.array,
-  messages: _propTypes.default.shape({
-    addNote: _propTypes.default.string,
-    summonAsset: _propTypes.default.string,
-    cancel: _propTypes.default.string
-  }),
+  assetRequestPosition: _propTypes.default.object,
+  assetRequestContentId: _propTypes.default.string,
+  assetChoiceProps: _propTypes.default.object,
+  focusedEditorId: _propTypes.default.string,
+  // custom context object that will be passed to downstream entity decoration components
   customContext: _propTypes.default.object,
-  // className: PropTypes.string,
+  // list of objects possibly embeddable inside the editor
   assets: _propTypes.default.object,
-  editorClass: _propTypes.default.string,
+
+  /**
+   * CALLBACKS
+   */
   onEditorChange: _propTypes.default.func,
   onNoteAdd: _propTypes.default.func,
-  editorPlaceholder: _propTypes.default.string,
   onAssetChange: _propTypes.default.func,
   onAssetRequest: _propTypes.default.func,
   onAssetRequestCancel: _propTypes.default.func,
@@ -559,9 +567,20 @@ exports.default = Editor;
   onDragOver: _propTypes.default.func,
   onClick: _propTypes.default.func,
   onBlur: _propTypes.default.func,
-  assetRequestPosition: _propTypes.default.object,
-  assetRequestContentId: _propTypes.default.string,
-  assetChoiceProps: _propTypes.default.object,
+
+  /**
+   * CUSTOMIZATION
+   */
+  // (translated) messages to provide to the editor for displaying
+  messages: _propTypes.default.shape({
+    addNote: _propTypes.default.string,
+    summonAsset: _propTypes.default.string,
+    cancel: _propTypes.default.string
+  }),
+  // custom class for the editor
+  editorClass: _propTypes.default.string,
+  // editor placeholder text
+  editorPlaceholder: _propTypes.default.string,
   inlineAssetComponents: _propTypes.default.object,
   blockAssetComponents: _propTypes.default.object,
   AssetChoiceComponent: _propTypes.default.func,
@@ -572,12 +591,13 @@ exports.default = Editor;
   inlineEntities: _propTypes.default.array,
   iconMap: _propTypes.default.object,
   inlineButtons: _propTypes.default.array,
+  NoteContainerComponent: _propTypes.default.func,
+  ElementLayoutComponent: _propTypes.default.func,
+  // rendering mode to provide to entity decoration components
   renderingMode: _propTypes.default.string,
   keyBindingFn: _propTypes.default.func,
-  editorStyles: _propTypes.default.object,
-  focusedEditorId: _propTypes.default.string,
-  NoteContainerComponent: _propTypes.default.func,
-  ElementLayoutComponent: _propTypes.default.func
+  // custom inline styles
+  editorStyles: _propTypes.default.object
   /**
    * component contructor
    * @param {object} props - initializing props

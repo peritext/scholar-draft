@@ -41,27 +41,30 @@ DefaultElementLayout.propTypes = {
 export default class Editor extends Component {
 
   static propTypes = {
+
+    /**
+     * EDITOR STATE
+     */
+    // draft-js immutable object representing the main editor state
     mainEditorState: PropTypes.object,
+    // map of immutable objects representing the notes editor state
     notes: PropTypes.object,
+    // array of ids for representing the order of notes
     notesOrder: PropTypes.array,
-
-    messages: PropTypes.shape( {
-      addNote: PropTypes.string,
-      summonAsset: PropTypes.string,
-      cancel: PropTypes.string,
-    } ),
+    assetRequestPosition: PropTypes.object,
+    assetRequestContentId: PropTypes.string,
+    assetChoiceProps: PropTypes.object,
+    focusedEditorId: PropTypes.string,
+    // custom context object that will be passed to downstream entity decoration components
     customContext: PropTypes.object,
-
-    // className: PropTypes.string,
-
+    // list of objects possibly embeddable inside the editor
     assets: PropTypes.object,
 
-    editorClass: PropTypes.string,
-
+    /**
+     * CALLBACKS
+     */
     onEditorChange: PropTypes.func,
     onNoteAdd: PropTypes.func,
-    editorPlaceholder: PropTypes.string,
-
     onAssetChange: PropTypes.func,
     onAssetRequest: PropTypes.func,
     onAssetRequestCancel: PropTypes.func,
@@ -71,7 +74,6 @@ export default class Editor extends Component {
     onAssetMouseOut: PropTypes.func,
     onAssetBlur: PropTypes.func,
     handlePastedText: PropTypes.func,
-
     onNotePointerMouseOver: PropTypes.func,
     onNotePointerMouseOut: PropTypes.func,
     onNotePointerMouseClick: PropTypes.func,
@@ -81,10 +83,19 @@ export default class Editor extends Component {
     onClick: PropTypes.func,
     onBlur: PropTypes.func,
 
-    assetRequestPosition: PropTypes.object,
-    assetRequestContentId: PropTypes.string,
-    assetChoiceProps: PropTypes.object,
-
+    /**
+     * CUSTOMIZATION
+     */
+    // (translated) messages to provide to the editor for displaying
+    messages: PropTypes.shape( {
+      addNote: PropTypes.string,
+      summonAsset: PropTypes.string,
+      cancel: PropTypes.string,
+    } ),
+    // custom class for the editor
+    editorClass: PropTypes.string,
+    // editor placeholder text
+    editorPlaceholder: PropTypes.string,
     inlineAssetComponents: PropTypes.object,
     blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
@@ -95,15 +106,16 @@ export default class Editor extends Component {
     inlineEntities: PropTypes.array,
     iconMap: PropTypes.object,
     inlineButtons: PropTypes.array,
-
+    NoteContainerComponent: PropTypes.func,
+    ElementLayoutComponent: PropTypes.func,
+    
+    // rendering mode to provide to entity decoration components
     renderingMode: PropTypes.string,
 
     keyBindingFn: PropTypes.func,
-
+    
+    // custom inline styles
     editorStyles: PropTypes.object,
-    focusedEditorId: PropTypes.string,
-    NoteContainerComponent: PropTypes.func,
-    ElementLayoutComponent: PropTypes.func,
   }
 
   /**
