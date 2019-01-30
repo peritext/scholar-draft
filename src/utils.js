@@ -11,15 +11,13 @@ import {
   SelectionState
 } from 'draft-js';
 
-import {v4 as generateId} from 'uuid';
-
+import { v4 as generateId } from 'uuid';
 
 import {
   NOTE_POINTER,
   INLINE_ASSET,
   BLOCK_ASSET
 } from './constants';
-
 
 // modifiers helping to modify editorState
 import handleBlockType from './modifiers/handleBlockType';
@@ -29,30 +27,30 @@ import insertEmptyBlock from './modifiers/insertEmptyBlock';
 import leaveList from './modifiers/leaveList';
 import insertText from './modifiers/insertText';
 
-export const getOffsetRelativeToContainer = (el, stopClassName) => {
+export const getOffsetRelativeToContainer = ( el, stopClassName ) => {
   try {
     let element = el;
     let offset = {
       offsetX: 0,
       offsetY: 0
     };
-    if (element) {
-      let {parentNode} = element;
+    if ( element ) {
+      let { parentNode } = element;
       offset = {
         offsetX: el.offsetLeft || 0,
         offsetY: el.offsetTop || 0
       };
-      while (parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf(stopClassName) === -1) {
+      while ( parentNode && parentNode.tagName !== 'BODY' && parentNode.className.indexOf( stopClassName ) === -1 ) {
         offset.offsetX += parentNode.offsetLeft;
         offset.offsetY += parentNode.offsetTop;
         element = parentNode;
-        const {parentNode: newParentNode} = element.parentNode;
+        const { parentNode: newParentNode } = element.parentNode;
         parentNode = newParentNode;
       }
     }
     return offset;
   }
-  catch (error) {
+  catch ( error ) {
     return {
       offsetX: 0,
       offsetY: 0,
@@ -60,27 +58,27 @@ export const getOffsetRelativeToContainer = (el, stopClassName) => {
   }
 };
 
-export const getEventTextRange = (pageX, pageY) => {
+export const getEventTextRange = ( pageX, pageY ) => {
   try {
     let range;
     let textNode;
     let offset;
 
-    if (document.caretPositionFromPoint) { // standard
-      range = document.caretPositionFromPoint(pageX, pageY);
+    if ( document.caretPositionFromPoint ) { // standard
+      range = document.caretPositionFromPoint( pageX, pageY );
       textNode = range.offsetNode;
-      const {offset: rangeOffset} = range;
+      const { offset: rangeOffset } = range;
       offset = rangeOffset;
 
     }
-    else if (document.caretRangeFromPoint) { // WebKit
-      range = document.caretRangeFromPoint(pageX, pageY);
+    else if ( document.caretRangeFromPoint ) { // WebKit
+      range = document.caretRangeFromPoint( pageX, pageY );
       textNode = range.startContainer;
       offset = range.startOffset;
     }
-    return {range, textNode, offset};
+    return { range, textNode, offset };
   }
-  catch (error) {
+  catch ( error ) {
     return undefined;
   } 
     
@@ -102,13 +100,15 @@ export function insertAssetInEditor(
   const activeSelection = editorState.getSelection();
   const inputSelection = selection || activeSelection;
 
-  // infer the type of insertion (BLOCK or INLINE)
-  // from selection :
-  // selection in empty block --> block insertion
-  // else --> inline insertion
-  // (note : could be provided as a param, but then would require a more complex behavior)
+  /*
+   * infer the type of insertion (BLOCK or INLINE)
+   * from selection :
+   * selection in empty block --> block insertion
+   * else --> inline insertion
+   * (note : could be provided as a param, but then would require a more complex behavior)
+   */
   const isInEmptyBlock = currentContent
-    .getBlockForKey(inputSelection.getStartKey())
+    .getBlockForKey( inputSelection.getStartKey() )
     .getText()
     .trim().length === 0;
   const insertionType = isInEmptyBlock ? BLOCK_ASSET : INLINE_ASSET;
@@ -125,19 +125,19 @@ export function insertAssetInEditor(
   const newEntityKey = newContentState.getLastCreatedEntityKey();
 
   // define a new selection
-  const thatSelection = activeSelection.merge({
+  const thatSelection = activeSelection.merge( {
     anchorOffset: inputSelection.getStartOffset(),
     focusOffset: inputSelection.getEndOffset(),
     focusKey: inputSelection.getFocusKey(),
     anchorKey: inputSelection.getAnchorKey(),
-  });
+  } );
   // add the given selection to a new editor state with appropriate content state and selection
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState),
+    EditorState.createWithContent( newContentState ),
     thatSelection
   );
   // insert block asset instruction
-  if (insertionType === BLOCK_ASSET) {
+  if ( insertionType === BLOCK_ASSET ) {
     // create a new atomic block with asset's entity
     updatedEditor = AtomicBlockUtils.insertAtomicBlock(
       updatedEditor,
@@ -148,28 +148,31 @@ export function insertAssetInEditor(
     const blockMap = newContent.getBlockMap().toJS();
 
     // now we update the selection to be on the new block
-    const blockE = Object.keys(blockMap).map(blockId => blockMap[blockId])
-      .find((block) => {
-        if (block.type === 'atomic') {
-          return block.characterList.find(char => char.entity && char.entity === newEntityKey);
+    const blockE = Object.keys( blockMap ).map( ( blockId ) => blockMap[blockId] )
+      .find( ( block ) => {
+        if ( block.type === 'atomic' ) {
+          return block.characterList.find( ( char ) => char.entity && char.entity === newEntityKey );
         }
         return undefined;
-      });
-    const block = newContent.getBlockAfter(blockE.key);
-    const finalSelection = SelectionState.createEmpty(block.getKey());
-    updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
+      } );
+    const block = newContent.getBlockAfter( blockE.key );
+    const finalSelection = SelectionState.createEmpty( block.getKey() );
+    updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
   // insert inline asset instruction
   }
-  else if (insertionType === INLINE_ASSET) {
+  else if ( insertionType === INLINE_ASSET ) {
     // determine the range of the entity
     const anchorKey = thatSelection.getAnchorKey();
-    const currentContentBlock = currentContent.getBlockForKey(anchorKey);
+    const currentContentBlock = currentContent.getBlockForKey( anchorKey );
     const start = thatSelection.getStartOffset();
     const end = thatSelection.getEndOffset();
-    let selectedText = currentContentBlock.getText().slice(start, end);
-    // now we apply the entity to a portion of content
-    // case 1 : asset annotates some existing selected text
-    if (selectedText.length > 0) {
+    let selectedText = currentContentBlock.getText().slice( start, end );
+
+    /*
+     * now we apply the entity to a portion of content
+     * case 1 : asset annotates some existing selected text
+     */
+    if ( selectedText.length > 0 ) {
       // --> we apply the entity to that text
       newContentState = Modifier.applyEntity(
         currentContent,
@@ -190,10 +193,10 @@ export function insertAssetInEditor(
       );
     }
     // now we add a whitespace character after the new entity
-    let endSelection = thatSelection.merge({
+    let endSelection = thatSelection.merge( {
       anchorOffset: thatSelection.getEndOffset() + selectedText.length,
       focusOffset: thatSelection.getEndOffset() + selectedText.length,
-    });
+    } );
     newContentState = Modifier.replaceText(
       newContentState,
       endSelection,
@@ -202,14 +205,14 @@ export function insertAssetInEditor(
       null
     );
     // then we put the selection at end
-    endSelection = endSelection.merge({
+    endSelection = endSelection.merge( {
       anchorOffset: endSelection.getEndOffset() + 1,
       focusOffset: endSelection.getEndOffset() + 1,
-    });
+    } );
     // finally, apply new content state ...
-    updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
+    updatedEditor = EditorState.push( editorState, newContentState, 'apply-entity' );
     // ... and put selection after newly created content
-    updatedEditor = EditorState.forceSelection(updatedEditor, endSelection);
+    updatedEditor = EditorState.forceSelection( updatedEditor, endSelection );
   }
   return updatedEditor;
 }
@@ -240,22 +243,22 @@ export function insertInlineAssetInEditor(
   );
 
   const newEntityKey = newContentState.getLastCreatedEntityKey();
-  const thatSelection = activeSelection.merge({
+  const thatSelection = activeSelection.merge( {
     anchorOffset: inputSelection.getStartOffset(),
     focusOffset: inputSelection.getEndOffset(),
     focusKey: inputSelection.getFocusKey(),
     anchorKey: inputSelection.getAnchorKey(),
-  });
+  } );
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState),
+    EditorState.createWithContent( newContentState ),
     thatSelection
   );
   const anchorKey = thatSelection.getAnchorKey();
-  const currentContentBlock = currentContent.getBlockForKey(anchorKey);
+  const currentContentBlock = currentContent.getBlockForKey( anchorKey );
   const start = thatSelection.getStartOffset();
   const end = thatSelection.getEndOffset();
-  let selectedText = currentContentBlock.getText().slice(start, end);
-  if (selectedText.length > 0) {
+  let selectedText = currentContentBlock.getText().slice( start, end );
+  if ( selectedText.length > 0 ) {
     newContentState = Modifier.applyEntity(
       currentContent,
       thatSelection,
@@ -274,19 +277,22 @@ export function insertInlineAssetInEditor(
       newEntityKey
     );
   }
-  const endSelection = thatSelection.merge({
+  const endSelection = thatSelection.merge( {
     anchorOffset: thatSelection.getEndOffset(),
     focusOffset: thatSelection.getEndOffset(),
-  });
-  // newContentState = Modifier.replaceText(
-  //   newContentState,
-  //   endSelection,
-  //   ' ',
-  //   null,
-  //   null
-  // );
-  updatedEditor = EditorState.push(editorState, newContentState, 'apply-entity');
-  updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
+  } );
+
+  /*
+   * newContentState = Modifier.replaceText(
+   *   newContentState,
+   *   endSelection,
+   *   ' ',
+   *   null,
+   *   null
+   * );
+   */
+  updatedEditor = EditorState.push( editorState, newContentState, 'apply-entity' );
+  updatedEditor = EditorState.acceptSelection( updatedEditor, endSelection );
   return updatedEditor;
 }
 
@@ -309,12 +315,12 @@ export function insertBlockAssetInEditor(
 
   let selectionInEmptyBlock;
   // let selectionInAtomic;
-  if (inputSelection.isCollapsed()) {
+  if ( inputSelection.isCollapsed() ) {
     const blockId = inputSelection.getAnchorKey();
-    const block = editorState.getCurrentContent().getBlockForKey(blockId);
+    const block = editorState.getCurrentContent().getBlockForKey( blockId );
     const text = block.getText();
     const type = block.getType();
-    if (text.trim().length === 0 && type !== 'atomic') {
+    if ( text.trim().length === 0 && type !== 'atomic' ) {
       selectionInEmptyBlock = blockId;
     } /* else if (type === 'atomic') {
       selectionInAtomic = true;
@@ -331,15 +337,15 @@ export function insertBlockAssetInEditor(
   );
 
   const newEntityKey = newContentState.getLastCreatedEntityKey();
-  const thatSelection = activeSelection.merge({
+  const thatSelection = activeSelection.merge( {
     anchorOffset: inputSelection.getStartOffset(),
     focusOffset: inputSelection.getEndOffset(),
     focusKey: inputSelection.getFocusKey(),
     anchorKey: inputSelection.getAnchorKey(),
-  });
+  } );
 
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState),
+    EditorState.createWithContent( newContentState ),
     thatSelection
   );
 
@@ -348,36 +354,37 @@ export function insertBlockAssetInEditor(
     newEntityKey,
     ' '
   );
-  if (selectionInEmptyBlock) {
+  if ( selectionInEmptyBlock ) {
     updatedEditor = EditorState.acceptSelection(
-      EditorState.createWithContent(ContentState
-        .createFromBlockArray(/* eslint array-callback-return : 0 */
-          updatedEditor.getCurrentContent().getBlocksAsArray().filter((block, blockIndex) => {
+      EditorState.createWithContent( ContentState
+        .createFromBlockArray( /* eslint array-callback-return : 0 */
+          updatedEditor.getCurrentContent().getBlocksAsArray().filter( ( block, blockIndex ) => {
             const key = block.getKey();
-            if (blockIndex === 0 || key !== selectionInEmptyBlock) {
+            if ( blockIndex === 0 || key !== selectionInEmptyBlock ) {
               return true;
             }
-          }),
+          } ),
           updatedEditor.getCurrentContent().getBlockMap()
-        )),
+        ) ),
       thatSelection
     );
   }
+
   /**
    * UPDATE SELECTION
    */
   const newContent = updatedEditor.getCurrentContent();
   const blockMap = newContent.getBlockMap().toJS();
-  const blockE = Object.keys(blockMap).map(blockId => blockMap[blockId])
-    .find((block) => {
-      if (block.type === 'atomic') {
-        return block.characterList.find(char => char.entity && char.entity === newEntityKey);
+  const blockE = Object.keys( blockMap ).map( ( blockId ) => blockMap[blockId] )
+    .find( ( block ) => {
+      if ( block.type === 'atomic' ) {
+        return block.characterList.find( ( char ) => char.entity && char.entity === newEntityKey );
       }
       return undefined;
-    });
-  const block = newContent.getBlockAfter(blockE.key);
-  const finalSelection = SelectionState.createEmpty(block.getKey());
-  updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
+    } );
+  const block = newContent.getBlockAfter( blockE.key );
+  const finalSelection = SelectionState.createEmpty( block.getKey() );
+  updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
 
   return updatedEditor;
 }
@@ -398,19 +405,19 @@ export function insertNoteInEditor(
   let newContentState = currentContent.createEntity(
     NOTE_POINTER,
     'IMMUTABLE',
-    {noteId}
+    { noteId }
   );
   const newEntityKey = newContentState.getLastCreatedEntityKey();
   const activeSelection = editorState.getSelection();
   // // retaining only the end of selection
-  const thatSelection = activeSelection.merge({
+  const thatSelection = activeSelection.merge( {
     anchorOffset: activeSelection.getEndOffset(),
     focusOffset: activeSelection.getEndOffset(),
     focusKey: activeSelection.getAnchorKey(),
     anchorKey: activeSelection.getAnchorKey(),
-  });
+  } );
   let updatedEditor = EditorState.acceptSelection(
-    EditorState.createWithContent(newContentState),
+    EditorState.createWithContent( newContentState ),
     thatSelection
   );
 
@@ -425,10 +432,10 @@ export function insertNoteInEditor(
   );
   const anchorOffset = thatSelection.getEndOffset() + selectedText.length;
   const focusOffset = thatSelection.getEndOffset() + selectedText.length;
-  let endSelection = thatSelection.merge({
+  let endSelection = thatSelection.merge( {
     anchorOffset,
     focusOffset,
-  });
+  } );
   newContentState = Modifier.replaceText(
     newContentState,
     endSelection,
@@ -436,13 +443,13 @@ export function insertNoteInEditor(
     null,
     null
   );
-  endSelection = thatSelection.merge({
+  endSelection = thatSelection.merge( {
     anchorOffset: anchorOffset + 1,
     focusOffset: focusOffset + 1,
-  });
-  newContentState = Modifier.applyEntity(newContentState, endSelection, newEntityKey);
-  updatedEditor = EditorState.push(editorState, newContentState, 'edit-entity');
-  updatedEditor = EditorState.acceptSelection(updatedEditor, endSelection);
+  } );
+  newContentState = Modifier.applyEntity( newContentState, endSelection, newEntityKey );
+  updatedEditor = EditorState.push( editorState, newContentState, 'edit-entity' );
+  updatedEditor = EditorState.acceptSelection( updatedEditor, endSelection );
   return updatedEditor;
 }
 
@@ -460,50 +467,55 @@ export function deleteAssetFromEditor(
   // todo : try to optimize this with draftjs-utils
   const contentState = editorState.getCurrentContent();
   const blockMap = contentState.getBlockMap().toJS();
-  const entities = Object.keys(blockMap)
-  // iterate through blocks
-  // todo : use getEntitiesRange ?
-    .map(blockMapId => blockMap[blockMapId]
+  const entities = Object.keys( blockMap )
+
+  /*
+   * iterate through blocks
+   * todo : use getEntitiesRange ?
+   */
+    .map( ( blockMapId ) => blockMap[blockMapId]
       .characterList
       // find characters attached to an entity
-      .filter(chara => chara.entity !== null)
+      .filter( ( chara ) => chara.entity !== null )
       // keep entities only
-      .map(chara => chara.entity)
+      .map( ( chara ) => chara.entity )
       // add info about entity and its location
-      .map(entityKey => ({
+      .map( ( entityKey ) => ( {
         entityKey,
-        entity: contentState.getEntity(entityKey),
+        entity: contentState.getEntity( entityKey ),
         blockMapId
-      }))
+      } ) )
       // find relevant entity (corresponding to the asset to delete)
-      .find((entity) => {
+      .find( ( entity ) => {
         const data = entity.entity.getData();
         return data.asset && data.asset.id === id;
-      })).filter(data => data !== undefined);
-  if (entities.length) {
+      } ) ).filter( ( data ) => data !== undefined );
+  if ( entities.length ) {
     const entityInfos = entities[0];
-    return contentState.getBlockForKey(entityInfos.blockMapId).findEntityRanges(
-      characterMetadata => characterMetadata.entity === entityInfos.entityKey,
-      (start, end) => {
-        const selectionToDelete = SelectionState.createEmpty(entityInfos.blockMapId).merge({
+    return contentState.getBlockForKey( entityInfos.blockMapId ).findEntityRanges(
+      ( characterMetadata ) => characterMetadata.entity === entityInfos.entityKey,
+      ( start, end ) => {
+        const selectionToDelete = SelectionState.createEmpty( entityInfos.blockMapId ).merge( {
           anchorOffset: start,
           focusOffset: end
-        });
+        } );
         const newContentState = Modifier.removeRange(
           contentState,
           selectionToDelete,
         );
-        const newEditor = EditorState.push(editorState, newContentState, 'replace-text');
-        return callback(newEditor);
+        const newEditor = EditorState.push( editorState, newContentState, 'replace-text' );
+        return callback( newEditor );
       }
     );
 
   }
-  return callback(editorState);
+  return callback( editorState );
 }
 
-// todo : delete that function which seems to be a duplicate
-// of deleteAssetFromEditor
+/*
+ * todo : delete that function which seems to be a duplicate
+ * of deleteAssetFromEditor
+ */
 /**
  * Delete an asset from the editor, given its id only
  * @param {ImmutableRecord} editorState - the editor state before change
@@ -517,45 +529,45 @@ export function deleteNoteFromEditor(
 ) {
   const contentState = editorState.getCurrentContent();
   const blockMap = contentState.getBlockMap().toJS();
-  const entities = Object.keys(blockMap)
+  const entities = Object.keys( blockMap )
   // iterate through blocks
-    .map(blockMapId => blockMap[blockMapId]
+    .map( ( blockMapId ) => blockMap[blockMapId]
       .characterList
       // find characters attached to an entity
-      .filter(chara => chara.entity !== null)
+      .filter( ( chara ) => chara.entity !== null )
       // keep entities only
-      .map(chara => chara.entity)
+      .map( ( chara ) => chara.entity )
       // add info about entity and its location
-      .map(entityKey => ({
+      .map( ( entityKey ) => ( {
         entityKey,
-        entity: contentState.getEntity(entityKey),
+        entity: contentState.getEntity( entityKey ),
         blockMapId
-      }))
+      } ) )
       // find relevant entity (corresponding to the asset to delete)
-      .find((entity) => {
+      .find( ( entity ) => {
         const data = entity.entity.getData();
         return data.noteId === id;
-      })).filter(data => data !== undefined);
-  if (entities.length) {
+      } ) ).filter( ( data ) => data !== undefined );
+  if ( entities.length ) {
     const entityInfos = entities[0];
-    return contentState.getBlockForKey(entityInfos.blockMapId).findEntityRanges(
-      characterMetadata => characterMetadata.entity === entityInfos.entityKey,
-      (start, end) => {
-        const selectionToDelete = SelectionState.createEmpty(entityInfos.blockMapId).merge({
+    return contentState.getBlockForKey( entityInfos.blockMapId ).findEntityRanges(
+      ( characterMetadata ) => characterMetadata.entity === entityInfos.entityKey,
+      ( start, end ) => {
+        const selectionToDelete = SelectionState.createEmpty( entityInfos.blockMapId ).merge( {
           anchorOffset: start,
           focusOffset: end
-        });
+        } );
         const newContentState = Modifier.removeRange(
           contentState,
           selectionToDelete,
         );
-        const newEditor = EditorState.push(editorState, newContentState, 'replace-text');
-        return callback(newEditor);
+        const newEditor = EditorState.push( editorState, newContentState, 'replace-text' );
+        return callback( newEditor );
       }
     );
 
   }
-  return callback(editorState);
+  return callback( editorState );
 }
 
 /**
@@ -566,47 +578,49 @@ export function deleteNoteFromEditor(
  * @return {obj} {newNotes, notesOrder} - a map of the
  * updated notes and the notes order infered from the editor
  */
-export const updateNotesFromEditor = (editorState, inputNotes) => {
+export const updateNotesFromEditor = ( editorState, inputNotes ) => {
   const notes = inputNotes; // { ...inputNotes };
   const contentState = editorState.getCurrentContent();
 
-  // list all entities
-  // should be replaced by contentState.getEntityMap() with draft@0.11.0
+  /*
+   * list all entities
+   * should be replaced by contentState.getEntityMap() with draft@0.11.0
+   */
   const entities = [];
-  contentState.getBlockMap().forEach((block) => {
-    block.findEntityRanges((character) => {
+  contentState.getBlockMap().forEach( ( block ) => {
+    block.findEntityRanges( ( character ) => {
       const entityKey = character.getEntity();
-      if (entityKey) {
-        entities.push(contentState.getEntity(entityKey));
+      if ( entityKey ) {
+        entities.push( contentState.getEntity( entityKey ) );
       }
-    });
-  });
+    } );
+  } );
   // filter to note pointer entities
   const noteEntities = entities
-    .filter(thatEntity => thatEntity.getType() === NOTE_POINTER);
+    .filter( ( thatEntity ) => thatEntity.getType() === NOTE_POINTER );
 
   const notesOrder = [];
 
   // attribute orders to notes
   let order = 0;
-  noteEntities.forEach((entity) => {
-    const {noteId} = entity.getData();
-    notesOrder.push(noteId);
+  noteEntities.forEach( ( entity ) => {
+    const { noteId } = entity.getData();
+    notesOrder.push( noteId );
     order++;
-    if (notes[noteId]) {
+    if ( notes[noteId] ) {
       notes[noteId].order = order;
     }
-  });
-  const notesToDelete = Object.keys(notes)
-    .filter((noteId) => {
-      const entity = noteEntities.find((noteEntity, index) =>
-        noteEntity.getData().noteId === noteId);
+  } );
+  const notesToDelete = Object.keys( notes )
+    .filter( ( noteId ) => {
+      const entity = noteEntities.find( ( noteEntity, index ) =>
+        noteEntity.getData().noteId === noteId );
       return entity === undefined;
-    });
+    } );
 
-  notesToDelete.forEach((noteId) => {
+  notesToDelete.forEach( ( noteId ) => {
     delete notes[noteId];
-  });
+  } );
 
   return {
     newNotes: notes,
@@ -623,41 +637,44 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
  * {noteId: string, order: number, editorState: ImmutableRecord}
  * @return {obj} newAssets - a map of the assets actually in use
  */
-export const updateAssetsFromEditors = (editorStates, inputAssets) => {
-  const assets = {...inputAssets};
-  // list all entities
-  // todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
+export const updateAssetsFromEditors = ( editorStates, inputAssets ) => {
+  const assets = { ...inputAssets };
+
+  /*
+   * list all entities
+   * todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
+   */
   const entities = [];
-  editorStates.forEach((editorState) => {
+  editorStates.forEach( ( editorState ) => {
     const contentState = editorState.getCurrentContent();
-    contentState.getBlockMap().forEach((block) => {
-      block.findEntityRanges((character) => {
+    contentState.getBlockMap().forEach( ( block ) => {
+      block.findEntityRanges( ( character ) => {
         const entityKey = character.getEntity();
-        if (entityKey) {
-          entities.push(contentState.getEntity(entityKey));
+        if ( entityKey ) {
+          entities.push( contentState.getEntity( entityKey ) );
         }
-      });
-    });
-  });
+      } );
+    } );
+  } );
   const assetsEntities = entities
-    .filter(thatEntity =>
+    .filter( ( thatEntity ) =>
       thatEntity.getType() === INLINE_ASSET ||
-        thatEntity.getType() === BLOCK_ASSET);
+        thatEntity.getType() === BLOCK_ASSET );
 
   // filter unused assets
-  return Object.keys(assets)
-    .filter((assetId) => {
-      const entity = assetsEntities.find((assetEntity, index) =>
-        assetEntity.getData().asset.id === assetId);
+  return Object.keys( assets )
+    .filter( ( assetId ) => {
+      const entity = assetsEntities.find( ( assetEntity, index ) =>
+        assetEntity.getData().asset.id === assetId );
       return entity !== undefined;
-    })
-    .reduce((finalAssets, assetId) => {
+    } )
+    .reduce( ( finalAssets, assetId ) => {
       const asset = assets[assetId];
       return {
         ...finalAssets,
         [assetId]: asset
       };
-    }, {});
+    }, {} );
 };
 
 /**
@@ -666,27 +683,27 @@ export const updateAssetsFromEditors = (editorStates, inputAssets) => {
  * @param {string} id - the asset id
  * @return {ImmutableRecord} entity - the related draft-js entity
  */
-const getAssetEntity = (editorState, id) => {
+const getAssetEntity = ( editorState, id ) => {
   let entity;
   let data;
   let assetEntity;
   const contentState = editorState.getCurrentContent();
-  contentState.getBlockMap().some((block) => {
-    block.findEntityRanges((character) => {
+  contentState.getBlockMap().some( ( block ) => {
+    block.findEntityRanges( ( character ) => {
       const entityKey = character.getEntity();
-      if (entityKey) {
-        entity = contentState.getEntity(entityKey);
+      if ( entityKey ) {
+        entity = contentState.getEntity( entityKey );
         data = entity.getData();
-        if (data.asset && data.asset.id === id) {
+        if ( data.asset && data.asset.id === id ) {
           assetEntity = entity;
         }
       }
-    });
-    if (assetEntity) {
+    } );
+    if ( assetEntity ) {
       return true;
     }
     return false;
-  });
+  } );
   return assetEntity;
 };
 
@@ -696,10 +713,10 @@ const getAssetEntity = (editorState, id) => {
  * @param {object} assets - a map of the assets to parse
  * @return {array} newAssets - array of unused assets
  */
-export function getUnusedAssets(editorState, assets) {
+export function getUnusedAssets( editorState, assets ) {
   return Object
-    .keys(assets)
-    .filter(id => getAssetEntity(editorState, id) === undefined);
+    .keys( assets )
+    .filter( ( id ) => getAssetEntity( editorState, id ) === undefined );
 }
 
 /**
@@ -708,10 +725,10 @@ export function getUnusedAssets(editorState, assets) {
  * @param {object} assets - a map of the assets to parse
  * @return {array} newAssets - array of used assets
  */
-export function getUsedAssets(editorState, assets) {
+export function getUsedAssets( editorState, assets ) {
   return Object
-    .keys(assets)
-    .filter(id => getAssetEntity(editorState, id) !== undefined);
+    .keys( assets )
+    .filter( ( id ) => getAssetEntity( editorState, id ) !== undefined );
 }
 
 /**
@@ -720,7 +737,7 @@ export function getUsedAssets(editorState, assets) {
  * @param {ImmutableRecord} fragment - the fragment to embed
  * @return {ImmutableRecord} newEditorState - the new editor state
  */
-export function insertFragment(editorState, fragment) {
+export function insertFragment( editorState, fragment ) {
   const newContent = Modifier.replaceWithFragment(
     editorState.getCurrentContent(),
     editorState.getSelection(),
@@ -738,23 +755,23 @@ export function insertFragment(editorState, fragment) {
  * @param {object} range - the input range to look in
  * @return {object} node
  */
-export const getSelectedBlockElement = (range) => {
+export const getSelectedBlockElement = ( range ) => {
   try {
     let node = range.startContainer;
     do {
       if (
         node.getAttribute &&
         (
-          node.getAttribute('data-block') == 'true' ||
-          node.getAttribute('data-contents') == 'true'
+          node.getAttribute( 'data-block' ) == 'true' ||
+          node.getAttribute( 'data-contents' ) == 'true'
         )
       ) {
         return node;
       }
       node = node.parentNode;
-    } while (node != null);
+    } while ( node != null );
   }
-  catch (error) {
+  catch ( error ) {
     return null;
   }
   return null;
@@ -766,8 +783,8 @@ export const getSelectedBlockElement = (range) => {
  */
 export const getSelectionRange = () => {
   const selection = window.getSelection();
-  if (selection.rangeCount === 0) return null;
-  return selection.getRangeAt(0);
+  if ( selection.rangeCount === 0 ) return null;
+  return selection.getRangeAt( 0 );
 };
 
 /**
@@ -776,16 +793,16 @@ export const getSelectionRange = () => {
  * @param {inputEle} DOMEl - the presumed parent
  * @return {boolean} isParent - whether yes or no
  */
-export const isParentOf = (inputEle, maybeParent) => {
+export const isParentOf = ( inputEle, maybeParent ) => {
   try {
     let ele = inputEle;
-    while (ele.parentNode != null && ele.parentNode != document.body) { /* eslint eqeqeq:0 */
-      if (ele.parentNode === maybeParent) return true;
+    while ( ele.parentNode != null && ele.parentNode != document.body ) { /* eslint eqeqeq:0 */
+      if ( ele.parentNode === maybeParent ) return true;
       ele = ele.parentNode;
     }
     return false;
   }
-  catch (error) {
+  catch ( error ) {
     return false;
   }
 };
@@ -796,10 +813,10 @@ export const isParentOf = (inputEle, maybeParent) => {
  * @param {ImmutableRecord} character - the character to check
  * @return {ImmutableRecord} newEditorState - the new editor state
  */
-export function checkCharacterForState(editorState, character) {
-  let newEditorState = handleBlockType(editorState, character);
-  if (editorState === newEditorState) {
-    newEditorState = handleInlineStyle(editorState, character);
+export function checkCharacterForState( editorState, character ) {
+  let newEditorState = handleBlockType( editorState, character );
+  if ( editorState === newEditorState ) {
+    newEditorState = handleInlineStyle( editorState, character );
   }
   return newEditorState;
 }
@@ -811,26 +828,26 @@ export function checkCharacterForState(editorState, character) {
  * @param {object} ev - the original key event
  * @return {ImmutableRecord} newEditorState - the new editor state
  */
-export function checkReturnForState(editorState, ev) {
+export function checkReturnForState( editorState, ev ) {
   let newEditorState = editorState;
   const contentState = editorState.getCurrentContent();
   const selection = editorState.getSelection();
   const key = selection.getStartKey();
-  const currentBlock = contentState.getBlockForKey(key);
+  const currentBlock = contentState.getBlockForKey( key );
   const type = currentBlock.getType();
   const text = currentBlock.getText();
-  if (/-list-item$/.test(type) && text === '') {
-    newEditorState = leaveList(editorState);
+  if ( /-list-item$/.test( type ) && text === '' ) {
+    newEditorState = leaveList( editorState );
   }
-  if (newEditorState === editorState &&
-    (ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.altKey || /^header-/.test(type))) {
-    newEditorState = insertEmptyBlock(editorState);
+  if ( newEditorState === editorState &&
+    ( ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.altKey || /^header-/.test( type ) ) ) {
+    newEditorState = insertEmptyBlock( editorState );
   }
-  if (newEditorState === editorState && type === 'code-block') {
-    newEditorState = insertText(editorState, '\n');
+  if ( newEditorState === editorState && type === 'code-block' ) {
+    newEditorState = insertText( editorState, '\n' );
   }
-  if (newEditorState === editorState) {
-    newEditorState = handleNewCodeBlock(editorState);
+  if ( newEditorState === editorState ) {
+    newEditorState = handleNewCodeBlock( editorState );
   }
 
   return newEditorState;
@@ -848,64 +865,62 @@ export class Emitter {
   renderingModeListeners = new Map()
   customContextListeners = new Map()
 
-  subscribeToAssets = (listener) => {
+  subscribeToAssets = ( listener ) => {
     const id = generateId();
-    this.assetsListeners.set(id, listener);
-    return () => this.assetsListeners.delete(id);
+    this.assetsListeners.set( id, listener );
+    return () => this.assetsListeners.delete( id );
   }
 
-  subscribeToNotes = (listener) => {
+  subscribeToNotes = ( listener ) => {
     const id = generateId();
-    this.notesListeners.set(id, listener);
-    return () => this.notesListeners.delete(id);
+    this.notesListeners.set( id, listener );
+    return () => this.notesListeners.delete( id );
   }
 
-  subscribeToAssetChoiceProps = (listener) => {
+  subscribeToAssetChoiceProps = ( listener ) => {
     const id = generateId();
-    this.assetChoicePropsListeners.set(id, listener);
-    return () => this.assetChoicePropsListeners.delete(id);
+    this.assetChoicePropsListeners.set( id, listener );
+    return () => this.assetChoicePropsListeners.delete( id );
   }
 
-
-  subscribeToRenderingMode = (listener) => {
+  subscribeToRenderingMode = ( listener ) => {
     const id = generateId();
-    this.renderingModeListeners.set(id, listener);
-    return () => this.renderingModeListeners.delete(id);
+    this.renderingModeListeners.set( id, listener );
+    return () => this.renderingModeListeners.delete( id );
   }
 
-  subscribeToCustomContext = (listener) => {
+  subscribeToCustomContext = ( listener ) => {
     const id = generateId();
-    this.customContextListeners.set(id, listener);
-    return () => this.customContextListeners.delete(id);
+    this.customContextListeners.set( id, listener );
+    return () => this.customContextListeners.delete( id );
   }
 
-
-  dispatchAssets = (assets) => {
-    this.assetsListeners.forEach((listener) => {
-      listener(assets);
-    });
+  dispatchAssets = ( assets ) => {
+    this.assetsListeners.forEach( ( listener ) => {
+      listener( assets );
+    } );
   }
-  dispatchNotes= (notes) => {
-    this.notesListeners.forEach((listener) => {
-      listener(notes);
-    });
-  }
-
-  dispatchAssetChoiceProps= (props) => {
-    this.assetChoicePropsListeners.forEach((listener) => {
-      listener(props);
-    });
+  dispatchNotes= ( notes ) => {
+    this.notesListeners.forEach( ( listener ) => {
+      listener( notes );
+    } );
   }
 
-  dispatchRenderingMode = (renderingMode) => {
-    this.renderingModeListeners.forEach((listener) => {
-      listener(renderingMode);
-    });
+  dispatchAssetChoiceProps= ( props ) => {
+    this.assetChoicePropsListeners.forEach( ( listener ) => {
+      listener( props );
+    } );
   }
 
-  dispatchCustomContext = (customContext) => {
-    this.customContextListeners.forEach((listener) => {
-      listener(customContext);
-    });
+  dispatchRenderingMode = ( renderingMode ) => {
+    this.renderingModeListeners.forEach( ( listener ) => {
+      listener( renderingMode );
+    } );
+  }
+
+  dispatchCustomContext = ( customContext ) => {
+    this.customContextListeners.forEach( ( listener ) => {
+      listener( customContext );
+    } );
   }
 }

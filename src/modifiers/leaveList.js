@@ -1,15 +1,15 @@
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
-import {RichUtils} from 'draft-js';
+import { RichUtils } from 'draft-js';
 
-const leaveList = (editorState) => {
+const leaveList = ( editorState ) => {
   const contentState = editorState.getCurrentContent();
   const selection = editorState.getSelection();
   const key = selection.getStartKey();
-  const currentBlock = contentState.getBlockForKey(key);
+  const currentBlock = contentState.getBlockForKey( key );
   const type = currentBlock.getType();
-  return RichUtils.toggleBlockType(editorState, type);
+  return RichUtils.toggleBlockType( editorState, type );
 };
 
 export default leaveList;

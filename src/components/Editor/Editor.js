@@ -5,35 +5,38 @@
  * @module scholar-draft/Editor
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import {Scrollbars} from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars';
 import {
   SpringSystem,
   MathUtil
 } from 'rebound';
 
-import {EditorState} from 'draft-js';
-
+import { EditorState } from 'draft-js';
 
 // import { getOffsetRelativeToContainer, } from '../../utils';
-
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 import DefaultNoteContainer from '../NoteContainer/NoteContainer';
 
-
 import './Editor.scss';
 
-const DefaultElementLayout = ({
+const DefaultElementLayout = ( {
   children,
   style,
   className
-}) => (<div style={style} className={className}>{children}</div>);
+} ) => ( 
+  <div
+    style={ style }
+    className={ className }
+  >{children}
+  </div> 
+);
 
 DefaultElementLayout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.array, PropTypes.element, PropTypes.func]),
+  children: PropTypes.oneOfType( [ PropTypes.array, PropTypes.element, PropTypes.func ] ),
   style: PropTypes.string,
   className: PropTypes.string
 };
@@ -45,11 +48,11 @@ export default class Editor extends Component {
     notes: PropTypes.object,
     notesOrder: PropTypes.array,
 
-    messages: PropTypes.shape({
+    messages: PropTypes.shape( {
       addNote: PropTypes.string,
       summonAsset: PropTypes.string,
       cancel: PropTypes.string,
-    }),
+    } ),
     customContext: PropTypes.object,
 
     // className: PropTypes.string,
@@ -110,10 +113,13 @@ export default class Editor extends Component {
    * component contructor
    * @param {object} props - initializing props
    */
-  constructor(props) {
-    super(props);
-    // this is used as a map of refs
-    // to interact with note components
+  constructor( props ) {
+    super( props );
+
+    /*
+     * this is used as a map of refs
+     * to interact with note components
+     */
     this.notes = {};
   }
 
@@ -121,16 +127,19 @@ export default class Editor extends Component {
    * Executes code on instance after the component is mounted
    */
   componentDidMount = () => {
-    // we use a spring system to handle automatic scrolls
-    // (e.g. note pointer clicked or click in the table of contents)
+
+    /*
+     * we use a spring system to handle automatic scrolls
+     * (e.g. note pointer clicked or click in the table of contents)
+     */
     this.springSystem = new SpringSystem();
     this.spring = this.springSystem.createSpring();
-    this.spring.addListener({
+    this.spring.addListener( {
       onSpringUpdate: this.handleSpringUpdate
-    });
+    } );
   }
 
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = ( nextProps ) => {
     // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
     //   setTimeout(() => {
     //     const { anchorNode } = getSelection();
@@ -151,10 +160,10 @@ export default class Editor extends Component {
    * Handles the scrolling process using the spring system
    * @param {object} spring - the spring system instance
    */
-  handleSpringUpdate = (spring) => {
+  handleSpringUpdate = ( spring ) => {
     const val = spring.getCurrentValue();
-    if (val !== undefined && this.globalScrollbar) {
-      this.globalScrollbar.scrollTop(val);
+    if ( val !== undefined && this.globalScrollbar ) {
+      this.globalScrollbar.scrollTop( val );
     }
   }
 
@@ -163,45 +172,44 @@ export default class Editor extends Component {
    * so that it transitions to a specific point in the page
    * @param {number} top - the position to scroll to in pixels
    */
-  scrollTop(top) {
+  scrollTop( top ) {
     // this.globalScrollbar.scrollTop(top);
     const scrollbars = this.globalScrollbar;
     const scrollTop = scrollbars.getScrollTop();
     const scrollHeight = scrollbars.getScrollHeight();
-    const val = MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
-    this.spring.setCurrentValue(scrollTop).setAtRest();
-    this.spring.setEndValue(val);
+    const val = MathUtil.mapValueInRange( top, 0, scrollHeight, 0, scrollHeight );
+    this.spring.setCurrentValue( scrollTop ).setAtRest();
+    this.spring.setEndValue( val );
   }
-
 
   /**
    * manages imperative focus on one of the editors
    * @param {string} contentId - 'main' or note uuid
    * @param {ImmutableRecord} selection - the selection to focus on
    */
-  focus = (contentId, selection) => {
-    if (contentId === 'main' && this.mainEditor) {
-      if (selection) {
-        this.mainEditor.setState({
+  focus = ( contentId, selection ) => {
+    if ( contentId === 'main' && this.mainEditor ) {
+      if ( selection ) {
+        this.mainEditor.setState( {
           readOnly: false,
           editorState: EditorState.acceptSelection(
             this.mainEditor.state.editorState,
             selection
           )
-        });
+        } );
       }
-      setTimeout(() => this.mainEditor.focus());
+      setTimeout( () => this.mainEditor.focus() );
     }
-    else if (this.notes[contentId]) {
-      setTimeout(() => this.notes[contentId].editor.focus());
-      if (selection) {
-        this.notes[contentId].editor.setState({
+    else if ( this.notes[contentId] ) {
+      setTimeout( () => this.notes[contentId].editor.focus() );
+      if ( selection ) {
+        this.notes[contentId].editor.setState( {
           readOnly: false,
           editorState: EditorState.acceptSelection(
             this.notes[contentId].editor.state.editorState,
             selection
           )
-        });
+        } );
       }
     }
   }
@@ -211,7 +219,7 @@ export default class Editor extends Component {
    * @return {ImmutableRecord} editorState - output editor state
    */
   generateEmptyEditor = () => {
-    if (this.mainEditor) {
+    if ( this.mainEditor ) {
       return this.mainEditor.generateEmptyEditor();
     }
     return null;
@@ -221,11 +229,11 @@ export default class Editor extends Component {
    * Scrolls to a specific note
    * @param {string} noteId
    */
-  scrollToNote = (thatNoteId) => {
-    const notePointer = document.getElementById(`note-container-${thatNoteId}`);
+  scrollToNote = ( thatNoteId ) => {
+    const notePointer = document.getElementById( `note-container-${thatNoteId}` );
     const scrollTo = notePointer && notePointer.offsetTop;
-    if (scrollTo) {
-      this.scrollTop(scrollTo);
+    if ( scrollTo ) {
+      this.scrollTop( scrollTo );
     }
   }
 
@@ -233,11 +241,11 @@ export default class Editor extends Component {
    * Scrolls to a specific note pointer
    * @param {string} noteId
    */
-  scrollToNotePointer = (thatNoteId) => {
-    const notePointer = document.getElementById(`note-pointer-${thatNoteId}`);
+  scrollToNotePointer = ( thatNoteId ) => {
+    const notePointer = document.getElementById( `note-pointer-${thatNoteId}` );
     const scrollTo = notePointer && notePointer.offsetTop;
-    if (scrollTo) {
-      this.scrollTop(scrollTo);
+    if ( scrollTo ) {
+      this.scrollTop( scrollTo );
     }
   }
 
@@ -247,7 +255,7 @@ export default class Editor extends Component {
    * @param {number} order - order to attribute to it
    * @return {ReactMarkup} noteComponent - the note component
    */
-  renderNoteEditor = (noteId, order) => {
+  renderNoteEditor = ( noteId, order ) => {
 
     const {
       notes,
@@ -300,111 +308,110 @@ export default class Editor extends Component {
     } = this.props;
 
     let containerDimensions;
-    if (this.editor) {
+    if ( this.editor ) {
       containerDimensions = this.editor.getBoundingClientRect();
     }
 
-    const onThisNoteEditorChange = editor => onEditorChange(noteId, editor);
-    const onNoteAssetRequest = (selection) => {
-      onAssetRequest(noteId, selection);
+    const onThisNoteEditorChange = ( editor ) => onEditorChange( noteId, editor );
+    const onNoteAssetRequest = ( selection ) => {
+      onAssetRequest( noteId, selection );
     };
     const onClickDelete = () => {
-      if (typeof onNoteDelete === 'function') {
-        this.props.onNoteDelete(noteId);
+      if ( typeof onNoteDelete === 'function' ) {
+        this.props.onNoteDelete( noteId );
       }
     };
-    const onNoteDrop = (payload, selection) => {
-      if (typeof onDrop === 'function') {
-        onDrop(noteId, payload, selection);
+    const onNoteDrop = ( payload, selection ) => {
+      if ( typeof onDrop === 'function' ) {
+        onDrop( noteId, payload, selection );
       }
     };
-    const onNoteDragOver = (event) => {
-      if (typeof onDragOver === 'function') {
-        onDragOver(noteId, event);
+    const onNoteDragOver = ( event ) => {
+      if ( typeof onDragOver === 'function' ) {
+        onDragOver( noteId, event );
       }
     };
     const note = notes[noteId];
 
-    const onNoteEditorClick = (event) => {
-      if (typeof onClick === 'function') {
-        onClick(event, noteId);
+    const onNoteEditorClick = ( event ) => {
+      if ( typeof onClick === 'function' ) {
+        onClick( event, noteId );
       }
     };
-    const bindNote = (thatNote) => {
+    const bindNote = ( thatNote ) => {
       this.notes[noteId] = thatNote;
     };
-    const onNoteBlur = (event) => {
-      onBlur(event, noteId);
+    const onNoteBlur = ( event ) => {
+      onBlur( event, noteId );
     };
 
-    const onClickScrollToNotePointer = (thatNoteId) => {
-      const notePointer = document.getElementById(`note-pointer-${thatNoteId}`);
+    const onClickScrollToNotePointer = ( thatNoteId ) => {
+      const notePointer = document.getElementById( `note-pointer-${thatNoteId}` );
       const scrollTo = notePointer && notePointer.offsetTop;
-      if (scrollTo) {
-        this.scrollTop(scrollTo);
+      if ( scrollTo ) {
+        this.scrollTop( scrollTo );
       }
     };
-
 
     const NoteContainer = NoteContainerComponent || DefaultNoteContainer;
     return (
       <NoteContainer
-        key={noteId}
-        note={note}
-        notes={notes}
-        assets={assets}
-        customContext={customContext}
-        editorPlaceholder={editorPlaceholder}
+        key={ noteId }
+        note={ note }
+        notes={ notes }
+        assets={ assets }
+        customContext={ customContext }
+        editorPlaceholder={ editorPlaceholder }
 
-        ref={bindNote}
+        ref={ bindNote }
 
-        messages={messages}
+        messages={ messages }
 
-        contentId={noteId}
+        contentId={ noteId }
 
-        assetRequestPosition={assetRequestPosition}
-        assetRequestContentId={assetRequestContentId}
-        assetChoiceProps={assetChoiceProps}
+        assetRequestPosition={ assetRequestPosition }
+        assetRequestContentId={ assetRequestContentId }
+        assetChoiceProps={ assetChoiceProps }
 
-        isActive={noteId === focusedEditorId}
+        isActive={ noteId === focusedEditorId }
 
-        onEditorClick={onNoteEditorClick}
-        onBlur={onNoteBlur}
+        onEditorClick={ onNoteEditorClick }
+        onBlur={ onNoteBlur }
 
-        renderingMode={renderingMode}
+        renderingMode={ renderingMode }
 
-        onEditorChange={onThisNoteEditorChange}
+        onEditorChange={ onThisNoteEditorChange }
 
-        onClickScrollToNotePointer={onClickScrollToNotePointer}
+        onClickScrollToNotePointer={ onClickScrollToNotePointer }
 
-        onAssetRequest={onNoteAssetRequest}
-        onAssetRequestCancel={onAssetRequestCancel}
-        onAssetChange={onAssetChange}
-        onAssetChoice={onAssetChoice}
-        handlePastedText={handlePastedText}
+        onAssetRequest={ onNoteAssetRequest }
+        onAssetRequestCancel={ onAssetRequestCancel }
+        onAssetChange={ onAssetChange }
+        onAssetChoice={ onAssetChoice }
+        handlePastedText={ handlePastedText }
 
+        onDrop={ onNoteDrop }
+        onDragOver={ onNoteDragOver }
+        onClickDelete={ onClickDelete }
 
-        onDrop={onNoteDrop}
-        onDragOver={onNoteDragOver}
-        onClickDelete={onClickDelete}
+        onAssetClick={ onAssetClick }
+        onAssetMouseOver={ onAssetMouseOver }
+        onAssetMouseOut={ onAssetMouseOut }
 
-        onAssetClick={onAssetClick}
-        onAssetMouseOver={onAssetMouseOver}
-        onAssetMouseOut={onAssetMouseOut}
+        containerDimensions={ containerDimensions }
+        inlineButtons={ inlineButtons }
+        inlineAssetComponents={ inlineAssetComponents }
+        blockAssetComponents={ blockAssetComponents }
+        AssetChoiceComponent={ AssetChoiceComponent }
+        inlineEntities={ inlineEntities }
+        iconMap={ iconMap }
+        keyBindingFn={ keyBindingFn }
+        NoteLayout={ NoteLayout }
+        AssetButtonComponent={ AssetButtonComponent }
+        NoteButtonComponent={ NoteButtonComponent }
 
-        containerDimensions={containerDimensions}
-        inlineButtons={inlineButtons}
-        inlineAssetComponents={inlineAssetComponents}
-        blockAssetComponents={blockAssetComponents}
-        AssetChoiceComponent={AssetChoiceComponent}
-        inlineEntities={inlineEntities}
-        iconMap={iconMap}
-        keyBindingFn={keyBindingFn}
-        NoteLayout={NoteLayout}
-        AssetButtonComponent={AssetButtonComponent}
-        NoteButtonComponent={NoteButtonComponent}
-
-        editorStyle={editorStyles && editorStyles.noteEditor} />
+        editorStyle={ editorStyles && editorStyles.noteEditor }
+      />
     );
   }
 
@@ -475,143 +482,151 @@ export default class Editor extends Component {
      * bindings
      */
 
-    const bindMainEditor = (editor) => {
+    const bindMainEditor = ( editor ) => {
       this.mainEditor = editor;
     };
 
     /**
      * callbacks
      */
-    const onMainEditorChange = (editor) => {
-      onEditorChange('main', editor);
+    const onMainEditorChange = ( editor ) => {
+      onEditorChange( 'main', editor );
     };
-    const onMainAssetRequest = (selection) => {
-      onAssetRequest('main', selection);
+    const onMainAssetRequest = ( selection ) => {
+      onAssetRequest( 'main', selection );
     };
-    const onMainEditorDrop = (payload, selection) => {
-      if (typeof onDrop === 'function') {
-        onDrop('main', payload, selection);
+    const onMainEditorDrop = ( payload, selection ) => {
+      if ( typeof onDrop === 'function' ) {
+        onDrop( 'main', payload, selection );
       }
     };
 
-    const onMainDragOver = (event) => {
-      if (typeof onDragOver === 'function') {
-        onDragOver('main', event);
+    const onMainDragOver = ( event ) => {
+      if ( typeof onDragOver === 'function' ) {
+        onDragOver( 'main', event );
       }
     };
 
-    const onMainEditorClick = (event) => {
-      if (typeof onClick === 'function') {
-        onClick(event, 'main');
+    const onMainEditorClick = ( event ) => {
+      if ( typeof onClick === 'function' ) {
+        onClick( event, 'main' );
       }
     };
-    const onMainBlur = (event) => {
-      onBlur(event, 'main');
-    };
-
-    const onNotePointerMouseClickHandler = (event) => {
-      const noteContainer = document.getElementById(`note-container-${event}`);
-      if (noteContainer) {
-        const {offsetTop} = noteContainer;
-        this.scrollTop(offsetTop);
-      }
-      if (typeof onNotePointerMouseClick === 'function') {
-        onNotePointerMouseClick(event, 'main');
-      }
+    const onMainBlur = ( event ) => {
+      onBlur( event, 'main' );
     };
 
-    const bindGlobalScrollbarRef = (scrollbar) => {
+    const onNotePointerMouseClickHandler = ( event ) => {
+      const noteContainer = document.getElementById( `note-container-${event}` );
+      if ( noteContainer ) {
+        const { offsetTop } = noteContainer;
+        this.scrollTop( offsetTop );
+      }
+      if ( typeof onNotePointerMouseClick === 'function' ) {
+        onNotePointerMouseClick( event, 'main' );
+      }
+    };
+
+    const bindGlobalScrollbarRef = ( scrollbar ) => {
       this.globalScrollbar = scrollbar;
     };
 
-    const activeNotes = notesOrder || Object.keys(notes || {})
-      .sort((first, second) => {
-        if (notes[first].order > notes[second].order) {
+    const activeNotes = notesOrder || Object.keys( notes || {} )
+      .sort( ( first, second ) => {
+        if ( notes[first].order > notes[second].order ) {
           return 1;
         } return -1;
-      });
+      } );
 
-    const bindEditorRef = (editor) => {
+    const bindEditorRef = ( editor ) => {
       this.editor = editor;
     };
 
     let containerDimensions;
-    if (this.editor) {
+    if ( this.editor ) {
       containerDimensions = this.editor.getBoundingClientRect();
     }
+
+    const handleScrollUpdate = this.onScrollUpdate;
+
     return (
-      <div ref={bindEditorRef} className={editorClass}>
+      <div
+        ref={ bindEditorRef }
+        className={ editorClass }
+      >
         <Scrollbars
-          ref={bindGlobalScrollbarRef}
-          className="custom-scrollbars"
+          ref={ bindGlobalScrollbarRef }
+          className={ 'custom-scrollbars' }
           autoHide
-          onUpdate={this.onScrollUpdate}
-          universal>
-          <ElementLayout className="main-container-editor">
+          onUpdate={ handleScrollUpdate }
+          universal
+        >
+          <ElementLayout className={ 'main-container-editor' }>
             <BasicEditor
-              editorState={mainEditorState}
-              assets={assets}
-              ref={bindMainEditor}
-              customContext={customContext}
+              editorState={ mainEditorState }
+              assets={ assets }
+              ref={ bindMainEditor }
+              customContext={ customContext }
 
-              messages={messages}
+              messages={ messages }
 
-              editorPlaceholder={editorPlaceholder}
+              editorPlaceholder={ editorPlaceholder }
 
-              notes={notes}
+              notes={ notes }
 
-              contentId="main"
+              contentId={ 'main' }
 
-              assetRequestPosition={assetRequestPosition}
-              isRequestingAssets={assetRequestContentId === 'main'}
-              assetChoiceProps={assetChoiceProps}
+              assetRequestPosition={ assetRequestPosition }
+              isRequestingAssets={ assetRequestContentId === 'main' }
+              assetChoiceProps={ assetChoiceProps }
 
-              isActive={focusedEditorId === 'main'}
+              isActive={ focusedEditorId === 'main' }
 
-              onClick={onMainEditorClick}
-              onBlur={onMainBlur}
+              onClick={ onMainEditorClick }
+              onBlur={ onMainBlur }
 
-              renderingMode={renderingMode}
-              handlePastedText={handlePastedText}
+              renderingMode={ renderingMode }
+              handlePastedText={ handlePastedText }
 
-              onEditorChange={onMainEditorChange}
-              onDragOver={onMainDragOver}
-              onDrop={onMainEditorDrop}
-              onAssetRequest={onMainAssetRequest}
-              onAssetRequestCancel={onAssetRequestCancel}
-              onAssetChoice={onAssetChoice}
+              onEditorChange={ onMainEditorChange }
+              onDragOver={ onMainDragOver }
+              onDrop={ onMainEditorDrop }
+              onAssetRequest={ onMainAssetRequest }
+              onAssetRequestCancel={ onAssetRequestCancel }
+              onAssetChoice={ onAssetChoice }
 
-              onNoteAdd={onNoteAdd}
-              onAssetChange={onAssetChange}
+              onNoteAdd={ onNoteAdd }
+              onAssetChange={ onAssetChange }
 
-              onAssetClick={onAssetClick}
-              onAssetMouseOver={onAssetMouseOver}
-              onAssetMouseOut={onAssetMouseOut}
-              onAssetBlur={onAssetBlur}
+              onAssetClick={ onAssetClick }
+              onAssetMouseOver={ onAssetMouseOver }
+              onAssetMouseOut={ onAssetMouseOut }
+              onAssetBlur={ onAssetBlur }
 
-              onNotePointerMouseOver={onNotePointerMouseOver}
-              onNotePointerMouseOut={onNotePointerMouseOut}
-              onNotePointerMouseClick={onNotePointerMouseClickHandler}
+              onNotePointerMouseOver={ onNotePointerMouseOver }
+              onNotePointerMouseOut={ onNotePointerMouseOut }
+              onNotePointerMouseClick={ onNotePointerMouseClickHandler }
 
-              inlineButtons={inlineButtons}
-              inlineAssetComponents={inlineAssetComponents}
-              blockAssetComponents={blockAssetComponents}
-              AssetChoiceComponent={AssetChoiceComponent}
-              NotePointerComponent={NotePointerComponent}
-              AssetButtonComponent={AssetButtonComponent}
-              NoteButtonComponent={NoteButtonComponent}
-              inlineEntities={inlineEntities}
-              iconMap={iconMap}
+              inlineButtons={ inlineButtons }
+              inlineAssetComponents={ inlineAssetComponents }
+              blockAssetComponents={ blockAssetComponents }
+              AssetChoiceComponent={ AssetChoiceComponent }
+              NotePointerComponent={ NotePointerComponent }
+              AssetButtonComponent={ AssetButtonComponent }
+              NoteButtonComponent={ NoteButtonComponent }
+              inlineEntities={ inlineEntities }
+              iconMap={ iconMap }
 
-              containerDimensions={containerDimensions}
+              containerDimensions={ containerDimensions }
 
               allowNotesInsertion
-              editorStyle={editorStyles && editorStyles.mainEditor} />
+              editorStyle={ editorStyles && editorStyles.mainEditor }
+            />
           </ElementLayout>
-          <ElementLayout className="notes-container">
+          <ElementLayout className={ 'notes-container' }>
             {
               activeNotes
-                .map(this.renderNoteEditor)
+                .map( this.renderNoteEditor )
             }
           </ElementLayout>
         </Scrollbars>

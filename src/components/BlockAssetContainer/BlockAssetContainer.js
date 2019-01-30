@@ -6,7 +6,7 @@
  * at editor's implementation
  * @module scholar-draft/BlockAssetContainer
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import './BlockAssetContainer.scss';
@@ -20,7 +20,6 @@ class BlockAssetContainer extends Component {
 
     renderingMode: PropTypes.string,
 
-
     onAssetMouseOver: PropTypes.func,
     onAssetMouseOut: PropTypes.func,
     onAssetChange: PropTypes.func,
@@ -28,44 +27,44 @@ class BlockAssetContainer extends Component {
     onAssetBlur: PropTypes.func,
   }
 
-  constructor(props) {
-    super(props);
+  constructor( props ) {
+    super( props );
     this.state = {
       
     };
   }
 
   componentDidMount() {
-    this.setState({
+    this.setState( {
       asset: this.context.assets[this.props.blockProps.assetId],
       renderingMode: this.props.blockProps.renderingMode,
-    });
-    this.unsubscribe = this.context.emitter.subscribeToAssets((assets) => {
+    } );
+    this.unsubscribe = this.context.emitter.subscribeToAssets( ( assets ) => {
       const asset = assets[this.props.blockProps.assetId];
       // if (asset !== this.state.asset) {
-      this.setState({
+      this.setState( {
         asset
-      });
+      } );
       // }
-    });
+    } );
 
     this.unsubscribeToCustomContext = this.context
-      .emitter.subscribeToCustomContext((customContext) => {
-        if (customContext !== this.state.customContext) {
-          this.setState({
+      .emitter.subscribeToCustomContext( ( customContext ) => {
+        if ( customContext !== this.state.customContext ) {
+          this.setState( {
             customContext
-          });
+          } );
         }
-      });
+      } );
 
     this.unsubscribeToRenderingMode = this.context.emitter
-      .subscribeToRenderingMode((renderingMode) => {
+      .subscribeToRenderingMode( ( renderingMode ) => {
         // if (this.state.renderingMode !== renderingMode) {
-        this.setState({
+        this.setState( {
           renderingMode
-        });
+        } );
         // }
-      });
+      } );
   }
 
   componentWillUnmount() {
@@ -81,7 +80,7 @@ class BlockAssetContainer extends Component {
       renderingMode,
       customContext
     } = this.state;
-    if (!asset) {
+    if ( !asset ) {
       return null;
     }
 
@@ -102,17 +101,17 @@ class BlockAssetContainer extends Component {
       children
     } = this.props;
 
-    const onMOver = (event) => {
+    const onMOver = ( event ) => {
       event.stopPropagation();
-      if (typeof onMouseOver === 'function') {
-        onAssetMouseOver(asset.id, asset, event);
+      if ( typeof onMouseOver === 'function' ) {
+        onAssetMouseOver( asset.id, asset, event );
       }
     };
 
-    const onMOut = (event) => {
+    const onMOut = ( event ) => {
       event.stopPropagation();
-      if (typeof onMouseOut === 'function') {
-        onAssetMouseOut(asset.id, asset, event);
+      if ( typeof onMouseOut === 'function' ) {
+        onAssetMouseOut( asset.id, asset, event );
       }
     };
 
@@ -122,20 +121,22 @@ class BlockAssetContainer extends Component {
 
     return (
       <div
-        className="scholar-draft-BlockAssetContainer"
-        onMouseOver={onMOver}
-        onFocus={onMOver}
-        onMouseOut={onMOut}
-        onBlur={onMOut}>
+        className={ 'scholar-draft-BlockAssetContainer' }
+        onMouseOver={ onMOver }
+        onFocus={ onMOver }
+        onMouseOut={ onMOut }
+        onBlur={ onMOut }
+      >
         <RealAssetComponent
-          assetId={assetId}
-          asset={asset}
-          customContext={customContext}
-          onAssetChange={onAssetChange}
-          onAssetFocus={onAssetFocus}
-          onAssetBlur={onAssetBlur}
-          iconMap={iconMap}
-          renderingMode={renderingMode}>
+          assetId={ assetId }
+          asset={ asset }
+          customContext={ customContext }
+          onAssetChange={ onAssetChange }
+          onAssetFocus={ onAssetFocus }
+          onAssetBlur={ onAssetBlur }
+          iconMap={ iconMap }
+          renderingMode={ renderingMode }
+        >
           {children}
         </RealAssetComponent>
       </div>
@@ -146,14 +147,14 @@ class BlockAssetContainer extends Component {
 BlockAssetContainer.propTypes = {
   children: PropTypes.array,
   assetId: PropTypes.string,
-  blockProps: PropTypes.shape({
+  blockProps: PropTypes.shape( {
     assetId: PropTypes.string,
-    AssetComponent: PropTypes.oneOfType([
+    AssetComponent: PropTypes.oneOfType( [
       PropTypes.func,
       PropTypes.element
-    ]),
+    ] ),
     renderingMode: PropTypes.string,
-  })
+  } )
 };
 
 export default BlockAssetContainer;

@@ -139,8 +139,10 @@ function (_Component) {
 
 
       if (_this.props.isActive && !nextProps.isActive && !nextProps.assetRequestPosition) {
-        // locking the draft-editor if asset choice component is not open
-        // console.log('hding 2', this.props.contentId);
+        /*
+         * locking the draft-editor if asset choice component is not open
+         * console.log('hding 2', this.props.contentId);
+         */
         stateMods = (0, _objectSpread2.default)({}, stateMods, {
           readOnly: true,
           styles: {
@@ -160,11 +162,14 @@ function (_Component) {
           var selection = _this.state.editorState.getSelection();
 
           stateMods = (0, _objectSpread2.default)({}, stateMods, {
-            readOnly: false // editorState: nextProps.editorState ? EditorState.createWithContent(
-            //   nextProps.editorState.getCurrentContent(),
-            //   this.createDecorator()
-            // ) : this.generateEmptyEditor(),
-            // editorState: EditorState.acceptSelection(nextProps.editorState, selection),
+            readOnly: false
+            /*
+             * editorState: nextProps.editorState ? EditorState.createWithContent(
+             *   nextProps.editorState.getCurrentContent(),
+             *   this.createDecorator()
+             * ) : this.generateEmptyEditor(),
+             * editorState: EditorState.acceptSelection(nextProps.editorState, selection),
+             */
 
           });
 
@@ -231,12 +236,17 @@ function (_Component) {
             setTimeout(function () {
               return _this.forceRender(_this.props);
             });
-          } // updating locally stored editorState when the one given by props
-          // has changed
+          }
+          /*
+           * updating locally stored editorState when the one given by props
+           * has changed
+           */
 
         } else if (_this.props.editorState !== nextProps.editorState) {
-        // console.log('storing new editor state with selection',
-        // nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
+        /*
+         * console.log('storing new editor state with selection',
+         * nextProps.editorState && nextProps.editorState.getSelection().getStartOffset())
+         */
         stateMods = (0, _objectSpread2.default)({}, stateMods, {
           editorState: nextProps.editorState || _this.generateEmptyEditor()
         });
@@ -265,10 +275,12 @@ function (_Component) {
 
 
         if (!_this.props.assets || !nextProps.assets || Object.keys(_this.props.assets).length !== Object.keys(nextProps.assets).length) {
-          // re-rendering after a timeout.
-          // not doing that causes the draft editor not to update
-          // before a new modification is applied to it
-          // this is weird but it works
+          /*
+           * re-rendering after a timeout.
+           * not doing that causes the draft editor not to update
+           * before a new modification is applied to it
+           * this is weird but it works
+           */
           setTimeout(function () {
             return _this.forceRender(nextProps);
           });
@@ -285,16 +297,21 @@ function (_Component) {
           notes: nextProps.notes
         });
         /* eslint react/no-unused-state : 0 */
-        // if the number of notes is changed it means
-        // new entities might be present in the editor.
-        // As, for optimizations reasons, draft-js editor does not update
-        // its entity map in this case (did not exactly understand why)
-        // it has to be forced to re-render itself
+
+        /*
+         * if the number of notes is changed it means
+         * new entities might be present in the editor.
+         * As, for optimizations reasons, draft-js editor does not update
+         * its entity map in this case (did not exactly understand why)
+         * it has to be forced to re-render itself
+         */
 
         if (!_this.props.notes || !nextProps.notes || Object.keys(_this.props.notes).length !== Object.keys(nextProps.notes).length) {
-          // re-rendering after a timeout.
-          // not doing that causes the draft editor not to update
-          // before a new modification is applied to it
+          /*
+           * re-rendering after a timeout.
+           * not doing that causes the draft editor not to update
+           * before a new modification is applied to it
+           */
           setTimeout(function () {
             return _this.forceRender(nextProps);
           });
@@ -330,15 +347,16 @@ function (_Component) {
 
 
       if (
-      /* (
-      this.props.editorState !== prevProps.editorState &&
-      this.editor &&
-      !this.state.readOnly &&
-      // this.props.isActive &&
-      prevState.readOnly
-      )
-      ||
-      */
+      /*
+       * (
+       * this.props.editorState !== prevProps.editorState &&
+       * this.editor &&
+       * !this.state.readOnly &&
+       * // this.props.isActive &&
+       * prevState.readOnly
+       * )
+       * ||
+       */
       prevState.readOnly && !_this.state.readOnly) {
         // draft triggers an unwanted onChange event when focusing
         _this.setState({
@@ -421,9 +439,12 @@ function (_Component) {
       _this.debouncedUpdateSelection.cancel();
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "undo", function () {
-      _this.onChange(_draftJs.EditorState.undo(_this.props.editorState), false); // draft-js won't notice the change of editorState
-      // so we have to force it to re-render after having received
-      // the new editorState
+      _this.onChange(_draftJs.EditorState.undo(_this.props.editorState), false);
+      /*
+       * draft-js won't notice the change of editorState
+       * so we have to force it to re-render after having received
+       * the new editorState
+       */
 
 
       setTimeout(function () {
@@ -431,9 +452,12 @@ function (_Component) {
       });
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "redo", function () {
-      _this.onChange(_draftJs.EditorState.redo(_this.props.editorState), false); // draft-js won't notice the change of editorState
-      // so we have to force it to re-render after having received
-      // the new editorState
+      _this.onChange(_draftJs.EditorState.redo(_this.props.editorState), false);
+      /*
+       * draft-js won't notice the change of editorState
+       * so we have to force it to re-render after having received
+       * the new editorState
+       */
 
 
       setTimeout(function () {
@@ -448,8 +472,11 @@ function (_Component) {
 
       var newEditorState = _draftJs.EditorState.createWithContent(content, _this.createDecorator());
 
-      var selectedEditorState; // we try to overcome the following error in firefox : https://bugzilla.mozilla.org/show_bug.cgi?id=921444
-      // which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
+      var selectedEditorState;
+      /*
+       * we try to overcome the following error in firefox : https://bugzilla.mozilla.org/show_bug.cgi?id=921444
+       * which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
+       */
 
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > 0) {
         selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, prevSelection);
@@ -544,11 +571,14 @@ function (_Component) {
       } else if (command === 'editor-redo') {
         _this.redo();
       } else if (command === 'summon-asset') {
-        _this.props.onAssetRequest(); // this is a workaround for a corner case
-        // when an inline entity containing html contents is placed at the end of block
-        // draft-js seems to be confused concerning the selection offset
-        // when hitting backspace in that solution
-        // @todo see in future versions of draft-js if the problem is solved
+        _this.props.onAssetRequest();
+        /*
+         * this is a workaround for a corner case
+         * when an inline entity containing html contents is placed at the end of block
+         * draft-js seems to be confused concerning the selection offset
+         * when hitting backspace in that solution
+         * @todo see in future versions of draft-js if the problem is solved
+         */
 
       } else if (command === 'backspace') {
         var _editorState = _this.props.editorState;
@@ -561,8 +591,11 @@ function (_Component) {
           var selectedBlockKey = selection.getStartKey();
           var selectionOffset = selection.getStartOffset();
           var selectedBlock = contentState.getBlockForKey(selectedBlockKey);
-          var selectedBlockLength = selectedBlock.getLength(); // check of the selection offset returned by draft
-          // is greater than selected block length (which should be impossible)
+          var selectedBlockLength = selectedBlock.getLength();
+          /*
+           * check of the selection offset returned by draft
+           * is greater than selected block length (which should be impossible)
+           */
 
           if (selectionOffset > selectedBlockLength) {
             // remove entity mention from the last character of the real block
@@ -600,11 +633,13 @@ function (_Component) {
       return 'not-handled';
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "_handleBeforeInput", function (character) {
-      // todo : make that feature more subtle and customizable through props
-      // if (character === '@') {
-      //   this.props.onAssetRequest();
-      //   return 'handled';
-      // }
+      /*
+       * todo : make that feature more subtle and customizable through props
+       * if (character === '@') {
+       *   this.props.onAssetRequest();
+       *   return 'handled';
+       * }
+       */
       if (character !== ' ') {
         return 'not-handled';
       }
@@ -827,8 +862,11 @@ function (_Component) {
         if (!editorBounds) return;
         sideToolbarTop = rangeBounds.top || blockBounds.top;
         styles.sideToolbar.top = sideToolbarTop; // `${sideToolbarTop}px`;
-        // position at begining of the line if no asset requested or block asset requested
-        // else position after selection
+
+        /*
+         * position at begining of the line if no asset requested or block asset requested
+         * else position after selection
+         */
 
         var controlWidth = sideToolbarEle.offsetWidth || 50;
         left = assetRequestPosition ? (rangeBounds.right || editorBounds.left) + controlWidth : editorBounds.left - controlWidth;
@@ -848,9 +886,12 @@ function (_Component) {
           var popTop = rangeBounds.top - popoverSpacing;
           left = rangeBounds.left - inlineToolbarWidth / 2;
           /* eslint prefer-destructuring:0 */
-          // prevent inline toolbar collapse
-          // left = left + inlineToolbarWidth / 2  >
-          // editorBounds.right ? editorBounds.right - inlineToolbarWidth : left;
+
+          /*
+           * prevent inline toolbar collapse
+           * left = left + inlineToolbarWidth / 2  >
+           * editorBounds.right ? editorBounds.right - inlineToolbarWidth : left;
+           */
 
           if (left + inlineToolbarWidth * 1.2 < editorBounds.right) {
             styles.inlineToolbar.left = left;
@@ -1005,9 +1046,12 @@ function (_Component) {
 
 
       var onOnAssetChoice = function onOnAssetChoice(asset) {
-        onAssetChoice(asset); // this.setState({
-        //   readOnly: false
-        // });
+        onAssetChoice(asset);
+        /*
+         * this.setState({
+         *   readOnly: false
+         * });
+         */
       };
       /**
        * component bindings and final props definitions
@@ -1033,9 +1077,14 @@ function (_Component) {
 
       var keyBindingFn = typeof _this.props.keyBindingFn === 'function' ? _this.props.keyBindingFn : _defaultKeyBindingFn; // props-provided iconMap can be merged with defaultIconMap for displaying custom icons
 
-      var iconMap = _this.props.iconMap ? (0, _objectSpread2.default)({}, _defaultIconMap.default, _this.props.iconMap) : _defaultIconMap.default; // console.timeEnd(`preparing rendering ${contentId}`)
-      // console.log(this.props.contentId,
-      // 'render with selection', stateEditorState.getSelection().getStartOffset());
+      var iconMap = _this.props.iconMap ? (0, _objectSpread2.default)({}, _defaultIconMap.default, _this.props.iconMap) : _defaultIconMap.default;
+      var handleFocus = _this.onFocus;
+      var handleBlur = _this.onBlur;
+      /*
+       * console.timeEnd(`preparing rendering ${contentId}`)
+       * console.log(this.props.contentId,
+       * 'render with selection', stateEditorState.getSelection().getStartOffset());
+       */
 
       return _react.default.createElement("div", {
         className: editorClass + (readOnly ? '' : ' active'),
@@ -1083,8 +1132,8 @@ function (_Component) {
         handleKeyCommand: _handleKeyCommand,
         handleBeforeInput: _handleBeforeInput,
         handleReturn: _handleReturn,
-        onFocus: _this.onFocus,
-        onBlur: _this.onBlur,
+        onFocus: handleFocus,
+        onBlur: handleBlur,
         onTab: _onTab,
         handleDrop: _handleDrop,
         ref: bindEditorRef

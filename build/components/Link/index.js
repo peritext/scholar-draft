@@ -20,7 +20,7 @@ var Link = function Link(props) {
       title = _props$contentState$g.title;
 
   return _react.default.createElement("a", {
-    className: "scholar-draft-Link",
+    className: 'scholar-draft-Link',
     href: href,
     title: title
   }, props.children);

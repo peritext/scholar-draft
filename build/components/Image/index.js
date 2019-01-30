@@ -25,7 +25,7 @@ var Image = function Image(_ref) {
       title = _contentState$getEnti.title;
 
   return _react.default.createElement("span", {
-    className: "scholar-draft-Image"
+    className: 'scholar-draft-Image'
   }, children, _react.default.createElement("img", {
     src: src,
     alt: alt,

@@ -50,10 +50,13 @@ function (_Component) {
       var _this$context = _this.context,
           onNotePointerMouseOver = _this$context.onNotePointerMouseOver,
           onNotePointerMouseOut = _this$context.onNotePointerMouseOut,
-          onNotePointerMouseClick = _this$context.onNotePointerMouseClick; // note:  it was necessary to display component children
-      // to avoid weird selection bugs implying this component.
-      // this should be solved with draft-js@0.11
-      // see https://github.com/facebook/draft-js/issues/627
+          onNotePointerMouseClick = _this$context.onNotePointerMouseClick;
+      /*
+       * note:  it was necessary to display component children
+       * to avoid weird selection bugs implying this component.
+       * this should be solved with draft-js@0.11
+       * see https://github.com/facebook/draft-js/issues/627
+       */
 
       var children = _this.props.children;
 
@@ -83,7 +86,7 @@ function (_Component) {
 
       var id = note && note.id ? "note-pointer-".concat(note.id) : 'note-pointer-orphan';
       return _react.default.createElement("sup", {
-        className: "scholar-draft-NotePointer",
+        className: 'scholar-draft-NotePointer',
         id: id,
         onMouseOver: onMouseOver,
         onFocus: onMouseOver,

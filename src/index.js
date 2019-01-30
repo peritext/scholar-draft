@@ -13,16 +13,19 @@ import * as Constants from './constants';
  * Editor without footnotes support
  */
 export const BasicEditor = basicEditor;
+
 /**
  * Draft-js state manipulation and assets management utils
  */
 export const utils = Utils;
+
 /**
  * Constant draft-js entity names used by the module
  */
 export const constants = Constants;
 
 const Editor = editor;
+
 /**
  * Editor with footnotes support
  */

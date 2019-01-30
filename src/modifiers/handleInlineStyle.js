@@ -20,24 +20,24 @@ const inlineMatchers = {
   ]
 };
 
-const handleInlineStyle = (editorState, character) => {
+const handleInlineStyle = ( editorState, character ) => {
   const key = editorState.getSelection().getStartKey();
-  const text = editorState.getCurrentContent().getBlockForKey(key).getText();
+  const text = editorState.getCurrentContent().getBlockForKey( key ).getText();
   const line = `${text}${character}`;
   let newEditorState = editorState;
-  Object.keys(inlineMatchers).some((index) => {
-    inlineMatchers[index].some((re) => {
+  Object.keys( inlineMatchers ).some( ( index ) => {
+    inlineMatchers[index].some( ( re ) => {
       let matchArr;
       do {
-        matchArr = re.exec(line);
-        if (matchArr) {
-          newEditorState = changeCurrentInlineStyle(newEditorState, matchArr, index);
+        matchArr = re.exec( line );
+        if ( matchArr ) {
+          newEditorState = changeCurrentInlineStyle( newEditorState, matchArr, index );
         }
-      } while (matchArr);
+      } while ( matchArr );
       return newEditorState !== editorState;
-    });
+    } );
     return newEditorState !== editorState;
-  });
+  } );
   return newEditorState;
 };
 

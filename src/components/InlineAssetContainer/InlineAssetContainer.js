@@ -6,7 +6,7 @@
  * at editor's implementation
  * @module scholar-draft/BlockAssetContainer
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import './InlineAssetContainer.scss';
@@ -27,44 +27,44 @@ class InlineAssetContainer extends Component {
     onAssetBlur: PropTypes.func,
   }
 
-  constructor(props) {
-    super(props);
+  constructor( props ) {
+    super( props );
     this.state = {
       
     };
   }
 
   componentDidMount() {
-    this.setState({
+    this.setState( {
       asset: this.context.assets[this.props.assetId],
       renderingMode: this.props.renderingMode
-    });
-    this.unsubscribeToAssets = this.context.emitter.subscribeToAssets((assets) => {
+    } );
+    this.unsubscribeToAssets = this.context.emitter.subscribeToAssets( ( assets ) => {
       const asset = assets[this.props.assetId];
-      if (asset !== this.state.asset) {
-        this.setState({
+      if ( asset !== this.state.asset ) {
+        this.setState( {
           asset
-        });
+        } );
       }
-    });
+    } );
 
     this.unsubscribeToCustomContext = this.context
-      .emitter.subscribeToCustomContext((customContext) => {
-        if (customContext !== this.state.customContext) {
-          this.setState({
+      .emitter.subscribeToCustomContext( ( customContext ) => {
+        if ( customContext !== this.state.customContext ) {
+          this.setState( {
             customContext
-          });
+          } );
         }
-      });
+      } );
 
     this.unsubscribeToRenderingMode = this.context.emitter
-      .subscribeToRenderingMode((renderingMode) => {
-        if (this.state.renderingMode !== renderingMode) {
-          this.setState({
+      .subscribeToRenderingMode( ( renderingMode ) => {
+        if ( this.state.renderingMode !== renderingMode ) {
+          this.setState( {
             renderingMode
-          });
+          } );
         }
-      });
+      } );
   }
 
   componentWillUnmount() {
@@ -79,7 +79,7 @@ class InlineAssetContainer extends Component {
       renderingMode,
       customContext,
     } = this.state;
-    if (!asset) {
+    if ( !asset ) {
       return null;
     }
 
@@ -98,41 +98,42 @@ class InlineAssetContainer extends Component {
       children
     } = this.props;
 
-
-    if (!AssetComponent) {
+    if ( !AssetComponent ) {
       return null;
     }
 
-    const onMOver = (event) => {
+    const onMOver = ( event ) => {
       event.stopPropagation();
-      if (typeof onMouseOver === 'function') {
-        onAssetMouseOver(asset.id, asset, event);
+      if ( typeof onMouseOver === 'function' ) {
+        onAssetMouseOver( asset.id, asset, event );
       }
     };
 
-    const onMOut = (event) => {
+    const onMOut = ( event ) => {
       event.stopPropagation();
-      if (typeof onMouseOut === 'function') {
-        onAssetMouseOut(asset.id, asset, event);
+      if ( typeof onMouseOut === 'function' ) {
+        onAssetMouseOut( asset.id, asset, event );
       }
     };
 
     return (
       <span
-        className="scholar-draft-InlineAssetContainer"
-        onMouseOver={onMOver}
-        onFocus={onMOver}
-        onMouseOut={onMOut}
-        onBlur={onMOut}>
+        className={ 'scholar-draft-InlineAssetContainer' }
+        onMouseOver={ onMOver }
+        onFocus={ onMOver }
+        onMouseOut={ onMOut }
+        onBlur={ onMOut }
+      >
         <AssetComponent
-          assetId={assetId}
-          asset={asset}
-          customContext={customContext}
-          onAssetChange={onAssetChange}
-          onAssetFocus={onAssetFocus}
-          onAssetBlur={onAssetBlur}
-          iconMap={iconMap}
-          renderingMode={renderingMode}>
+          assetId={ assetId }
+          asset={ asset }
+          customContext={ customContext }
+          onAssetChange={ onAssetChange }
+          onAssetFocus={ onAssetFocus }
+          onAssetBlur={ onAssetBlur }
+          iconMap={ iconMap }
+          renderingMode={ renderingMode }
+        >
           {children}
         </AssetComponent>
       </span>
@@ -143,10 +144,10 @@ class InlineAssetContainer extends Component {
 InlineAssetContainer.propTypes = {
   children: PropTypes.array,
   assetId: PropTypes.string,
-  AssetComponent: PropTypes.oneOfType([
+  AssetComponent: PropTypes.oneOfType( [
     PropTypes.func,
     PropTypes.element
-  ]),
+  ] ),
 
   renderingMode: PropTypes.string,
 };

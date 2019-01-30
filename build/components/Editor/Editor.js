@@ -71,12 +71,17 @@ function (_Component) {
     var _this;
 
     (0, _classCallCheck2.default)(this, Editor);
-    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(Editor).call(this, props)); // this is used as a map of refs
-    // to interact with note components
+    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(Editor).call(this, props));
+    /*
+     * this is used as a map of refs
+     * to interact with note components
+     */
 
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
-      // we use a spring system to handle automatic scrolls
-      // (e.g. note pointer clicked or click in the table of contents)
+      /*
+       * we use a spring system to handle automatic scrolls
+       * (e.g. note pointer clicked or click in the table of contents)
+       */
       _this.springSystem = new _rebound.SpringSystem();
       _this.spring = _this.springSystem.createSpring();
 
@@ -466,17 +471,18 @@ function (_Component) {
         containerDimensions = this.editor.getBoundingClientRect();
       }
 
+      var handleScrollUpdate = this.onScrollUpdate;
       return _react.default.createElement("div", {
         ref: bindEditorRef,
         className: editorClass
       }, _react.default.createElement(_reactCustomScrollbars.Scrollbars, {
         ref: bindGlobalScrollbarRef,
-        className: "custom-scrollbars",
+        className: 'custom-scrollbars',
         autoHide: true,
-        onUpdate: this.onScrollUpdate,
+        onUpdate: handleScrollUpdate,
         universal: true
       }, _react.default.createElement(ElementLayout, {
-        className: "main-container-editor"
+        className: 'main-container-editor'
       }, _react.default.createElement(_BasicEditor.default, {
         editorState: mainEditorState,
         assets: assets,
@@ -485,7 +491,7 @@ function (_Component) {
         messages: messages,
         editorPlaceholder: editorPlaceholder,
         notes: notes,
-        contentId: "main",
+        contentId: 'main',
         assetRequestPosition: assetRequestPosition,
         isRequestingAssets: assetRequestContentId === 'main',
         assetChoiceProps: assetChoiceProps,
@@ -522,7 +528,7 @@ function (_Component) {
         allowNotesInsertion: true,
         editorStyle: editorStyles && editorStyles.mainEditor
       })), _react.default.createElement(ElementLayout, {
-        className: "notes-container"
+        className: 'notes-container'
       }, activeNotes.map(this.renderNoteEditor))));
     }
   }]);

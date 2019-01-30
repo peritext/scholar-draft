@@ -2,7 +2,7 @@
  * This module exports a react component for editors' side tool bar
  * @module scholar-draft/SideToolbar
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import DefaultAssetButton from '../ToolbarButtons/AssetButton';
@@ -27,10 +27,10 @@ export default class SideToolbar extends Component {
     onAssetChoiceFocus: PropTypes.func,
 
     allowNotesInsertion: PropTypes.bool,
-    allowAssets: PropTypes.shape({
+    allowAssets: PropTypes.shape( {
       inline: PropTypes.bool,
       block: PropTypes.bool
-    }),
+    } ),
 
     AssetChoiceComponent: PropTypes.func,
     AssetButtonComponent: PropTypes.func,
@@ -43,14 +43,14 @@ export default class SideToolbar extends Component {
 
   };
 
-  constructor(props) {
-    super(props);
+  constructor( props ) {
+    super( props );
     this.state = {
       assetChoiceStyle: undefined
     };
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => (
+  shouldComponentUpdate = ( nextProps, nextState ) => (
     this.props.editorState !== nextProps.editorState ||
       this.props.assetRequestPosition !== nextProps.assetRequestPosition ||
       this.props.allowNotesInsertion !== nextProps.allowNotesInsertion ||
@@ -60,8 +60,8 @@ export default class SideToolbar extends Component {
   )
 
   componentDidUpdate = () => {
-    setTimeout(() => {
-      const {containerDimensions} = this.props;
+    setTimeout( () => {
+      const { containerDimensions } = this.props;
       let assetChoiceStyle;
       if (
         this.assetChoiceComponent 
@@ -70,7 +70,7 @@ export default class SideToolbar extends Component {
         && this.assetChoiceComponent.element 
         && containerDimensions
       ) {
-        const {width, height} = this.assetChoiceComponent.element.getBoundingClientRect();
+        const { width, height } = this.assetChoiceComponent.element.getBoundingClientRect();
         const {
           x: btnX, /* eslint id-length : 0 */
           y: btnY, /* eslint id-length : 0 */
@@ -86,28 +86,31 @@ export default class SideToolbar extends Component {
           // (
           rightExtremity > rightBoundary 
           && bottomExtremity > bottomBoundary
-          // )
-          // ||
-          // (
-          //   rightExtremity > rightBoundary 
-          //   && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
-          // )
+
+        /*
+         * )
+         * ||
+         * (
+         *   rightExtremity > rightBoundary 
+         *   && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
+         * )
+         */
         ) {
           assetChoiceStyle = {
-            left: -(width + assetButtonWidth),
-            top: -(assetButtonHeight + height),
+            left: -( width + assetButtonWidth ),
+            top: -( assetButtonHeight + height ),
           };
         }
-        else if (rightExtremity > rightBoundary) {
+        else if ( rightExtremity > rightBoundary ) {
           assetChoiceStyle = {
-            left: -(width + assetButtonWidth),
+            left: -( width + assetButtonWidth ),
             top: assetButtonWidth,
           };
         }
-        else if (bottomExtremity > bottomBoundary) {
+        else if ( bottomExtremity > bottomBoundary ) {
           assetChoiceStyle = {
             // left: -(width + assetButtonWidth * 2),
-            top: -(assetButtonHeight + height),
+            top: -( assetButtonHeight + height ),
           };
         }
       }
@@ -118,12 +121,12 @@ export default class SideToolbar extends Component {
             (
               this.state.assetChoiceStyle 
               && assetChoiceStyle 
-              && JSON.stringify(this.state.assetChoiceStyle) === JSON.stringify(assetChoiceStyle))
+              && JSON.stringify( this.state.assetChoiceStyle ) === JSON.stringify( assetChoiceStyle ) )
         )
       ) {
-        this.setState({assetChoiceStyle});
+        this.setState( { assetChoiceStyle } );
       }
-    }, 500);
+    }, 500 );
   }
 
   render = () => {
@@ -138,8 +141,11 @@ export default class SideToolbar extends Component {
       assetChoiceProps = {},
       onNoteAdd,
       allowAssets = {
-        // inline: true,
-        // block: true
+
+        /*
+         * inline: true,
+         * block: true
+         */
       },
       messages,
       iconMap,
@@ -158,70 +164,72 @@ export default class SideToolbar extends Component {
       assetChoiceStyle
     } = this.state;
 
-
-    const onAssetButtonClick = (event) => {
+    const onAssetButtonClick = ( event ) => {
       event.stopPropagation();
-      if (assetRequestPosition) {
+      if ( assetRequestPosition ) {
         onAssetRequestCancel();
       }
       else {
         const currentSelection = editorState && editorState.getSelection();
-        onAssetRequest(currentSelection);
+        onAssetRequest( currentSelection );
       }
     };
 
-    const bindToolbar = (toolbar) => {
+    const bindToolbar = ( toolbar ) => {
       this.toolbar = toolbar;
     };
-    const bindAssetChoiceComponentRef = (assetChoiceComponent) => {
+    const bindAssetChoiceComponentRef = ( assetChoiceComponent ) => {
       this.assetChoiceComponent = assetChoiceComponent;
     };
-    const bindAssetButton = (assetButton) => {
+    const bindAssetButton = ( assetButton ) => {
       this.assetButton = assetButton;
     };
-    const stopEventPropagation = event => event.stopPropagation();
+    const stopEventPropagation = ( event ) => event.stopPropagation();
     const assetSelectorActive = assetRequestPosition !== undefined;
-
 
     const AssetButton = AssetButtonComponent || DefaultAssetButton;
     const NoteButton = NoteButtonComponent || DefaultNoteButton;
-    
 
     return (
       <div
-        className="scholar-draft-SideToolbar"
-        ref={bindToolbar}
-        style={style}>
+        className={ 'scholar-draft-SideToolbar' }
+        ref={ bindToolbar }
+        style={ style }
+      >
         {allowNotesInsertion && !assetRequestPosition &&
         <NoteButton 
-          onClick={onNoteAdd} 
-          iconMap={iconMap}
-          message={messages && messages.addNote} />
+          onClick={ onNoteAdd } 
+          iconMap={ iconMap }
+          message={ messages && messages.addNote }
+        />
         }
-        {(allowAssets.inline || allowAssets.block) && 
+        {( allowAssets.inline || allowAssets.block ) && 
         <AssetButton 
-          onClick={onAssetButtonClick} 
-          active={assetSelectorActive}
-          iconMap={iconMap}
-          ref={bindAssetButton}
+          onClick={ onAssetButtonClick } 
+          active={ assetSelectorActive }
+          iconMap={ iconMap }
+          ref={ bindAssetButton }
           message={
             messages &&
             assetSelectorActive ? 
               messages.cancel : 
               messages.summonAsset
-          } />}
+          }
+        />}
         {assetRequestPosition &&
           <span
-            className="block-asset-choice-container" 
-            onClick={stopEventPropagation}
-            style={assetChoiceStyle}>
+            className={ 'block-asset-choice-container' } 
+            onClick={ stopEventPropagation }
+            style={ assetChoiceStyle }
+          >
             <AssetChoiceComponent
-              {...assetChoiceProps}
-              ref={bindAssetChoiceComponentRef}
-              contentId={contentId}
-              onAssetChoice={onAssetChoice}
-              onAssetRequestCancel={onAssetRequestCancel}
-              onAssetChoiceFocus={onAssetChoiceFocus} />
+              { ...assetChoiceProps }
+              ref={ bindAssetChoiceComponentRef }
+              contentId={ contentId }
+              onAssetChoice={ onAssetChoice }
+              onAssetRequestCancel={ onAssetRequestCancel }
+              onAssetChoiceFocus={ onAssetChoiceFocus }
+            />
           </span>
         }
       </div>

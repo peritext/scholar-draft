@@ -72,12 +72,15 @@ function (_Component) {
           var bottomBoundary = containerDimensions.y + containerDimensions.height;
 
           if ( // (
-          rightExtremity > rightBoundary && bottomExtremity > bottomBoundary // )
-          // ||
-          // (
-          //   rightExtremity > rightBoundary 
-          //   && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
-          // )
+          rightExtremity > rightBoundary && bottomExtremity > bottomBoundary
+          /*
+           * )
+           * ||
+           * (
+           *   rightExtremity > rightBoundary 
+           *   && bottomExtremity + (assetButtonHeight * 2) + height > bottomBoundary
+           * )
+           */
           ) {
               assetChoiceStyle = {
                 left: -(width + assetButtonWidth),
@@ -158,7 +161,7 @@ function (_Component) {
       var AssetButton = AssetButtonComponent || _AssetButton.default;
       var NoteButton = NoteButtonComponent || _NoteButton.default;
       return _react.default.createElement("div", {
-        className: "scholar-draft-SideToolbar",
+        className: 'scholar-draft-SideToolbar',
         ref: bindToolbar,
         style: style
       }, allowNotesInsertion && !assetRequestPosition && _react.default.createElement(NoteButton, {
@@ -172,7 +175,7 @@ function (_Component) {
         ref: bindAssetButton,
         message: messages && assetSelectorActive ? messages.cancel : messages.summonAsset
       }), assetRequestPosition && _react.default.createElement("span", {
-        className: "block-asset-choice-container",
+        className: 'block-asset-choice-container',
         onClick: stopEventPropagation,
         style: assetChoiceStyle
       }, _react.default.createElement(AssetChoiceComponent, (0, _extends2.default)({}, assetChoiceProps, {

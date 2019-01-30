@@ -28,12 +28,12 @@ var NoteButton = function NoteButton(_ref) {
   };
 
   return _react.default.createElement("div", (0, _extends2.default)({
-    className: "scholar-draft-NoteButton",
+    className: 'scholar-draft-NoteButton',
     onClick: onClick,
     onMouseDown: onMouseDown,
     "data-tip": message
   }, otherProps), iconMap.note, _react.default.createElement(_reactTooltip.default, {
-    place: "right"
+    place: 'right'
   }));
 };
 

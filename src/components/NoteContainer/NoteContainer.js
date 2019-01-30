@@ -2,44 +2,48 @@
  * This module exports a react component wrapping a editable note representation
  * @module scholar-draft/NoteContainer
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
 
 import './NoteContainer.scss';
 
 import BasicEditor from '../BasicEditor/BasicEditor';
 
-const Layout = ({
+const Layout = ( {
   children,
   NoteLayout,
   note,
   onHeaderClick,
   onDelete,
   onClickScrollToNotePointerHandler,
-}) => {
-  if (NoteLayout) {
+} ) => {
+  if ( NoteLayout ) {
     return (
       <NoteLayout
-        note={note}
-        onHeaderClick={onHeaderClick}
-        onDelete={onDelete}
-        onClickToRetroLink={onClickScrollToNotePointerHandler}
-        id={`note-container-${note.id}`}>
+        note={ note }
+        onHeaderClick={ onHeaderClick }
+        onDelete={ onDelete }
+        onClickToRetroLink={ onClickScrollToNotePointerHandler }
+        id={ `note-container-${note.id}` }
+      >
         {children}
       </NoteLayout>
     );
   }
   return (
     <section 
-      className="scholar-draft-NoteContainer"
-      id={`note-container-${note.id}`}>
-      <div className="note-header" onClick={onHeaderClick}>
-        <button onClick={onDelete}>x</button>
+      className={ 'scholar-draft-NoteContainer' }
+      id={ `note-container-${note.id}` }
+    >
+      <div
+        className={ 'note-header' }
+        onClick={ onHeaderClick }
+      >
+        <button onClick={ onDelete }>x</button>
         <h3>Note {note.order}</h3>
-        <button onClick={onClickScrollToNotePointerHandler}>↑</button>
+        <button onClick={ onClickScrollToNotePointerHandler }>↑</button>
       </div>
-      <div className="note-body">
+      <div className={ 'note-body' }>
         {children}
       </div>
     </section>
@@ -47,8 +51,8 @@ const Layout = ({
 };
 
 Layout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  NoteLayout: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+  children: PropTypes.oneOfType( [ PropTypes.array, PropTypes.object ] ),
+  NoteLayout: PropTypes.oneOfType( [ PropTypes.element, PropTypes.func ] ),
   note: PropTypes.object,
   onHeaderClick: PropTypes.func,
   onDelete: PropTypes.func,
@@ -73,7 +77,6 @@ class NoteContainer extends Component {
     editorPlaceholder: PropTypes.string,
 
     containerDimensions: PropTypes.object,
-
 
     addTextAtCurrentSelection: PropTypes.func,
     onEditorChange: PropTypes.func,
@@ -158,85 +161,86 @@ class NoteContainer extends Component {
       NoteLayout
     } = this.props;
 
-    const bindRef = (editor) => {
+    const bindRef = ( editor ) => {
       this.editor = editor;
     };
 
-    const onClick = (event) => {
+    const onClick = ( event ) => {
       event.stopPropagation();
-      onEditorClick(event);
+      onEditorClick( event );
     };
 
-    const onHeaderClick = (event) => {
+    const onHeaderClick = ( event ) => {
       event.stopPropagation();
-      onEditorClick(event);
+      onEditorClick( event );
     };
 
-    const onDelete = (event) => {
+    const onDelete = ( event ) => {
       event.stopPropagation();
-      onClickDelete(event);
+      onClickDelete( event );
     };
 
-    const onClickScrollToNotePointerHandler = (event) => {
+    const onClickScrollToNotePointerHandler = ( event ) => {
       event.stopPropagation();
-      onClickScrollToNotePointer(note.id);
+      onClickScrollToNotePointer( note.id );
     };
-    if (note) {
+    if ( note ) {
       return (
         <Layout
-          NoteLayout={NoteLayout}
-          note={note}
-          onHeaderClick={onHeaderClick}
-          onDelete={onDelete}
-          onClickScrollToNotePointerHandler={onClickScrollToNotePointerHandler}>
+          NoteLayout={ NoteLayout }
+          note={ note }
+          onHeaderClick={ onHeaderClick }
+          onDelete={ onDelete }
+          onClickScrollToNotePointerHandler={ onClickScrollToNotePointerHandler }
+        >
           <BasicEditor 
-            editorState={note.editorState}
-            contentId={contentId}
-            assets={assets}
-            ref={bindRef}
-            onClick={onClick}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onBlur={onBlur}
-            addTextAtCurrentSelection={addTextAtCurrentSelection}
-            clipboard={clipboard}
-            editorPlaceholder={editorPlaceholder}
-            handlePastedText={handlePastedText}
+            editorState={ note.editorState }
+            contentId={ contentId }
+            assets={ assets }
+            ref={ bindRef }
+            onClick={ onClick }
+            onDrop={ onDrop }
+            onDragOver={ onDragOver }
+            onBlur={ onBlur }
+            addTextAtCurrentSelection={ addTextAtCurrentSelection }
+            clipboard={ clipboard }
+            editorPlaceholder={ editorPlaceholder }
+            handlePastedText={ handlePastedText }
 
-            containerDimensions={containerDimensions}
+            containerDimensions={ containerDimensions }
 
-            messages={messages}
+            messages={ messages }
 
-            renderingMode={renderingMode}
+            renderingMode={ renderingMode }
 
-            isActive={isActive}
+            isActive={ isActive }
 
-            assetRequestPosition={assetRequestPosition}
-            onAssetRequestCancel={onAssetRequestCancel}
-            isRequestingAssets={assetRequestContentId === contentId}
+            assetRequestPosition={ assetRequestPosition }
+            onAssetRequestCancel={ onAssetRequestCancel }
+            isRequestingAssets={ assetRequestContentId === contentId }
 
-            AssetButtonComponent={AssetButtonComponent}
-            NoteButtonComponent={NoteButtonComponent}
-            AssetChoiceComponent={AssetChoiceComponent}
-            assetChoiceProps={assetChoiceProps}
+            AssetButtonComponent={ AssetButtonComponent }
+            NoteButtonComponent={ NoteButtonComponent }
+            AssetChoiceComponent={ AssetChoiceComponent }
+            assetChoiceProps={ assetChoiceProps }
 
+            onEditorChange={ onEditorChange }
+            onAssetRequest={ onAssetRequest }
+            onAssetChange={ onAssetChange }
+            onAssetChoice={ onAssetChoice }
 
-            onEditorChange={onEditorChange}
-            onAssetRequest={onAssetRequest}
-            onAssetChange={onAssetChange}
-            onAssetChoice={onAssetChoice}
-
-            onAssetClick={onAssetClick}
-            onAssetMouseOver={onAssetMouseOver}
-            onAssetMouseOut={onAssetMouseOut}
+            onAssetClick={ onAssetClick }
+            onAssetMouseOver={ onAssetMouseOver }
+            onAssetMouseOut={ onAssetMouseOut }
             
-            inlineButtons={inlineButtons}
-            inlineAssetComponents={inlineAssetComponents}
-            blockAssetComponents={blockAssetComponents}
-            inlineEntities={inlineEntities}
-            iconMap={iconMap}
-            allowNotesInsertion={false}
-            editorStyle={editorStyle} />
+            inlineButtons={ inlineButtons }
+            inlineAssetComponents={ inlineAssetComponents }
+            blockAssetComponents={ blockAssetComponents }
+            inlineEntities={ inlineEntities }
+            iconMap={ iconMap }
+            allowNotesInsertion={ false }
+            editorStyle={ editorStyle }
+          />
         </Layout>
       );
     }

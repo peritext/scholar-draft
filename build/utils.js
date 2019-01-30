@@ -127,11 +127,14 @@ exports.getEventTextRange = getEventTextRange;
 function insertAssetInEditor(editorState, asset, selection) {
   var currentContent = editorState.getCurrentContent();
   var activeSelection = editorState.getSelection();
-  var inputSelection = selection || activeSelection; // infer the type of insertion (BLOCK or INLINE)
-  // from selection :
-  // selection in empty block --> block insertion
-  // else --> inline insertion
-  // (note : could be provided as a param, but then would require a more complex behavior)
+  var inputSelection = selection || activeSelection;
+  /*
+   * infer the type of insertion (BLOCK or INLINE)
+   * from selection :
+   * selection in empty block --> block insertion
+   * else --> inline insertion
+   * (note : could be provided as a param, but then would require a more complex behavior)
+   */
 
   var isInEmptyBlock = currentContent.getBlockForKey(inputSelection.getStartKey()).getText().trim().length === 0;
   var insertionType = isInEmptyBlock ? _constants.BLOCK_ASSET : _constants.INLINE_ASSET; // create new entity within content state
@@ -180,8 +183,11 @@ function insertAssetInEditor(editorState, asset, selection) {
     var currentContentBlock = currentContent.getBlockForKey(anchorKey);
     var start = thatSelection.getStartOffset();
     var end = thatSelection.getEndOffset();
-    var selectedText = currentContentBlock.getText().slice(start, end); // now we apply the entity to a portion of content
-    // case 1 : asset annotates some existing selected text
+    var selectedText = currentContentBlock.getText().slice(start, end);
+    /*
+     * now we apply the entity to a portion of content
+     * case 1 : asset annotates some existing selected text
+     */
 
     if (selectedText.length > 0) {
       // --> we apply the entity to that text
@@ -256,13 +262,16 @@ function insertInlineAssetInEditor(editorState, asset, selection) {
   var endSelection = thatSelection.merge({
     anchorOffset: thatSelection.getEndOffset(),
     focusOffset: thatSelection.getEndOffset()
-  }); // newContentState = Modifier.replaceText(
-  //   newContentState,
-  //   endSelection,
-  //   ' ',
-  //   null,
-  //   null
-  // );
+  });
+  /*
+   * newContentState = Modifier.replaceText(
+   *   newContentState,
+   *   endSelection,
+   *   ' ',
+   *   null,
+   *   null
+   * );
+   */
 
   updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
   updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
@@ -410,8 +419,11 @@ function deleteAssetFromEditor(editorState, id, callback) {
   // todo : try to optimize this with draftjs-utils
   var contentState = editorState.getCurrentContent();
   var blockMap = contentState.getBlockMap().toJS();
-  var entities = Object.keys(blockMap) // iterate through blocks
-  // todo : use getEntitiesRange ?
+  var entities = Object.keys(blockMap)
+  /*
+   * iterate through blocks
+   * todo : use getEntitiesRange ?
+   */
   .map(function (blockMapId) {
     return blockMap[blockMapId].characterList // find characters attached to an entity
     .filter(function (chara) {
@@ -454,8 +466,11 @@ function deleteAssetFromEditor(editorState, id, callback) {
   }
 
   return callback(editorState);
-} // todo : delete that function which seems to be a duplicate
-// of deleteAssetFromEditor
+}
+/*
+ * todo : delete that function which seems to be a duplicate
+ * of deleteAssetFromEditor
+ */
 
 /**
  * Delete an asset from the editor, given its id only
@@ -525,8 +540,11 @@ function deleteNoteFromEditor(editorState, id, callback) {
 var updateNotesFromEditor = function updateNotesFromEditor(editorState, inputNotes) {
   var notes = inputNotes; // { ...inputNotes };
 
-  var contentState = editorState.getCurrentContent(); // list all entities
-  // should be replaced by contentState.getEntityMap() with draft@0.11.0
+  var contentState = editorState.getCurrentContent();
+  /*
+   * list all entities
+   * should be replaced by contentState.getEntityMap() with draft@0.11.0
+   */
 
   var entities = [];
   contentState.getBlockMap().forEach(function (block) {
@@ -584,8 +602,11 @@ var updateNotesFromEditor = function updateNotesFromEditor(editorState, inputNot
 exports.updateNotesFromEditor = updateNotesFromEditor;
 
 var updateAssetsFromEditors = function updateAssetsFromEditors(editorStates, inputAssets) {
-  var assets = (0, _objectSpread3.default)({}, inputAssets); // list all entities
-  // todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
+  var assets = (0, _objectSpread3.default)({}, inputAssets);
+  /*
+   * list all entities
+   * todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
+   */
 
   var entities = [];
   editorStates.forEach(function (editorState) {

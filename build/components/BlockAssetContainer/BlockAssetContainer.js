@@ -93,7 +93,7 @@ function (_Component) {
 
       var RealAssetComponent = typeof AssetComponent === 'function' ? AssetComponent : renderEmptyComponent;
       return _react.default.createElement("div", {
-        className: "scholar-draft-BlockAssetContainer",
+        className: 'scholar-draft-BlockAssetContainer',
         onMouseOver: onMOver,
         onFocus: onMOver,
         onMouseOut: onMOut,

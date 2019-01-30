@@ -33,43 +33,43 @@ var _unorderedlist = _interopRequireDefault(require("./unorderedlist.svg"));
 // import SVGInline from 'react-svg-inline';
 var _default = {
   asset: _react.default.createElement("img", {
-    alt: "asset-icon",
+    alt: 'asset-icon',
     src: _asset.default
   }),
   bold: _react.default.createElement("img", {
-    alt: "bold-icon",
+    alt: 'bold-icon',
     src: _bold.default
   }),
   codeblock: _react.default.createElement("img", {
-    alt: "codeblock-icon",
+    alt: 'codeblock-icon',
     src: _codeblock.default
   }),
   h1: _react.default.createElement("img", {
-    alt: "h1-icon",
+    alt: 'h1-icon',
     src: _h.default
   }),
   h2: _react.default.createElement("img", {
-    alt: "h2-icon",
+    alt: 'h2-icon',
     src: _h2.default
   }),
   italic: _react.default.createElement("img", {
-    alt: "italic-icon",
+    alt: 'italic-icon',
     src: _italic.default
   }),
   note: _react.default.createElement("img", {
-    alt: "note-icon",
+    alt: 'note-icon',
     src: _note.default
   }),
   orderedlist: _react.default.createElement("img", {
-    alt: "orderedlist-icon",
+    alt: 'orderedlist-icon',
     src: _orderedlist.default
   }),
   quoteblock: _react.default.createElement("img", {
-    alt: "quoteblock-icon",
+    alt: 'quoteblock-icon',
     src: _quoteblock.default
   }),
   unorderedlist: _react.default.createElement("img", {
-    alt: "unorderedlist-icon",
+    alt: 'unorderedlist-icon',
     src: _unorderedlist.default
   })
 };

@@ -4,12 +4,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Image = ({entityKey, children, contentState}) => {
-  const {src, alt, title} = contentState.getEntity(entityKey).getData();
+const Image = ( { entityKey, children, contentState } ) => {
+  const { src, alt, title } = contentState.getEntity( entityKey ).getData();
   return (
-    <span className="scholar-draft-Image">
+    <span className={ 'scholar-draft-Image' }>
       {children}
-      <img src={src} alt={alt} title={title} />
+      <img
+        src={ src }
+        alt={ alt }
+        title={ title }
+      />
     </span>
   );
 };

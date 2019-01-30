@@ -18,7 +18,7 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
  */
 var Quote = function Quote(props) {
   return _react.default.createElement("q", {
-    className: "scholar-draft-QuoteContainer"
+    className: 'scholar-draft-QuoteContainer'
   }, props.children);
 };
 

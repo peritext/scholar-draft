@@ -52,17 +52,17 @@ var Layout = function Layout(_ref) {
   }
 
   return _react.default.createElement("section", {
-    className: "scholar-draft-NoteContainer",
+    className: 'scholar-draft-NoteContainer',
     id: "note-container-".concat(note.id)
   }, _react.default.createElement("div", {
-    className: "note-header",
+    className: 'note-header',
     onClick: onHeaderClick
   }, _react.default.createElement("button", {
     onClick: onDelete
   }, "x"), _react.default.createElement("h3", null, "Note ", note.order), _react.default.createElement("button", {
     onClick: onClickScrollToNotePointerHandler
   }, "\u2191")), _react.default.createElement("div", {
-    className: "note-body"
+    className: 'note-body'
   }, children));
 };
 

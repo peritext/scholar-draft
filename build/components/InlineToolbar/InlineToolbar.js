@@ -67,7 +67,7 @@ function (_Component) {
       };
 
       return _react.default.createElement("div", {
-        className: "scholar-draft-InlineToolbar",
+        className: 'scholar-draft-InlineToolbar',
         ref: bindRef,
         style: style
       }, (buttons || _defaultButtons.default).map(function (button, key) {

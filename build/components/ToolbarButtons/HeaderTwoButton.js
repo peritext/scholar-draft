@@ -16,7 +16,7 @@ var _BlockButton = _interopRequireDefault(require("./BlockButton"));
 /* eslint react/prop-types: 0 */
 var _default = function _default(props) {
   return _react.default.createElement(_BlockButton.default, (0, _extends2.default)({}, props, {
-    blockType: "header-two"
+    blockType: 'header-two'
   }), props.iconMap.h2);
 };
 

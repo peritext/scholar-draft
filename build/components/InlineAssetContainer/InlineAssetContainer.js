@@ -91,7 +91,7 @@ function (_Component) {
       };
 
       return _react.default.createElement("span", {
-        className: "scholar-draft-InlineAssetContainer",
+        className: 'scholar-draft-InlineAssetContainer',
         onMouseOver: onMOver,
         onFocus: onMOver,
         onMouseOut: onMOut,

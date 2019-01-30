@@ -4,10 +4,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Link = (props) => {
-  const {href, title} = props.contentState.getEntity(props.entityKey).getData();
+const Link = ( props ) => {
+  const { href, title } = props.contentState.getEntity( props.entityKey ).getData();
   return (
-    <a className="scholar-draft-Link" href={href} title={title}>
+    <a
+      className={ 'scholar-draft-Link' }
+      href={ href }
+      title={ title }
+    >
       {props.children}
     </a>
   );

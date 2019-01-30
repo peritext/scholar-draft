@@ -1,9 +1,9 @@
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
-import {EditorState, Modifier} from 'draft-js';
+import { EditorState, Modifier } from 'draft-js';
 
-const insertText = (editorState, text) => {
+const insertText = ( editorState, text ) => {
   const selection = editorState.getSelection();
   const content = editorState.getCurrentContent();
   const newContentState = Modifier.insertText(

@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
-import {RichUtils} from 'draft-js';
+import React, { Component } from 'react';
+import { RichUtils } from 'draft-js';
 import PropTypes from 'prop-types';
 
 class BlockButton extends Component {
 
   static propTypes = {
+
     /**
      * The current editorState. This gets passed down from the editor.
      */
@@ -21,21 +22,21 @@ class BlockButton extends Component {
      */
     blockType: PropTypes.string,
 
-    children: PropTypes.oneOfType([
+    children: PropTypes.oneOfType( [
       PropTypes.array,
       PropTypes.object
-    ])
+    ] )
   };
 
-  isSelected = (editorState, blockType) => {
-    if (!editorState || !editorState.getSelection) {
+  isSelected = ( editorState, blockType ) => {
+    if ( !editorState || !editorState.getSelection ) {
       return;
     }
     const selection = editorState.getSelection();
     const selectedBlock = editorState
       .getCurrentContent()
-      .getBlockForKey(selection.getStartKey());
-    if (!selectedBlock) return false;
+      .getBlockForKey( selection.getStartKey() );
+    if ( !selectedBlock ) return false;
     const selectedBlockType = selectedBlock.getType();
     return selectedBlockType === blockType;
   };
@@ -47,27 +48,31 @@ class BlockButton extends Component {
       blockType, 
       children, 
       updateEditorState,
-      // iconMap,
-      // ...otherProps 
+
+      /*
+       * iconMap,
+       * ...otherProps 
+       */
     } = this.props;
 
-    const selected = this.isSelected(editorState, blockType); 
+    const selected = this.isSelected( editorState, blockType ); 
     const className = `scholar-draft-BlockButton${selected ? ' active' : ''}`;
 
-    const onMouseDown = (event) => {
+    const onMouseDown = ( event ) => {
       event.preventDefault();
-      updateEditorState(RichUtils.toggleBlockType(editorState, blockType));
+      updateEditorState( RichUtils.toggleBlockType( editorState, blockType ) );
     };
 
     return (
       <div
-        onMouseDown={onMouseDown}
-        className={className}>
+        onMouseDown={ onMouseDown }
+        className={ className }
+      >
         {React.Children.map(
           children, 
-          child => React.cloneElement(child, { 
+          ( child ) => React.cloneElement( child, { 
             selected
-          })
+          } )
         )}
       </div>
     );

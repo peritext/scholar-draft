@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {RichUtils} from 'draft-js';
+import React, { Component } from 'react';
+import { RichUtils } from 'draft-js';
 import PropTypes from 'prop-types';
 
 import './ButtonStyles.scss';
@@ -7,6 +7,7 @@ import './ButtonStyles.scss';
 class InlineButton extends Component {
 
   static propTypes = {
+
     /**
      * The current editorState. This gets passed down from the editor.
      */
@@ -23,7 +24,7 @@ class InlineButton extends Component {
      */
     styleType: PropTypes.string,
 
-    children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    children: PropTypes.oneOfType( [ PropTypes.array, PropTypes.object ] ),
 
     inlineStyleType: PropTypes.string,
 
@@ -36,8 +37,8 @@ class InlineButton extends Component {
    * @param {string} inlineStyleType - inline style to inspect against the provided editorState
    * @return {boolean} isSelected - 
    */
-  isSelected = (editorState, inlineStyleType) => {
-    if (!editorState || !editorState.getSelection) {
+  isSelected = ( editorState, inlineStyleType ) => {
+    if ( !editorState || !editorState.getSelection ) {
       return;
     }
     // Check the editor is focused
@@ -45,13 +46,13 @@ class InlineButton extends Component {
 
     const selectedBlock = editorState
       .getCurrentContent()
-      .getBlockForKey(selection.getStartKey());
-    if (!selectedBlock) {
+      .getBlockForKey( selection.getStartKey() );
+    if ( !selectedBlock ) {
       return false;
     }
 
     const currentInlineStyle = editorState.getCurrentInlineStyle();
-    return currentInlineStyle.has(inlineStyleType);
+    return currentInlineStyle.has( inlineStyleType );
   };
 
   render = () => {
@@ -64,24 +65,25 @@ class InlineButton extends Component {
       ...otherProps 
     } = this.props;
 
-    const selected = this.isSelected(editorState, inlineStyleType); 
+    const selected = this.isSelected( editorState, inlineStyleType ); 
     const className = `scholar-draft-InlineButton${selected ? ' active' : ''} `;
 
-    const onMouseDown = (event) => {
+    const onMouseDown = ( event ) => {
       event.preventDefault();
-      updateEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyleType));
+      updateEditorState( RichUtils.toggleInlineStyle( editorState, inlineStyleType ) );
     };
 
     return (
       <div
-        onMouseDown={onMouseDown}
-        className={className}
-        {...otherProps}>
+        onMouseDown={ onMouseDown }
+        className={ className }
+        { ...otherProps }
+      >
         {React.Children.map(
           this.props.children, 
-          child => React.cloneElement(child, { 
+          ( child ) => React.cloneElement( child, { 
             selected
-          })
+          } )
         )}
       </div>
     );

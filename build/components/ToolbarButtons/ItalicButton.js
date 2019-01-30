@@ -16,7 +16,7 @@ var _InlineButton = _interopRequireDefault(require("./InlineButton"));
 /* eslint react/prop-types: 0 */
 var _default = function _default(props) {
   return _react.default.createElement(_InlineButton.default, (0, _extends2.default)({}, props, {
-    inlineStyleType: "ITALIC"
+    inlineStyleType: 'ITALIC'
   }), props.iconMap.italic);
 };
 

@@ -14,14 +14,64 @@ import quoteblock from './quoteblock.svg';
 import unorderedlist from './unorderedlist.svg';
 
 export default {
-  asset: <img alt="asset-icon" src={asset} />,
-  bold: <img alt="bold-icon" src={bold} />,
-  codeblock: <img alt="codeblock-icon" src={codeblock} />,
-  h1: <img alt="h1-icon" src={h1} />,
-  h2: <img alt="h2-icon" src={h2} />,
-  italic: <img alt="italic-icon" src={italic} />,
-  note: <img alt="note-icon" src={note} />,
-  orderedlist: <img alt="orderedlist-icon" src={orderedlist} />,
-  quoteblock: <img alt="quoteblock-icon" src={quoteblock} />,
-  unorderedlist: <img alt="unorderedlist-icon" src={unorderedlist} />,
+  asset: (
+    <img
+      alt={ 'asset-icon' }
+      src={ asset }
+    />
+  ),
+  bold: (
+    <img
+      alt={ 'bold-icon' }
+      src={ bold }
+    />
+  ),
+  codeblock: (
+    <img
+      alt={ 'codeblock-icon' }
+      src={ codeblock }
+    />
+  ),
+  h1: (
+    <img
+      alt={ 'h1-icon' }
+      src={ h1 }
+    />
+  ),
+  h2: (
+    <img
+      alt={ 'h2-icon' }
+      src={ h2 }
+    />
+  ),
+  italic: (
+    <img
+      alt={ 'italic-icon' }
+      src={ italic }
+    />
+  ),
+  note: (
+    <img
+      alt={ 'note-icon' }
+      src={ note }
+    />
+  ),
+  orderedlist: (
+    <img
+      alt={ 'orderedlist-icon' }
+      src={ orderedlist }
+    />
+  ),
+  quoteblock: (
+    <img
+      alt={ 'quoteblock-icon' }
+      src={ quoteblock }
+    />
+  ),
+  unorderedlist: (
+    <img
+      alt={ 'unorderedlist-icon' }
+      src={ unorderedlist }
+    />
+  ),
 };
