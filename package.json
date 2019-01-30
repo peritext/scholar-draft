@@ -11,7 +11,7 @@
     "lint:watch": "node_modules/eslint-watch/bin/esw --watch src",
     "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "test:watch": "npm run test -- --watch",
-    "storybook": "start-storybook -p 6007",
+    "dev": "start-storybook -p 6007",
     "build-storybook": "build-storybook",
     "validate": "npm ls"
   },
