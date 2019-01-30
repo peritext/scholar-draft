@@ -214,7 +214,6 @@ var Editor = function (_Component) {
           iconMap = _this$props.iconMap,
           keyBindingFn = _this$props.keyBindingFn,
           editorStyles = _this$props.editorStyles,
-          clipboard = _this$props.clipboard,
           focusedEditorId = _this$props.focusedEditorId,
           NoteContainerComponent = _this$props.NoteContainerComponent,
           AssetButtonComponent = _this$props.AssetButtonComponent,
@@ -307,8 +306,6 @@ var Editor = function (_Component) {
         onAssetChange: onAssetChange,
         onAssetChoice: onAssetChoice,
         handlePastedText: handlePastedText,
-
-        clipboard: clipboard,
 
         onDrop: onNoteDrop,
         onDragOver: onNoteDragOver,
@@ -448,7 +445,6 @@ var Editor = function (_Component) {
           inlineEntities = _props$inlineEntities === undefined ? [] : _props$inlineEntities,
           iconMap = _props.iconMap,
           editorStyles = _props.editorStyles,
-          clipboard = _props.clipboard,
           focusedEditorId = _props.focusedEditorId,
           renderingMode = _props.renderingMode;
 
@@ -595,8 +591,6 @@ var Editor = function (_Component) {
 
               containerDimensions: containerDimensions,
 
-              clipboard: clipboard,
-
               allowNotesInsertion: true,
               editorStyle: editorStyles && editorStyles.mainEditor
             })
@@ -674,7 +668,6 @@ Editor.propTypes = {
   keyBindingFn: _propTypes2.default.func,
 
   editorStyles: _propTypes2.default.object,
-  clipboard: _propTypes2.default.object,
   focusedEditorId: _propTypes2.default.string,
   NoteContainerComponent: _propTypes2.default.func,
   ElementLayoutComponent: _propTypes2.default.func };

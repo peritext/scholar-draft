@@ -101,7 +101,6 @@ export default class Editor extends Component {
     keyBindingFn: PropTypes.func,
 
     editorStyles: PropTypes.object,
-    clipboard: PropTypes.object,
     focusedEditorId: PropTypes.string,
     NoteContainerComponent: PropTypes.func,
     ElementLayoutComponent: PropTypes.func,
@@ -287,7 +286,6 @@ export default class Editor extends Component {
       keyBindingFn,
 
       editorStyles,
-      clipboard,
       focusedEditorId,
       NoteContainerComponent,
       AssetButtonComponent,
@@ -384,7 +382,6 @@ export default class Editor extends Component {
         onAssetChoice={onAssetChoice}
         handlePastedText={handlePastedText}
 
-        clipboard={clipboard}
 
         onDrop={onNoteDrop}
         onDragOver={onNoteDragOver}
@@ -465,7 +462,6 @@ export default class Editor extends Component {
       iconMap,
 
       editorStyles,
-      clipboard,
       focusedEditorId,
 
       renderingMode,
@@ -609,8 +605,6 @@ export default class Editor extends Component {
               iconMap={iconMap}
 
               containerDimensions={containerDimensions}
-
-              clipboard={clipboard}
 
               allowNotesInsertion
               editorStyle={editorStyles && editorStyles.mainEditor}

@@ -30,7 +30,6 @@ import MultiDecorator from '../../multidecorators';
 import {
   INLINE_ASSET,
   NOTE_POINTER,
-  SCHOLAR_DRAFT_CLIPBOARD_CODE
 } from '../../constants';
 
 import {
@@ -74,7 +73,6 @@ export default class BasicEditor extends Component {
     readOnly: PropTypes.bool,
     assets: PropTypes.object,
     notes: PropTypes.object,
-    clipboard: PropTypes.object,
     inlineAssetComponents: PropTypes.object,
     customContext: PropTypes.object,
     blockAssetComponents: PropTypes.object,
@@ -172,18 +170,10 @@ export default class BasicEditor extends Component {
     super(props);
     // selection positionning is debounced to improve performance
     this.debouncedUpdateSelection = debounce(this.updateSelection, 100);
-    // undo stack is debounced to improve performance
-    // this.feedUndoStack = debounce(this.feedUndoStack, 1000);
-    // it is needed to bind this function right away for being able
-    // to initialize the state
-    this.generateEmptyEditor = this.generateEmptyEditor.bind(this);
 
     this.state = {
       // editor state is initialized with a decorated editorState (notes + assets + ...)
       editorState: this.generateEmptyEditor(),
-      // editor states undo and redo stacks
-      // undoStack: [],
-      // redoStack: [],
       // toolbars styles are represented as css-in-js
       styles: {
         inlineToolbar: {
@@ -571,18 +561,11 @@ export default class BasicEditor extends Component {
    * @param {ImmutableRecord} editorState - the new editor state
    */
   onChange = (editorState) => {
-  // onChange = (editorState, feedUndoStack = true) => {
-    // console.log(this.props.contentId,
-    // ' on change', editorState.getSelection().getStartOffset(),
-    // 'is focusing', this.state.isFocusing)
     if (
       typeof this.props.onEditorChange === 'function' &&
       !this.state.readOnly &&
       !this.state.isFocusing
     ) {
-      // if (feedUndoStack === true) {
-      //   this.feedUndoStack(editorState);
-      // }
       this.props.onEditorChange(editorState);
     }
   }
@@ -592,49 +575,9 @@ export default class BasicEditor extends Component {
   }
 
   /**
-   * Stores previous editor states in an undo stack
-   * @param {ImmutableRecord} editorState - the input editor state
-   */
-  // feedUndoStack = (editorState) => {
-  //   const {
-  //     undoStack
-  //   } = this.state;
-  //   // max length for undo stack
-  //   // todo: store that in props or in a variable
-  //   const newUndoStack = undoStack.length > 50 ?
-  //      undoStack.slice(undoStack.length - 50) : undoStack;
-  //   this.setState({
-  //     undoStack: [
-  //       ...newUndoStack,
-  //       editorState
-  //     ]
-  //   });
-  // }
-
-  /**
    * Manages relevant state changes and callbacks when undo is called
    */
   undo = () => {
-    // const {
-    //   undoStack,
-    //   redoStack
-    // } = this.state;
-    // const newUndoStack = [...undoStack];
-    // if (undoStack.length > 1) {
-    //   const last = newUndoStack.pop();
-    //   this.setState({
-    //     redoStack: [
-    //       ...redoStack,
-    //       last
-    //     ],
-    //     undoStack: newUndoStack
-    //   });
-    //   this.onChange(newUndoStack[newUndoStack.length - 1], false);
-    //   // draft-js won't notice the change of editorState
-    //   // so we have to force it to re-render after having received
-    //   // the new editorStaten
-    //   setTimeout(() => this.forceRender(this.props));
-    // }
     this.onChange(EditorState.undo(this.props.editorState), false);
     // draft-js won't notice the change of editorState
     // so we have to force it to re-render after having received
@@ -647,23 +590,10 @@ export default class BasicEditor extends Component {
    * Manages relevant state changes and callbacks when redo is called
    */
   redo = () => {
-    // const {
-    //   undoStack,
-    //   redoStack
-    // } = this.state;
-    // const newRedoStack = [...redoStack];
-    // if (redoStack.length) {
-    //   const last = newRedoStack.pop();
-    //   this.setState({
-    //     undoStack: [
-    //       ...undoStack,
-    //       last
-    //     ],
-    //     redoStack: newRedoStack
-    //   });
-    //   this.onChange(last);
-    // }
     this.onChange(EditorState.redo(this.props.editorState), false);
+    // draft-js won't notice the change of editorState
+    // so we have to force it to re-render after having received
+    // the new editorState
     setTimeout(() => this.forceRender(this.props));
   }
 
