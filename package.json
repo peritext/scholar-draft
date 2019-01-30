@@ -112,13 +112,13 @@
   },
   "dependencies": {
     "@storybook/cli": "^4.1.11",
+    "d3-ease": "^1.0.5",
     "draft-js": "^0.10.5",
     "draft-js-checkable-list-item": "^3.0.4",
     "draft-js-simpledecorator": "^1.0.2",
     "draftjs-utils": "^0.9.4",
     "react-custom-scrollbars": "^4.1.0",
     "react-tooltip": "^3.3.0",
-    "rebound": "0.1.0",
     "uuid": "^3.0.1"
   }
 }

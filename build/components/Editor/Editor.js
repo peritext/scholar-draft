@@ -29,7 +29,7 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _reactCustomScrollbars = require("react-custom-scrollbars");
 
-var _rebound = require("rebound");
+var _d3Ease = require("d3-ease");
 
 var _draftJs = require("draft-js");
 
@@ -77,18 +77,7 @@ function (_Component) {
      * to interact with note components
      */
 
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
-      /*
-       * we use a spring system to handle automatic scrolls
-       * (e.g. note pointer clicked or click in the table of contents)
-       */
-      _this.springSystem = new _rebound.SpringSystem();
-      _this.spring = _this.springSystem.createSpring();
-
-      _this.spring.addListener({
-        onSpringUpdate: _this.handleSpringUpdate
-      });
-    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {});
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps) {} // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
     //   setTimeout(() => {
     //     const { anchorNode } = getSelection();
@@ -105,17 +94,11 @@ function (_Component) {
     // }
 
     /**
-     * Handles the scrolling process using the spring system
-     * @param {object} spring - the spring system instance
+     * Programmatically modifies the scroll state of the component
+     * so that it transitions to a specific point in the page
+     * @param {number} top - the position to scroll to in pixels
      */
     );
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "handleSpringUpdate", function (spring) {
-      var val = spring.getCurrentValue();
-
-      if (val !== undefined && _this.globalScrollbar) {
-        _this.globalScrollbar.scrollTop(val);
-      }
-    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "focus", function (contentId, selection) {
       if (contentId === 'main' && _this.mainEditor) {
         if (selection) {
@@ -314,22 +297,29 @@ function (_Component) {
 
   (0, _createClass2.default)(Editor, [{
     key: "scrollTop",
+    value: function scrollTop(initialTop) {
+      var _this2 = this;
 
-    /**
-     * Programmatically modifies the scroll state of the component
-     * so that it transitions to a specific point in the page
-     * @param {number} top - the position to scroll to in pixels
-     */
-    value: function scrollTop(top) {
-      // this.globalScrollbar.scrollTop(top);
       var scrollbars = this.globalScrollbar;
       var scrollTop = scrollbars.getScrollTop();
       var scrollHeight = scrollbars.getScrollHeight();
+      var top = initialTop > scrollHeight ? scrollHeight : initialTop;
+      top = top < 0 ? 0 : top;
+      var ANIMATION_DURATION = 1000;
+      var ANIMATION_STEPS = 10;
+      var animationTick = 1 / ANIMATION_STEPS;
+      var diff = top - scrollTop;
 
-      var val = _rebound.MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
+      var _loop = function _loop(currentTime) {
+        var to = (0, _d3Ease.easeCubic)(currentTime);
+        setTimeout(function () {
+          _this2.globalScrollbar.scrollTop(scrollTop + diff * to);
+        }, ANIMATION_DURATION * currentTime);
+      };
 
-      this.spring.setCurrentValue(scrollTop).setAtRest();
-      this.spring.setEndValue(val);
+      for (var currentTime = 0; currentTime <= 1; currentTime += animationTick) {
+        _loop(currentTime);
+      }
     }
     /**
      * manages imperative focus on one of the editors
@@ -345,7 +335,7 @@ function (_Component) {
      * @return {ReactMarkup} component - the output component
      */
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       var _this$props2 = this.props,
           mainEditorState = _this$props2.mainEditorState,
@@ -398,7 +388,7 @@ function (_Component) {
        */
 
       var bindMainEditor = function bindMainEditor(editor) {
-        _this2.mainEditor = editor;
+        _this3.mainEditor = editor;
       };
       /**
        * callbacks
@@ -441,7 +431,7 @@ function (_Component) {
         if (noteContainer) {
           var offsetTop = noteContainer.offsetTop;
 
-          _this2.scrollTop(offsetTop);
+          _this3.scrollTop(offsetTop);
         }
 
         if (typeof onNotePointerMouseClick === 'function') {
@@ -450,7 +440,7 @@ function (_Component) {
       };
 
       var bindGlobalScrollbarRef = function bindGlobalScrollbarRef(scrollbar) {
-        _this2.globalScrollbar = scrollbar;
+        _this3.globalScrollbar = scrollbar;
       };
 
       var activeNotes = notesOrder || Object.keys(notes || {}).sort(function (first, second) {
@@ -462,7 +452,7 @@ function (_Component) {
       });
 
       var bindEditorRef = function bindEditorRef(editor) {
-        _this2.editor = editor;
+        _this3.editor = editor;
       };
 
       var containerDimensions;
