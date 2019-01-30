@@ -1,18 +1,15 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _react = require('react');
+var _react = _interopRequireDefault(require("react"));
 
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
 /**
  * This module exports a react component for wrapping quotes 
@@ -20,16 +17,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @module scholar-draft/Quote
  */
 var Quote = function Quote(props) {
-  return _react2.default.createElement(
-    'q',
-    { className: 'scholar-draft-QuoteContainer' },
-    props.children
-  );
+  return _react.default.createElement("q", {
+    className: "scholar-draft-QuoteContainer"
+  }, props.children);
 };
 
 Quote.propTypes = {
-  children: _propTypes2.default.array
+  children: _propTypes.default.array
 };
-
-exports.default = Quote;
-module.exports = exports['default'];
+var _default = Quote;
+exports.default = _default;
+module.exports = exports.default;

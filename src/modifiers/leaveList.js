@@ -1,7 +1,7 @@
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
-import { RichUtils } from 'draft-js';
+import {RichUtils} from 'draft-js';
 
 const leaveList = (editorState) => {
   const contentState = editorState.getCurrentContent();

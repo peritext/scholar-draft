@@ -1,7 +1,7 @@
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
-import { EditorState, RichUtils, SelectionState, Modifier } from 'draft-js';
+import {EditorState, RichUtils, SelectionState, Modifier} from 'draft-js';
 
 const insertLink = (editorState, matchArr) => {
   const currentContent = editorState.getCurrentContent();
@@ -13,7 +13,7 @@ const insertLink = (editorState, matchArr) => {
     href,
     title
   ] = matchArr;
-  const { index } = matchArr;
+  const {index} = matchArr;
   const focusOffset = index + matchText.length;
   const wordSelection = SelectionState.createEmpty(key).merge({
     anchorOffset: index,
@@ -22,7 +22,7 @@ const insertLink = (editorState, matchArr) => {
   const nextContent = currentContent.createEntity(
     'LINK',
     'MUTABLE',
-    { href, title }
+    {href, title}
   );
   const entityKey = nextContent.getLastCreatedEntityKey();
   let newContentState = Modifier.replaceText(

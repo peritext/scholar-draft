@@ -6,7 +6,7 @@
  * at editor's implementation
  * @module scholar-draft/BlockAssetContainer
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import './BlockAssetContainer.scss';
@@ -126,8 +126,7 @@ class BlockAssetContainer extends Component {
         onMouseOver={onMOver}
         onFocus={onMOver}
         onMouseOut={onMOut}
-        onBlur={onMOut}
-      >
+        onBlur={onMOut}>
         <RealAssetComponent
           assetId={assetId}
           asset={asset}
@@ -136,8 +135,7 @@ class BlockAssetContainer extends Component {
           onAssetFocus={onAssetFocus}
           onAssetBlur={onAssetBlur}
           iconMap={iconMap}
-          renderingMode={renderingMode}
-        >
+          renderingMode={renderingMode}>
           {children}
         </RealAssetComponent>
       </div>

@@ -1,50 +1,54 @@
-'use strict';
+"use strict";
+
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+var _react = _interopRequireWildcard(require("react"));
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _inherits3 = _interopRequireDefault(_inherits2);
+require("./BlockAssetContainer.scss");
 
-var _react = require('react');
+/* eslint react/no-did-mount-set-state : 0 */
 
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-require('./BlockAssetContainer.scss');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var BlockAssetContainer = function (_Component) {
-  (0, _inherits3.default)(BlockAssetContainer, _Component);
+/**
+ * This module exports a wrapper for block assets.
+ * It handles context-related interactions with upstream environment
+ * and provides a simple prop-based api to the asset components passed
+ * at editor's implementation
+ * @module scholar-draft/BlockAssetContainer
+ */
+var BlockAssetContainer =
+/*#__PURE__*/
+function (_Component) {
+  (0, _inherits2.default)(BlockAssetContainer, _Component);
 
   function BlockAssetContainer(props) {
-    (0, _classCallCheck3.default)(this, BlockAssetContainer);
+    var _this;
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (BlockAssetContainer.__proto__ || (0, _getPrototypeOf2.default)(BlockAssetContainer)).call(this, props));
-
-    _this.render = function () {
+    (0, _classCallCheck2.default)(this, BlockAssetContainer);
+    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(BlockAssetContainer).call(this, props));
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "render", function () {
       var _this$state = _this.state,
           asset = _this$state.asset,
           renderingMode = _this$state.renderingMode,
@@ -67,9 +71,9 @@ var BlockAssetContainer = function (_Component) {
           AssetComponent = _this$props$blockProp.AssetComponent,
           children = _this$props.children;
 
-
       var onMOver = function onMOver(event) {
         event.stopPropagation();
+
         if (typeof onMouseOver === 'function') {
           onAssetMouseOver(asset.id, asset, event);
         }
@@ -77,49 +81,40 @@ var BlockAssetContainer = function (_Component) {
 
       var onMOut = function onMOut(event) {
         event.stopPropagation();
+
         if (typeof onMouseOut === 'function') {
           onAssetMouseOut(asset.id, asset, event);
         }
       };
 
       var renderEmptyComponent = function renderEmptyComponent() {
-        return _react2.default.createElement('div', null);
+        return _react.default.createElement("div", null);
       };
 
       var RealAssetComponent = typeof AssetComponent === 'function' ? AssetComponent : renderEmptyComponent;
-
-      return _react2.default.createElement(
-        'div',
-        {
-          className: 'scholar-draft-BlockAssetContainer',
-          onMouseOver: onMOver,
-          onFocus: onMOver,
-          onMouseOut: onMOut,
-          onBlur: onMOut
-        },
-        _react2.default.createElement(
-          RealAssetComponent,
-          {
-            assetId: assetId,
-            asset: asset,
-            customContext: customContext,
-            onAssetChange: onAssetChange,
-            onAssetFocus: onAssetFocus,
-            onAssetBlur: onAssetBlur,
-            iconMap: iconMap,
-            renderingMode: renderingMode
-          },
-          children
-        )
-      );
-    };
-
+      return _react.default.createElement("div", {
+        className: "scholar-draft-BlockAssetContainer",
+        onMouseOver: onMOver,
+        onFocus: onMOver,
+        onMouseOut: onMOut,
+        onBlur: onMOut
+      }, _react.default.createElement(RealAssetComponent, {
+        assetId: assetId,
+        asset: asset,
+        customContext: customContext,
+        onAssetChange: onAssetChange,
+        onAssetFocus: onAssetFocus,
+        onAssetBlur: onAssetBlur,
+        iconMap: iconMap,
+        renderingMode: renderingMode
+      }, children));
+    });
     _this.state = {};
     return _this;
   }
 
-  (0, _createClass3.default)(BlockAssetContainer, [{
-    key: 'componentDidMount',
+  (0, _createClass2.default)(BlockAssetContainer, [{
+    key: "componentDidMount",
     value: function componentDidMount() {
       var _this2 = this;
 
@@ -128,14 +123,13 @@ var BlockAssetContainer = function (_Component) {
         renderingMode: this.props.blockProps.renderingMode
       });
       this.unsubscribe = this.context.emitter.subscribeToAssets(function (assets) {
-        var asset = assets[_this2.props.blockProps.assetId];
-        // if (asset !== this.state.asset) {
+        var asset = assets[_this2.props.blockProps.assetId]; // if (asset !== this.state.asset) {
+
         _this2.setState({
           asset: asset
-        });
-        // }
-      });
+        }); // }
 
+      });
       this.unsubscribeToCustomContext = this.context.emitter.subscribeToCustomContext(function (customContext) {
         if (customContext !== _this2.state.customContext) {
           _this2.setState({
@@ -143,17 +137,16 @@ var BlockAssetContainer = function (_Component) {
           });
         }
       });
-
       this.unsubscribeToRenderingMode = this.context.emitter.subscribeToRenderingMode(function (renderingMode) {
         // if (this.state.renderingMode !== renderingMode) {
         _this2.setState({
           renderingMode: renderingMode
-        });
-        // }
+        }); // }
+
       });
     }
   }, {
-    key: 'componentWillUnmount',
+    key: "componentWillUnmount",
     value: function componentWillUnmount() {
       this.unsubscribe();
       this.unsubscribeToRenderingMode();
@@ -161,40 +154,28 @@ var BlockAssetContainer = function (_Component) {
     }
   }]);
   return BlockAssetContainer;
-}(_react.Component); /* eslint react/no-did-mount-set-state : 0 */
-/**
- * This module exports a wrapper for block assets.
- * It handles context-related interactions with upstream environment
- * and provides a simple prop-based api to the asset components passed
- * at editor's implementation
- * @module scholar-draft/BlockAssetContainer
- */
+}(_react.Component);
 
-
-BlockAssetContainer.contextTypes = {
-  emitter: _propTypes2.default.object,
-  assets: _propTypes2.default.object,
-  iconMap: _propTypes2.default.object,
-
-  renderingMode: _propTypes2.default.string,
-
-  onAssetMouseOver: _propTypes2.default.func,
-  onAssetMouseOut: _propTypes2.default.func,
-  onAssetChange: _propTypes2.default.func,
-  onAssetFocus: _propTypes2.default.func,
-  onAssetBlur: _propTypes2.default.func
-};
-
-
+(0, _defineProperty2.default)(BlockAssetContainer, "contextTypes", {
+  emitter: _propTypes.default.object,
+  assets: _propTypes.default.object,
+  iconMap: _propTypes.default.object,
+  renderingMode: _propTypes.default.string,
+  onAssetMouseOver: _propTypes.default.func,
+  onAssetMouseOut: _propTypes.default.func,
+  onAssetChange: _propTypes.default.func,
+  onAssetFocus: _propTypes.default.func,
+  onAssetBlur: _propTypes.default.func
+});
 BlockAssetContainer.propTypes = {
-  children: _propTypes2.default.array,
-  assetId: _propTypes2.default.string,
-  blockProps: _propTypes2.default.shape({
-    assetId: _propTypes2.default.string,
-    AssetComponent: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.element]),
-    renderingMode: _propTypes2.default.string
+  children: _propTypes.default.array,
+  assetId: _propTypes.default.string,
+  blockProps: _propTypes.default.shape({
+    assetId: _propTypes.default.string,
+    AssetComponent: _propTypes.default.oneOfType([_propTypes.default.func, _propTypes.default.element]),
+    renderingMode: _propTypes.default.string
   })
 };
-
-exports.default = BlockAssetContainer;
-module.exports = exports['default'];
+var _default = BlockAssetContainer;
+exports.default = _default;
+module.exports = exports.default;

@@ -11,7 +11,7 @@ import {
   SelectionState
 } from 'draft-js';
 
-import { v4 as generateId } from 'uuid';
+import {v4 as generateId} from 'uuid';
 
 
 import {
@@ -37,7 +37,7 @@ export const getOffsetRelativeToContainer = (el, stopClassName) => {
       offsetY: 0
     };
     if (element) {
-      let { parentNode } = element;
+      let {parentNode} = element;
       offset = {
         offsetX: el.offsetLeft || 0,
         offsetY: el.offsetTop || 0
@@ -46,12 +46,13 @@ export const getOffsetRelativeToContainer = (el, stopClassName) => {
         offset.offsetX += parentNode.offsetLeft;
         offset.offsetY += parentNode.offsetTop;
         element = parentNode;
-        const { parentNode: newParentNode } = element.parentNode;
+        const {parentNode: newParentNode} = element.parentNode;
         parentNode = newParentNode;
       }
     }
     return offset;
-  } catch (error) {
+  }
+  catch (error) {
     return {
       offsetX: 0,
       offsetY: 0,
@@ -68,16 +69,18 @@ export const getEventTextRange = (pageX, pageY) => {
     if (document.caretPositionFromPoint) { // standard
       range = document.caretPositionFromPoint(pageX, pageY);
       textNode = range.offsetNode;
-      const { offset: rangeOffset } = range;
+      const {offset: rangeOffset} = range;
       offset = rangeOffset;
 
-    } else if (document.caretRangeFromPoint) { // WebKit
+    }
+    else if (document.caretRangeFromPoint) { // WebKit
       range = document.caretRangeFromPoint(pageX, pageY);
       textNode = range.startContainer;
       offset = range.startOffset;
     }
-    return { range, textNode, offset };
-  } catch (error) {
+    return {range, textNode, offset};
+  }
+  catch (error) {
     return undefined;
   } 
     
@@ -156,7 +159,8 @@ export function insertAssetInEditor(
     const finalSelection = SelectionState.createEmpty(block.getKey());
     updatedEditor = EditorState.acceptSelection(updatedEditor, finalSelection);
   // insert inline asset instruction
-  } else if (insertionType === INLINE_ASSET) {
+  }
+  else if (insertionType === INLINE_ASSET) {
     // determine the range of the entity
     const anchorKey = thatSelection.getAnchorKey();
     const currentContentBlock = currentContent.getBlockForKey(anchorKey);
@@ -173,7 +177,8 @@ export function insertAssetInEditor(
         newEntityKey
       );
     // case 2 : asset targets an empty selection
-    } else {
+    }
+    else {
       // --> we apply the entity to a whitespace character
       selectedText = ' ';
       newContentState = Modifier.replaceText(
@@ -256,7 +261,8 @@ export function insertInlineAssetInEditor(
       thatSelection,
       newEntityKey
     );
-  } else {
+  }
+  else {
     selectedText = ' ';
 
     newContentState = Modifier.replaceText(
@@ -392,7 +398,7 @@ export function insertNoteInEditor(
   let newContentState = currentContent.createEntity(
     NOTE_POINTER,
     'IMMUTABLE',
-    { noteId }
+    {noteId}
   );
   const newEntityKey = newContentState.getLastCreatedEntityKey();
   const activeSelection = editorState.getSelection();
@@ -584,7 +590,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
   // attribute orders to notes
   let order = 0;
   noteEntities.forEach((entity) => {
-    const { noteId } = entity.getData();
+    const {noteId} = entity.getData();
     notesOrder.push(noteId);
     order++;
     if (notes[noteId]) {
@@ -618,7 +624,7 @@ export const updateNotesFromEditor = (editorState, inputNotes) => {
  * @return {obj} newAssets - a map of the assets actually in use
  */
 export const updateAssetsFromEditors = (editorStates, inputAssets) => {
-  const assets = { ...inputAssets };
+  const assets = {...inputAssets};
   // list all entities
   // todo: should be replaced by contentState.getEntityMap() with draft@0.11.0
   const entities = [];
@@ -747,7 +753,8 @@ export const getSelectedBlockElement = (range) => {
       }
       node = node.parentNode;
     } while (node != null);
-  } catch (error) {
+  }
+  catch (error) {
     return null;
   }
   return null;
@@ -777,7 +784,8 @@ export const isParentOf = (inputEle, maybeParent) => {
       ele = ele.parentNode;
     }
     return false;
-  } catch (error) {
+  }
+  catch (error) {
     return false;
   }
 };

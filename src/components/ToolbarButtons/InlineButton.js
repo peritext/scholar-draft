@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { RichUtils } from 'draft-js';
+import React, {Component} from 'react';
+import {RichUtils} from 'draft-js';
 import PropTypes from 'prop-types';
 
 import './ButtonStyles.scss';
@@ -76,8 +76,7 @@ class InlineButton extends Component {
       <div
         onMouseDown={onMouseDown}
         className={className}
-        {...otherProps}
-      >
+        {...otherProps}>
         {React.Children.map(
           this.props.children, 
           child => React.cloneElement(child, { 

@@ -1,31 +1,24 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
 
-var _extends3 = _interopRequireDefault(_extends2);
+var _react = _interopRequireDefault(require("react"));
 
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _BlockButton = require('./BlockButton');
-
-var _BlockButton2 = _interopRequireDefault(_BlockButton);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _BlockButton = _interopRequireDefault(require("./BlockButton"));
 
 /* eslint react/prop-types: 0 */
-
-exports.default = function (props) {
-  return _react2.default.createElement(
-    _BlockButton2.default,
-    (0, _extends3.default)({}, props, { blockType: 'header-one' }),
-    props.iconMap.h1
-  );
+var _default = function _default(props) {
+  return _react.default.createElement(_BlockButton.default, (0, _extends2.default)({}, props, {
+    blockType: "header-one"
+  }), props.iconMap.h1);
 };
 
-module.exports = exports['default'];
+exports.default = _default;
+module.exports = exports.default;

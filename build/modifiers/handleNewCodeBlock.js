@@ -1,18 +1,15 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _changeCurrentBlockType = require('./changeCurrentBlockType');
+var _changeCurrentBlockType = _interopRequireDefault(require("./changeCurrentBlockType"));
 
-var _changeCurrentBlockType2 = _interopRequireDefault(_changeCurrentBlockType);
-
-var _insertEmptyBlock = require('./insertEmptyBlock');
-
-var _insertEmptyBlock2 = _interopRequireDefault(_insertEmptyBlock);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _insertEmptyBlock = _interopRequireDefault(require("./insertEmptyBlock"));
 
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
@@ -24,20 +21,27 @@ var handleNewCodeBlock = function handleNewCodeBlock(editorState) {
   var currentBlock = contentState.getBlockForKey(key);
   var matchData = /^```([\w-]+)?$/.exec(currentBlock.getText());
   var isLast = selection.getEndOffset() === currentBlock.getLength();
+
   if (matchData && isLast) {
     var data = {};
     var language = matchData[1];
+
     if (language) {
       data.language = language;
     }
-    return (0, _changeCurrentBlockType2.default)(editorState, 'code-block', '', data);
+
+    return (0, _changeCurrentBlockType.default)(editorState, 'code-block', '', data);
   }
+
   var type = currentBlock.getType();
+
   if (type === 'code-block' && isLast) {
-    return (0, _insertEmptyBlock2.default)(editorState, 'code-block', currentBlock.getData());
+    return (0, _insertEmptyBlock.default)(editorState, 'code-block', currentBlock.getData());
   }
+
   return editorState;
 };
 
-exports.default = handleNewCodeBlock;
-module.exports = exports['default'];
+var _default = handleNewCodeBlock;
+exports.default = _default;
+module.exports = exports.default;

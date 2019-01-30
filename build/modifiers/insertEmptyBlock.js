@@ -1,12 +1,13 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _draftJs = require('draft-js');
+var _draftJs = require("draft-js");
 
-var _immutable = require('immutable');
+var _immutable = require("immutable");
 
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
@@ -14,7 +15,6 @@ var _immutable = require('immutable');
 var insertEmptyBlock = function insertEmptyBlock(editorState) {
   var blockType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'unstyled';
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
   var contentState = editorState.getCurrentContent();
   var selection = editorState.getSelection();
   var key = selection.getStartKey();
@@ -52,5 +52,6 @@ var insertEmptyBlock = function insertEmptyBlock(editorState) {
   return _draftJs.EditorState.push(editorState, newContentState, 'split-block');
 };
 
-exports.default = insertEmptyBlock;
-module.exports = exports['default'];
+var _default = insertEmptyBlock;
+exports.default = _default;
+module.exports = exports.default;

@@ -5,13 +5,13 @@
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
 
-import { EditorState, SelectionState, Modifier } from 'draft-js';
+import {EditorState, SelectionState, Modifier} from 'draft-js';
 
 const changeCurrentInlineStyle = (editorState, matchArr, style) => {
   const currentContent = editorState.getCurrentContent();
   const selection = editorState.getSelection();
   const key = selection.getStartKey();
-  const { index } = matchArr;
+  const {index} = matchArr;
   const blockMap = currentContent.getBlockMap();
   const block = blockMap.get(key);
   const currentInlineStyle = block.getInlineStyleAt(index).merge();

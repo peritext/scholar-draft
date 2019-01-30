@@ -1,43 +1,41 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _keys = require('babel-runtime/core-js/object/keys');
+var _changeCurrentInlineStyle = _interopRequireDefault(require("./changeCurrentInlineStyle"));
 
-var _keys2 = _interopRequireDefault(_keys);
-
-var _changeCurrentInlineStyle = require('./changeCurrentInlineStyle');
-
-var _changeCurrentInlineStyle2 = _interopRequireDefault(_changeCurrentInlineStyle);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/**
+ * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
+ */
 var inlineMatchers = {
   BOLD: [/\*\*([^(?:**)]+)\*\*/g, /__([^(?:__)]+)__/g],
   ITALIC: [/\*([^*]+)\*/g, /_([^_]+)_/g],
   CODE: [/`([^`]+)`/g],
   STRIKETHROUGH: [/~~([^(?:~~)]+)~~/g]
-}; /**
-    * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
-    */
-
+};
 
 var handleInlineStyle = function handleInlineStyle(editorState, character) {
   var key = editorState.getSelection().getStartKey();
   var text = editorState.getCurrentContent().getBlockForKey(key).getText();
-  var line = '' + text + character;
+  var line = "".concat(text).concat(character);
   var newEditorState = editorState;
-  (0, _keys2.default)(inlineMatchers).some(function (index) {
+  Object.keys(inlineMatchers).some(function (index) {
     inlineMatchers[index].some(function (re) {
-      var matchArr = void 0;
+      var matchArr;
+
       do {
         matchArr = re.exec(line);
+
         if (matchArr) {
-          newEditorState = (0, _changeCurrentInlineStyle2.default)(newEditorState, matchArr, index);
+          newEditorState = (0, _changeCurrentInlineStyle.default)(newEditorState, matchArr, index);
         }
       } while (matchArr);
+
       return newEditorState !== editorState;
     });
     return newEditorState !== editorState;
@@ -45,5 +43,6 @@ var handleInlineStyle = function handleInlineStyle(editorState, character) {
   return newEditorState;
 };
 
-exports.default = handleInlineStyle;
-module.exports = exports['default'];
+var _default = handleInlineStyle;
+exports.default = _default;
+module.exports = exports.default;

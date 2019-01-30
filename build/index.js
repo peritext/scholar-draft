@@ -1,51 +1,49 @@
-'use strict';
+"use strict";
+
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.constants = exports.utils = exports.BasicEditor = undefined;
+exports.default = exports.constants = exports.utils = exports.BasicEditor = void 0;
 
-var _BasicEditor = require('./components/BasicEditor/BasicEditor');
+var _BasicEditor = _interopRequireDefault(require("./components/BasicEditor/BasicEditor"));
 
-var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
+var _Editor = _interopRequireDefault(require("./components/Editor/Editor"));
 
-var _Editor = require('./components/Editor/Editor');
+var Utils = _interopRequireWildcard(require("./utils"));
 
-var _Editor2 = _interopRequireDefault(_Editor);
+var Constants = _interopRequireWildcard(require("./constants"));
 
-var _utils = require('./utils');
-
-var Utils = _interopRequireWildcard(_utils);
-
-var _constants = require('./constants');
-
-var Constants = _interopRequireWildcard(_constants);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Editor without footnotes support
- */
 /**
  * Scholar-draft
  * entry point of the module
  * @module scholar-draft
  */
 
-var BasicEditor = exports.BasicEditor = _BasicEditor2.default;
+/**
+ * Editor without footnotes support
+ */
+var BasicEditor = _BasicEditor.default;
 /**
  * Draft-js state manipulation and assets management utils
  */
-var utils = exports.utils = Utils;
+
+exports.BasicEditor = BasicEditor;
+var utils = Utils;
 /**
  * Constant draft-js entity names used by the module
  */
-var constants = exports.constants = Constants;
 
-var Editor = _Editor2.default;
+exports.utils = utils;
+var constants = Constants;
+exports.constants = constants;
+var Editor = _Editor.default;
 /**
  * Editor with footnotes support
  */
-exports.default = Editor;
+
+var _default = Editor;
+exports.default = _default;

@@ -1,66 +1,65 @@
-'use strict';
+"use strict";
+
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+var _react = _interopRequireWildcard(require("react"));
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _inherits3 = _interopRequireDefault(_inherits2);
+require("./NotePointer.scss");
 
-var _react = require('react');
+/* eslint react/no-did-mount-set-state : 0 */
 
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-require('./NotePointer.scss');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var NotePointer = function (_Component) {
-  (0, _inherits3.default)(NotePointer, _Component);
+/**
+ * This module exports a react component for note pointers in editors
+ * @module scholar-draft/NotePointer
+ */
+var NotePointer =
+/*#__PURE__*/
+function (_Component) {
+  (0, _inherits2.default)(NotePointer, _Component);
 
   function NotePointer(props) {
-    (0, _classCallCheck3.default)(this, NotePointer);
+    var _this;
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (NotePointer.__proto__ || (0, _getPrototypeOf2.default)(NotePointer)).call(this, props));
-
-    _this.render = function () {
+    (0, _classCallCheck2.default)(this, NotePointer);
+    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(NotePointer).call(this, props));
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "render", function () {
       var note = _this.state.note;
       var _this$context = _this.context,
           onNotePointerMouseOver = _this$context.onNotePointerMouseOver,
           onNotePointerMouseOut = _this$context.onNotePointerMouseOut,
-          onNotePointerMouseClick = _this$context.onNotePointerMouseClick;
-
-      // note:  it was necessary to display component children
+          onNotePointerMouseClick = _this$context.onNotePointerMouseClick; // note:  it was necessary to display component children
       // to avoid weird selection bugs implying this component.
       // this should be solved with draft-js@0.11
       // see https://github.com/facebook/draft-js/issues/627
 
       var children = _this.props.children;
 
-
       var onMouseOver = function onMouseOver(event) {
         event.stopPropagation();
+
         if (typeof onNotePointerMouseOver === 'function' && note) {
           onNotePointerMouseOver(note.id, note, event);
         }
@@ -68,6 +67,7 @@ var NotePointer = function (_Component) {
 
       var onMouseOut = function onMouseOut(event) {
         event.stopPropagation();
+
         if (typeof onNotePointerMouseOut === 'function' && note) {
           onNotePointerMouseOut(note.id, note, event);
         }
@@ -75,39 +75,29 @@ var NotePointer = function (_Component) {
 
       var onMouseClick = function onMouseClick(event) {
         event.stopPropagation();
+
         if (typeof onNotePointerMouseClick === 'function' && note) {
           onNotePointerMouseClick(note.id, note, event);
         }
       };
 
-      var id = note && note.id ? 'note-pointer-' + note.id : 'note-pointer-orphan';
-
-      return _react2.default.createElement(
-        'sup',
-        {
-          className: 'scholar-draft-NotePointer',
-          id: id,
-          onMouseOver: onMouseOver,
-          onFocus: onMouseOver,
-          onMouseOut: onMouseOut,
-          onBlur: onMouseOut,
-          onClick: onMouseClick
-        },
-        _react2.default.createElement(
-          'span',
-          null,
-          note && note.order || '*',
-          children
-        )
-      );
-    };
-
+      var id = note && note.id ? "note-pointer-".concat(note.id) : 'note-pointer-orphan';
+      return _react.default.createElement("sup", {
+        className: "scholar-draft-NotePointer",
+        id: id,
+        onMouseOver: onMouseOver,
+        onFocus: onMouseOver,
+        onMouseOut: onMouseOut,
+        onBlur: onMouseOut,
+        onClick: onMouseClick
+      }, _react.default.createElement("span", null, note && note.order || '*', children));
+    });
     _this.state = {};
     return _this;
   }
 
-  (0, _createClass3.default)(NotePointer, [{
-    key: 'componentDidMount',
+  (0, _createClass2.default)(NotePointer, [{
+    key: "componentDidMount",
     value: function componentDidMount() {
       var _this2 = this;
 
@@ -116,6 +106,7 @@ var NotePointer = function (_Component) {
       });
       this.unsubscribe = this.context.emitter.subscribeToNotes(function (notes) {
         var note = notes[_this2.props.noteId];
+
         if (!_this2.state.note || note && note.order !== _this2.state.note.order) {
           _this2.setState({
             note: note
@@ -124,32 +115,24 @@ var NotePointer = function (_Component) {
       });
     }
   }, {
-    key: 'componentWillUnmount',
+    key: "componentWillUnmount",
     value: function componentWillUnmount() {
       this.unsubscribe();
     }
   }]);
   return NotePointer;
-}(_react.Component); /* eslint react/no-did-mount-set-state : 0 */
-/**
- * This module exports a react component for note pointers in editors
- * @module scholar-draft/NotePointer
- */
+}(_react.Component);
 
-
-NotePointer.contextTypes = {
-  emitter: _propTypes2.default.object,
-  notes: _propTypes2.default.object,
-
-  onNotePointerMouseOver: _propTypes2.default.func,
-  onNotePointerMouseOut: _propTypes2.default.func,
-  onNotePointerMouseClick: _propTypes2.default.func
-};
-
-
+(0, _defineProperty2.default)(NotePointer, "contextTypes", {
+  emitter: _propTypes.default.object,
+  notes: _propTypes.default.object,
+  onNotePointerMouseOver: _propTypes.default.func,
+  onNotePointerMouseOut: _propTypes.default.func,
+  onNotePointerMouseClick: _propTypes.default.func
+});
 NotePointer.propTypes = {
-  noteId: _propTypes2.default.string
+  noteId: _propTypes.default.string
 };
-
-exports.default = NotePointer;
-module.exports = exports['default'];
+var _default = NotePointer;
+exports.default = _default;
+module.exports = exports.default;

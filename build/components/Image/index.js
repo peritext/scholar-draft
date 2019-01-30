@@ -1,18 +1,15 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _react = require('react');
+var _react = _interopRequireDefault(require("react"));
 
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
@@ -27,19 +24,20 @@ var Image = function Image(_ref) {
       alt = _contentState$getEnti.alt,
       title = _contentState$getEnti.title;
 
-  return _react2.default.createElement(
-    'span',
-    { className: 'scholar-draft-Image' },
-    children,
-    _react2.default.createElement('img', { src: src, alt: alt, title: title })
-  );
+  return _react.default.createElement("span", {
+    className: "scholar-draft-Image"
+  }, children, _react.default.createElement("img", {
+    src: src,
+    alt: alt,
+    title: title
+  }));
 };
 
 Image.propTypes = {
-  contentState: _propTypes2.default.object,
-  entityKey: _propTypes2.default.string,
-  children: _propTypes2.default.array
+  contentState: _propTypes.default.object,
+  entityKey: _propTypes.default.string,
+  children: _propTypes.default.array
 };
-
-exports.default = Image;
-module.exports = exports['default'];
+var _default = Image;
+exports.default = _default;
+module.exports = exports.default;

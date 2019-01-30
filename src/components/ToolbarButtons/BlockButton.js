@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { RichUtils } from 'draft-js';
+import React, {Component} from 'react';
+import {RichUtils} from 'draft-js';
 import PropTypes from 'prop-types';
 
 class BlockButton extends Component {
@@ -62,8 +62,7 @@ class BlockButton extends Component {
     return (
       <div
         onMouseDown={onMouseDown}
-        className={className}
-      >
+        className={className}>
         {React.Children.map(
           children, 
           child => React.cloneElement(child, { 

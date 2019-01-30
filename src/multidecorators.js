@@ -1,7 +1,7 @@
 // Taken from: https://github.com/echenley/draft-js-multidecorators
-var Immutable = require('immutable');
+import Immutable from 'immutable';
 
-var KEY_SEPARATOR = '-';
+const KEY_SEPARATOR = '-';
 
 function MultiDecorator(decorators) {
     this.decorators = Immutable.List(decorators);
@@ -83,4 +83,4 @@ MultiDecorator.prototype.getInnerKey = function(key) {
     return parts.slice(1).join(KEY_SEPARATOR);
 };
 
-module.exports = MultiDecorator;
+export default MultiDecorator;

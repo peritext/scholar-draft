@@ -1,8 +1,8 @@
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
-import { genKey, ContentBlock, EditorState } from 'draft-js';
-import { List, Map } from 'immutable';
+import {genKey, ContentBlock, EditorState} from 'draft-js';
+import {List, Map} from 'immutable';
 
 const insertEmptyBlock = (editorState, blockType = 'unstyled', data = {}) => {
   const contentState = editorState.getCurrentContent();

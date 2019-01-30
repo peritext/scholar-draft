@@ -1,68 +1,77 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _react = require('react');
+var _react = _interopRequireDefault(require("react"));
 
-var _react2 = _interopRequireDefault(_react);
+var _asset = _interopRequireDefault(require("./asset.svg"));
 
-var _asset = require('./asset.svg');
+var _bold = _interopRequireDefault(require("./bold.svg"));
 
-var _asset2 = _interopRequireDefault(_asset);
+var _codeblock = _interopRequireDefault(require("./codeblock.svg"));
 
-var _bold = require('./bold.svg');
+var _h = _interopRequireDefault(require("./h1.svg"));
 
-var _bold2 = _interopRequireDefault(_bold);
+var _h2 = _interopRequireDefault(require("./h2.svg"));
 
-var _codeblock = require('./codeblock.svg');
+var _italic = _interopRequireDefault(require("./italic.svg"));
 
-var _codeblock2 = _interopRequireDefault(_codeblock);
+var _note = _interopRequireDefault(require("./note.svg"));
 
-var _h = require('./h1.svg');
+var _orderedlist = _interopRequireDefault(require("./orderedlist.svg"));
 
-var _h2 = _interopRequireDefault(_h);
+var _quoteblock = _interopRequireDefault(require("./quoteblock.svg"));
 
-var _h3 = require('./h2.svg');
+var _unorderedlist = _interopRequireDefault(require("./unorderedlist.svg"));
 
-var _h4 = _interopRequireDefault(_h3);
-
-var _italic = require('./italic.svg');
-
-var _italic2 = _interopRequireDefault(_italic);
-
-var _note = require('./note.svg');
-
-var _note2 = _interopRequireDefault(_note);
-
-var _orderedlist = require('./orderedlist.svg');
-
-var _orderedlist2 = _interopRequireDefault(_orderedlist);
-
-var _quoteblock = require('./quoteblock.svg');
-
-var _quoteblock2 = _interopRequireDefault(_quoteblock);
-
-var _unorderedlist = require('./unorderedlist.svg');
-
-var _unorderedlist2 = _interopRequireDefault(_unorderedlist);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+/* eslint jsx-a11y/img-has-alt: 0 */
 // import SVGInline from 'react-svg-inline';
-
-exports.default = {
-  asset: _react2.default.createElement('img', { alt: 'asset-icon', src: _asset2.default }),
-  bold: _react2.default.createElement('img', { alt: 'bold-icon', src: _bold2.default }),
-  codeblock: _react2.default.createElement('img', { alt: 'codeblock-icon', src: _codeblock2.default }),
-  h1: _react2.default.createElement('img', { alt: 'h1-icon', src: _h2.default }),
-  h2: _react2.default.createElement('img', { alt: 'h2-icon', src: _h4.default }),
-  italic: _react2.default.createElement('img', { alt: 'italic-icon', src: _italic2.default }),
-  note: _react2.default.createElement('img', { alt: 'note-icon', src: _note2.default }),
-  orderedlist: _react2.default.createElement('img', { alt: 'orderedlist-icon', src: _orderedlist2.default }),
-  quoteblock: _react2.default.createElement('img', { alt: 'quoteblock-icon', src: _quoteblock2.default }),
-  unorderedlist: _react2.default.createElement('img', { alt: 'unorderedlist-icon', src: _unorderedlist2.default })
-}; /* eslint jsx-a11y/img-has-alt: 0 */
-
-module.exports = exports['default'];
+var _default = {
+  asset: _react.default.createElement("img", {
+    alt: "asset-icon",
+    src: _asset.default
+  }),
+  bold: _react.default.createElement("img", {
+    alt: "bold-icon",
+    src: _bold.default
+  }),
+  codeblock: _react.default.createElement("img", {
+    alt: "codeblock-icon",
+    src: _codeblock.default
+  }),
+  h1: _react.default.createElement("img", {
+    alt: "h1-icon",
+    src: _h.default
+  }),
+  h2: _react.default.createElement("img", {
+    alt: "h2-icon",
+    src: _h2.default
+  }),
+  italic: _react.default.createElement("img", {
+    alt: "italic-icon",
+    src: _italic.default
+  }),
+  note: _react.default.createElement("img", {
+    alt: "note-icon",
+    src: _note.default
+  }),
+  orderedlist: _react.default.createElement("img", {
+    alt: "orderedlist-icon",
+    src: _orderedlist.default
+  }),
+  quoteblock: _react.default.createElement("img", {
+    alt: "quoteblock-icon",
+    src: _quoteblock.default
+  }),
+  unorderedlist: _react.default.createElement("img", {
+    alt: "unorderedlist-icon",
+    src: _unorderedlist.default
+  })
+};
+exports.default = _default;
+module.exports = exports.default;

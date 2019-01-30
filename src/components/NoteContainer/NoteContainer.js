@@ -2,7 +2,7 @@
  * This module exports a react component wrapping a editable note representation
  * @module scholar-draft/NoteContainer
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 
@@ -25,8 +25,7 @@ const Layout = ({
         onHeaderClick={onHeaderClick}
         onDelete={onDelete}
         onClickToRetroLink={onClickScrollToNotePointerHandler}
-        id={`note-container-${note.id}`}
-      >
+        id={`note-container-${note.id}`}>
         {children}
       </NoteLayout>
     );
@@ -34,8 +33,7 @@ const Layout = ({
   return (
     <section 
       className="scholar-draft-NoteContainer"
-      id={`note-container-${note.id}`}
-    >
+      id={`note-container-${note.id}`}>
       <div className="note-header" onClick={onHeaderClick}>
         <button onClick={onDelete}>x</button>
         <h3>Note {note.order}</h3>
@@ -190,8 +188,7 @@ class NoteContainer extends Component {
           note={note}
           onHeaderClick={onHeaderClick}
           onDelete={onDelete}
-          onClickScrollToNotePointerHandler={onClickScrollToNotePointerHandler}
-        >
+          onClickScrollToNotePointerHandler={onClickScrollToNotePointerHandler}>
           <BasicEditor 
             editorState={note.editorState}
             contentId={contentId}
@@ -239,8 +236,7 @@ class NoteContainer extends Component {
             inlineEntities={inlineEntities}
             iconMap={iconMap}
             allowNotesInsertion={false}
-            editorStyle={editorStyle}
-          />
+            editorStyle={editorStyle} />
         </Layout>
       );
     }

@@ -1,18 +1,15 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _react = require('react');
+var _react = _interopRequireDefault(require("react"));
 
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
@@ -22,18 +19,18 @@ var Link = function Link(props) {
       href = _props$contentState$g.href,
       title = _props$contentState$g.title;
 
-  return _react2.default.createElement(
-    'a',
-    { className: 'scholar-draft-Link', href: href, title: title },
-    props.children
-  );
+  return _react.default.createElement("a", {
+    className: "scholar-draft-Link",
+    href: href,
+    title: title
+  }, props.children);
 };
 
 Link.propTypes = {
-  contentState: _propTypes2.default.object,
-  children: _propTypes2.default.array,
-  entityKey: _propTypes2.default.string
+  contentState: _propTypes.default.object,
+  children: _propTypes.default.array,
+  entityKey: _propTypes.default.string
 };
-
-exports.default = Link;
-module.exports = exports['default'];
+var _default = Link;
+exports.default = _default;
+module.exports = exports.default;

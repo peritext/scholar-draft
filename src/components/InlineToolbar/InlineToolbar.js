@@ -3,7 +3,7 @@
  * allowing to style selected text
  * @module scholar-draft/InlineToolbar
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import defaultButtons from './defaultButtons';
@@ -59,8 +59,7 @@ export default class InlineToolbar extends Component {
       <div
         className="scholar-draft-InlineToolbar"
         ref={bindRef}
-        style={style}
-      >
+        style={style}>
         {(buttons || defaultButtons).map((button, key) => React.cloneElement(button, {
           // Pass down some useful props to each button
           updateEditorState,

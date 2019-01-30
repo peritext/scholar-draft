@@ -1,46 +1,46 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _react = require('react');
+var _react = _interopRequireDefault(require("react"));
 
-var _react2 = _interopRequireDefault(_react);
+var _BlockQuoteButton = _interopRequireDefault(require("../ToolbarButtons/BlockQuoteButton"));
 
-var _BlockQuoteButton = require('../ToolbarButtons/BlockQuoteButton');
+var _BoldButton = _interopRequireDefault(require("../ToolbarButtons/BoldButton"));
 
-var _BlockQuoteButton2 = _interopRequireDefault(_BlockQuoteButton);
+var _CodeBlockButton = _interopRequireDefault(require("../ToolbarButtons/CodeBlockButton"));
 
-var _BoldButton = require('../ToolbarButtons/BoldButton');
+var _HeaderOneButton = _interopRequireDefault(require("../ToolbarButtons/HeaderOneButton"));
 
-var _BoldButton2 = _interopRequireDefault(_BoldButton);
+var _HeaderTwoButton = _interopRequireDefault(require("../ToolbarButtons/HeaderTwoButton"));
 
-var _CodeBlockButton = require('../ToolbarButtons/CodeBlockButton');
+var _ItalicButton = _interopRequireDefault(require("../ToolbarButtons/ItalicButton"));
 
-var _CodeBlockButton2 = _interopRequireDefault(_CodeBlockButton);
+var _OrderedListItemButton = _interopRequireDefault(require("../ToolbarButtons/OrderedListItemButton"));
 
-var _HeaderOneButton = require('../ToolbarButtons/HeaderOneButton');
+var _UnorderedListItemButton = _interopRequireDefault(require("../ToolbarButtons/UnorderedListItemButton"));
 
-var _HeaderOneButton2 = _interopRequireDefault(_HeaderOneButton);
-
-var _HeaderTwoButton = require('../ToolbarButtons/HeaderTwoButton');
-
-var _HeaderTwoButton2 = _interopRequireDefault(_HeaderTwoButton);
-
-var _ItalicButton = require('../ToolbarButtons/ItalicButton');
-
-var _ItalicButton2 = _interopRequireDefault(_ItalicButton);
-
-var _OrderedListItemButton = require('../ToolbarButtons/OrderedListItemButton');
-
-var _OrderedListItemButton2 = _interopRequireDefault(_OrderedListItemButton);
-
-var _UnorderedListItemButton = require('../ToolbarButtons/UnorderedListItemButton');
-
-var _UnorderedListItemButton2 = _interopRequireDefault(_UnorderedListItemButton);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = [_react2.default.createElement(_BoldButton2.default, null), _react2.default.createElement(_ItalicButton2.default, null), _react2.default.createElement(_BlockQuoteButton2.default, null), _react2.default.createElement(_HeaderOneButton2.default, null), _react2.default.createElement(_HeaderTwoButton2.default, null), _react2.default.createElement(_OrderedListItemButton2.default, null), _react2.default.createElement(_UnorderedListItemButton2.default, null), _react2.default.createElement(_CodeBlockButton2.default, null)];
-module.exports = exports['default'];
+var _default = [_react.default.createElement(_BoldButton.default, {
+  key: 0
+}), _react.default.createElement(_ItalicButton.default, {
+  key: 1
+}), _react.default.createElement(_BlockQuoteButton.default, {
+  key: 2
+}), _react.default.createElement(_HeaderOneButton.default, {
+  key: 3
+}), _react.default.createElement(_HeaderTwoButton.default, {
+  key: 4
+}), _react.default.createElement(_OrderedListItemButton.default, {
+  key: 5
+}), _react.default.createElement(_UnorderedListItemButton.default, {
+  key: 6
+}), _react.default.createElement(_CodeBlockButton.default, {
+  key: 7
+})];
+exports.default = _default;
+module.exports = exports.default;

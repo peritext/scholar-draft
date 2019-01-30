@@ -1,64 +1,60 @@
-'use strict';
+"use strict";
+
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = undefined;
+exports.default = void 0;
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _getPrototypeOf3 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _react = _interopRequireWildcard(require("react"));
 
-var _inherits3 = _interopRequireDefault(_inherits2);
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _react = require('react');
+var _defaultButtons = _interopRequireDefault(require("./defaultButtons"));
 
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _defaultButtons = require('./defaultButtons');
-
-var _defaultButtons2 = _interopRequireDefault(_defaultButtons);
-
-require('./InlineToolbar.scss');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+require("./InlineToolbar.scss");
 
 /**
  * This module exports a react component for editors' pop-up toolbar 
  * allowing to style selected text
  * @module scholar-draft/InlineToolbar
  */
-var InlineToolbar = function (_Component) {
-  (0, _inherits3.default)(InlineToolbar, _Component);
+var InlineToolbar =
+/*#__PURE__*/
+function (_Component) {
+  (0, _inherits2.default)(InlineToolbar, _Component);
 
   function InlineToolbar() {
-    var _ref;
+    var _getPrototypeOf2;
 
-    var _temp, _this, _ret;
+    var _this;
 
-    (0, _classCallCheck3.default)(this, InlineToolbar);
+    (0, _classCallCheck2.default)(this, InlineToolbar);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = InlineToolbar.__proto__ || (0, _getPrototypeOf2.default)(InlineToolbar)).call.apply(_ref, [this].concat(args))), _this), _this.shouldComponentUpdate = function (nextProps, nextState) {
+    _this = (0, _possibleConstructorReturn2.default)(this, (_getPrototypeOf2 = (0, _getPrototypeOf3.default)(InlineToolbar)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "shouldComponentUpdate", function (nextProps, nextState) {
       return _this.props.editorState !== nextProps.editorState || _this.props.style !== nextProps.style;
-    }, _this.render = function () {
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "render", function () {
       var _this$props = _this.props,
           updateEditorState = _this$props.updateEditorState,
           editorState = _this$props.editorState,
@@ -70,52 +66,51 @@ var InlineToolbar = function (_Component) {
         _this.toolbar = toolbar;
       };
 
-      return _react2.default.createElement(
-        'div',
-        {
-          className: 'scholar-draft-InlineToolbar',
-          ref: bindRef,
-          style: style
-        },
-        (buttons || _defaultButtons2.default).map(function (button, key) {
-          return _react2.default.cloneElement(button, {
-            // Pass down some useful props to each button
-            updateEditorState: updateEditorState,
-            editorState: editorState,
-            iconMap: iconMap,
-            key: key /* eslint react/no-array-index-key:0 */
-          });
-        })
-      );
-    }, _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+      return _react.default.createElement("div", {
+        className: "scholar-draft-InlineToolbar",
+        ref: bindRef,
+        style: style
+      }, (buttons || _defaultButtons.default).map(function (button, key) {
+        return _react.default.cloneElement(button, {
+          // Pass down some useful props to each button
+          updateEditorState: updateEditorState,
+          editorState: editorState,
+          iconMap: iconMap,
+          key: key
+          /* eslint react/no-array-index-key:0 */
+
+        });
+      }));
+    });
+    return _this;
   }
 
   return InlineToolbar;
 }(_react.Component);
 
-InlineToolbar.propTypes = {
-  iconMap: _propTypes2.default.object,
+exports.default = InlineToolbar;
+(0, _defineProperty2.default)(InlineToolbar, "propTypes", {
+  iconMap: _propTypes.default.object,
 
   /**
    * The current editorState
    */
-  editorState: _propTypes2.default.object,
+  editorState: _propTypes.default.object,
 
   /**
    * The current style
    */
-  style: _propTypes2.default.object,
+  style: _propTypes.default.object,
 
   /**
    * Can call this to update the editor state
    */
-  updateEditorState: _propTypes2.default.func,
+  updateEditorState: _propTypes.default.func,
 
   /**
    * The inline buttons to use, if this is omitted will use the default
    * buttons, bold, italic and link.
    */
-  buttons: _propTypes2.default.array
-};
-exports.default = InlineToolbar;
-module.exports = exports['default'];
+  buttons: _propTypes.default.array
+});
+module.exports = exports.default;

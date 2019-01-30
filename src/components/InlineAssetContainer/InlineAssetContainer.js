@@ -6,7 +6,7 @@
  * at editor's implementation
  * @module scholar-draft/BlockAssetContainer
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import './InlineAssetContainer.scss';
@@ -123,8 +123,7 @@ class InlineAssetContainer extends Component {
         onMouseOver={onMOver}
         onFocus={onMOver}
         onMouseOut={onMOut}
-        onBlur={onMOut}
-      >
+        onBlur={onMOut}>
         <AssetComponent
           assetId={assetId}
           asset={asset}
@@ -133,8 +132,7 @@ class InlineAssetContainer extends Component {
           onAssetFocus={onAssetFocus}
           onAssetBlur={onAssetBlur}
           iconMap={iconMap}
-          renderingMode={renderingMode}
-        >
+          renderingMode={renderingMode}>
           {children}
         </AssetComponent>
       </span>

@@ -1,59 +1,43 @@
-'use strict';
+"use strict";
+
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = undefined;
+exports.default = void 0;
 
-var _keys = require('babel-runtime/core-js/object/keys');
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _keys2 = _interopRequireDefault(_keys);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _react = _interopRequireWildcard(require("react"));
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+var _reactCustomScrollbars = require("react-custom-scrollbars");
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _rebound = require("rebound");
 
-var _inherits3 = _interopRequireDefault(_inherits2);
+var _draftJs = require("draft-js");
 
-var _react = require('react');
+var _BasicEditor = _interopRequireDefault(require("../BasicEditor/BasicEditor"));
 
-var _react2 = _interopRequireDefault(_react);
+var _NoteContainer = _interopRequireDefault(require("../NoteContainer/NoteContainer"));
 
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _reactCustomScrollbars = require('react-custom-scrollbars');
-
-var _rebound = require('rebound');
-
-var _draftJs = require('draft-js');
-
-var _BasicEditor = require('../BasicEditor/BasicEditor');
-
-var _BasicEditor2 = _interopRequireDefault(_BasicEditor);
-
-var _NoteContainer = require('../NoteContainer/NoteContainer');
-
-var _NoteContainer2 = _interopRequireDefault(_NoteContainer);
-
-require('./Editor.scss');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+require("./Editor.scss");
 
 /**
  * This module exports a component representing an editor with main editor and footnotes,
@@ -61,53 +45,46 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Asset components must be provided through props
  * @module scholar-draft/Editor
  */
-
+// import { getOffsetRelativeToContainer, } from '../../utils';
 var DefaultElementLayout = function DefaultElementLayout(_ref) {
   var children = _ref.children,
       style = _ref.style,
       className = _ref.className;
-  return _react2.default.createElement(
-    'div',
-    { style: style, className: className },
-    children
-  );
+  return _react.default.createElement("div", {
+    style: style,
+    className: className
+  }, children);
 };
-
-// import { getOffsetRelativeToContainer, } from '../../utils';
-
 
 DefaultElementLayout.propTypes = {
-  children: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.element, _propTypes2.default.func]),
-  style: _propTypes2.default.string,
-  className: _propTypes2.default.string
+  children: _propTypes.default.oneOfType([_propTypes.default.array, _propTypes.default.element, _propTypes.default.func]),
+  style: _propTypes.default.string,
+  className: _propTypes.default.string
 };
 
-var Editor = function (_Component) {
-  (0, _inherits3.default)(Editor, _Component);
+var Editor =
+/*#__PURE__*/
+function (_Component) {
+  (0, _inherits2.default)(Editor, _Component);
 
-  /**
-   * component contructor
-   * @param {object} props - initializing props
-   */
   function Editor(props) {
-    (0, _classCallCheck3.default)(this, Editor);
+    var _this;
 
-    // this is used as a map of refs
+    (0, _classCallCheck2.default)(this, Editor);
+    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(Editor).call(this, props)); // this is used as a map of refs
     // to interact with note components
-    var _this = (0, _possibleConstructorReturn3.default)(this, (Editor.__proto__ || (0, _getPrototypeOf2.default)(Editor)).call(this, props));
 
-    _this.componentDidMount = function () {
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
       // we use a spring system to handle automatic scrolls
       // (e.g. note pointer clicked or click in the table of contents)
       _this.springSystem = new _rebound.SpringSystem();
       _this.spring = _this.springSystem.createSpring();
+
       _this.spring.addListener({
         onSpringUpdate: _this.handleSpringUpdate
       });
-    };
-
-    _this.componentWillReceiveProps = function (nextProps) {}
-    // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps) {} // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
     //   setTimeout(() => {
     //     const { anchorNode } = getSelection();
     //     if (anchorNode) {
@@ -122,21 +99,19 @@ var Editor = function (_Component) {
     //   }, 300);
     // }
 
-
     /**
      * Handles the scrolling process using the spring system
      * @param {object} spring - the spring system instance
      */
-    ;
-
-    _this.handleSpringUpdate = function (spring) {
+    );
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "handleSpringUpdate", function (spring) {
       var val = spring.getCurrentValue();
+
       if (val !== undefined && _this.globalScrollbar) {
         _this.globalScrollbar.scrollTop(val);
       }
-    };
-
-    _this.focus = function (contentId, selection) {
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "focus", function (contentId, selection) {
       if (contentId === 'main' && _this.mainEditor) {
         if (selection) {
           _this.mainEditor.setState({
@@ -144,6 +119,7 @@ var Editor = function (_Component) {
             editorState: _draftJs.EditorState.acceptSelection(_this.mainEditor.state.editorState, selection)
           });
         }
+
         setTimeout(function () {
           return _this.mainEditor.focus();
         });
@@ -151,6 +127,7 @@ var Editor = function (_Component) {
         setTimeout(function () {
           return _this.notes[contentId].editor.focus();
         });
+
         if (selection) {
           _this.notes[contentId].editor.setState({
             readOnly: false,
@@ -158,32 +135,31 @@ var Editor = function (_Component) {
           });
         }
       }
-    };
-
-    _this.generateEmptyEditor = function () {
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "generateEmptyEditor", function () {
       if (_this.mainEditor) {
         return _this.mainEditor.generateEmptyEditor();
       }
+
       return null;
-    };
-
-    _this.scrollToNote = function (thatNoteId) {
-      var notePointer = document.getElementById('note-container-' + thatNoteId);
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "scrollToNote", function (thatNoteId) {
+      var notePointer = document.getElementById("note-container-".concat(thatNoteId));
       var scrollTo = notePointer && notePointer.offsetTop;
+
       if (scrollTo) {
         _this.scrollTop(scrollTo);
       }
-    };
-
-    _this.scrollToNotePointer = function (thatNoteId) {
-      var notePointer = document.getElementById('note-pointer-' + thatNoteId);
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "scrollToNotePointer", function (thatNoteId) {
+      var notePointer = document.getElementById("note-pointer-".concat(thatNoteId));
       var scrollTo = notePointer && notePointer.offsetTop;
+
       if (scrollTo) {
         _this.scrollTop(scrollTo);
       }
-    };
-
-    _this.renderNoteEditor = function (noteId, order) {
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "renderNoteEditor", function (noteId, order) {
       var _this$props = _this.props,
           notes = _this$props.notes,
           assets = _this$props.assets,
@@ -221,9 +197,8 @@ var Editor = function (_Component) {
           inlineButtons = _this$props.inlineButtons,
           renderingMode = _this$props.renderingMode,
           NoteLayout = _this$props.NoteLayout;
+      var containerDimensions;
 
-
-      var containerDimensions = void 0;
       if (_this.editor) {
         containerDimensions = _this.editor.getBoundingClientRect();
       }
@@ -231,24 +206,29 @@ var Editor = function (_Component) {
       var onThisNoteEditorChange = function onThisNoteEditorChange(editor) {
         return onEditorChange(noteId, editor);
       };
+
       var onNoteAssetRequest = function onNoteAssetRequest(selection) {
         onAssetRequest(noteId, selection);
       };
+
       var onClickDelete = function onClickDelete() {
         if (typeof onNoteDelete === 'function') {
           _this.props.onNoteDelete(noteId);
         }
       };
+
       var onNoteDrop = function onNoteDrop(payload, selection) {
         if (typeof onDrop === 'function') {
           onDrop(noteId, payload, selection);
         }
       };
+
       var onNoteDragOver = function onNoteDragOver(event) {
         if (typeof onDragOver === 'function') {
           onDragOver(noteId, event);
         }
       };
+
       var note = notes[noteId];
 
       var onNoteEditorClick = function onNoteEditorClick(event) {
@@ -256,65 +236,55 @@ var Editor = function (_Component) {
           onClick(event, noteId);
         }
       };
+
       var bindNote = function bindNote(thatNote) {
         _this.notes[noteId] = thatNote;
       };
+
       var onNoteBlur = function onNoteBlur(event) {
         onBlur(event, noteId);
       };
 
       var onClickScrollToNotePointer = function onClickScrollToNotePointer(thatNoteId) {
-        var notePointer = document.getElementById('note-pointer-' + thatNoteId);
+        var notePointer = document.getElementById("note-pointer-".concat(thatNoteId));
         var scrollTo = notePointer && notePointer.offsetTop;
+
         if (scrollTo) {
           _this.scrollTop(scrollTo);
         }
       };
 
-      var NoteContainer = NoteContainerComponent || _NoteContainer2.default;
-      return _react2.default.createElement(NoteContainer, {
+      var NoteContainer = NoteContainerComponent || _NoteContainer.default;
+      return _react.default.createElement(NoteContainer, {
         key: noteId,
         note: note,
         notes: notes,
         assets: assets,
         customContext: customContext,
         editorPlaceholder: editorPlaceholder,
-
         ref: bindNote,
-
         messages: messages,
-
         contentId: noteId,
-
         assetRequestPosition: assetRequestPosition,
         assetRequestContentId: assetRequestContentId,
         assetChoiceProps: assetChoiceProps,
-
         isActive: noteId === focusedEditorId,
-
         onEditorClick: onNoteEditorClick,
         onBlur: onNoteBlur,
-
         renderingMode: renderingMode,
-
         onEditorChange: onThisNoteEditorChange,
-
         onClickScrollToNotePointer: onClickScrollToNotePointer,
-
         onAssetRequest: onNoteAssetRequest,
         onAssetRequestCancel: onAssetRequestCancel,
         onAssetChange: onAssetChange,
         onAssetChoice: onAssetChoice,
         handlePastedText: handlePastedText,
-
         onDrop: onNoteDrop,
         onDragOver: onNoteDragOver,
         onClickDelete: onClickDelete,
-
         onAssetClick: onAssetClick,
         onAssetMouseOver: onAssetMouseOver,
         onAssetMouseOut: onAssetMouseOut,
-
         containerDimensions: containerDimensions,
         inlineButtons: inlineButtons,
         inlineAssetComponents: inlineAssetComponents,
@@ -326,23 +296,19 @@ var Editor = function (_Component) {
         NoteLayout: NoteLayout,
         AssetButtonComponent: AssetButtonComponent,
         NoteButtonComponent: NoteButtonComponent,
-
         editorStyle: editorStyles && editorStyles.noteEditor
       });
-    };
-
+    });
     _this.notes = {};
     return _this;
   }
-
   /**
    * Executes code on instance after the component is mounted
    */
 
 
-  (0, _createClass3.default)(Editor, [{
-    key: 'scrollTop',
-
+  (0, _createClass2.default)(Editor, [{
+    key: "scrollTop",
 
     /**
      * Programmatically modifies the scroll state of the component
@@ -354,46 +320,20 @@ var Editor = function (_Component) {
       var scrollbars = this.globalScrollbar;
       var scrollTop = scrollbars.getScrollTop();
       var scrollHeight = scrollbars.getScrollHeight();
+
       var val = _rebound.MathUtil.mapValueInRange(top, 0, scrollHeight, 0, scrollHeight);
+
       this.spring.setCurrentValue(scrollTop).setAtRest();
       this.spring.setEndValue(val);
     }
-
     /**
      * manages imperative focus on one of the editors
      * @param {string} contentId - 'main' or note uuid
      * @param {ImmutableRecord} selection - the selection to focus on
      */
 
-
-    /**
-     * Provides upstream-usable empty editor factory method with proper decorator
-     * @return {ImmutableRecord} editorState - output editor state
-     */
-
-
-    /**
-     * Scrolls to a specific note
-     * @param {string} noteId
-     */
-
-
-    /**
-     * Scrolls to a specific note pointer
-     * @param {string} noteId
-     */
-
-
-    /**
-     * Renders a note editor component for a specific note
-     * @param {string} noteId - uuid of the note to render
-     * @param {number} order - order to attribute to it
-     * @return {ReactMarkup} noteComponent - the note component
-     */
-
   }, {
-    key: 'render',
-
+    key: "render",
 
     /**
      * Renders the component
@@ -402,55 +342,52 @@ var Editor = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props = this.props,
-          mainEditorState = _props.mainEditorState,
-          notes = _props.notes,
-          notesOrder = _props.notesOrder,
-          assets = _props.assets,
-          customContext = _props.customContext,
-          editorPlaceholder = _props.editorPlaceholder,
-          messages = _props.messages,
-          _props$editorClass = _props.editorClass,
-          editorClass = _props$editorClass === undefined ? 'scholar-draft-Editor' : _props$editorClass,
-          onEditorChange = _props.onEditorChange,
-          onNoteAdd = _props.onNoteAdd,
-          onAssetChange = _props.onAssetChange,
-          onAssetRequest = _props.onAssetRequest,
-          onAssetRequestCancel = _props.onAssetRequestCancel,
-          onAssetChoice = _props.onAssetChoice,
-          onAssetClick = _props.onAssetClick,
-          onAssetMouseOver = _props.onAssetMouseOver,
-          onAssetMouseOut = _props.onAssetMouseOut,
-          onAssetBlur = _props.onAssetBlur,
-          handlePastedText = _props.handlePastedText,
-          onNotePointerMouseOver = _props.onNotePointerMouseOver,
-          onNotePointerMouseOut = _props.onNotePointerMouseOut,
-          onNotePointerMouseClick = _props.onNotePointerMouseClick,
-          onDrop = _props.onDrop,
-          onDragOver = _props.onDragOver,
-          onClick = _props.onClick,
-          onBlur = _props.onBlur,
-          assetRequestPosition = _props.assetRequestPosition,
-          assetRequestContentId = _props.assetRequestContentId,
-          assetChoiceProps = _props.assetChoiceProps,
-          inlineButtons = _props.inlineButtons,
-          inlineAssetComponents = _props.inlineAssetComponents,
-          blockAssetComponents = _props.blockAssetComponents,
-          AssetChoiceComponent = _props.AssetChoiceComponent,
-          NotePointerComponent = _props.NotePointerComponent,
-          AssetButtonComponent = _props.AssetButtonComponent,
-          NoteButtonComponent = _props.NoteButtonComponent,
-          ElementLayoutComponent = _props.ElementLayoutComponent,
-          _props$inlineEntities = _props.inlineEntities,
-          inlineEntities = _props$inlineEntities === undefined ? [] : _props$inlineEntities,
-          iconMap = _props.iconMap,
-          editorStyles = _props.editorStyles,
-          focusedEditorId = _props.focusedEditorId,
-          renderingMode = _props.renderingMode;
-
-
+      var _this$props2 = this.props,
+          mainEditorState = _this$props2.mainEditorState,
+          notes = _this$props2.notes,
+          notesOrder = _this$props2.notesOrder,
+          assets = _this$props2.assets,
+          customContext = _this$props2.customContext,
+          editorPlaceholder = _this$props2.editorPlaceholder,
+          messages = _this$props2.messages,
+          _this$props2$editorCl = _this$props2.editorClass,
+          editorClass = _this$props2$editorCl === void 0 ? 'scholar-draft-Editor' : _this$props2$editorCl,
+          onEditorChange = _this$props2.onEditorChange,
+          onNoteAdd = _this$props2.onNoteAdd,
+          onAssetChange = _this$props2.onAssetChange,
+          onAssetRequest = _this$props2.onAssetRequest,
+          onAssetRequestCancel = _this$props2.onAssetRequestCancel,
+          onAssetChoice = _this$props2.onAssetChoice,
+          onAssetClick = _this$props2.onAssetClick,
+          onAssetMouseOver = _this$props2.onAssetMouseOver,
+          onAssetMouseOut = _this$props2.onAssetMouseOut,
+          onAssetBlur = _this$props2.onAssetBlur,
+          handlePastedText = _this$props2.handlePastedText,
+          onNotePointerMouseOver = _this$props2.onNotePointerMouseOver,
+          onNotePointerMouseOut = _this$props2.onNotePointerMouseOut,
+          onNotePointerMouseClick = _this$props2.onNotePointerMouseClick,
+          onDrop = _this$props2.onDrop,
+          onDragOver = _this$props2.onDragOver,
+          onClick = _this$props2.onClick,
+          onBlur = _this$props2.onBlur,
+          assetRequestPosition = _this$props2.assetRequestPosition,
+          assetRequestContentId = _this$props2.assetRequestContentId,
+          assetChoiceProps = _this$props2.assetChoiceProps,
+          inlineButtons = _this$props2.inlineButtons,
+          inlineAssetComponents = _this$props2.inlineAssetComponents,
+          blockAssetComponents = _this$props2.blockAssetComponents,
+          AssetChoiceComponent = _this$props2.AssetChoiceComponent,
+          NotePointerComponent = _this$props2.NotePointerComponent,
+          AssetButtonComponent = _this$props2.AssetButtonComponent,
+          NoteButtonComponent = _this$props2.NoteButtonComponent,
+          ElementLayoutComponent = _this$props2.ElementLayoutComponent,
+          _this$props2$inlineEn = _this$props2.inlineEntities,
+          inlineEntities = _this$props2$inlineEn === void 0 ? [] : _this$props2$inlineEn,
+          iconMap = _this$props2.iconMap,
+          editorStyles = _this$props2.editorStyles,
+          focusedEditorId = _this$props2.focusedEditorId,
+          renderingMode = _this$props2.renderingMode;
       var ElementLayout = ElementLayoutComponent || DefaultElementLayout;
-
       /**
        * bindings
        */
@@ -458,16 +395,19 @@ var Editor = function (_Component) {
       var bindMainEditor = function bindMainEditor(editor) {
         _this2.mainEditor = editor;
       };
-
       /**
        * callbacks
        */
+
+
       var onMainEditorChange = function onMainEditorChange(editor) {
         onEditorChange('main', editor);
       };
+
       var onMainAssetRequest = function onMainAssetRequest(selection) {
         onAssetRequest('main', selection);
       };
+
       var onMainEditorDrop = function onMainEditorDrop(payload, selection) {
         if (typeof onDrop === 'function') {
           onDrop('main', payload, selection);
@@ -485,17 +425,20 @@ var Editor = function (_Component) {
           onClick(event, 'main');
         }
       };
+
       var onMainBlur = function onMainBlur(event) {
         onBlur(event, 'main');
       };
 
       var onNotePointerMouseClickHandler = function onNotePointerMouseClickHandler(event) {
-        var noteContainer = document.getElementById('note-container-' + event);
+        var noteContainer = document.getElementById("note-container-".concat(event));
+
         if (noteContainer) {
           var offsetTop = noteContainer.offsetTop;
 
           _this2.scrollTop(offsetTop);
         }
+
         if (typeof onNotePointerMouseClick === 'function') {
           onNotePointerMouseClick(event, 'main');
         }
@@ -505,171 +448,144 @@ var Editor = function (_Component) {
         _this2.globalScrollbar = scrollbar;
       };
 
-      var activeNotes = notesOrder || (0, _keys2.default)(notes || {}).sort(function (first, second) {
+      var activeNotes = notesOrder || Object.keys(notes || {}).sort(function (first, second) {
         if (notes[first].order > notes[second].order) {
           return 1;
-        }return -1;
+        }
+
+        return -1;
       });
 
       var bindEditorRef = function bindEditorRef(editor) {
         _this2.editor = editor;
       };
 
-      var containerDimensions = void 0;
+      var containerDimensions;
+
       if (this.editor) {
         containerDimensions = this.editor.getBoundingClientRect();
       }
-      return _react2.default.createElement(
-        'div',
-        { ref: bindEditorRef, className: editorClass },
-        _react2.default.createElement(
-          _reactCustomScrollbars.Scrollbars,
-          {
-            ref: bindGlobalScrollbarRef,
-            className: 'custom-scrollbars',
-            autoHide: true,
-            onUpdate: this.onScrollUpdate,
-            universal: true
-          },
-          _react2.default.createElement(
-            ElementLayout,
-            { className: 'main-container-editor' },
-            _react2.default.createElement(_BasicEditor2.default, {
-              editorState: mainEditorState,
-              assets: assets,
-              ref: bindMainEditor,
-              customContext: customContext,
 
-              messages: messages,
-
-              editorPlaceholder: editorPlaceholder,
-
-              notes: notes,
-
-              contentId: 'main',
-
-              assetRequestPosition: assetRequestPosition,
-              isRequestingAssets: assetRequestContentId === 'main',
-              assetChoiceProps: assetChoiceProps,
-
-              isActive: focusedEditorId === 'main',
-
-              onClick: onMainEditorClick,
-              onBlur: onMainBlur,
-
-              renderingMode: renderingMode,
-              handlePastedText: handlePastedText,
-
-              onEditorChange: onMainEditorChange,
-              onDragOver: onMainDragOver,
-              onDrop: onMainEditorDrop,
-              onAssetRequest: onMainAssetRequest,
-              onAssetRequestCancel: onAssetRequestCancel,
-              onAssetChoice: onAssetChoice,
-
-              onNoteAdd: onNoteAdd,
-              onAssetChange: onAssetChange,
-
-              onAssetClick: onAssetClick,
-              onAssetMouseOver: onAssetMouseOver,
-              onAssetMouseOut: onAssetMouseOut,
-              onAssetBlur: onAssetBlur,
-
-              onNotePointerMouseOver: onNotePointerMouseOver,
-              onNotePointerMouseOut: onNotePointerMouseOut,
-              onNotePointerMouseClick: onNotePointerMouseClickHandler,
-
-              inlineButtons: inlineButtons,
-              inlineAssetComponents: inlineAssetComponents,
-              blockAssetComponents: blockAssetComponents,
-              AssetChoiceComponent: AssetChoiceComponent,
-              NotePointerComponent: NotePointerComponent,
-              AssetButtonComponent: AssetButtonComponent,
-              NoteButtonComponent: NoteButtonComponent,
-              inlineEntities: inlineEntities,
-              iconMap: iconMap,
-
-              containerDimensions: containerDimensions,
-
-              allowNotesInsertion: true,
-              editorStyle: editorStyles && editorStyles.mainEditor
-            })
-          ),
-          _react2.default.createElement(
-            ElementLayout,
-            { className: 'notes-container' },
-            activeNotes.map(this.renderNoteEditor)
-          )
-        )
-      );
+      return _react.default.createElement("div", {
+        ref: bindEditorRef,
+        className: editorClass
+      }, _react.default.createElement(_reactCustomScrollbars.Scrollbars, {
+        ref: bindGlobalScrollbarRef,
+        className: "custom-scrollbars",
+        autoHide: true,
+        onUpdate: this.onScrollUpdate,
+        universal: true
+      }, _react.default.createElement(ElementLayout, {
+        className: "main-container-editor"
+      }, _react.default.createElement(_BasicEditor.default, {
+        editorState: mainEditorState,
+        assets: assets,
+        ref: bindMainEditor,
+        customContext: customContext,
+        messages: messages,
+        editorPlaceholder: editorPlaceholder,
+        notes: notes,
+        contentId: "main",
+        assetRequestPosition: assetRequestPosition,
+        isRequestingAssets: assetRequestContentId === 'main',
+        assetChoiceProps: assetChoiceProps,
+        isActive: focusedEditorId === 'main',
+        onClick: onMainEditorClick,
+        onBlur: onMainBlur,
+        renderingMode: renderingMode,
+        handlePastedText: handlePastedText,
+        onEditorChange: onMainEditorChange,
+        onDragOver: onMainDragOver,
+        onDrop: onMainEditorDrop,
+        onAssetRequest: onMainAssetRequest,
+        onAssetRequestCancel: onAssetRequestCancel,
+        onAssetChoice: onAssetChoice,
+        onNoteAdd: onNoteAdd,
+        onAssetChange: onAssetChange,
+        onAssetClick: onAssetClick,
+        onAssetMouseOver: onAssetMouseOver,
+        onAssetMouseOut: onAssetMouseOut,
+        onAssetBlur: onAssetBlur,
+        onNotePointerMouseOver: onNotePointerMouseOver,
+        onNotePointerMouseOut: onNotePointerMouseOut,
+        onNotePointerMouseClick: onNotePointerMouseClickHandler,
+        inlineButtons: inlineButtons,
+        inlineAssetComponents: inlineAssetComponents,
+        blockAssetComponents: blockAssetComponents,
+        AssetChoiceComponent: AssetChoiceComponent,
+        NotePointerComponent: NotePointerComponent,
+        AssetButtonComponent: AssetButtonComponent,
+        NoteButtonComponent: NoteButtonComponent,
+        inlineEntities: inlineEntities,
+        iconMap: iconMap,
+        containerDimensions: containerDimensions,
+        allowNotesInsertion: true,
+        editorStyle: editorStyles && editorStyles.mainEditor
+      })), _react.default.createElement(ElementLayout, {
+        className: "notes-container"
+      }, activeNotes.map(this.renderNoteEditor))));
     }
   }]);
   return Editor;
 }(_react.Component);
 
-Editor.propTypes = {
-  mainEditorState: _propTypes2.default.object,
-  notes: _propTypes2.default.object,
-  notesOrder: _propTypes2.default.array,
-
-  messages: _propTypes2.default.shape({
-    addNote: _propTypes2.default.string,
-    summonAsset: _propTypes2.default.string,
-    cancel: _propTypes2.default.string
-  }),
-  customContext: _propTypes2.default.object,
-
-  // className: PropTypes.string,
-
-  assets: _propTypes2.default.object,
-
-  editorClass: _propTypes2.default.string,
-
-  onEditorChange: _propTypes2.default.func,
-  onNoteAdd: _propTypes2.default.func,
-  editorPlaceholder: _propTypes2.default.string,
-
-  onAssetChange: _propTypes2.default.func,
-  onAssetRequest: _propTypes2.default.func,
-  onAssetRequestCancel: _propTypes2.default.func,
-  onAssetChoice: _propTypes2.default.func,
-  onAssetClick: _propTypes2.default.func,
-  onAssetMouseOver: _propTypes2.default.func,
-  onAssetMouseOut: _propTypes2.default.func,
-  onAssetBlur: _propTypes2.default.func,
-  handlePastedText: _propTypes2.default.func,
-
-  onNotePointerMouseOver: _propTypes2.default.func,
-  onNotePointerMouseOut: _propTypes2.default.func,
-  onNotePointerMouseClick: _propTypes2.default.func,
-  onNoteDelete: _propTypes2.default.func,
-  onDrop: _propTypes2.default.func,
-  onDragOver: _propTypes2.default.func,
-  onClick: _propTypes2.default.func,
-  onBlur: _propTypes2.default.func,
-
-  assetRequestPosition: _propTypes2.default.object,
-  assetRequestContentId: _propTypes2.default.string,
-  assetChoiceProps: _propTypes2.default.object,
-
-  inlineAssetComponents: _propTypes2.default.object,
-  blockAssetComponents: _propTypes2.default.object,
-  AssetChoiceComponent: _propTypes2.default.func,
-  NotePointerComponent: _propTypes2.default.func,
-  AssetButtonComponent: _propTypes2.default.func,
-  NoteButtonComponent: _propTypes2.default.func,
-  NoteLayout: _propTypes2.default.func,
-  inlineEntities: _propTypes2.default.array,
-  iconMap: _propTypes2.default.object,
-  inlineButtons: _propTypes2.default.array,
-
-  renderingMode: _propTypes2.default.string,
-
-  keyBindingFn: _propTypes2.default.func,
-
-  editorStyles: _propTypes2.default.object,
-  focusedEditorId: _propTypes2.default.string,
-  NoteContainerComponent: _propTypes2.default.func,
-  ElementLayoutComponent: _propTypes2.default.func };
 exports.default = Editor;
-module.exports = exports['default'];
+(0, _defineProperty2.default)(Editor, "propTypes", {
+  mainEditorState: _propTypes.default.object,
+  notes: _propTypes.default.object,
+  notesOrder: _propTypes.default.array,
+  messages: _propTypes.default.shape({
+    addNote: _propTypes.default.string,
+    summonAsset: _propTypes.default.string,
+    cancel: _propTypes.default.string
+  }),
+  customContext: _propTypes.default.object,
+  // className: PropTypes.string,
+  assets: _propTypes.default.object,
+  editorClass: _propTypes.default.string,
+  onEditorChange: _propTypes.default.func,
+  onNoteAdd: _propTypes.default.func,
+  editorPlaceholder: _propTypes.default.string,
+  onAssetChange: _propTypes.default.func,
+  onAssetRequest: _propTypes.default.func,
+  onAssetRequestCancel: _propTypes.default.func,
+  onAssetChoice: _propTypes.default.func,
+  onAssetClick: _propTypes.default.func,
+  onAssetMouseOver: _propTypes.default.func,
+  onAssetMouseOut: _propTypes.default.func,
+  onAssetBlur: _propTypes.default.func,
+  handlePastedText: _propTypes.default.func,
+  onNotePointerMouseOver: _propTypes.default.func,
+  onNotePointerMouseOut: _propTypes.default.func,
+  onNotePointerMouseClick: _propTypes.default.func,
+  onNoteDelete: _propTypes.default.func,
+  onDrop: _propTypes.default.func,
+  onDragOver: _propTypes.default.func,
+  onClick: _propTypes.default.func,
+  onBlur: _propTypes.default.func,
+  assetRequestPosition: _propTypes.default.object,
+  assetRequestContentId: _propTypes.default.string,
+  assetChoiceProps: _propTypes.default.object,
+  inlineAssetComponents: _propTypes.default.object,
+  blockAssetComponents: _propTypes.default.object,
+  AssetChoiceComponent: _propTypes.default.func,
+  NotePointerComponent: _propTypes.default.func,
+  AssetButtonComponent: _propTypes.default.func,
+  NoteButtonComponent: _propTypes.default.func,
+  NoteLayout: _propTypes.default.func,
+  inlineEntities: _propTypes.default.array,
+  iconMap: _propTypes.default.object,
+  inlineButtons: _propTypes.default.array,
+  renderingMode: _propTypes.default.string,
+  keyBindingFn: _propTypes.default.func,
+  editorStyles: _propTypes.default.object,
+  focusedEditorId: _propTypes.default.string,
+  NoteContainerComponent: _propTypes.default.func,
+  ElementLayoutComponent: _propTypes.default.func
+  /**
+   * component contructor
+   * @param {object} props - initializing props
+   */
+
+});
+module.exports = exports.default;

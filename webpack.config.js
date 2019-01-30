@@ -3,7 +3,7 @@ module.exports = {
     rules: [
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        use: [
+        loader: [
             'file?hash=sha512&digest=hex&name=[hash].[ext]',
             'image-webpack?bypassOnDebug&optipng.optimizationLevel=7&gifsicle.interlaced=false'
         ]
@@ -14,11 +14,11 @@ module.exports = {
       // },
       {
         test: /\.scss$/,
-        use: ['style', 'css', 'sass']
+        loader: ['style', 'css', 'sass']
       },
       {
         test: /\.css$/,
-        use: ['style', 'css']
+        loader: ['style', 'css']
       }    ]
   }
 };

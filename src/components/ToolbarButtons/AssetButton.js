@@ -1,6 +1,6 @@
 /* eslint react/prop-types: 0 */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 
@@ -24,12 +24,10 @@ class AssetButton extends Component {
         onMouseDown={onMouseDown}
         onClick={onClick}
         data-tip={message}
-        {...otherProps}
-      >
+        {...otherProps}>
         {iconMap.asset}
         <ReactTooltip 
-          place={active ? 'left' : 'right'}
-        />
+          place={active ? 'left' : 'right'} />
       </div>);
   }
 }

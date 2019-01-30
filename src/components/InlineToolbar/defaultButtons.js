@@ -10,12 +10,12 @@ import OrderedListItemButton from '../ToolbarButtons/OrderedListItemButton';
 import UnorderedListItemButton from '../ToolbarButtons/UnorderedListItemButton';
 
 export default [
-  <BoldButton />,
-  <ItalicButton />,
-  <BlockQuoteButton />,
-  <HeaderOneButton />,
-  <HeaderTwoButton />,
-  <OrderedListItemButton />,
-  <UnorderedListItemButton />,
-  <CodeBlockButton />,
+  <BoldButton key={0} />,
+  <ItalicButton key={1} />,
+  <BlockQuoteButton key={2} />,
+  <HeaderOneButton key={3} />,
+  <HeaderTwoButton key={4} />,
+  <OrderedListItemButton key={5} />,
+  <UnorderedListItemButton key={6} />,
+  <CodeBlockButton key={7} />,
 ];

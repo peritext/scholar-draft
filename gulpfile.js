@@ -1,25 +1,15 @@
 var gulp = require('gulp');
 var strip = require('gulp-strip-comments');
 var babel = require('gulp-babel');
+var babelConfig = require('./package.json').babel;
 
-gulp.task('build', function(){
+
+gulp.task('build', function(cb){
   gulp.src([
       'src/*.js',
       'src/**/*.js'
     ])
-    .pipe(babel({
-      "plugins": [
-        "add-module-exports",
-        "transform-class-properties",
-        "transform-decorators-legacy",
-        "transform-object-rest-spread",
-        "transform-export-extensions"
-      ],
-      "presets": [
-        "es2015",
-        "react"
-      ]
-    }))
+    .pipe(babel(babelConfig))
     .pipe(gulp.dest('build'));
 
   gulp.src([
@@ -34,4 +24,5 @@ gulp.task('build', function(){
       'src/**/*.scss'
     ])
     .pipe(gulp.dest('build'));
+  cb(null);
 });

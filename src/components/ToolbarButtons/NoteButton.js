@@ -18,12 +18,10 @@ const NoteButton = ({
       onClick={onClick}
       onMouseDown={onMouseDown}
       data-tip={message}
-      {...otherProps}
-    >
+      {...otherProps}>
       {iconMap.note}
       <ReactTooltip 
-        place="right"
-      />
+        place="right" />
     </div>
   );
 };

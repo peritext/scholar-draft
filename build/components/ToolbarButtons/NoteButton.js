@@ -1,62 +1,47 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
 
-var _extends3 = _interopRequireDefault(_extends2);
+var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+var _react = _interopRequireDefault(require("react"));
 
-var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _reactTooltip = require('react-tooltip');
-
-var _reactTooltip2 = _interopRequireDefault(_reactTooltip);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _reactTooltip = _interopRequireDefault(require("react-tooltip"));
 
 var NoteButton = function NoteButton(_ref) {
   var onClick = _ref.onClick,
       iconMap = _ref.iconMap,
       message = _ref.message,
-      otherProps = (0, _objectWithoutProperties3.default)(_ref, ['onClick', 'iconMap', 'message']);
-
+      otherProps = (0, _objectWithoutProperties2.default)(_ref, ["onClick", "iconMap", "message"]);
 
   var onMouseDown = function onMouseDown(event) {
     return event.preventDefault();
   };
 
-  return _react2.default.createElement(
-    'div',
-    (0, _extends3.default)({
-      className: 'scholar-draft-NoteButton',
-      onClick: onClick,
-      onMouseDown: onMouseDown,
-      'data-tip': message
-    }, otherProps),
-    iconMap.note,
-    _react2.default.createElement(_reactTooltip2.default, {
-      place: 'right'
-    })
-  );
+  return _react.default.createElement("div", (0, _extends2.default)({
+    className: "scholar-draft-NoteButton",
+    onClick: onClick,
+    onMouseDown: onMouseDown,
+    "data-tip": message
+  }, otherProps), iconMap.note, _react.default.createElement(_reactTooltip.default, {
+    place: "right"
+  }));
 };
 
 NoteButton.propTypes = {
-  onClick: _propTypes2.default.func,
-  iconMap: _propTypes2.default.object,
-  message: _propTypes2.default.string
+  onClick: _propTypes.default.func,
+  iconMap: _propTypes.default.object,
+  message: _propTypes.default.string
 };
-
-exports.default = NoteButton;
-module.exports = exports['default'];
+var _default = NoteButton;
+exports.default = _default;
+module.exports = exports.default;

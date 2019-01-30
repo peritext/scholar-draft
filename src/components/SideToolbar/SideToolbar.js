@@ -2,7 +2,7 @@
  * This module exports a react component for editors' side tool bar
  * @module scholar-draft/SideToolbar
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import DefaultAssetButton from '../ToolbarButtons/AssetButton';
@@ -61,7 +61,7 @@ export default class SideToolbar extends Component {
 
   componentDidUpdate = () => {
     setTimeout(() => {
-      const { containerDimensions } = this.props;
+      const {containerDimensions} = this.props;
       let assetChoiceStyle;
       if (
         this.assetChoiceComponent 
@@ -70,7 +70,7 @@ export default class SideToolbar extends Component {
         && this.assetChoiceComponent.element 
         && containerDimensions
       ) {
-        const { width, height } = this.assetChoiceComponent.element.getBoundingClientRect();
+        const {width, height} = this.assetChoiceComponent.element.getBoundingClientRect();
         const {
           x: btnX, /* eslint id-length : 0 */
           y: btnY, /* eslint id-length : 0 */
@@ -97,12 +97,14 @@ export default class SideToolbar extends Component {
             left: -(width + assetButtonWidth),
             top: -(assetButtonHeight + height),
           };
-        } else if (rightExtremity > rightBoundary) {
+        }
+        else if (rightExtremity > rightBoundary) {
           assetChoiceStyle = {
             left: -(width + assetButtonWidth),
             top: assetButtonWidth,
           };
-        } else if (bottomExtremity > bottomBoundary) {
+        }
+        else if (bottomExtremity > bottomBoundary) {
           assetChoiceStyle = {
             // left: -(width + assetButtonWidth * 2),
             top: -(assetButtonHeight + height),
@@ -119,7 +121,7 @@ export default class SideToolbar extends Component {
               && JSON.stringify(this.state.assetChoiceStyle) === JSON.stringify(assetChoiceStyle))
         )
       ) {
-        this.setState({ assetChoiceStyle });
+        this.setState({assetChoiceStyle});
       }
     }, 500);
   }
@@ -161,7 +163,8 @@ export default class SideToolbar extends Component {
       event.stopPropagation();
       if (assetRequestPosition) {
         onAssetRequestCancel();
-      } else {
+      }
+      else {
         const currentSelection = editorState && editorState.getSelection();
         onAssetRequest(currentSelection);
       }
@@ -188,14 +191,12 @@ export default class SideToolbar extends Component {
       <div
         className="scholar-draft-SideToolbar"
         ref={bindToolbar}
-        style={style}
-      >
+        style={style}>
         {allowNotesInsertion && !assetRequestPosition &&
         <NoteButton 
           onClick={onNoteAdd} 
           iconMap={iconMap}
-          message={messages && messages.addNote}
-        />
+          message={messages && messages.addNote} />
         }
         {(allowAssets.inline || allowAssets.block) && 
         <AssetButton 
@@ -208,23 +209,19 @@ export default class SideToolbar extends Component {
             assetSelectorActive ? 
               messages.cancel : 
               messages.summonAsset
-          }
-        />}
+          } />}
         {assetRequestPosition &&
           <span
             className="block-asset-choice-container" 
             onClick={stopEventPropagation}
-            style={assetChoiceStyle}
-          >
+            style={assetChoiceStyle}>
             <AssetChoiceComponent
               {...assetChoiceProps}
               ref={bindAssetChoiceComponentRef}
               contentId={contentId}
               onAssetChoice={onAssetChoice}
               onAssetRequestCancel={onAssetRequestCancel}
-              onAssetChoiceFocus={onAssetChoiceFocus}
-
-            />
+              onAssetChoiceFocus={onAssetChoiceFocus} />
           </span>
         }
       </div>

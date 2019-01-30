@@ -5,16 +5,16 @@
  * @module scholar-draft/Editor
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import { Scrollbars } from 'react-custom-scrollbars';
+import {Scrollbars} from 'react-custom-scrollbars';
 import {
   SpringSystem,
   MathUtil
 } from 'rebound';
 
-import { EditorState } from 'draft-js';
+import {EditorState} from 'draft-js';
 
 
 // import { getOffsetRelativeToContainer, } from '../../utils';
@@ -191,7 +191,8 @@ export default class Editor extends Component {
         });
       }
       setTimeout(() => this.mainEditor.focus());
-    } else if (this.notes[contentId]) {
+    }
+    else if (this.notes[contentId]) {
       setTimeout(() => this.notes[contentId].editor.focus());
       if (selection) {
         this.notes[contentId].editor.setState({
@@ -403,8 +404,7 @@ export default class Editor extends Component {
         AssetButtonComponent={AssetButtonComponent}
         NoteButtonComponent={NoteButtonComponent}
 
-        editorStyle={editorStyles && editorStyles.noteEditor}
-      />
+        editorStyle={editorStyles && editorStyles.noteEditor} />
     );
   }
 
@@ -512,7 +512,7 @@ export default class Editor extends Component {
     const onNotePointerMouseClickHandler = (event) => {
       const noteContainer = document.getElementById(`note-container-${event}`);
       if (noteContainer) {
-        const { offsetTop } = noteContainer;
+        const {offsetTop} = noteContainer;
         this.scrollTop(offsetTop);
       }
       if (typeof onNotePointerMouseClick === 'function') {
@@ -546,8 +546,7 @@ export default class Editor extends Component {
           className="custom-scrollbars"
           autoHide
           onUpdate={this.onScrollUpdate}
-          universal
-        >
+          universal>
           <ElementLayout className="main-container-editor">
             <BasicEditor
               editorState={mainEditorState}
@@ -607,8 +606,7 @@ export default class Editor extends Component {
               containerDimensions={containerDimensions}
 
               allowNotesInsertion
-              editorStyle={editorStyles && editorStyles.mainEditor}
-            />
+              editorStyle={editorStyles && editorStyles.mainEditor} />
           </ElementLayout>
           <ElementLayout className="notes-container">
             {

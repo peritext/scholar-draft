@@ -3,7 +3,7 @@
  * This module exports a react component for note pointers in editors
  * @module scholar-draft/NotePointer
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import './NotePointer.scss';
@@ -92,8 +92,7 @@ class NotePointer extends Component {
         onFocus={onMouseOver}
         onMouseOut={onMouseOut}
         onBlur={onMouseOut}
-        onClick={onMouseClick}
-      >
+        onClick={onMouseClick}>
         <span>{(note && note.order) || '*'}{children}</span>
       </sup>
     );

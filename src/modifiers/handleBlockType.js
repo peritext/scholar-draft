@@ -5,8 +5,8 @@
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
 
-import { CHECKABLE_LIST_ITEM } from 'draft-js-checkable-list-item';
-import { RichUtils } from 'draft-js';
+import {CHECKABLE_LIST_ITEM} from 'draft-js-checkable-list-item';
+import {RichUtils} from 'draft-js';
 import changeCurrentBlockType from './changeCurrentBlockType';
 
 const sharps = (len) => {
@@ -53,7 +53,7 @@ const handleBlockType = (editorState, character) => {
   }
   matchArr = line.match(/^\[([x ])] (.*)$/i);
   if (matchArr && blockType === 'unordered-list-item') {
-    return changeCurrentBlockType(editorState, CHECKABLE_LIST_ITEM, matchArr[2], { checked: matchArr[1] !== ' ' });
+    return changeCurrentBlockType(editorState, CHECKABLE_LIST_ITEM, matchArr[2], {checked: matchArr[1] !== ' '});
   }
   return editorState;
 };
