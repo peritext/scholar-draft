@@ -89,7 +89,6 @@ export default class Editor extends Component {
     blockAssetComponents: PropTypes.object,
     AssetChoiceComponent: PropTypes.func,
     NotePointerComponent: PropTypes.func,
-    BibliographyComponent: PropTypes.func,
     AssetButtonComponent: PropTypes.func,
     NoteButtonComponent: PropTypes.func,
     NoteLayout: PropTypes.func,
@@ -459,7 +458,6 @@ export default class Editor extends Component {
       blockAssetComponents,
       AssetChoiceComponent,
       NotePointerComponent,
-      BibliographyComponent,
       AssetButtonComponent,
       NoteButtonComponent,
       ElementLayoutComponent,
@@ -624,13 +622,6 @@ export default class Editor extends Component {
                 .map(this.renderNoteEditor)
             }
           </ElementLayout>
-          {
-            BibliographyComponent
-            &&
-              <ElementLayout className="bibliography-container">
-                <BibliographyComponent />
-              </ElementLayout>
-          }
         </Scrollbars>
       </div>
     );

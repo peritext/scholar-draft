@@ -121,7 +121,6 @@ export default class BasicEditor extends Component {
     keyBindingFn: PropTypes.func,
     inlineButtons: PropTypes.array,
     NotePointerComponent: PropTypes.func,
-    BibliographyComponent: PropTypes.func,
     inlineEntities: PropTypes.array,
     messages: PropTypes.object,
 
@@ -1229,8 +1228,6 @@ export default class BasicEditor extends Component {
       AssetButtonComponent,
       NoteButtonComponent,
 
-      BibliographyComponent,
-
       isActive,
 
       inlineButtons,
@@ -1457,9 +1454,6 @@ export default class BasicEditor extends Component {
 
           {...otherProps}
         />
-        {
-          BibliographyComponent && <BibliographyComponent />
-        }
       </div>
     );
   }

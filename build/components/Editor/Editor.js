@@ -441,7 +441,6 @@ var Editor = function (_Component) {
           blockAssetComponents = _props.blockAssetComponents,
           AssetChoiceComponent = _props.AssetChoiceComponent,
           NotePointerComponent = _props.NotePointerComponent,
-          BibliographyComponent = _props.BibliographyComponent,
           AssetButtonComponent = _props.AssetButtonComponent,
           NoteButtonComponent = _props.NoteButtonComponent,
           ElementLayoutComponent = _props.ElementLayoutComponent,
@@ -606,11 +605,6 @@ var Editor = function (_Component) {
             ElementLayout,
             { className: 'notes-container' },
             activeNotes.map(this.renderNoteEditor)
-          ),
-          BibliographyComponent && _react2.default.createElement(
-            ElementLayout,
-            { className: 'bibliography-container' },
-            _react2.default.createElement(BibliographyComponent, null)
           )
         )
       );
@@ -668,7 +662,6 @@ Editor.propTypes = {
   blockAssetComponents: _propTypes2.default.object,
   AssetChoiceComponent: _propTypes2.default.func,
   NotePointerComponent: _propTypes2.default.func,
-  BibliographyComponent: _propTypes2.default.func,
   AssetButtonComponent: _propTypes2.default.func,
   NoteButtonComponent: _propTypes2.default.func,
   NoteLayout: _propTypes2.default.func,

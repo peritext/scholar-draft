@@ -426,7 +426,6 @@ BasicEditor.propTypes = {
   keyBindingFn: _propTypes2.default.func,
   inlineButtons: _propTypes2.default.array,
   NotePointerComponent: _propTypes2.default.func,
-  BibliographyComponent: _propTypes2.default.func,
   inlineEntities: _propTypes2.default.array,
   messages: _propTypes2.default.object,
 
@@ -1277,11 +1276,10 @@ var _initialiseProps = function _initialiseProps() {
         assetChoiceProps = _props3.assetChoiceProps,
         AssetButtonComponent = _props3.AssetButtonComponent,
         NoteButtonComponent = _props3.NoteButtonComponent,
-        BibliographyComponent = _props3.BibliographyComponent,
         isActive = _props3.isActive,
         inlineButtons = _props3.inlineButtons,
         containerDimensions = _props3.containerDimensions,
-        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'editorPlaceholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'BibliographyComponent', 'isActive', 'inlineButtons', 'containerDimensions']);
+        otherProps = (0, _objectWithoutProperties3.default)(_props3, ['editorState', 'editorClass', 'contentId', 'editorPlaceholder', 'allowNotesInsertion', 'allowInlineAsset', 'allowBlockAsset', 'onAssetRequest', 'assetRequestPosition', 'onAssetRequestCancel', 'onAssetChoice', 'editorStyle', 'onClick', 'AssetChoiceComponent', 'assetChoiceProps', 'AssetButtonComponent', 'NoteButtonComponent', 'isActive', 'inlineButtons', 'containerDimensions']);
 
 
     var messages = {
@@ -1477,8 +1475,7 @@ var _initialiseProps = function _initialiseProps() {
 
         ref: bindEditorRef
 
-      }, otherProps)),
-      BibliographyComponent && _react2.default.createElement(BibliographyComponent, null)
+      }, otherProps))
     );
   };
 };
