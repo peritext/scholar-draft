@@ -13,8 +13,6 @@ var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends")
 
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
 var _objectSpread2 = _interopRequireDefault(require("@babel/runtime/helpers/objectSpread"));
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
@@ -43,9 +41,9 @@ var _adjustBlockDepth = _interopRequireDefault(require("../../modifiers/adjustBl
 
 var _multidecorators = _interopRequireDefault(require("../../multidecorators"));
 
-var _constants = require("../../constants");
-
 var _utils = require("../../utils");
+
+var _constants = require("../../constants");
 
 var _SideToolbar = _interopRequireDefault(require("../SideToolbar/SideToolbar"));
 
@@ -116,7 +114,7 @@ function (_Component) {
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
       _this.setState({
         readOnly: false,
-        editorState: _this.props.editorState ? _draftJs.EditorState.createWithContent(_this.props.editorState.getCurrentContent(), _this.createDecorator()) : _this.generateEmptyEditor()
+        editorState: _this.props.editorState ? _draftJs.EditorState.createWithContent(_this.props.editorState.getCurrentContent(), _this.createLocalDecorator()) : _this.generateEmptyEditor()
       });
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps, nextState) {
@@ -166,7 +164,7 @@ function (_Component) {
             /*
              * editorState: nextProps.editorState ? EditorState.createWithContent(
              *   nextProps.editorState.getCurrentContent(),
-             *   this.createDecorator()
+             *   this.createLocalDecorator()
              * ) : this.generateEmptyEditor(),
              * editorState: EditorState.acceptSelection(nextProps.editorState, selection),
              */
@@ -232,7 +230,7 @@ function (_Component) {
               console.error(error);
             }
           } else {
-            stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this.createDecorator()) : _this.generateEmptyEditor();
+            stateMods.editorState = nextProps.editorState ? _draftJs.EditorState.createWithContent(nextProps.editorState.getCurrentContent(), _this.createLocalDecorator()) : _this.generateEmptyEditor();
             setTimeout(function () {
               return _this.forceRender(_this.props);
             });
@@ -376,6 +374,22 @@ function (_Component) {
         });
       }
     });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "createLocalDecorator", function () {
+      var _this$props = _this.props,
+          inlineEntities = _this$props.inlineEntities,
+          NotePointerComponent = _this$props.NotePointerComponent;
+      return (0, _utils.createDecorator)({
+        NotePointerComponent: NotePointerComponent || _NotePointer.default,
+        findInlineAsset: _utils.findInlineAsset,
+        findNotePointer: _utils.findNotePointer,
+        findQuotes: _utils.findQuotes,
+        InlineAssetContainerComponent: _InlineAssetContainer.default,
+        QuoteContainerComponent: _QuoteContainer.default,
+        inlineEntities: inlineEntities
+        /* [{strategy: function, entity: component}] */
+
+      });
+    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "onNoteAdd", function () {
       if (typeof _this.props.onNoteAdd === 'function') {
         _this.props.onNoteAdd();
@@ -470,7 +484,7 @@ function (_Component) {
       var prevSelection = editorState.getSelection();
       var content = editorState.getCurrentContent();
 
-      var newEditorState = _draftJs.EditorState.createWithContent(content, _this.createDecorator());
+      var newEditorState = _draftJs.EditorState.createWithContent(content, _this.createLocalDecorator());
 
       var selectedEditorState;
       /*
@@ -515,9 +529,9 @@ function (_Component) {
           return;
         }
 
-        var _this$props = _this.props,
-            blockAssetComponents = _this$props.blockAssetComponents,
-            renderingMode = _this$props.renderingMode;
+        var _this$props2 = _this.props,
+            blockAssetComponents = _this$props2.blockAssetComponents,
+            renderingMode = _this$props2.renderingMode;
 
         var AssetComponent = blockAssetComponents[asset.type] || _react.default.createElement("div", null);
 
@@ -693,7 +707,7 @@ function (_Component) {
 
         var newContentState = _draftJs.Modifier.replaceText(_this.props.editorState.getCurrentContent(), payloadSel, ' ');
 
-        var newEditorState = _draftJs.EditorState.createWithContent(newContentState, _this.createDecorator());
+        var newEditorState = _draftJs.EditorState.createWithContent(newContentState, _this.createLocalDecorator());
 
         _this.onChange(newEditorState);
 
@@ -729,89 +743,8 @@ function (_Component) {
 
       return false;
     });
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "findInlineAsset", function (contentBlock, callback, inputContentState) {
-      var contentState = inputContentState;
-
-      if (contentState === undefined) {
-        if (!_this.props.editorState) {
-          return callback(null);
-        }
-
-        contentState = _this.props.editorState.getCurrentContent();
-      }
-
-      contentBlock.findEntityRanges(function (character) {
-        var entityKey = character.getEntity();
-        return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.INLINE_ASSET;
-      }, function (start, end) {
-        var _this$props2 = _this.props,
-            assets = _this$props2.assets,
-            renderingMode = _this$props2.renderingMode,
-            components = _this$props2.inlineAssetComponents;
-        var entityKey = contentBlock.getEntityAt(start);
-        var data = contentState.getEntity(entityKey).toJS();
-        var id = data && data.data && data.data.asset && data.data.asset.id;
-        var asset = assets[id];
-        var AssetComponent = asset && components[asset.type] ? components[asset.type] : function () {
-          return _react.default.createElement("span", null);
-        };
-        var props = {};
-
-        if (id) {
-          props = {
-            assetId: id,
-            renderingMode: renderingMode,
-            AssetComponent: AssetComponent
-          };
-        }
-
-        callback(start, end, props);
-      });
-    });
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "findNotePointer", function (contentBlock, callback, inputContentState) {
-      var contentState = inputContentState;
-
-      if (contentState === undefined) {
-        if (!_this.props.editorState) {
-          return callback(null);
-        }
-
-        contentState = _this.props.editorState.getCurrentContent();
-      }
-
-      contentBlock.findEntityRanges(function (character) {
-        var entityKey = character.getEntity();
-        return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.NOTE_POINTER;
-      }, function (start, end) {
-        var entityKey = contentBlock.getEntityAt(start);
-        var data = contentState.getEntity(entityKey).toJS();
-        var props = (0, _objectSpread2.default)({}, data.data);
-        callback(start, end, props);
-      });
-    });
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "findQuotes", function (contentBlock, callback, contentState) {
-      var QUOTE_REGEX = /("[^"]+")/gi;
-
-      _this.findWithRegex(QUOTE_REGEX, contentBlock, callback);
-    });
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "findWithRegex", function (regex, contentBlock, callback) {
-      var text = contentBlock.getText();
-      var matchArr;
-      var start;
-
-      while ((matchArr = regex.exec(text)) !== null) {
-        start = matchArr.index;
-        callback(start, start + matchArr[0].length);
-      }
-    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "generateEmptyEditor", function () {
-      return _draftJs.EditorState.createEmpty(_this.createDecorator());
-    });
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "createDecorator", function () {
-      var ActiveNotePointer = _this.props.NotePointerComponent || _NotePointer.default;
-      return new _multidecorators.default([new _draftJsSimpledecorator.default(_this.findInlineAsset, _InlineAssetContainer.default), new _draftJsSimpledecorator.default(_this.findNotePointer, ActiveNotePointer), new _draftJsSimpledecorator.default(_this.findQuotes, _QuoteContainer.default)].concat((0, _toConsumableArray2.default)((_this.props.inlineEntities || []).map(function (entity) {
-        return new _draftJsSimpledecorator.default(entity.strategy, entity.component);
-      }))));
+      return _draftJs.EditorState.createEmpty(_this.createLocalDecorator());
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "updateSelection", function () {
       if (!(_this.props.isRequestingAssets || _this.props.isActive) && _this.state.styles.sideToolbar.display !== 'none') {

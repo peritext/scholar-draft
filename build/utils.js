@@ -16,7 +16,9 @@ exports.getUsedAssets = getUsedAssets;
 exports.insertFragment = insertFragment;
 exports.checkCharacterForState = checkCharacterForState;
 exports.checkReturnForState = checkReturnForState;
-exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.getAssetEntity = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = exports.getEventTextRange = exports.getOffsetRelativeToContainer = void 0;
+exports.createDecorator = exports.findInlineAsset = exports.findNotePointer = exports.findQuotes = exports.findWithRegex = exports.Emitter = exports.isParentOf = exports.getSelectionRange = exports.getSelectedBlockElement = exports.getAssetEntity = exports.updateAssetsFromEditors = exports.updateNotesFromEditor = exports.getEventTextRange = exports.getOffsetRelativeToContainer = void 0;
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -24,9 +26,15 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _objectSpread3 = _interopRequireDefault(require("@babel/runtime/helpers/objectSpread"));
 
+var _react = _interopRequireDefault(require("react"));
+
 var _draftJs = require("draft-js");
 
 var _uuid = require("uuid");
+
+var _multidecorators = _interopRequireDefault(require("./multidecorators"));
+
+var _draftJsSimpledecorator = _interopRequireDefault(require("draft-js-simpledecorator"));
 
 var _constants = require("./constants");
 
@@ -42,12 +50,8 @@ var _leaveList = _interopRequireDefault(require("./modifiers/leaveList"));
 
 var _insertText = _interopRequireDefault(require("./modifiers/insertText"));
 
-/**
- * This module exports a series of draft-js utils
- * to manipulate scholar-draft state upstream to component's implementation
- * @module scholar-draft/utils
- */
-// modifiers helping to modify editorState
+var _this2 = void 0;
+
 var getOffsetRelativeToContainer = function getOffsetRelativeToContainer(el, stopClassName) {
   try {
     var element = el;
@@ -919,5 +923,139 @@ var Emitter = function Emitter() {
     });
   });
 };
+/**
+ * Util for Draft.js strategies building
+ */
+
 
 exports.Emitter = Emitter;
+
+var findWithRegex = function findWithRegex(regex, contentBlock, callback) {
+  var text = contentBlock.getText();
+  var matchArr;
+  var start;
+
+  while ((matchArr = regex.exec(text)) !== null) {
+    start = matchArr.index;
+    callback(start, start + matchArr[0].length);
+  }
+};
+/**
+ * Draft.js strategy for finding quotes statements
+ * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+ * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+ * @param {ImmutableRecord} inputContentState - the content state to parse
+ */
+
+/*
+ * todo: improve with all lang./typography
+ * quotes configurations (french quotes, english quotes, ...)
+ */
+
+
+exports.findWithRegex = findWithRegex;
+
+var findQuotes = function findQuotes(contentBlock, callback, contentState) {
+  var QUOTE_REGEX = /("[^"]+")/gi;
+  findWithRegex(QUOTE_REGEX, contentBlock, callback);
+};
+/**
+ * Draft.js strategy for finding inline note pointers and loading them with relevant props
+ * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+ * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+ * @param {ImmutableRecord} inputContentState - the content state to parse
+ */
+
+
+exports.findQuotes = findQuotes;
+
+var findNotePointer = function findNotePointer(contentBlock, callback, inputContentState) {
+  var contentState = inputContentState;
+
+  if (contentState === undefined) {
+    return callback(null);
+    /*
+     *  if ( !this.props.editorState ) {
+     *    return callback( null );
+     *  }
+     *  contentState = this.props.editorState.getCurrentContent();
+     */
+  }
+
+  contentBlock.findEntityRanges(function (character) {
+    var entityKey = character.getEntity();
+    return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.NOTE_POINTER;
+  }, function (start, end) {
+    var entityKey = contentBlock.getEntityAt(start);
+    var data = contentState.getEntity(entityKey).toJS();
+    var props = (0, _objectSpread3.default)({}, data.data);
+    callback(start, end, props);
+  });
+};
+/**
+ * Draft.js strategy for finding inline assets and loading them with relevant props
+ * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+ * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+ * @param {ImmutableRecord} inputContentState - the content state to parse
+ */
+
+
+exports.findNotePointer = findNotePointer;
+
+var findInlineAsset = function findInlineAsset(contentBlock, callback, inputContentState) {
+  var contentState = inputContentState;
+
+  if (contentState === undefined) {
+    // if ( !this.props.editorState ) {
+    return callback(null);
+    /*
+     * }
+     * contentState = this.props.editorState.getCurrentContent();
+     */
+  }
+
+  contentBlock.findEntityRanges(function (character) {
+    var entityKey = character.getEntity();
+    return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.INLINE_ASSET;
+  }, function (start, end) {
+    var _this2$props = _this2.props,
+        assets = _this2$props.assets,
+        renderingMode = _this2$props.renderingMode,
+        components = _this2$props.inlineAssetComponents;
+    var entityKey = contentBlock.getEntityAt(start);
+    var data = contentState.getEntity(entityKey).toJS();
+    var id = data && data.data && data.data.asset && data.data.asset.id;
+    var asset = assets[id];
+    var AssetComponent = asset && components[asset.type] ? components[asset.type] : function () {
+      return _react.default.createElement("span", null);
+    };
+    var props = {};
+
+    if (id) {
+      props = {
+        assetId: id,
+        renderingMode: renderingMode,
+        AssetComponent: AssetComponent
+      };
+    }
+
+    callback(start, end, props);
+  });
+};
+
+exports.findInlineAsset = findInlineAsset;
+
+var createDecorator = function createDecorator(_ref) {
+  var NotePointerComponent = _ref.NotePointerComponent,
+      findInlineAssetMethod = _ref.findInlineAsset,
+      findNotePointerMethod = _ref.findNotePointer,
+      findQuotesMethod = _ref.findQuotes,
+      InlineAssetContainerComponent = _ref.InlineAssetContainerComponent,
+      QuoteContainerComponent = _ref.QuoteContainerComponent,
+      inlineEntities = _ref.inlineEntities;
+  return new _multidecorators.default([new _draftJsSimpledecorator.default(findInlineAssetMethod, InlineAssetContainerComponent), new _draftJsSimpledecorator.default(findNotePointerMethod, NotePointerComponent), new _draftJsSimpledecorator.default(findQuotesMethod, QuoteContainerComponent)].concat((0, _toConsumableArray2.default)((inlineEntities || []).map(function (entity) {
+    return new _draftJsSimpledecorator.default(entity.strategy, entity.component);
+  }))));
+};
+
+exports.createDecorator = createDecorator;

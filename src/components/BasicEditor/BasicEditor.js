@@ -25,6 +25,13 @@ import {
 import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
 import MultiDecorator from '../../multidecorators';
 
+import {
+  findQuotes,
+  findNotePointer,
+  findInlineAsset,
+  createDecorator,
+} from '../../utils';
+
 // constant entities type names
 import {
   INLINE_ASSET,
@@ -221,7 +228,7 @@ export default class BasicEditor extends Component {
       readOnly: false,
       editorState: this.props.editorState ? EditorState.createWithContent(
         this.props.editorState.getCurrentContent(),
-        this.createDecorator()
+        this.createLocalDecorator()
       ) : this.generateEmptyEditor()
     } );
   }
@@ -280,7 +287,7 @@ export default class BasicEditor extends Component {
         /*
          * editorState: nextProps.editorState ? EditorState.createWithContent(
          *   nextProps.editorState.getCurrentContent(),
-         *   this.createDecorator()
+         *   this.createLocalDecorator()
          * ) : this.generateEmptyEditor(),
          * editorState: EditorState.acceptSelection(nextProps.editorState, selection),
          */
@@ -355,7 +362,7 @@ export default class BasicEditor extends Component {
       else {
         stateMods.editorState = nextProps.editorState ? EditorState.createWithContent(
           nextProps.editorState.getCurrentContent(),
-          this.createDecorator()
+          this.createLocalDecorator()
         ) : this.generateEmptyEditor();
         setTimeout( () => this.forceRender( this.props ) );
       }
@@ -509,6 +516,22 @@ export default class BasicEditor extends Component {
     }
   }
 
+  createLocalDecorator = () => {
+    const {
+      inlineEntities,
+      NotePointerComponent,
+    } = this.props;
+    return createDecorator( {
+      NotePointerComponent: NotePointerComponent || NotePointer,
+      findInlineAsset,
+      findNotePointer,
+      findQuotes,
+      InlineAssetContainerComponent: InlineAssetContainer,
+      QuoteContainerComponent: QuoteContainer,
+      inlineEntities, /* [{strategy: function, entity: component}] */
+    } );
+  }
+
   /**
    * Handles note addition in a secured and appropriate way
    */
@@ -643,7 +666,7 @@ export default class BasicEditor extends Component {
     const editorState = props.editorState || this.state.editorState || this.generateEmptyEditor();
     const prevSelection = editorState.getSelection();
     const content = editorState.getCurrentContent();
-    const newEditorState = EditorState.createWithContent( content, this.createDecorator() );
+    const newEditorState = EditorState.createWithContent( content, this.createLocalDecorator() );
     let selectedEditorState;
 
     /*
@@ -890,7 +913,7 @@ export default class BasicEditor extends Component {
         payloadSel,
         ' '
       );
-      const newEditorState = EditorState.createWithContent( newContentState, this.createDecorator() );
+      const newEditorState = EditorState.createWithContent( newContentState, this.createLocalDecorator() );
       this.onChange( newEditorState );
       if ( typeof this.props.onDrop === 'function' ) {
         this.props.onDrop( payload, selection );
@@ -932,130 +955,7 @@ export default class BasicEditor extends Component {
     return false;
   }
 
-  /**
-   * Draft.js strategy for finding inline assets and loading them with relevant props
-   * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
-   * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
-   * @param {ImmutableRecord} inputContentState - the content state to parse
-   */
-  findInlineAsset = ( contentBlock, callback, inputContentState ) => {
-    let contentState = inputContentState;
-    if ( contentState === undefined ) {
-      if ( !this.props.editorState ) {
-        return callback( null );
-      }
-      contentState = this.props.editorState.getCurrentContent();
-    }
-    contentBlock.findEntityRanges(
-      ( character ) => {
-        const entityKey = character.getEntity();
-        return (
-          entityKey !== null &&
-          contentState.getEntity( entityKey ).getType() === INLINE_ASSET
-        );
-      },
-      ( start, end ) => {
-        const {
-          assets,
-          renderingMode,
-          inlineAssetComponents: components
-        } = this.props;
-
-        const entityKey = contentBlock.getEntityAt( start );
-        const data = contentState.getEntity( entityKey ).toJS();
-        const id = data && data.data && data.data.asset && data.data.asset.id;
-        const asset = assets[id];
-        const AssetComponent = asset && components[asset.type] ?
-          components[asset.type]
-          : () => ( <span /> );
-
-        let props = {};
-        if ( id ) {
-          props = {
-            assetId: id,
-            renderingMode,
-            AssetComponent,
-          };
-        }
-        callback( start, end, props );
-      }
-    );
-  }
-
-  /**
-   * Draft.js strategy for finding inline note pointers and loading them with relevant props
-   * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
-   * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
-   * @param {ImmutableRecord} inputContentState - the content state to parse
-   */
-  findNotePointer = ( contentBlock, callback, inputContentState ) => {
-    let contentState = inputContentState;
-    if ( contentState === undefined ) {
-      if ( !this.props.editorState ) {
-        return callback( null );
-      }
-      contentState = this.props.editorState.getCurrentContent();
-    }
-    contentBlock.findEntityRanges(
-      ( character ) => {
-        const entityKey = character.getEntity();
-        return (
-          entityKey !== null &&
-          contentState.getEntity( entityKey ).getType() === NOTE_POINTER
-        );
-      },
-      ( start, end ) => {
-        const entityKey = contentBlock.getEntityAt( start );
-        const data = contentState.getEntity( entityKey ).toJS();
-
-        const props = {
-          ...data.data,
-        };
-        callback( start, end, props );
-      }
-    );
-  }
-
-  /**
-   * Draft.js strategy for finding quotes statements
-   * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
-   * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
-   * @param {ImmutableRecord} inputContentState - the content state to parse
-   */
-  /*
-   * todo: improve with all lang./typography
-   * quotes configurations (french quotes, english quotes, ...)
-   */
-  findQuotes = ( contentBlock, callback, contentState ) => {
-    const QUOTE_REGEX = /("[^"]+")/gi;
-    this.findWithRegex( QUOTE_REGEX, contentBlock, callback );
-  }
-
-  /**
-   * Util for Draft.js strategies building
-   */
-  findWithRegex = ( regex, contentBlock, callback ) => {
-    const text = contentBlock.getText();
-    let matchArr;
-    let start;
-    while ( ( matchArr = regex.exec( text ) ) !== null ) {
-      start = matchArr.index;
-      callback( start, start + matchArr[0].length );
-    }
-  }
-
-  generateEmptyEditor = () => EditorState.createEmpty( this.createDecorator() )
-
-  createDecorator = () => {
-    const ActiveNotePointer = this.props.NotePointerComponent || NotePointer;
-    return new MultiDecorator( [
-      new SimpleDecorator( this.findInlineAsset, InlineAssetContainer ),
-      new SimpleDecorator( this.findNotePointer, ActiveNotePointer ),
-      new SimpleDecorator( this.findQuotes, QuoteContainer ),
-      ...( this.props.inlineEntities || [] ).map( ( entity ) =>
-        new SimpleDecorator( entity.strategy, entity.component ) )
-    ] );
-  }
+  generateEmptyEditor = () => EditorState.createEmpty( this.createLocalDecorator() )
 
   /**
    * updates the positions of toolbars relatively to current draft selection

@@ -3,6 +3,7 @@
  * to manipulate scholar-draft state upstream to component's implementation
  * @module scholar-draft/utils
  */
+import React from 'react';
 import {
   EditorState,
   ContentState,
@@ -12,6 +13,9 @@ import {
 } from 'draft-js';
 
 import { v4 as generateId } from 'uuid';
+
+import MultiDecorator from './multidecorators';
+import SimpleDecorator from 'draft-js-simpledecorator';
 
 import {
   NOTE_POINTER,
@@ -924,3 +928,140 @@ export class Emitter {
     } );
   }
 }
+
+/**
+ * Util for Draft.js strategies building
+ */
+export const findWithRegex = ( regex, contentBlock, callback ) => {
+  const text = contentBlock.getText();
+  let matchArr;
+  let start;
+  while ( ( matchArr = regex.exec( text ) ) !== null ) {
+    start = matchArr.index;
+    callback( start, start + matchArr[0].length );
+  }
+};
+
+/**
+ * Draft.js strategy for finding quotes statements
+ * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+ * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+ * @param {ImmutableRecord} inputContentState - the content state to parse
+ */
+/*
+ * todo: improve with all lang./typography
+ * quotes configurations (french quotes, english quotes, ...)
+ */
+export const findQuotes = ( contentBlock, callback, contentState ) => {
+  const QUOTE_REGEX = /("[^"]+")/gi;
+  findWithRegex( QUOTE_REGEX, contentBlock, callback );
+};
+
+/**
+ * Draft.js strategy for finding inline note pointers and loading them with relevant props
+ * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+ * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+ * @param {ImmutableRecord} inputContentState - the content state to parse
+ */
+export const findNotePointer = ( contentBlock, callback, inputContentState ) => {
+  const contentState = inputContentState;
+  if ( contentState === undefined ) {
+    return callback( null );
+
+  /*
+   *  if ( !this.props.editorState ) {
+   *    return callback( null );
+   *  }
+   *  contentState = this.props.editorState.getCurrentContent();
+   */
+  }
+  contentBlock.findEntityRanges(
+    ( character ) => {
+      const entityKey = character.getEntity();
+      return (
+        entityKey !== null &&
+       contentState.getEntity( entityKey ).getType() === NOTE_POINTER
+      );
+    },
+    ( start, end ) => {
+      const entityKey = contentBlock.getEntityAt( start );
+      const data = contentState.getEntity( entityKey ).toJS();
+
+      const props = {
+        ...data.data,
+      };
+      callback( start, end, props );
+    }
+  );
+};
+
+/**
+ * Draft.js strategy for finding inline assets and loading them with relevant props
+ * @param {ImmutableRecord} contentBlock - the content block in which entities are searched
+ * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
+ * @param {ImmutableRecord} inputContentState - the content state to parse
+ */
+export const findInlineAsset = ( contentBlock, callback, inputContentState ) => {
+  const contentState = inputContentState;
+  if ( contentState === undefined ) {
+    // if ( !this.props.editorState ) {
+    return callback( null );
+
+    /*
+     * }
+     * contentState = this.props.editorState.getCurrentContent();
+     */
+  }
+  contentBlock.findEntityRanges(
+    ( character ) => {
+      const entityKey = character.getEntity();
+      return (
+        entityKey !== null &&
+          contentState.getEntity( entityKey ).getType() === INLINE_ASSET
+      );
+    },
+    ( start, end ) => {
+      const {
+        assets,
+        renderingMode,
+        inlineAssetComponents: components
+      } = this.props;
+
+      const entityKey = contentBlock.getEntityAt( start );
+      const data = contentState.getEntity( entityKey ).toJS();
+      const id = data && data.data && data.data.asset && data.data.asset.id;
+      const asset = assets[id];
+      const AssetComponent = asset && components[asset.type] ?
+        components[asset.type]
+        : () => ( <span /> );
+
+      let props = {};
+      if ( id ) {
+        props = {
+          assetId: id,
+          renderingMode,
+          AssetComponent,
+        };
+      }
+      callback( start, end, props );
+    }
+  );
+};
+
+export const createDecorator = ( {
+  NotePointerComponent,
+  findInlineAsset: findInlineAssetMethod,
+  findNotePointer: findNotePointerMethod,
+  findQuotes: findQuotesMethod,
+  InlineAssetContainerComponent,
+  QuoteContainerComponent,
+  inlineEntities, /* [{strategy: function, entity: component}] */
+} ) => {
+  return new MultiDecorator( [
+    new SimpleDecorator( findInlineAssetMethod, InlineAssetContainerComponent ),
+    new SimpleDecorator( findNotePointerMethod, NotePointerComponent ),
+    new SimpleDecorator( findQuotesMethod, QuoteContainerComponent ),
+    ...( inlineEntities || [] ).map( ( entity ) =>
+      new SimpleDecorator( entity.strategy, entity.component ) )
+  ] );
+};
