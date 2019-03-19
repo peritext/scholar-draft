@@ -7,7 +7,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.constants = exports.utils = exports.BasicEditor = void 0;
+exports.QuoteContainer = exports.NotePointer = exports.InlineAssetContainer = exports.default = exports.constants = exports.utils = exports.BasicEditor = void 0;
 
 var _BasicEditor = _interopRequireDefault(require("./components/BasicEditor/BasicEditor"));
 
@@ -16,6 +16,12 @@ var _Editor = _interopRequireDefault(require("./components/Editor/Editor"));
 var Utils = _interopRequireWildcard(require("./utils"));
 
 var Constants = _interopRequireWildcard(require("./constants"));
+
+var _InlineAssetContainer = _interopRequireDefault(require("./components/InlineAssetContainer/InlineAssetContainer"));
+
+var _NotePointer = _interopRequireDefault(require("./components/NotePointer/NotePointer"));
+
+var _QuoteContainer = _interopRequireDefault(require("./components/QuoteContainer/QuoteContainer"));
 
 /**
  * Scholar-draft
@@ -47,3 +53,9 @@ var Editor = _Editor.default;
 
 var _default = Editor;
 exports.default = _default;
+var InlineAssetContainer = _InlineAssetContainer.default;
+exports.InlineAssetContainer = InlineAssetContainer;
+var NotePointer = _NotePointer.default;
+exports.NotePointer = NotePointer;
+var QuoteContainer = _QuoteContainer.default;
+exports.QuoteContainer = QuoteContainer;

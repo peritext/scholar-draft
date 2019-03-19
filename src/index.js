@@ -9,6 +9,10 @@ import editor from './components/Editor/Editor';
 import * as Utils from './utils';
 import * as Constants from './constants';
 
+import inlineAssetContainer from './components/InlineAssetContainer/InlineAssetContainer';
+import notePointer from './components/NotePointer/NotePointer';
+import quoteContainer from './components/QuoteContainer/QuoteContainer';
+
 /**
  * Editor without footnotes support
  */
@@ -31,3 +35,6 @@ const Editor = editor;
  */
 export default Editor;
 
+export const InlineAssetContainer = inlineAssetContainer;
+export const NotePointer = notePointer;
+export const QuoteContainer = quoteContainer;
