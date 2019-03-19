@@ -130,6 +130,9 @@ export default class Editor extends Component {
      * to interact with note components
      */
     this.notes = {};
+    this.state = {
+      focusedEditorId: undefined
+    };
   }
 
   /**
@@ -139,20 +142,27 @@ export default class Editor extends Component {
   }
 
   componentWillReceiveProps = ( nextProps ) => {
-    // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
-    //   setTimeout(() => {
-    //     const { anchorNode } = getSelection();
-    //     if (anchorNode) {
-    //       const offset = getOffsetRelativeToContainer(
-    //        anchorNode, this.props.className || 'scholar-draft-Editor');
-    //       if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
-    //         const scrollTo = offset.offsetY;// - (this.globalScrollbar.getClientHeight() / 2);
-    //         this.scrollTop(scrollTo);
-    //       }
-    //     }
-    //     // this.scrollTop(rect.top);
-    //   }, 300);
-    // }
+    if ( this.props.focusedEditorId !== nextProps.focusedEditorId /*&& nextProps.focusedEditorId*/ ) {
+      // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+      if ( navigator.userAgent.search( 'Firefox' ) ) {
+        console.log( 'focused editor id has changed to %s', nextProps.focusedEditorId );
+        this.setState( { focusedEditorId: undefined } );
+        setTimeout( () => {
+          this.setState( { focusedEditorId: nextProps.focusedEditorId } );
+          if ( nextProps.focusedEditorId === 'main' ) {
+            this.editor.focus();
+          }
+          else if ( nextProps.focusedEditorId ) {
+            this.notes[nextProps.focusedEditorId].editor.focus();
+          }
+        }, 500 );
+      }
+      else {
+        this.setState( {
+          focusedEditorId: nextProps.focusedEditorId,
+        } );
+      }
+    }
   }
 
   /**
@@ -294,7 +304,7 @@ export default class Editor extends Component {
       keyBindingFn,
 
       editorStyles,
-      focusedEditorId,
+      // focusedEditorId,
       NoteContainerComponent,
       AssetButtonComponent,
       NoteButtonComponent,
@@ -305,6 +315,9 @@ export default class Editor extends Component {
       NoteLayout,
 
     } = this.props;
+    const {
+      focusedEditorId
+    } = this.state;
 
     let containerDimensions;
     if ( this.editor ) {
@@ -468,12 +481,15 @@ export default class Editor extends Component {
       iconMap,
 
       editorStyles,
-      focusedEditorId,
+      // focusedEditorId,
 
       renderingMode,
 
       // keyBindingFn,
     } = this.props;
+    const {
+      focusedEditorId,
+    } = this.state;
 
     const ElementLayout = ElementLayoutComponent || DefaultElementLayout;
 

@@ -78,27 +78,36 @@ function (_Component) {
      */
 
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {});
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps) {} // if (this.props.focusedEditorId !== nextProps.focusedEditorId && nextProps.focusedEditorId) {
-    //   setTimeout(() => {
-    //     const { anchorNode } = getSelection();
-    //     if (anchorNode) {
-    //       const offset = getOffsetRelativeToContainer(
-    //        anchorNode, this.props.className || 'scholar-draft-Editor');
-    //       if (offset.offsetY && !isNaN(offset.offsetY)) { /* eslint no-restricted-globals : 0  */
-    //         const scrollTo = offset.offsetY;// - (this.globalScrollbar.getClientHeight() / 2);
-    //         this.scrollTop(scrollTo);
-    //       }
-    //     }
-    //     // this.scrollTop(rect.top);
-    //   }, 300);
-    // }
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps) {
+      if (_this.props.focusedEditorId !== nextProps.focusedEditorId
+      /*&& nextProps.focusedEditorId*/
+      ) {
+          // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+          if (navigator.userAgent.search('Firefox')) {
+            console.log('focused editor id has changed to %s', nextProps.focusedEditorId);
 
-    /**
-     * Programmatically modifies the scroll state of the component
-     * so that it transitions to a specific point in the page
-     * @param {number} top - the position to scroll to in pixels
-     */
-    );
+            _this.setState({
+              focusedEditorId: undefined
+            });
+
+            setTimeout(function () {
+              _this.setState({
+                focusedEditorId: nextProps.focusedEditorId
+              });
+
+              if (nextProps.focusedEditorId === 'main') {
+                _this.editor.focus();
+              } else if (nextProps.focusedEditorId) {
+                _this.notes[nextProps.focusedEditorId].editor.focus();
+              }
+            }, 500);
+          } else {
+            _this.setState({
+              focusedEditorId: nextProps.focusedEditorId
+            });
+          }
+        }
+    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "focus", function (contentId, selection) {
       if (contentId === 'main' && _this.mainEditor) {
         if (selection) {
@@ -178,13 +187,13 @@ function (_Component) {
           iconMap = _this$props.iconMap,
           keyBindingFn = _this$props.keyBindingFn,
           editorStyles = _this$props.editorStyles,
-          focusedEditorId = _this$props.focusedEditorId,
           NoteContainerComponent = _this$props.NoteContainerComponent,
           AssetButtonComponent = _this$props.AssetButtonComponent,
           NoteButtonComponent = _this$props.NoteButtonComponent,
           inlineButtons = _this$props.inlineButtons,
           renderingMode = _this$props.renderingMode,
           NoteLayout = _this$props.NoteLayout;
+      var focusedEditorId = _this.state.focusedEditorId;
       var containerDimensions;
 
       if (_this.editor) {
@@ -288,6 +297,9 @@ function (_Component) {
       });
     });
     _this.notes = {};
+    _this.state = {
+      focusedEditorId: undefined
+    };
     return _this;
   }
   /**
@@ -297,6 +309,12 @@ function (_Component) {
 
   (0, _createClass2.default)(Editor, [{
     key: "scrollTop",
+
+    /**
+     * Programmatically modifies the scroll state of the component
+     * so that it transitions to a specific point in the page
+     * @param {number} top - the position to scroll to in pixels
+     */
     value: function scrollTop(initialTop) {
       var _this2 = this;
 
@@ -380,8 +398,8 @@ function (_Component) {
           inlineEntities = _this$props2$inlineEn === void 0 ? [] : _this$props2$inlineEn,
           iconMap = _this$props2.iconMap,
           editorStyles = _this$props2.editorStyles,
-          focusedEditorId = _this$props2.focusedEditorId,
           renderingMode = _this$props2.renderingMode;
+      var focusedEditorId = this.state.focusedEditorId;
       var ElementLayout = ElementLayoutComponent || DefaultElementLayout;
       /**
        * bindings
