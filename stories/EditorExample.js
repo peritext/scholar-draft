@@ -1166,59 +1166,66 @@ export default class EditorExample extends Component {
                 width: '10%',
                 height: '100%',
                 zIndex: 3,
-                overflow: 'auto'
+                overflow: 'hidden'
             }
         }>
-        <button onClick = { changeRenderingMode } > Change rendering mode(present: { renderingMode }) < /button> 
-        <button onClick = { downloadState } > Download current state < /button> 
-        <button onClick = { load300000ExampleState } > Load example state(300 000 characters without entities) < /button> 
-        <button onClick = { load500000ExampleState } > Load example state(500 000 characters(~170 pages doc) with 30 entities) < /button>
+        <div style={{
+            overflow: 'auto',
+            height: '100%',
+        }}>
+            <button onClick = { changeRenderingMode } > Change rendering mode(present: { renderingMode }) < /button> 
+            <button onClick = { downloadState } > Download current state < /button> 
+            <button onClick = { load300000ExampleState } > Load example state(300 000 characters without entities) < /button> 
+            <button onClick = { load500000ExampleState } > Load example state(500 000 characters(~170 pages doc) with 30 entities) < /button>
 
-        {
-            assetRequest && <div>
-                <button onClick = {
-                    () => insertContextualization() } > Insert contextualization < /button> </div>
-        } 
-        <div
-            draggable = { true }
-            onDragStart = { startDrag }
-            style = {
-                    {
-                        border: '1px solid black',
-                        background: 'white'
-                    }
-                } >
-                Draggable resource 
-                </div> {
-                    Object.keys(contextualizations)
-                        .map(key => {
-                            const onClick = () => deleteContextualization(key);
-                            return ( <
-                                div key = { key } >
-                                <
-                                button onClick = { onClick } >
-                                Delete contextualization { key } <
-                                /button> <
-                                /div>
-                            );
-                        })
-                } <div> {
-                    Object.keys(contextualizations).length > 0 && < div >
-                    <button onClick = { refreshUpstreamContextualizationsList }> Refresh upstream contextualizations list </button> </div>}
-                    Change the contextualizer page:
-                        <input
-                            value = { Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages : '' }
-                            onChange = { onContextualizerPagesChange } >
-                        </input> 
-                    </div> 
-                        <div>
-                        Change the contextualizer title:
+            {
+                assetRequest && <div>
+                    <button onClick = {
+                        () => insertContextualization() } > Insert contextualization < /button> </div>
+            } 
+            <div
+                draggable = { true }
+                onDragStart = { startDrag }
+                style = {
+                        {
+                            border: '1px solid black',
+                            background: 'white'
+                        }
+                    } >
+                    Draggable resource 
+                    </div> {
+                        Object.keys(contextualizations)
+                            .map(key => {
+                                const onClick = () => deleteContextualization(key);
+                                return ( <
+                                    div key = { key } >
+                                    <
+                                    button onClick = { onClick } >
+                                    Delete contextualization { key } <
+                                    /button> <
+                                    /div>
+                                );
+                            })
+                    } <div> {
+                        Object.keys(contextualizations).length > 0 && < div >
+                        <button onClick = { refreshUpstreamContextualizationsList }> Refresh upstream contextualizations list </button> </div>}
+                        Change the contextualizer page:
                             <input
-                            value = { Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : 0 }
-                            onChange = { onResourceTitleChange } >
+                                value = { Object.keys(contextualizers).length ? contextualizers[Object.keys(contextualizers)[0]].pages : '' }
+                                onChange = { onContextualizerPagesChange } >
                             </input> 
                         </div> 
-                    </div>
+                            <div
+                            style={{paddingBottom: '100%'}}
+                            >
+                            Change the contextualizer title:
+                                <input
+                                value = { Object.keys(resources).length ? resources[Object.keys(resources)[0]].title : 0 }
+                                onChange = { onResourceTitleChange } >
+                                </input> 
+                            </div> 
+                        </div>
+                </div>
 
                     <div
                     onScroll = { onScroll }

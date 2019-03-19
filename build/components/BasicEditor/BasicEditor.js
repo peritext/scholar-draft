@@ -380,7 +380,9 @@ function (_Component) {
           NotePointerComponent = _this$props.NotePointerComponent;
       return (0, _utils.createDecorator)({
         NotePointerComponent: NotePointerComponent || _NotePointer.default,
-        findInlineAsset: _utils.findInlineAsset,
+        findInlineAsset: function findInlineAsset(contentBlock, callback, inputContentState) {
+          return (0, _utils.findInlineAsset)(contentBlock, callback, inputContentState, _this.props);
+        },
         findNotePointer: _utils.findNotePointer,
         findQuotes: _utils.findQuotes,
         InlineAssetContainerComponent: _InlineAssetContainer.default,

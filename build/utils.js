@@ -50,8 +50,12 @@ var _leaveList = _interopRequireDefault(require("./modifiers/leaveList"));
 
 var _insertText = _interopRequireDefault(require("./modifiers/insertText"));
 
-var _this2 = void 0;
-
+/**
+ * This module exports a series of draft-js utils
+ * to manipulate scholar-draft state upstream to component's implementation
+ * @module scholar-draft/utils
+ */
+// modifiers helping to modify editorState
 var getOffsetRelativeToContainer = function getOffsetRelativeToContainer(el, stopClassName) {
   try {
     var element = el;
@@ -1002,7 +1006,7 @@ var findNotePointer = function findNotePointer(contentBlock, callback, inputCont
 
 exports.findNotePointer = findNotePointer;
 
-var findInlineAsset = function findInlineAsset(contentBlock, callback, inputContentState) {
+var findInlineAsset = function findInlineAsset(contentBlock, callback, inputContentState, inputProps) {
   var contentState = inputContentState;
 
   if (contentState === undefined) {
@@ -1018,10 +1022,9 @@ var findInlineAsset = function findInlineAsset(contentBlock, callback, inputCont
     var entityKey = character.getEntity();
     return entityKey !== null && contentState.getEntity(entityKey).getType() === _constants.INLINE_ASSET;
   }, function (start, end) {
-    var _this2$props = _this2.props,
-        assets = _this2$props.assets,
-        renderingMode = _this2$props.renderingMode,
-        components = _this2$props.inlineAssetComponents;
+    var assets = inputProps.assets,
+        renderingMode = inputProps.renderingMode,
+        components = inputProps.inlineAssetComponents;
     var entityKey = contentBlock.getEntityAt(start);
     var data = contentState.getEntity(entityKey).toJS();
     var id = data && data.data && data.data.asset && data.data.asset.id;
@@ -1056,6 +1059,23 @@ var createDecorator = function createDecorator(_ref) {
   return new _multidecorators.default([new _draftJsSimpledecorator.default(findInlineAssetMethod, InlineAssetContainerComponent), new _draftJsSimpledecorator.default(findNotePointerMethod, NotePointerComponent), new _draftJsSimpledecorator.default(findQuotesMethod, QuoteContainerComponent)].concat((0, _toConsumableArray2.default)((inlineEntities || []).map(function (entity) {
     return new _draftJsSimpledecorator.default(entity.strategy, entity.component);
   }))));
+  /*
+   * return new CompositeDecorator( [
+   *   {
+   *     strategy: findInlineAssetMethod,
+   *     component: InlineAssetContainerComponent
+   *   },
+   *   {
+   *     strategy: findNotePointerMethod,
+   *     component: NotePointerComponent
+   *   },
+   *   {
+   *     strategy: findQuotesMethod,
+   *     component: QuoteContainerComponent
+   *   },
+   *   ...( inlineEntities || [] )
+   * ] );
+   */
 };
 
 exports.createDecorator = createDecorator;
