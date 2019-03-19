@@ -523,7 +523,7 @@ export default class BasicEditor extends Component {
     } = this.props;
     return createDecorator( {
       NotePointerComponent: NotePointerComponent || NotePointer,
-      findInlineAsset,
+      findInlineAsset: ( contentBlock, callback, inputContentState ) => findInlineAsset( contentBlock, callback, inputContentState, this.props ),
       findNotePointer,
       findQuotes,
       InlineAssetContainerComponent: InlineAssetContainer,

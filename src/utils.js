@@ -9,7 +9,8 @@ import {
   ContentState,
   Modifier,
   AtomicBlockUtils,
-  SelectionState
+  SelectionState,
+  // CompositeDecorator
 } from 'draft-js';
 
 import { v4 as generateId } from 'uuid';
@@ -1001,7 +1002,7 @@ export const findNotePointer = ( contentBlock, callback, inputContentState ) => 
  * @param {function} callback - callback with arguments (startRange, endRange, props to pass)
  * @param {ImmutableRecord} inputContentState - the content state to parse
  */
-export const findInlineAsset = ( contentBlock, callback, inputContentState ) => {
+export const findInlineAsset = ( contentBlock, callback, inputContentState, inputProps ) => {
   const contentState = inputContentState;
   if ( contentState === undefined ) {
     // if ( !this.props.editorState ) {
@@ -1024,8 +1025,8 @@ export const findInlineAsset = ( contentBlock, callback, inputContentState ) => 
       const {
         assets,
         renderingMode,
-        inlineAssetComponents: components
-      } = this.props;
+        inlineAssetComponents: components,
+      } = inputProps;
 
       const entityKey = contentBlock.getEntityAt( start );
       const data = contentState.getEntity( entityKey ).toJS();
@@ -1064,4 +1065,22 @@ export const createDecorator = ( {
     ...( inlineEntities || [] ).map( ( entity ) =>
       new SimpleDecorator( entity.strategy, entity.component ) )
   ] );
+
+  /*
+   * return new CompositeDecorator( [
+   *   {
+   *     strategy: findInlineAssetMethod,
+   *     component: InlineAssetContainerComponent
+   *   },
+   *   {
+   *     strategy: findNotePointerMethod,
+   *     component: NotePointerComponent
+   *   },
+   *   {
+   *     strategy: findQuotesMethod,
+   *     component: QuoteContainerComponent
+   *   },
+   *   ...( inlineEntities || [] )
+   * ] );
+   */
 };
