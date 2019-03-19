@@ -1078,7 +1078,6 @@ export default class BasicEditor extends Component {
 
     setTimeout( () => {
       if ( !this.state.readOnly ) {
-        console.log( 'focusing on editor' );
         this.editor.focus();
       }
     } );

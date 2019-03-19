@@ -139,29 +139,35 @@ export default class Editor extends Component {
    * Executes code on instance after the component is mounted
    */
   componentDidMount = () => {
+    if ( this.props.focusedEditorId ) {
+      this.updateFocusedEditorId( this.props.focusedEditorId );
+    }
   }
 
   componentWillReceiveProps = ( nextProps ) => {
-    if ( this.props.focusedEditorId !== nextProps.focusedEditorId /*&& nextProps.focusedEditorId*/ ) {
-      // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-      if ( navigator.userAgent.search( 'Firefox' ) ) {
-        console.log( 'focused editor id has changed to %s', nextProps.focusedEditorId );
-        this.setState( { focusedEditorId: undefined } );
-        setTimeout( () => {
-          this.setState( { focusedEditorId: nextProps.focusedEditorId } );
-          if ( nextProps.focusedEditorId === 'main' ) {
-            this.editor.focus();
-          }
-          else if ( nextProps.focusedEditorId ) {
-            this.notes[nextProps.focusedEditorId].editor.focus();
-          }
-        }, 500 );
-      }
-      else {
-        this.setState( {
-          focusedEditorId: nextProps.focusedEditorId,
-        } );
-      }
+    if ( this.props.focusedEditorId !== nextProps.focusedEditorId ) {
+      this.updateFocusedEditorId( nextProps.focusedEditorId );
+    }
+  }
+
+  updateFocusedEditorId = ( focusedEditorId ) => {
+    // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+    if ( navigator.userAgent.search( 'Firefox' ) ) {
+      this.setState( { focusedEditorId: undefined } );
+      setTimeout( () => {
+        this.setState( { focusedEditorId } );
+        if ( focusedEditorId === 'main' && this.editor ) {
+          this.editor.focus();
+        }
+        else if ( focusedEditorId && this.notes[focusedEditorId] ) {
+          this.notes[focusedEditorId].editor.focus();
+        }
+      }, 500 );
+    }
+    else {
+      this.setState( {
+        focusedEditorId,
+      } );
     }
   }
 

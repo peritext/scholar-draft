@@ -77,36 +77,39 @@ function (_Component) {
      * to interact with note components
      */
 
-    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {});
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
+      if (_this.props.focusedEditorId) {
+        _this.updateFocusedEditorId(_this.props.focusedEditorId);
+      }
+    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps) {
-      if (_this.props.focusedEditorId !== nextProps.focusedEditorId
-      /*&& nextProps.focusedEditorId*/
-      ) {
-          // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-          if (navigator.userAgent.search('Firefox')) {
-            console.log('focused editor id has changed to %s', nextProps.focusedEditorId);
+      if (_this.props.focusedEditorId !== nextProps.focusedEditorId) {
+        _this.updateFocusedEditorId(nextProps.focusedEditorId);
+      }
+    });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "updateFocusedEditorId", function (focusedEditorId) {
+      // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+      if (navigator.userAgent.search('Firefox')) {
+        _this.setState({
+          focusedEditorId: undefined
+        });
 
-            _this.setState({
-              focusedEditorId: undefined
-            });
+        setTimeout(function () {
+          _this.setState({
+            focusedEditorId: focusedEditorId
+          });
 
-            setTimeout(function () {
-              _this.setState({
-                focusedEditorId: nextProps.focusedEditorId
-              });
-
-              if (nextProps.focusedEditorId === 'main') {
-                _this.editor.focus();
-              } else if (nextProps.focusedEditorId) {
-                _this.notes[nextProps.focusedEditorId].editor.focus();
-              }
-            }, 500);
-          } else {
-            _this.setState({
-              focusedEditorId: nextProps.focusedEditorId
-            });
+          if (focusedEditorId === 'main' && _this.editor) {
+            _this.editor.focus();
+          } else if (focusedEditorId && _this.notes[focusedEditorId]) {
+            _this.notes[focusedEditorId].editor.focus();
           }
-        }
+        }, 500);
+      } else {
+        _this.setState({
+          focusedEditorId: focusedEditorId
+        });
+      }
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "focus", function (contentId, selection) {
       if (contentId === 'main' && _this.mainEditor) {

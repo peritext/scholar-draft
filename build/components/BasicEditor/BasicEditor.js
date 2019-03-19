@@ -854,8 +854,6 @@ function (_Component) {
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "focus", function (event) {
       setTimeout(function () {
         if (!_this.state.readOnly) {
-          console.log('focusing on editor');
-
           _this.editor.focus();
         }
       });
