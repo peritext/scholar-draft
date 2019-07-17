@@ -7,10 +7,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _draftJsCheckableListItem = require("draft-js-checkable-list-item");
-
-var _draftJs = require("draft-js");
-
 var _changeCurrentBlockType = _interopRequireDefault(require("./changeCurrentBlockType"));
 
 /**
@@ -20,6 +16,7 @@ var _changeCurrentBlockType = _interopRequireDefault(require("./changeCurrentBlo
 /**
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
+// import { RichUtils } from 'draft-js';
 var sharps = function sharps(len) {
   var ret = '';
 
@@ -37,9 +34,7 @@ var handleBlockType = function handleBlockType(editorState, character) {
   var key = currentSelection.getStartKey();
   var text = editorState.getCurrentContent().getBlockForKey(key).getText();
   var position = currentSelection.getAnchorOffset();
-  var line = [text.slice(0, position), character, text.slice(position)].join('');
-
-  var blockType = _draftJs.RichUtils.getCurrentBlockType(editorState);
+  var line = [text.slice(0, position), character, text.slice(position)].join(''); // const blockType = RichUtils.getCurrentBlockType( editorState );
 
   for (var index = 1; index <= 6; index += 1) {
     if (line.indexOf("".concat(sharps(index), " ")) === 0) {
@@ -63,14 +58,6 @@ var handleBlockType = function handleBlockType(editorState, character) {
 
   if (matchArr) {
     return (0, _changeCurrentBlockType.default)(editorState, 'blockquote', matchArr[1]);
-  }
-
-  matchArr = line.match(/^\[([x ])] (.*)$/i);
-
-  if (matchArr && blockType === 'unordered-list-item') {
-    return (0, _changeCurrentBlockType.default)(editorState, _draftJsCheckableListItem.CHECKABLE_LIST_ITEM, matchArr[2], {
-      checked: matchArr[1] !== ' '
-    });
   }
 
   return editorState;

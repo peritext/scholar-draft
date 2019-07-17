@@ -33,9 +33,9 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _lodash = require("lodash");
 
-var _draftJs = require("draft-js");
+require("draft-js/dist/Draft.css");
 
-var _adjustBlockDepth = _interopRequireDefault(require("../../modifiers/adjustBlockDepth"));
+var _draftJs = require("draft-js");
 
 var _utils = require("../../utils");
 
@@ -68,6 +68,7 @@ require("./BasicEditor.scss");
  * draft-js EditorState decorators utils
  * import SimpleDecorator from 'draft-js-simpledecorator';
  */
+// import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
 // constant entities type names
 // subcomponents
 // default icon map (exposes a map of img components - overriden by props-provided icon map)
@@ -676,7 +677,12 @@ function (_Component) {
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "_onTab", function (ev) {
       var editorState = _this.props.editorState;
-      var newEditorState = (0, _adjustBlockDepth.default)(editorState, ev);
+      console.log('on tab');
+
+      var newEditorState = _draftJs.RichUtils.onTab(ev, editorState, 6); // adjustBlockDepth( editorState, ev );
+
+
+      console.log('new', newEditorState.toJS());
 
       if (newEditorState !== editorState) {
         _this.onChange(newEditorState);

@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 
 import { debounce } from 'lodash';
 
+import 'draft-js/dist/Draft.css';
+
 /*
  * draft-js EditorState decorators utils
  * import SimpleDecorator from 'draft-js-simpledecorator';
@@ -24,7 +26,7 @@ import {
   Editor
 } from 'draft-js';
 
-import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
+// import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
 
 import {
   findQuotes,
@@ -868,7 +870,9 @@ export default class BasicEditor extends Component {
    */
   _onTab = ( ev ) => {
     const { editorState } = this.props;
-    const newEditorState = adjustBlockDepth( editorState, ev );
+    console.log( 'on tab' );
+    const newEditorState = RichUtils.onTab( ev, editorState, 6 ); // adjustBlockDepth( editorState, ev );
+    console.log( 'new', newEditorState.toJS() );
     if ( newEditorState !== editorState ) {
       this.onChange( newEditorState );
       return 'handled';

@@ -5,8 +5,7 @@
  * Courtesy of markdown-shortcuts-plugins project(https://github.com/ngs/draft-js-markdown-shortcuts-plugin)
  */
 
-import { CHECKABLE_LIST_ITEM } from 'draft-js-checkable-list-item';
-import { RichUtils } from 'draft-js';
+// import { RichUtils } from 'draft-js';
 import changeCurrentBlockType from './changeCurrentBlockType';
 
 const sharps = ( len ) => {
@@ -33,7 +32,7 @@ const handleBlockType = ( editorState, character ) => {
   const text = editorState.getCurrentContent().getBlockForKey( key ).getText();
   const position = currentSelection.getAnchorOffset();
   const line = [ text.slice( 0, position ), character, text.slice( position ) ].join( '' );
-  const blockType = RichUtils.getCurrentBlockType( editorState );
+  // const blockType = RichUtils.getCurrentBlockType( editorState );
   for ( let index = 1; index <= 6; index += 1 ) {
     if ( line.indexOf( `${sharps( index )} ` ) === 0 ) {
       return changeCurrentBlockType( editorState, blockTypes[index], line.replace( /^#+\s/, '' ) );
@@ -50,10 +49,6 @@ const handleBlockType = ( editorState, character ) => {
   matchArr = line.match( /^> (.*)$/ );
   if ( matchArr ) {
     return changeCurrentBlockType( editorState, 'blockquote', matchArr[1] );
-  }
-  matchArr = line.match( /^\[([x ])] (.*)$/i );
-  if ( matchArr && blockType === 'unordered-list-item' ) {
-    return changeCurrentBlockType( editorState, CHECKABLE_LIST_ITEM, matchArr[2], { checked: matchArr[1] !== ' ' } );
   }
   return editorState;
 };
