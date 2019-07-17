@@ -92,6 +92,14 @@ export default class ConnectedEditorExample extends Component {
     assets: {}
   }
 
+  static childContextTypes ={
+    getAssetComponent: PropTypes.func,
+  }
+
+  getChildContext = () => ({
+    getAssetComponent: this.getAssetComponent
+  })
+
   componentDidUpdate(prevProps, prevState) {
     const {
       editorState,
@@ -443,6 +451,10 @@ export default class ConnectedEditorExample extends Component {
     return assets;
   }
 
+  getAssetComponent = id => {
+    return inlineAssetComponents.citation;
+  }
+
   render = () => {
     
     const {
@@ -574,6 +586,7 @@ export default class ConnectedEditorExample extends Component {
       }
     };
     const assetRequestPosition = contextualizationRequest ? editorState.getSelection() : undefined;
+
     return (
       <div
         style={{

@@ -9,8 +9,10 @@ import PropTypes from 'prop-types';
 
 import { debounce } from 'lodash';
 
-// draft-js EditorState decorators utils
-import SimpleDecorator from 'draft-js-simpledecorator';
+/*
+ * draft-js EditorState decorators utils
+ * import SimpleDecorator from 'draft-js-simpledecorator';
+ */
 
 import {
   EditorState,
@@ -23,7 +25,6 @@ import {
 } from 'draft-js';
 
 import adjustBlockDepth from '../../modifiers/adjustBlockDepth';
-import MultiDecorator from '../../multidecorators';
 
 import {
   findQuotes,
@@ -180,8 +181,7 @@ export default class BasicEditor extends Component {
     this.debouncedUpdateSelection = debounce( this.updateSelection, 100 );
 
     this.state = {
-      // editor state is initialized with a decorated editorState (notes + assets + ...)
-      editorState: this.generateEmptyEditor(),
+      editorState: undefined,
       // toolbars styles are represented as css-in-js
       styles: {
         inlineToolbar: {
@@ -226,10 +226,6 @@ export default class BasicEditor extends Component {
   componentDidMount = () => {
     this.setState( {
       readOnly: false,
-      editorState: this.props.editorState ? EditorState.createWithContent(
-        this.props.editorState.getCurrentContent(),
-        this.createLocalDecorator()
-      ) : this.generateEmptyEditor()
     } );
   }
 
@@ -279,7 +275,8 @@ export default class BasicEditor extends Component {
 
     /* && !this.props.assetRequestPosition */
     ) {
-      const selection = this.state.editorState.getSelection();
+      const state = this.state.editorState || nextProps.editorState;
+      const selection = state.getSelection();
       stateMods = {
         ...stateMods,
         readOnly: false,
@@ -663,7 +660,10 @@ export default class BasicEditor extends Component {
    * @params {object} props - the component's props to manipulate
    */
   forceRender = ( props ) => {
-    const editorState = props.editorState || this.state.editorState || this.generateEmptyEditor();
+    const editorState = props.editorState || this.state.editorState; // || this.generateEmptyEditor();
+    if ( !this.state.editorState ) {
+      return;
+    }
     const prevSelection = editorState.getSelection();
     const content = editorState.getCurrentContent();
     const newEditorState = EditorState.createWithContent( content, this.createLocalDecorator() );
@@ -815,7 +815,7 @@ export default class BasicEditor extends Component {
           );
           const updatedEditorState = EditorState.push( editorState, newContentState, 'remove-entity' );
           // update selection
-          const newEditorState = EditorState.forceSelection(
+          const newEditorState = EditorState.acceptSelection(
             updatedEditorState,
             cleaningSelection.merge( {
               focusOffset: selectedBlockLength - 1
@@ -1247,7 +1247,7 @@ export default class BasicEditor extends Component {
      * component bindings and final props definitions
      */
 
-    const realEditorState = editorState
+    const realEditorState = stateEditorState
       || this.generateEmptyEditor(); /* eslint no-unused-vars : 0 */
 
     const bindEditorRef = ( editor ) => {
@@ -1289,7 +1289,7 @@ export default class BasicEditor extends Component {
         <InlineToolbar
           ref={ bindInlineToolbar }
           buttons={ inlineButtons }
-          editorState={ stateEditorState }
+          editorState={ realEditorState }
           updateEditorState={ onChange }
           iconMap={ iconMap }
           style={ styles.inlineToolbar }
@@ -1326,7 +1326,7 @@ export default class BasicEditor extends Component {
           onNoteAdd={ onNoteAdd }
         />
         <Editor
-          editorState={ stateEditorState }
+          editorState={ realEditorState }
           onChange={ onChange }
 
           blockRendererFn={ _blockRenderer }

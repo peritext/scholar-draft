@@ -108,6 +108,7 @@ export default class Editor extends Component {
     inlineButtons: PropTypes.array,
     NoteContainerComponent: PropTypes.func,
     ElementLayoutComponent: PropTypes.func,
+    getAssetComponent: PropTypes.func,
     
     // rendering mode to provide to entity decoration components
     renderingMode: PropTypes.string,
@@ -116,6 +117,10 @@ export default class Editor extends Component {
     
     // custom inline styles
     editorStyles: PropTypes.object,
+  }
+
+  static childContextTypes = {
+    getAssetComponent: PropTypes.func,
   }
 
   /**
@@ -135,6 +140,10 @@ export default class Editor extends Component {
     };
   }
 
+  getChildContext = () => ( {
+    getAssetComponent: this.props.getAssetComponent,
+  } )
+
   /**
    * Executes code on instance after the component is mounted
    */
@@ -151,6 +160,7 @@ export default class Editor extends Component {
   }
 
   updateFocusedEditorId = ( focusedEditorId ) => {
+    console.log( 'update focused editor id' );
     // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
     if ( navigator.userAgent.search( 'Firefox' ) ) {
       this.setState( { focusedEditorId: undefined } );
@@ -437,7 +447,7 @@ export default class Editor extends Component {
    * Renders the component
    * @return {ReactMarkup} component - the output component
    */
-  render() {
+  render = () => {
     const {
       mainEditorState,
       notes,

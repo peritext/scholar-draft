@@ -25,6 +25,7 @@ class InlineAssetContainer extends Component {
     onAssetChange: PropTypes.func,
     onAssetFocus: PropTypes.func,
     onAssetBlur: PropTypes.func,
+    getAssetComponent: PropTypes.func,
   }
 
   constructor( props ) {
@@ -35,15 +36,32 @@ class InlineAssetContainer extends Component {
   }
 
   componentDidMount() {
+    const { entityKey, contentState } = this.props;
+    const { getAssetComponent } = this.context;
+    const entity = contentState.getEntity( entityKey );
+    const { asset: entityAsset } = entity.getData();
+    let asset;
+    let assetId;
+    let AssetComponent;
+    if ( entityAsset ) {
+      const { id } = entityAsset;
+      assetId = id;
+      asset = this.context.assets[assetId];
+      AssetComponent = getAssetComponent( assetId );
+    }
     this.setState( {
-      asset: this.context.assets[this.props.assetId],
-      renderingMode: this.props.renderingMode
+      asset,
+      assetId,
+      renderingMode: this.props.renderingMode,
+      AssetComponent,
     } );
     this.unsubscribeToAssets = this.context.emitter.subscribeToAssets( ( assets ) => {
-      const asset = assets[this.props.assetId];
-      if ( asset !== this.state.asset ) {
+      const newAsset = assets[this.state.assetId];
+      AssetComponent = this.context.getAssetComponent( newAsset );
+      if ( newAsset !== this.state.asset ) {
         this.setState( {
-          asset
+          asset: newAsset,
+          AssetComponent,
         } );
       }
     } );
@@ -76,13 +94,14 @@ class InlineAssetContainer extends Component {
   render = () => {
     const {
       asset,
+      assetId,
       renderingMode,
       customContext,
+      AssetComponent
     } = this.state;
     if ( !asset ) {
       return null;
     }
-
     const {
       onAssetMouseOver,
       onAssetMouseOut,
@@ -93,8 +112,6 @@ class InlineAssetContainer extends Component {
     } = this.context;
 
     const {
-      assetId,
-      AssetComponent,
       children
     } = this.props;
 
@@ -150,6 +167,7 @@ InlineAssetContainer.propTypes = {
   ] ),
 
   renderingMode: PropTypes.string,
+
 };
 
 export default InlineAssetContainer;

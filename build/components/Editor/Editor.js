@@ -77,6 +77,11 @@ function (_Component) {
      * to interact with note components
      */
 
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "getChildContext", function () {
+      return {
+        getAssetComponent: _this.props.getAssetComponent
+      };
+    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
       if (_this.props.focusedEditorId) {
         _this.updateFocusedEditorId(_this.props.focusedEditorId);
@@ -88,7 +93,8 @@ function (_Component) {
       }
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "updateFocusedEditorId", function (focusedEditorId) {
-      // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+      console.log('update focused editor id'); // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+
       if (navigator.userAgent.search('Firefox')) {
         _this.setState({
           focusedEditorId: undefined
@@ -299,66 +305,8 @@ function (_Component) {
         editorStyle: editorStyles && editorStyles.noteEditor
       });
     });
-    _this.notes = {};
-    _this.state = {
-      focusedEditorId: undefined
-    };
-    return _this;
-  }
-  /**
-   * Executes code on instance after the component is mounted
-   */
-
-
-  (0, _createClass2.default)(Editor, [{
-    key: "scrollTop",
-
-    /**
-     * Programmatically modifies the scroll state of the component
-     * so that it transitions to a specific point in the page
-     * @param {number} top - the position to scroll to in pixels
-     */
-    value: function scrollTop(initialTop) {
-      var _this2 = this;
-
-      var scrollbars = this.globalScrollbar;
-      var scrollTop = scrollbars.getScrollTop();
-      var scrollHeight = scrollbars.getScrollHeight();
-      var top = initialTop > scrollHeight ? scrollHeight : initialTop;
-      top = top < 0 ? 0 : top;
-      var ANIMATION_DURATION = 1000;
-      var ANIMATION_STEPS = 10;
-      var animationTick = 1 / ANIMATION_STEPS;
-      var diff = top - scrollTop;
-
-      var _loop = function _loop(currentTime) {
-        var to = (0, _d3Ease.easeCubic)(currentTime);
-        setTimeout(function () {
-          _this2.globalScrollbar.scrollTop(scrollTop + diff * to);
-        }, ANIMATION_DURATION * currentTime);
-      };
-
-      for (var currentTime = 0; currentTime <= 1; currentTime += animationTick) {
-        _loop(currentTime);
-      }
-    }
-    /**
-     * manages imperative focus on one of the editors
-     * @param {string} contentId - 'main' or note uuid
-     * @param {ImmutableRecord} selection - the selection to focus on
-     */
-
-  }, {
-    key: "render",
-
-    /**
-     * Renders the component
-     * @return {ReactMarkup} component - the output component
-     */
-    value: function render() {
-      var _this3 = this;
-
-      var _this$props2 = this.props,
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "render", function () {
+      var _this$props2 = _this.props,
           mainEditorState = _this$props2.mainEditorState,
           notes = _this$props2.notes,
           notesOrder = _this$props2.notesOrder,
@@ -402,14 +350,14 @@ function (_Component) {
           iconMap = _this$props2.iconMap,
           editorStyles = _this$props2.editorStyles,
           renderingMode = _this$props2.renderingMode;
-      var focusedEditorId = this.state.focusedEditorId;
+      var focusedEditorId = _this.state.focusedEditorId;
       var ElementLayout = ElementLayoutComponent || DefaultElementLayout;
       /**
        * bindings
        */
 
       var bindMainEditor = function bindMainEditor(editor) {
-        _this3.mainEditor = editor;
+        _this.mainEditor = editor;
       };
       /**
        * callbacks
@@ -452,7 +400,7 @@ function (_Component) {
         if (noteContainer) {
           var offsetTop = noteContainer.offsetTop;
 
-          _this3.scrollTop(offsetTop);
+          _this.scrollTop(offsetTop);
         }
 
         if (typeof onNotePointerMouseClick === 'function') {
@@ -461,7 +409,7 @@ function (_Component) {
       };
 
       var bindGlobalScrollbarRef = function bindGlobalScrollbarRef(scrollbar) {
-        _this3.globalScrollbar = scrollbar;
+        _this.globalScrollbar = scrollbar;
       };
 
       var activeNotes = notesOrder || Object.keys(notes || {}).sort(function (first, second) {
@@ -473,16 +421,16 @@ function (_Component) {
       });
 
       var bindEditorRef = function bindEditorRef(editor) {
-        _this3.editor = editor;
+        _this.editor = editor;
       };
 
       var containerDimensions;
 
-      if (this.editor) {
-        containerDimensions = this.editor.getBoundingClientRect();
+      if (_this.editor) {
+        containerDimensions = _this.editor.getBoundingClientRect();
       }
 
-      var handleScrollUpdate = this.onScrollUpdate;
+      var handleScrollUpdate = _this.onScrollUpdate;
       return _react.default.createElement("div", {
         ref: bindEditorRef,
         className: editorClass
@@ -540,8 +488,53 @@ function (_Component) {
         editorStyle: editorStyles && editorStyles.mainEditor
       })), _react.default.createElement(ElementLayout, {
         className: 'notes-container'
-      }, activeNotes.map(this.renderNoteEditor))));
+      }, activeNotes.map(_this.renderNoteEditor))));
+    });
+    _this.notes = {};
+    _this.state = {
+      focusedEditorId: undefined
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(Editor, [{
+    key: "scrollTop",
+
+    /**
+     * Programmatically modifies the scroll state of the component
+     * so that it transitions to a specific point in the page
+     * @param {number} top - the position to scroll to in pixels
+     */
+    value: function scrollTop(initialTop) {
+      var _this2 = this;
+
+      var scrollbars = this.globalScrollbar;
+      var scrollTop = scrollbars.getScrollTop();
+      var scrollHeight = scrollbars.getScrollHeight();
+      var top = initialTop > scrollHeight ? scrollHeight : initialTop;
+      top = top < 0 ? 0 : top;
+      var ANIMATION_DURATION = 1000;
+      var ANIMATION_STEPS = 10;
+      var animationTick = 1 / ANIMATION_STEPS;
+      var diff = top - scrollTop;
+
+      var _loop = function _loop(currentTime) {
+        var to = (0, _d3Ease.easeCubic)(currentTime);
+        setTimeout(function () {
+          _this2.globalScrollbar.scrollTop(scrollTop + diff * to);
+        }, ANIMATION_DURATION * currentTime);
+      };
+
+      for (var currentTime = 0; currentTime <= 1; currentTime += animationTick) {
+        _loop(currentTime);
+      }
     }
+    /**
+     * manages imperative focus on one of the editors
+     * @param {string} contentId - 'main' or note uuid
+     * @param {ImmutableRecord} selection - the selection to focus on
+     */
+
   }]);
   return Editor;
 }(_react.Component);
@@ -614,11 +607,15 @@ exports.default = Editor;
   inlineButtons: _propTypes.default.array,
   NoteContainerComponent: _propTypes.default.func,
   ElementLayoutComponent: _propTypes.default.func,
+  getAssetComponent: _propTypes.default.func,
   // rendering mode to provide to entity decoration components
   renderingMode: _propTypes.default.string,
   keyBindingFn: _propTypes.default.func,
   // custom inline styles
   editorStyles: _propTypes.default.object
+});
+(0, _defineProperty2.default)(Editor, "childContextTypes", {
+  getAssetComponent: _propTypes.default.func
   /**
    * component contructor
    * @param {object} props - initializing props

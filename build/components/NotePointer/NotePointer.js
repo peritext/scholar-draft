@@ -104,11 +104,20 @@ function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
+      var _this$props = this.props,
+          entityKey = _this$props.entityKey,
+          contentState = _this$props.contentState;
+      var entity = contentState.getEntity(entityKey);
+
+      var _entity$getData = entity.getData(),
+          noteId = _entity$getData.noteId;
+
       this.setState({
-        note: this.context.notes && this.context.notes[this.props.noteId]
+        note: this.context.notes && this.context.notes[noteId],
+        noteId: noteId
       });
       this.unsubscribe = this.context.emitter.subscribeToNotes(function (notes) {
-        var note = notes[_this2.props.noteId];
+        var note = notes[_this2.state.noteId];
 
         if (!_this2.state.note || note && note.order !== _this2.state.note.order) {
           _this2.setState({

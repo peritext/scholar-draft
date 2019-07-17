@@ -33,13 +33,9 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _lodash = require("lodash");
 
-var _draftJsSimpledecorator = _interopRequireDefault(require("draft-js-simpledecorator"));
-
 var _draftJs = require("draft-js");
 
 var _adjustBlockDepth = _interopRequireDefault(require("../../modifiers/adjustBlockDepth"));
-
-var _multidecorators = _interopRequireDefault(require("../../multidecorators"));
 
 var _utils = require("../../utils");
 
@@ -67,7 +63,11 @@ require("./BasicEditor.scss");
  * Asset components must be provided through props
  * @module scholar-draft/BasicEditor
  */
-// draft-js EditorState decorators utils
+
+/*
+ * draft-js EditorState decorators utils
+ * import SimpleDecorator from 'draft-js-simpledecorator';
+ */
 // constant entities type names
 // subcomponents
 // default icon map (exposes a map of img components - overriden by props-provided icon map)
@@ -113,8 +113,7 @@ function (_Component) {
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidMount", function () {
       _this.setState({
-        readOnly: false,
-        editorState: _this.props.editorState ? _draftJs.EditorState.createWithContent(_this.props.editorState.getCurrentContent(), _this.createLocalDecorator()) : _this.generateEmptyEditor()
+        readOnly: false
       });
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentWillReceiveProps", function (nextProps, nextState) {
@@ -157,8 +156,8 @@ function (_Component) {
       } else if (!_this.props.isActive && nextProps.isActive
       /* && !this.props.assetRequestPosition */
       ) {
-          var selection = _this.state.editorState.getSelection();
-
+          var state = _this.state.editorState || nextProps.editorState;
+          var selection = state.getSelection();
           stateMods = (0, _objectSpread2.default)({}, stateMods, {
             readOnly: false
             /*
@@ -481,7 +480,11 @@ function (_Component) {
       });
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "forceRender", function (props) {
-      var editorState = props.editorState || _this.state.editorState || _this.generateEmptyEditor();
+      var editorState = props.editorState || _this.state.editorState; // || this.generateEmptyEditor();
+
+      if (!_this.state.editorState) {
+        return;
+      }
 
       var prevSelection = editorState.getSelection();
       var content = editorState.getCurrentContent();
@@ -625,7 +628,7 @@ function (_Component) {
             var updatedEditorState = _draftJs.EditorState.push(_editorState, newContentState, 'remove-entity'); // update selection
 
 
-            var newEditorState = _draftJs.EditorState.forceSelection(updatedEditorState, cleaningSelection.merge({
+            var newEditorState = _draftJs.EditorState.acceptSelection(updatedEditorState, cleaningSelection.merge({
               focusOffset: selectedBlockLength - 1
             }));
 
@@ -991,7 +994,7 @@ function (_Component) {
        */
 
 
-      var realEditorState = editorState || _this.generateEmptyEditor();
+      var realEditorState = stateEditorState || _this.generateEmptyEditor();
       /* eslint no-unused-vars : 0 */
 
 
@@ -1027,7 +1030,7 @@ function (_Component) {
       }, _react.default.createElement(_InlineToolbar.default, {
         ref: bindInlineToolbar,
         buttons: inlineButtons,
-        editorState: stateEditorState,
+        editorState: realEditorState,
         updateEditorState: onChange,
         iconMap: iconMap,
         style: styles.inlineToolbar
@@ -1054,7 +1057,7 @@ function (_Component) {
         contentId: contentId,
         onNoteAdd: onNoteAdd
       }), _react.default.createElement(_draftJs.Editor, (0, _extends2.default)({
-        editorState: stateEditorState,
+        editorState: realEditorState,
         onChange: onChange,
         blockRendererFn: _blockRenderer,
         spellCheck: true,
@@ -1074,8 +1077,7 @@ function (_Component) {
     });
     _this.debouncedUpdateSelection = (0, _lodash.debounce)(_this.updateSelection, 100);
     _this.state = {
-      // editor state is initialized with a decorated editorState (notes + assets + ...)
-      editorState: _this.generateEmptyEditor(),
+      editorState: undefined,
       // toolbars styles are represented as css-in-js
       styles: {
         inlineToolbar: {},

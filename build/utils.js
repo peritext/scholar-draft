@@ -32,10 +32,6 @@ var _draftJs = require("draft-js");
 
 var _uuid = require("uuid");
 
-var _multidecorators = _interopRequireDefault(require("./multidecorators"));
-
-var _draftJsSimpledecorator = _interopRequireDefault(require("draft-js-simpledecorator"));
-
 var _constants = require("./constants");
 
 var _handleBlockType = _interopRequireDefault(require("./modifiers/handleBlockType"));
@@ -54,6 +50,11 @@ var _insertText = _interopRequireDefault(require("./modifiers/insertText"));
  * This module exports a series of draft-js utils
  * to manipulate scholar-draft state upstream to component's implementation
  * @module scholar-draft/utils
+ */
+
+/*
+ * import MultiDecorator from './multidecorators';
+ * import SimpleDecorator from 'draft-js-simpledecorator';
  */
 // modifiers helping to modify editorState
 var getOffsetRelativeToContainer = function getOffsetRelativeToContainer(el, stopClassName) {
@@ -165,26 +166,40 @@ function insertAssetInEditor(editorState, asset, selection) {
 
   if (insertionType === _constants.BLOCK_ASSET) {
     // create a new atomic block with asset's entity
-    updatedEditor = _draftJs.AtomicBlockUtils.insertAtomicBlock(updatedEditor, newEntityKey, ' ');
-    var newContent = updatedEditor.getCurrentContent();
-    var blockMap = newContent.getBlockMap().toJS(); // now we update the selection to be on the new block
+    updatedEditor = _draftJs.AtomicBlockUtils.insertAtomicBlock(updatedEditor, newEntityKey, ' '); // const newContent = updatedEditor.getCurrentContent();
+    // let blockKey;
 
-    var blockE = Object.keys(blockMap).map(function (blockId) {
-      return blockMap[blockId];
-    }).find(function (block) {
-      if (block.type === 'atomic') {
-        return block.characterList.find(function (char) {
-          return char.entity && char.entity === newEntityKey;
-        });
-      }
+    /*
+     * newContent.getBlockMap().forEach(contentBlock => {
+     *   if (contentBlock.getEntityAt(0) === newEntityKey) {
+     *     blockKey = contentBlock.getKey();
+     *   }
+     * })
+     */
 
-      return undefined;
-    });
-    var block = newContent.getBlockAfter(blockE.key);
+    /*
+     * now we update the selection to be on the new block
+     * const nextBlock = newContent.getBlockAfter( blockKey );
+     * console.log('next block', nextBlock, nextBlock.getKey())
+     * const finalSelection = SelectionState.createEmpty( nextBlock.getKey() );
+     * newContentState = Modifier.insertText(
+     *   newContent,
+     *   finalSelection,
+     *   'coucou ça a va',
+     *   null,
+     * );
+     */
+    // updatedEditor = EditorState.createWithContent(newContentState, updatedEditor.getDecorator())
 
-    var finalSelection = _draftJs.SelectionState.createEmpty(block.getKey());
-
-    updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, finalSelection); // insert inline asset instruction
+    /*
+     * // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+     * if ( navigator.userAgent.search( 'Firefox' ) ) {
+     *   updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
+     * } else {
+     *   updatedEditor = EditorState.forceSelection( updatedEditor, finalSelection );
+     * }
+     */
+    // insert inline asset instruction
   } else if (insertionType === _constants.INLINE_ASSET) {
     // determine the range of the entity
     var anchorKey = thatSelection.getAnchorKey();
@@ -211,16 +226,24 @@ function insertAssetInEditor(editorState, asset, selection) {
       anchorOffset: thatSelection.getEndOffset() + selectedText.length,
       focusOffset: thatSelection.getEndOffset() + selectedText.length
     });
-    newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, ' ', null, null); // then we put the selection at end
+    newContentState = _draftJs.Modifier.replaceText(newContentState, endSelection, '  ', null, null); // then we put the selection at end
 
     endSelection = endSelection.merge({
       anchorOffset: endSelection.getEndOffset() + 1,
       focusOffset: endSelection.getEndOffset() + 1
     }); // finally, apply new content state ...
 
-    updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity'); // ... and put selection after newly created content
+    updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
+    /*
+     * ... and put selection after newly created content
+     * dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+     */
 
-    updatedEditor = _draftJs.EditorState.forceSelection(updatedEditor, endSelection);
+    if (navigator.userAgent.search('Firefox')) {
+      updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
+    } else {
+      updatedEditor = _draftJs.EditorState.forceSelection(updatedEditor, endSelection);
+    }
   }
 
   return updatedEditor;
@@ -1056,26 +1079,26 @@ var createDecorator = function createDecorator(_ref) {
       InlineAssetContainerComponent = _ref.InlineAssetContainerComponent,
       QuoteContainerComponent = _ref.QuoteContainerComponent,
       inlineEntities = _ref.inlineEntities;
-  return new _multidecorators.default([new _draftJsSimpledecorator.default(findInlineAssetMethod, InlineAssetContainerComponent), new _draftJsSimpledecorator.default(findNotePointerMethod, NotePointerComponent), new _draftJsSimpledecorator.default(findQuotesMethod, QuoteContainerComponent)].concat((0, _toConsumableArray2.default)((inlineEntities || []).map(function (entity) {
-    return new _draftJsSimpledecorator.default(entity.strategy, entity.component);
-  }))));
+
   /*
-   * return new CompositeDecorator( [
-   *   {
-   *     strategy: findInlineAssetMethod,
-   *     component: InlineAssetContainerComponent
-   *   },
-   *   {
-   *     strategy: findNotePointerMethod,
-   *     component: NotePointerComponent
-   *   },
-   *   {
-   *     strategy: findQuotesMethod,
-   *     component: QuoteContainerComponent
-   *   },
-   *   ...( inlineEntities || [] )
+   * return new MultiDecorator( [
+   *   new SimpleDecorator( findInlineAssetMethod, InlineAssetContainerComponent ),
+   *   new SimpleDecorator( findNotePointerMethod, NotePointerComponent ),
+   *   new SimpleDecorator( findQuotesMethod, QuoteContainerComponent ),
+   *   ...( inlineEntities || [] ).map( ( entity ) =>
+   *     new SimpleDecorator( entity.strategy, entity.component ) )
    * ] );
    */
+  return new _draftJs.CompositeDecorator([{
+    strategy: findInlineAssetMethod,
+    component: InlineAssetContainerComponent
+  }, {
+    strategy: findNotePointerMethod,
+    component: NotePointerComponent
+  }, {
+    strategy: findQuotesMethod,
+    component: QuoteContainerComponent
+  }].concat((0, _toConsumableArray2.default)(inlineEntities || [])));
 };
 
 exports.createDecorator = createDecorator;

@@ -10,13 +10,15 @@ import {
   Modifier,
   AtomicBlockUtils,
   SelectionState,
-  // CompositeDecorator
+  CompositeDecorator
 } from 'draft-js';
 
 import { v4 as generateId } from 'uuid';
 
-import MultiDecorator from './multidecorators';
-import SimpleDecorator from 'draft-js-simpledecorator';
+/*
+ * import MultiDecorator from './multidecorators';
+ * import SimpleDecorator from 'draft-js-simpledecorator';
+ */
 
 import {
   NOTE_POINTER,
@@ -149,20 +151,42 @@ export function insertAssetInEditor(
       newEntityKey,
       ' '
     );
-    const newContent = updatedEditor.getCurrentContent();
-    const blockMap = newContent.getBlockMap().toJS();
+    // const newContent = updatedEditor.getCurrentContent();
 
-    // now we update the selection to be on the new block
-    const blockE = Object.keys( blockMap ).map( ( blockId ) => blockMap[blockId] )
-      .find( ( block ) => {
-        if ( block.type === 'atomic' ) {
-          return block.characterList.find( ( char ) => char.entity && char.entity === newEntityKey );
-        }
-        return undefined;
-      } );
-    const block = newContent.getBlockAfter( blockE.key );
-    const finalSelection = SelectionState.createEmpty( block.getKey() );
-    updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
+    // let blockKey;
+
+    /*
+     * newContent.getBlockMap().forEach(contentBlock => {
+     *   if (contentBlock.getEntityAt(0) === newEntityKey) {
+     *     blockKey = contentBlock.getKey();
+     *   }
+     * })
+     */
+
+    /*
+     * now we update the selection to be on the new block
+     * const nextBlock = newContent.getBlockAfter( blockKey );
+     * console.log('next block', nextBlock, nextBlock.getKey())
+     * const finalSelection = SelectionState.createEmpty( nextBlock.getKey() );
+     * newContentState = Modifier.insertText(
+     *   newContent,
+     *   finalSelection,
+     *   'coucou ça a va',
+     *   null,
+     * );
+     */
+
+    // updatedEditor = EditorState.createWithContent(newContentState, updatedEditor.getDecorator())
+
+    /*
+     * // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+     * if ( navigator.userAgent.search( 'Firefox' ) ) {
+     *   updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
+     * } else {
+     *   updatedEditor = EditorState.forceSelection( updatedEditor, finalSelection );
+     * }
+     */
+    
   // insert inline asset instruction
   }
   else if ( insertionType === INLINE_ASSET ) {
@@ -205,7 +229,7 @@ export function insertAssetInEditor(
     newContentState = Modifier.replaceText(
       newContentState,
       endSelection,
-      ' ',
+      '  ',
       null,
       null
     );
@@ -216,8 +240,17 @@ export function insertAssetInEditor(
     } );
     // finally, apply new content state ...
     updatedEditor = EditorState.push( editorState, newContentState, 'apply-entity' );
-    // ... and put selection after newly created content
-    updatedEditor = EditorState.forceSelection( updatedEditor, endSelection );
+
+    /*
+     * ... and put selection after newly created content
+     * dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+     */
+    if ( navigator.userAgent.search( 'Firefox' ) ) {
+      updatedEditor = EditorState.acceptSelection( updatedEditor, endSelection );
+    }
+    else {
+      updatedEditor = EditorState.forceSelection( updatedEditor, endSelection );
+    }
   }
   return updatedEditor;
 }
@@ -1058,29 +1091,30 @@ export const createDecorator = ( {
   QuoteContainerComponent,
   inlineEntities, /* [{strategy: function, entity: component}] */
 } ) => {
-  return new MultiDecorator( [
-    new SimpleDecorator( findInlineAssetMethod, InlineAssetContainerComponent ),
-    new SimpleDecorator( findNotePointerMethod, NotePointerComponent ),
-    new SimpleDecorator( findQuotesMethod, QuoteContainerComponent ),
-    ...( inlineEntities || [] ).map( ( entity ) =>
-      new SimpleDecorator( entity.strategy, entity.component ) )
-  ] );
 
   /*
-   * return new CompositeDecorator( [
-   *   {
-   *     strategy: findInlineAssetMethod,
-   *     component: InlineAssetContainerComponent
-   *   },
-   *   {
-   *     strategy: findNotePointerMethod,
-   *     component: NotePointerComponent
-   *   },
-   *   {
-   *     strategy: findQuotesMethod,
-   *     component: QuoteContainerComponent
-   *   },
-   *   ...( inlineEntities || [] )
+   * return new MultiDecorator( [
+   *   new SimpleDecorator( findInlineAssetMethod, InlineAssetContainerComponent ),
+   *   new SimpleDecorator( findNotePointerMethod, NotePointerComponent ),
+   *   new SimpleDecorator( findQuotesMethod, QuoteContainerComponent ),
+   *   ...( inlineEntities || [] ).map( ( entity ) =>
+   *     new SimpleDecorator( entity.strategy, entity.component ) )
    * ] );
    */
+
+  return new CompositeDecorator( [
+    {
+      strategy: findInlineAssetMethod,
+      component: InlineAssetContainerComponent
+    },
+    {
+      strategy: findNotePointerMethod,
+      component: NotePointerComponent
+    },
+    {
+      strategy: findQuotesMethod,
+      component: QuoteContainerComponent
+    },
+    ...( inlineEntities || [] )
+  ] );
 };

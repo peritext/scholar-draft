@@ -51,8 +51,10 @@ function (_Component) {
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "render", function () {
       var _this$state = _this.state,
           asset = _this$state.asset,
+          assetId = _this$state.assetId,
           renderingMode = _this$state.renderingMode,
-          customContext = _this$state.customContext;
+          customContext = _this$state.customContext,
+          AssetComponent = _this$state.AssetComponent;
 
       if (!asset) {
         return null;
@@ -65,10 +67,7 @@ function (_Component) {
           onAssetFocus = _this$context.onAssetFocus,
           onAssetBlur = _this$context.onAssetBlur,
           iconMap = _this$context.iconMap;
-      var _this$props = _this.props,
-          assetId = _this$props.assetId,
-          AssetComponent = _this$props.AssetComponent,
-          children = _this$props.children;
+      var children = _this.props.children;
 
       if (!AssetComponent) {
         return null;
@@ -116,16 +115,40 @@ function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
+      var _this$props = this.props,
+          entityKey = _this$props.entityKey,
+          contentState = _this$props.contentState;
+      var getAssetComponent = this.context.getAssetComponent;
+      var entity = contentState.getEntity(entityKey);
+
+      var _entity$getData = entity.getData(),
+          entityAsset = _entity$getData.asset;
+
+      var asset;
+      var assetId;
+      var AssetComponent;
+
+      if (entityAsset) {
+        var id = entityAsset.id;
+        assetId = id;
+        asset = this.context.assets[assetId];
+        AssetComponent = getAssetComponent(assetId);
+      }
+
       this.setState({
-        asset: this.context.assets[this.props.assetId],
-        renderingMode: this.props.renderingMode
+        asset: asset,
+        assetId: assetId,
+        renderingMode: this.props.renderingMode,
+        AssetComponent: AssetComponent
       });
       this.unsubscribeToAssets = this.context.emitter.subscribeToAssets(function (assets) {
-        var asset = assets[_this2.props.assetId];
+        var newAsset = assets[_this2.state.assetId];
+        AssetComponent = _this2.context.getAssetComponent(newAsset);
 
-        if (asset !== _this2.state.asset) {
+        if (newAsset !== _this2.state.asset) {
           _this2.setState({
-            asset: asset
+            asset: newAsset,
+            AssetComponent: AssetComponent
           });
         }
       });
@@ -164,7 +187,8 @@ function (_Component) {
   onAssetMouseOut: _propTypes.default.func,
   onAssetChange: _propTypes.default.func,
   onAssetFocus: _propTypes.default.func,
-  onAssetBlur: _propTypes.default.func
+  onAssetBlur: _propTypes.default.func,
+  getAssetComponent: _propTypes.default.func
 });
 InlineAssetContainer.propTypes = {
   children: _propTypes.default.array,
