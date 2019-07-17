@@ -374,7 +374,7 @@ export default class Editor extends Component {
 
     const onClickScrollToNotePointer = ( thatNoteId ) => {
       const notePointer = document.getElementById( `note-pointer-${thatNoteId}` );
-      const scrollTo = notePointer && notePointer.offsetTop;
+      const scrollTo = notePointer && notePointer.parentNode.offsetTop;
       if ( scrollTo ) {
         this.scrollTop( scrollTo );
       }

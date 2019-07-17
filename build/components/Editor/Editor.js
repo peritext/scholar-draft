@@ -252,7 +252,7 @@ function (_Component) {
 
       var onClickScrollToNotePointer = function onClickScrollToNotePointer(thatNoteId) {
         var notePointer = document.getElementById("note-pointer-".concat(thatNoteId));
-        var scrollTo = notePointer && notePointer.offsetTop;
+        var scrollTo = notePointer && notePointer.parentNode.offsetTop;
 
         if (scrollTo) {
           _this.scrollTop(scrollTo);
