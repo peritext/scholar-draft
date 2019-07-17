@@ -93,8 +93,7 @@ function (_Component) {
       }
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "updateFocusedEditorId", function (focusedEditorId) {
-      console.log('update focused editor id'); // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-
+      // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
       if (navigator.userAgent.search('Firefox')) {
         _this.setState({
           focusedEditorId: undefined

@@ -160,7 +160,6 @@ export default class Editor extends Component {
   }
 
   updateFocusedEditorId = ( focusedEditorId ) => {
-    console.log( 'update focused editor id' );
     // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
     if ( navigator.userAgent.search( 'Firefox' ) ) {
       this.setState( { focusedEditorId: undefined } );
