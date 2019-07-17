@@ -132,7 +132,7 @@ function (_Component) {
         var id = entityAsset.id;
         assetId = id;
         asset = this.context.assets[assetId];
-        AssetComponent = getAssetComponent(assetId);
+        AssetComponent = getAssetComponent(asset);
       }
 
       this.setState({

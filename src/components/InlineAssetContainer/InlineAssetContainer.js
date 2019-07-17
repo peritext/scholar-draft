@@ -47,7 +47,7 @@ class InlineAssetContainer extends Component {
       const { id } = entityAsset;
       assetId = id;
       asset = this.context.assets[assetId];
-      AssetComponent = getAssetComponent( assetId );
+      AssetComponent = getAssetComponent( asset );
     }
     this.setState( {
       asset,
