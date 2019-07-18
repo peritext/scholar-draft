@@ -119,6 +119,7 @@ class NoteContainer extends Component {
       assets,
       assetRequestPosition,
       addTextAtCurrentSelection,
+      customContext,
       contentId,
       isActive,
       renderingMode,
@@ -208,6 +209,8 @@ class NoteContainer extends Component {
             handlePastedText={ handlePastedText }
 
             containerDimensions={ containerDimensions }
+
+            customContext={ customContext }
 
             messages={ messages }
 
