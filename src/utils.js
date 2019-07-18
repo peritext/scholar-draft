@@ -177,15 +177,6 @@ export function insertAssetInEditor(
      */
 
     // updatedEditor = EditorState.createWithContent(newContentState, updatedEditor.getDecorator())
-
-    /*
-     * // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-     * if ( navigator.userAgent.search( 'Firefox' ) ) {
-     *   updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
-     * } else {
-     *   updatedEditor = EditorState.forceSelection( updatedEditor, finalSelection );
-     * }
-     */
     
   // insert inline asset instruction
   }
@@ -241,16 +232,16 @@ export function insertAssetInEditor(
     // finally, apply new content state ...
     updatedEditor = EditorState.push( editorState, newContentState, 'apply-entity' );
 
-    /*
-     * ... and put selection after newly created content
-     * dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-     */
-    if ( navigator.userAgent.search( 'Firefox' ) ) {
-      updatedEditor = EditorState.acceptSelection( updatedEditor, endSelection );
-    }
-    else {
-      updatedEditor = EditorState.forceSelection( updatedEditor, endSelection );
-    }
+    // /*
+    //  * ... and put selection after newly created content
+    //  * dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+    //  */
+    // if ( navigator.userAgent.search( 'Firefox' ) > -1 ) {
+    //   updatedEditor = EditorState.acceptSelection( updatedEditor, endSelection );
+    // }
+    // else {
+    //   updatedEditor = EditorState.forceSelection( updatedEditor, endSelection );
+    // }
   }
   return updatedEditor;
 }
@@ -420,10 +411,12 @@ export function insertBlockAssetInEditor(
       }
       return undefined;
     } );
-  const block = newContent.getBlockAfter( blockE.key );
-  const finalSelection = SelectionState.createEmpty( block.getKey() );
-  updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
-
+  if (blockE) {
+    const block = newContent.getBlockAfter( blockE.key );
+    const finalSelection = SelectionState.createEmpty( block.getKey() );
+    updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
+  }
+  
   return updatedEditor;
 }
 

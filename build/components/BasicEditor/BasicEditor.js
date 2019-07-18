@@ -374,6 +374,17 @@ function (_Component) {
         });
       }
     });
+    (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "componentDidCatch", function () {
+      _this.setState({
+        editorState: _this.props.editorState,
+        // toolbars styles are represented as css-in-js
+        styles: {
+          inlineToolbar: {},
+          sideToolbar: {}
+        },
+        readOnly: true
+      });
+    });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "createLocalDecorator", function () {
       var _this$props = _this.props,
           inlineEntities = _this$props.inlineEntities,
@@ -498,7 +509,7 @@ function (_Component) {
        * which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
        */
 
-      if (navigator.userAgent.toLowerCase().indexOf('firefox') > 0) {
+      if (navigator.userAgent.toLowerCase().includes('firefox')) {
         selectedEditorState = _draftJs.EditorState.acceptSelection(newEditorState, prevSelection);
       } else {
         selectedEditorState = _draftJs.EditorState.forceSelection(newEditorState, prevSelection);
@@ -677,12 +688,9 @@ function (_Component) {
     });
     (0, _defineProperty2.default)((0, _assertThisInitialized2.default)((0, _assertThisInitialized2.default)(_this)), "_onTab", function (ev) {
       var editorState = _this.props.editorState;
-      console.log('on tab');
 
       var newEditorState = _draftJs.RichUtils.onTab(ev, editorState, 6); // adjustBlockDepth( editorState, ev );
 
-
-      console.log('new', newEditorState.toJS());
 
       if (newEditorState !== editorState) {
         _this.onChange(newEditorState);
@@ -1083,7 +1091,7 @@ function (_Component) {
     });
     _this.debouncedUpdateSelection = (0, _lodash.debounce)(_this.updateSelection, 100);
     _this.state = {
-      editorState: undefined,
+      editorState: _props.editorState,
       // toolbars styles are represented as css-in-js
       styles: {
         inlineToolbar: {},

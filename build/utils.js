@@ -190,15 +190,6 @@ function insertAssetInEditor(editorState, asset, selection) {
      * );
      */
     // updatedEditor = EditorState.createWithContent(newContentState, updatedEditor.getDecorator())
-
-    /*
-     * // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-     * if ( navigator.userAgent.search( 'Firefox' ) ) {
-     *   updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );
-     * } else {
-     *   updatedEditor = EditorState.forceSelection( updatedEditor, finalSelection );
-     * }
-     */
     // insert inline asset instruction
   } else if (insertionType === _constants.INLINE_ASSET) {
     // determine the range of the entity
@@ -233,17 +224,16 @@ function insertAssetInEditor(editorState, asset, selection) {
       focusOffset: endSelection.getEndOffset() + 1
     }); // finally, apply new content state ...
 
-    updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity');
-    /*
-     * ... and put selection after newly created content
-     * dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-     */
-
-    if (navigator.userAgent.search('Firefox')) {
-      updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, endSelection);
-    } else {
-      updatedEditor = _draftJs.EditorState.forceSelection(updatedEditor, endSelection);
-    }
+    updatedEditor = _draftJs.EditorState.push(editorState, newContentState, 'apply-entity'); // /*
+    //  * ... and put selection after newly created content
+    //  * dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
+    //  */
+    // if ( navigator.userAgent.search( 'Firefox' ) > -1 ) {
+    //   updatedEditor = EditorState.acceptSelection( updatedEditor, endSelection );
+    // }
+    // else {
+    //   updatedEditor = EditorState.forceSelection( updatedEditor, endSelection );
+    // }
   }
 
   return updatedEditor;
@@ -326,12 +316,9 @@ function insertBlockAssetInEditor(editorState, asset, selection) {
 
   if (inputSelection.isCollapsed()) {
     var blockId = inputSelection.getAnchorKey();
-
-    var _block = editorState.getCurrentContent().getBlockForKey(blockId);
-
-    var text = _block.getText();
-
-    var type = _block.getType();
+    var block = editorState.getCurrentContent().getBlockForKey(blockId);
+    var text = block.getText();
+    var type = block.getType();
 
     if (text.trim().length === 0 && type !== 'atomic') {
       selectionInEmptyBlock = blockId;
@@ -387,11 +374,15 @@ function insertBlockAssetInEditor(editorState, asset, selection) {
 
     return undefined;
   });
-  var block = newContent.getBlockAfter(blockE.key);
 
-  var finalSelection = _draftJs.SelectionState.createEmpty(block.getKey());
+  if (blockE) {
+    var _block = newContent.getBlockAfter(blockE.key);
 
-  updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, finalSelection);
+    var finalSelection = _draftJs.SelectionState.createEmpty(_block.getKey());
+
+    updatedEditor = _draftJs.EditorState.acceptSelection(updatedEditor, finalSelection);
+  }
+
   return updatedEditor;
 }
 /**
