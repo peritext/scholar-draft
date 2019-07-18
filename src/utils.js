@@ -411,7 +411,7 @@ export function insertBlockAssetInEditor(
       }
       return undefined;
     } );
-  if (blockE) {
+  if ( blockE ) {
     const block = newContent.getBlockAfter( blockE.key );
     const finalSelection = SelectionState.createEmpty( block.getKey() );
     updatedEditor = EditorState.acceptSelection( updatedEditor, finalSelection );

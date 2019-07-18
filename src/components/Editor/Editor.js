@@ -161,7 +161,7 @@ export default class Editor extends Component {
 
   updateFocusedEditorId = ( focusedEditorId ) => {
     // dirty workaround for a firefox-specific bug - related to https://github.com/facebook/draft-js/issues/1812
-    if ( navigator.userAgent.search( 'Firefox' ) ) {
+    if ( navigator.userAgent.toLowerCase().includes( 'firefox' ) ) {
       this.setState( { focusedEditorId: undefined } );
       setTimeout( () => {
         this.setState( { focusedEditorId } );
@@ -171,7 +171,7 @@ export default class Editor extends Component {
         else if ( focusedEditorId && this.notes[focusedEditorId] ) {
           this.notes[focusedEditorId].editor.focus();
         }
-      }, 500 );
+      }, 1 );
     }
     else {
       this.setState( {

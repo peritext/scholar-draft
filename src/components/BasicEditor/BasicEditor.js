@@ -183,7 +183,7 @@ export default class BasicEditor extends Component {
     this.debouncedUpdateSelection = debounce( this.updateSelection, 100 );
 
     this.state = {
-      editorState: undefined,
+      editorState: props.editorState,
       // toolbars styles are represented as css-in-js
       styles: {
         inlineToolbar: {
@@ -515,6 +515,22 @@ export default class BasicEditor extends Component {
     }
   }
 
+  componentDidCatch = () => {
+    this.setState( {
+      editorState: this.props.editorState,
+      // toolbars styles are represented as css-in-js
+      styles: {
+        inlineToolbar: {
+
+        },
+        sideToolbar: {
+
+        }
+      },
+      readOnly: true
+    } );
+  }
+
   createLocalDecorator = () => {
     const {
       inlineEntities,
@@ -675,7 +691,7 @@ export default class BasicEditor extends Component {
      * we try to overcome the following error in firefox : https://bugzilla.mozilla.org/show_bug.cgi?id=921444
      * which is related to this draft code part : https://github.com/facebook/draft-js/blob/8de2db9e9e99dea7f4db69f3d8e542df7e60cdda/src/component/selection/setDraftEditorSelection.js#L257
      */
-    if ( navigator.userAgent.toLowerCase().indexOf( 'firefox' ) > 0 ) {
+    if ( navigator.userAgent.toLowerCase().includes( 'firefox' ) ) {
       selectedEditorState = EditorState.acceptSelection(
         newEditorState,
         prevSelection
@@ -870,9 +886,7 @@ export default class BasicEditor extends Component {
    */
   _onTab = ( ev ) => {
     const { editorState } = this.props;
-    console.log( 'on tab' );
     const newEditorState = RichUtils.onTab( ev, editorState, 6 ); // adjustBlockDepth( editorState, ev );
-    console.log( 'new', newEditorState.toJS() );
     if ( newEditorState !== editorState ) {
       this.onChange( newEditorState );
       return 'handled';
